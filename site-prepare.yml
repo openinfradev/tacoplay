@@ -11,8 +11,6 @@
   tags: ceph
 
 - hosts: localhost
-  vars:
-    ansible_python_interpreter: /opt/app-root/bin/python
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
     - name: Add docker yum repository
