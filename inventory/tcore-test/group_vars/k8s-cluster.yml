@@ -1,0 +1,79 @@
+# OS
+disable_swap: true
+epel_enabled: true
+preinstall_selinux_state: disabled
+
+# Docker
+# see all/docker.yml for docker options
+
+# etcd
+etcd_deployment_type: docker
+etcd_memory_limit: 8192M
+
+# K8S
+kube_version: v1.12.1
+kubeadm_enabled: true
+kube_api_anonymous_auth: true
+kube_api_pwd: "{{ lookup('password', inventory_dir + '/credentials/kube_user.creds length=15 chars=ascii_letters,digits') }}"
+kube_users:
+  kube:
+    pass: "{{kube_api_pwd}}"
+    role: admin
+    groups:
+      - system:masters
+kubelet_deployment_type: host
+
+kube_network_plugin: calico
+kube_service_addresses: 10.233.0.0/18
+kube_pods_subnet: 10.233.64.0/18
+
+# Calico
+# set ipip to false and peer_with_calico_rr to use global bgp rr
+#ipip_mode: Never
+#calico_mtu: 9000
+#peer_with_calico_rr: false
+#calico_ip_auto_method: "interface=eth1"
+calico_felix_prometheusmetricsenabled: "true"
+calico_felix_prometheusmetricsport: 9091
+calico_felix_prometheusgometricsenabled: "true"
+calico_felix_prometheusprocessmetricsenabled: "true"
+
+# Set true to enable mount propataion
+local_volume_provisioner_enabled: false
+cephfs_provisioner_enabled: false
+pod_infra_version: 3.1
+
+# Copy kubectl to ansible host
+kubectl_localhost: true
+kubeconfig_localhost: true
+
+# Dashboard is disabled temporarily for private image repo issue
+dashboard_enabled: false
+
+# DNS
+dns_mode: coredns
+
+# Helm
+helm_enabled: true
+helm_deployment_type: host
+helm_version: "v2.10.0"
+helm_skip_refresh: true
+
+# Image repo URL
+# Uncomment the following lines when local docker registry is used
+#nginx_image_repo: "tacorepo:5000/nginx"
+#hyperkube_image_repo: "tacorepo:5000/google-containers/hyperkube"
+#helm_image_repo: "tacorepo:5000/k8s-helm"
+#tiller_image_repo: "tacorepo:5000/kubernetes-helm/tiller"
+#calico_node_image_repo: "tacorepo:5000/calico/node"
+#calico_cni_image_repo: "tacorepo:5000/calico/cni"
+#calicoctl_image_repo: "tacorepo:5000/calico/ctl"
+#dashboard_image_repo: "tacorepo:5000/google_containers/kubernetes-dashboard-amd64"
+#dnsmasq_nanny_image_repo: "tacorepo:5000/google_containers/k8s-dns-dnsmasq-nanny-amd64"
+#dnsmasq_sidecar_image_repo: "tacorepo:5000/google_containers/k8s-dns-sidecar-amd64"
+#kubedns_image_repo: "tacorepo:5000/google_containers/k8s-dns-kube-dns-amd64"
+#pod_infra_image_repo: "tacorepo:5000/google_containers/pause-amd64"
+#etcd_image_repo: "tacorepo:5000/coreos/etcd"
+#dnsmasqautoscaler_image_repo: "tacorepo:5000/google_containers/cluster-proportional-autoscaler-amd64"
+#kubednsautoscaler_image_repo: "tacorepo:5000/google_containers/cluster-proportional-autoscaler-amd64"
+#ingress_nginx_default_backend_image_repo: "tacorepo:5000/defaultbackend"

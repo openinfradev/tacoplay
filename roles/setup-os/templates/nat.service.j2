@@ -1,0 +1,12 @@
+[Unit]
+Description=NAT Service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart={{ bin_dir }}/nat-service start
+ExecStop={{ bin_dir }}/nat-service stop
+ExecReload={{ bin_dir }}/nat-service restart
+
+[Install]
+WantedBy=multi-user.target

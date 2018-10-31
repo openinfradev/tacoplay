@@ -1,0 +1,2570 @@
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: helm-toolkit
+data:
+  chart_name: helm-toolkit
+  release: helm-toolkit
+  namespace: helm-tookit
+  values: {}
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: helm-toolkit
+    reference: master
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: ingress
+data:
+  chart_name: ingress
+  release: ingress
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        entrypoint: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.0
+        ingress: registry.cicd.stg.taco/nginx-ingress-controller:0.9.0
+        error_pages: registry.cicd.stg.taco/defaultbackend:1.0
+        keepalived: registry.cicd.stg.taco/keepalived:1.4.5
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.0
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    network:
+      host_namespace: true
+    monitoring:
+      prometheus:
+        enabled: true
+        ingress_exporter:
+          scrape: true
+        config:
+          worker-processes: "8"
+    config:
+      worker-processes: "8"
+    pod:
+      replicas:
+        ingress: 1
+        error_page: 1
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: ingress
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: ceph-provisioners
+data:
+  chart_name: ceph-provisioners
+  release: ceph-provisioners
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        ceph_bootstrap: registry.cicd.stg.taco/ceph-daemon:tag-build-master-luminous-ubuntu-16.04
+        ceph_cephfs_provisioner: registry.cicd.stg.taco/cephfs-provisioner:v0.1.1
+        ceph_config_helper: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
+        ceph_rbd_provisioner: registry.cicd.stg.taco/rbd-provisioner:v0.1.1
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: IfNotPresent
+    deployment:
+      ceph: false
+      client_secrets: true
+      rbd_provisioner: false
+      cephfs_provisioner: false
+    storageclass:
+      rbd:
+        provision_storage_class: false
+      cephfs:
+        provision_storage_class: false
+    conf:
+      ceph:
+        global:
+          mon_host: 192.168.48.31
+    manifests:
+      configmap_bin: false
+      configmap_bin_common: false
+      configmap_etc: true
+      deployment_rbd_provisioner: false
+      deployment_cephfs_provisioner: false
+      job_bootstrap: false
+      job_cephfs_client_key: false
+      job_image_repo_sync: false
+      job_namespace_client_key_cleaner: false
+      job_namespace_client_key: false
+      storageclass_cephfs: false
+      storageclass_rbd: false
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: ceph-provisioners
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: mariadb
+data:
+  chart_name: mariadb
+  release: mariadb
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        mariadb: registry.cicd.stg.taco/mariadb:10.2.13
+        ingress: registry.cicd.stg.taco/nginx-ingress-controller:0.9.0
+        error_pages: registry.cicd.stg.taco/defaultbackend:1.0
+        prometheus_create_mysql_user: registry.cicd.stg.taco/mariadb:10.2.13
+        prometheus_mysql_exporter: registry.cicd.stg.taco/mysqld-exporter:v0.10.0
+        prometheus_mysql_exporter_helm_tests: registry.cicd.stg.taco/heat:pike
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: docker.io/docker:17.07.0
+      pull_policy: Always
+    pod:
+      replicas:
+        server: 3
+    volume:
+      enabled: true
+      class_name: ceph
+    monitoring:
+      prometheus:
+        enabled: true
+        mysqld_exporter:
+          scrape: true
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: mariadb
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: etcd
+data:
+  chart_name: etcd
+  release: etcd
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        etcd: registry.cicd.stg.taco/etcd-amd64:2.2.5
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+      pull_policy: IfNotPresent
+    pod:
+      replicas:
+        etcd: 1
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: etcd
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: rabbitmq
+data:
+  chart_name: rabbitmq
+  release: rabbitmq
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        rabbitmq: registry.cicd.stg.taco/rabbitmq:3.7.4
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        prometheus_rabbitmq_exporter: registry.cicd.stg.taco/rabbitmq-exporter:v0.21.0
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        scripted_test: registry.cicd.stg.taco/rabbitmq:3.7.4-management
+        prometheus_rabbitmq_exporter_helm_tests: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+      pull_policy: IfNotPresent
+    pod:
+      replicas:
+        server: 3
+    volume:
+      class_name: ceph
+    monitoring:
+      prometheus:
+        enabled: true
+        rabbitmq_exporter:
+          scrape: true
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: rabbitmq
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: memcached
+data:
+  chart_name: memcached
+  release: memcached
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        memcached: registry.cicd.stg.taco/memcached:1.5.5
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        prometheus_memcached_exporter: registry.cicd.stg.taco/memcached-exporter:v0.4.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: IfNotPresent
+    pod:
+      replicas:
+        server: 1
+    monitoring:
+      prometheus:
+        enabled: true
+        memcached_exporter:
+          scrape: true
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: memcached
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: libvirt
+data:
+  chart_name: libvirt
+  release: libvirt
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    release_group: null
+    images:
+      tags:
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        libvirt: registry.cicd.stg.taco/pike/ubuntu-source-nova-libvirt:0.1.0
+      pull_policy: Always
+    conf:
+      ceph:
+        enabled: true
+        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        cinder:
+          user: "cinder"
+          keyring: "AQASDcJacIJVDhAA5wrtpnBWsRMXQ27sw6uwjQ=="
+          secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
+      libvirt:
+        listen_addr: 0.0.0.0
+        log_level: 3
+    manifests:
+      configmap_bin: true
+      configmap_etc: true
+      daemonset_libvirt: true
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: libvirt
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openvswitch
+data:
+  chart_name: openvswitch
+  release: openvswitch
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    release_group: null
+    images:
+      tags:
+        openvswitch_db_server: registry.cicd.stg.taco/pike/ubuntu-source-openvswitch-db-server:0.1.0
+        openvswitch_vswitchd: registry.cicd.stg.taco/pike/ubuntu-source-openvswitch-vswitchd:0.1.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: openvswitch
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: keystone
+data:
+  chart_name: keystone
+  release: keystone
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - name: keystone-bootstrap
+          type: job
+          labels:
+            application: keystone
+            component: bootstrap
+        - name: keystone-credential-setup
+          type: job
+          labels:
+            application: keystone
+            component: credential-setup
+        - name: keystone-db-init
+          type: job
+          labels:
+            application: keystone
+            component: db-init
+        - name: keystone-db-sync
+          type: job
+          labels:
+            application: keystone
+            component: db-sync
+        - name: keystone-fernet-setup
+          type: job
+          labels:
+            application: keystone
+            component: fernet-setup
+        - name: keystone-domain-manage
+          type: job
+          labels:
+            application: keystone
+            component: domain-manage
+  values:
+    images:
+      tags:
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        keystone_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        keystone_fernet_setup: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
+        keystone_fernet_rotate: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
+        keystone_credential_setup: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
+        keystone_credential_rotate: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
+        keystone_api: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
+        keystone_domain_manage: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    conf:
+      keystone:
+        DEFAULT:
+          debug: true
+    pod:
+      user:
+        keystone:
+          uid: 42425
+      replicas:
+        api: 3
+  source:
+    type: local
+    location: /root/charts/openstack-helm
+    subpath: keystone
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: glance
+data:
+  chart_name: glance
+  release: glance
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - name: glance-bootstrap
+          type: job
+          labels:
+            application: glance
+            component: bootstrap
+        - name: glance-storage-init
+          type: job
+          labels:
+            application: glance
+            component: storage-init
+        - name: glance-db-init
+          type: job
+          labels:
+            application: glance
+            component: db-init
+        - name: glance-db-sync
+          type: job
+          labels:
+            application: glance
+            component: db-sync
+        - name: glance-ks-endpoints
+          type: job
+          labels:
+            application: glance
+            component: ks-endpoints
+        - name: glance-ks-service
+          type: job
+          labels:
+            application: glance
+            component: ks-service
+        - name: glance-ks-user
+          type: job
+          labels:
+            application: glance
+            component: ks-user
+  values:
+    storage: rbd
+    images:
+      tags:
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
+        glance_storage_init: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        glance_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-glance-api:0.1.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        glance_api: registry.cicd.stg.taco/pike/ubuntu-source-glance-api:0.1.0
+        glance_registry: registry.cicd.stg.taco/pike/ubuntu-source-glance-registry:0.1.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    pod:
+      replicas:
+        api: 3
+        registry: 3
+      user:
+        glance:
+          uid: 42415
+    network:
+      api:
+        ingress:
+          annotations:
+            nginx.ingress.kubernetes.io/proxy-body-size: 102400M
+    conf:
+      ceph:
+        enabled: true
+        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+      glance:
+        glance_store:
+          rbd_store_user: glance
+          rbd_store_pool: images-test
+        DEFAULT:
+          show_image_direct_url: true
+    bootstrap:
+      enabled: false
+      structured:
+        images:
+          cirros:
+            id: 201084fc-c276-4744-8504-cb974dbb3610
+            private: false
+  source:
+    type: local
+    location: /root/charts/openstack-helm
+    subpath: glance
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: nova
+data:
+  chart_name: nova
+  release: nova
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - name: nova-bootstrap
+          type: job
+          labels:
+            application: nova
+            component: bootstrap
+        - name: nova-cell-setup
+          type: job
+          labels:
+            application: nova
+            component: cell-setup
+        - name: nova-db-init
+          type: job
+          labels:
+            application: nova
+            component: db-init
+        - name: nova-db-sync
+          type: job
+          labels:
+            application: nova
+            component: db-sync
+        - name: nova-ks-endpoints
+          type: job
+          labels:
+            application: nova
+            component: ks-endpoints
+        - name: nova-ks-service
+          type: job
+          labels:
+            application: nova
+            component: ks-service
+        - name: nova-ks-user
+          type: job
+          labels:
+            application: nova
+            component: ks-user
+        - name: placement-ks-endpoints
+          type: job
+          labels:
+            application: placement
+            component: ks-endpoints
+        - name: placement-ks-service
+          type: job
+          labels:
+            application: placement
+            component: ks-service
+        - name: placement-ks-user
+          type: job
+          labels:
+            application: placement
+            component: ks-user
+  values:
+    images:
+      tags:
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        nova_api: registry.cicd.stg.taco/pike/ubuntu-source-nova-api:0.1.0
+        nova_cell_setup: registry.cicd.stg.taco/pike/ubuntu-source-nova-api:0.1.0
+        nova_cell_setup_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        nova_compute: registry.cicd.stg.taco/pike/ubuntu-source-nova-compute:0.1.0
+        nova_compute_ironic: registry.cicd.stg.taco/pike/ubuntu-source-nova-compute-ironic:0.1.0
+        nova_compute_ssh: registry.cicd.stg.taco/pike/ubuntu-source-nova-ssh:0.1.0
+        nova_conductor: registry.cicd.stg.taco/pike/ubuntu-source-nova-conductor:0.1.0
+        nova_consoleauth: registry.cicd.stg.taco/pike/ubuntu-source-nova-consoleauth:0.1.0
+        nova_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-nova-api:0.1.0
+        nova_novncproxy: registry.cicd.stg.taco/pike/ubuntu-source-nova-novncproxy:0.1.0
+        nova_novncproxy_assets: registry.cicd.stg.taco/pike/ubuntu-source-nova-novncproxy:0.1.0
+        nova_placement: registry.cicd.stg.taco/pike/ubuntu-source-nova-placement-api:0.1.0
+        nova_scheduler: registry.cicd.stg.taco/pike/ubuntu-source-nova-scheduler:0.1.0
+        nova_spiceproxy: registry.cicd.stg.taco/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
+        nova_spiceproxy_assets: registry.cicd.stg.taco/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        nova_service_cleaner: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
+      pull_policy: Always
+    bootstrap:
+      structured:
+        flavors:
+          enabled: true
+          options:
+            m1_tiny:
+              id: 0c84e220-a258-439f-a6ff-f8e9fd980025
+    network:
+      novncproxy:
+        name: "nova-novncproxy"
+        node_port:
+          enabled: true
+          port: 30608
+        port: 6080
+        targetPort: 6080
+    conf:
+      rootwrap_filters:
+        api_metadata:
+          override:
+          append:
+        compute:
+          override: |
+            # nova-rootwrap command filters for compute nodes
+            # This file should be owned by (and only-writeable by) the root user
+            [Filters]
+            # nova/virt/disk/mount/api.py: 'kpartx', '-a', device
+            # nova/virt/disk/mount/api.py: 'kpartx', '-d', device
+            kpartx: CommandFilter, kpartx, root
+            # nova/virt/xenapi/vm_utils.py: tune2fs, -O ^has_journal, part_path
+            # nova/virt/xenapi/vm_utils.py: tune2fs, -j, partition_path
+            tune2fs: CommandFilter, tune2fs, root
+            # nova/virt/disk/mount/api.py: 'mount', mapped_device
+            # nova/virt/disk/api.py: 'mount', '-o', 'bind', src, target
+            # nova/virt/xenapi/vm_utils.py: 'mount', '-t', 'ext2,ext3,ext4,reiserfs'..
+            # nova/virt/configdrive.py: 'mount', device, mountdir
+            mount: CommandFilter, mount, root
+            # nova/virt/disk/mount/api.py: 'umount', mapped_device
+            # nova/virt/disk/api.py: 'umount' target
+            # nova/virt/xenapi/vm_utils.py: 'umount', dev_path
+            # nova/virt/configdrive.py: 'umount', mountdir
+            umount: CommandFilter, umount, root
+            # nova/virt/disk/mount/nbd.py: 'qemu-nbd', '-c', device, image
+            # nova/virt/disk/mount/nbd.py: 'qemu-nbd', '-d', device
+            qemu-nbd: CommandFilter, qemu-nbd, root
+            # nova/virt/disk/mount/loop.py: 'losetup', '--find', '--show', image
+            # nova/virt/disk/mount/loop.py: 'losetup', '--detach', device
+            losetup: CommandFilter, losetup, root
+            # nova/virt/disk/vfs/localfs.py: 'blkid', '-o', 'value', '-s', 'TYPE', device
+            blkid: CommandFilter, blkid, root
+            # nova/virt/libvirt/utils.py: 'blockdev', '--getsize64', path
+            # nova/virt/disk/mount/nbd.py: 'blockdev', '--flushbufs', device
+            blockdev: RegExpFilter, blockdev, root, blockdev, (--getsize64|--flushbufs), /dev/.*
+            # nova/virt/disk/vfs/localfs.py: 'tee', canonpath
+            # nova/virt/libvirt/guest.py: 'tee',
+            # nova/virt/libvirt/vif.py: utils.execute('tee',
+            tee: CommandFilter, tee, root
+            # nova/virt/disk/vfs/localfs.py: 'mkdir', canonpath
+            mkdir: CommandFilter, mkdir, root
+            # nova/virt/disk/vfs/localfs.py: 'chown'
+            # nova/virt/libvirt/utils.py: def chown(): execute('chown', owner, path,
+            # nova/virt/libvirt/driver.py: 'chown', os.getuid( console_log
+            # nova/virt/libvirt/driver.py: 'chown', os.getuid( console_log
+            # nova/virt/libvirt/driver.py: 'chown', 'root', basepath('disk')
+            chown: CommandFilter, chown, root
+            # nova/virt/disk/vfs/localfs.py: 'chmod'
+            chmod: CommandFilter, chmod, root
+            # nova/virt/libvirt/vif.py: 'ip', 'tuntap', 'add', dev, 'mode', 'tap'
+            # nova/virt/libvirt/vif.py: 'ip', 'link', 'set', dev, 'up'
+            # nova/virt/libvirt/vif.py: 'ip', 'link', 'delete', dev
+            # nova/network/linux_net.py: 'ip', 'addr', 'add', str(floating_ip)+'/32'i..
+            # nova/network/linux_net.py: 'ip', 'addr', 'del', str(floating_ip)+'/32'..
+            # nova/network/linux_net.py: 'ip', 'addr', 'add', '169.254.169.254/32',..
+            # nova/network/linux_net.py: 'ip', 'addr', 'show', 'dev', dev, 'scope',..
+            # nova/network/linux_net.py: 'ip', 'addr', 'del/add', ip_params, dev)
+            # nova/network/linux_net.py: 'ip', 'addr', 'del', params, fields[-1]
+            # nova/network/linux_net.py: 'ip', 'addr', 'add', params, bridge
+            # nova/network/linux_net.py: 'ip', '-f', 'inet6', 'addr', 'change', ..
+            # nova/network/linux_net.py: 'ip', 'link', 'set', 'dev', dev, 'promisc',..
+            # nova/network/linux_net.py: 'ip', 'link', 'add', 'link', bridge_if ...
+            # nova/network/linux_net.py: 'ip', 'link', 'set', interface, address,..
+            # nova/network/linux_net.py: 'ip', 'link', 'set', interface, 'up'
+            # nova/network/linux_net.py: 'ip', 'link', 'set', bridge, 'up'
+            # nova/network/linux_net.py: 'ip', 'addr', 'show', 'dev', interface, ..
+            # nova/network/linux_net.py: 'ip', 'link', 'set', dev, address, ..
+            # nova/network/linux_net.py: 'ip', 'link', 'set', dev, 'up'
+            # nova/network/linux_net.py: 'ip', 'route', 'add', ..
+            # nova/network/linux_net.py: 'ip', 'route', 'del', .
+            # nova/network/linux_net.py: 'ip', 'route', 'show', 'dev', dev
+            ip: CommandFilter, ip, root
+            # nova/virt/libvirt/vif.py: 'tunctl', '-b', '-t', dev
+            # nova/network/linux_net.py: 'tunctl', '-b', '-t', dev
+            tunctl: CommandFilter, tunctl, root
+            # nova/virt/libvirt/vif.py: 'ovs-vsctl', ...
+            # nova/virt/libvirt/vif.py: 'ovs-vsctl', 'del-port', ...
+            # nova/network/linux_net.py: 'ovs-vsctl', ....
+            ovs-vsctl: CommandFilter, ovs-vsctl, root
+            # nova/network/linux_net.py: 'ivs-ctl', ....
+            ivs-ctl: CommandFilter, ivs-ctl, root
+            # nova/virt/libvirt/vif.py: 'vrouter-port-control', ...
+            vrouter-port-control: CommandFilter, vrouter-port-control, root
+            # nova/virt/libvirt/vif.py: 'ebrctl', ...
+            ebrctl: CommandFilter, ebrctl, root
+            # nova/virt/libvirt/vif.py: 'mm-ctl', ...
+            mm-ctl: CommandFilter, mm-ctl, root
+            # nova/network/linux_net.py: 'ovs-ofctl', ....
+            ovs-ofctl: CommandFilter, ovs-ofctl, root
+            # nova/virt/libvirt/driver.py: 'dd', if=%s % virsh_output, ...
+            dd: CommandFilter, dd, root
+            # nova/virt/xenapi/volume_utils.py: 'iscsiadm', '-m', ...
+            iscsiadm: CommandFilter, iscsiadm, root
+            # nova/virt/libvirt/volume/aoe.py: 'aoe-revalidate', aoedev
+            # nova/virt/libvirt/volume/aoe.py: 'aoe-discover'
+            aoe-revalidate: CommandFilter, aoe-revalidate, root
+            aoe-discover: CommandFilter, aoe-discover, root
+            # nova/virt/xenapi/vm_utils.py: parted, --script, ...
+            # nova/virt/xenapi/vm_utils.py: 'parted', '--script', dev_path, ..*.
+            parted: CommandFilter, parted, root
+            # nova/virt/xenapi/vm_utils.py: 'pygrub', '-qn', dev_path
+            pygrub: CommandFilter, pygrub, root
+            fdisk: CommandFilter, fdisk, root
+            # nova/virt/disk/api.py: e2fsck, -f, -p, image
+            e2fsck: CommandFilter, e2fsck, root
+            # nova/virt/disk/api.py: resize2fs, image
+            resize2fs: CommandFilter, resize2fs, root
+            iptables-save: CommandFilter, iptables-save, root
+            ip6tables-save: CommandFilter, ip6tables-save, root
+            # nova/network/linux_net.py: 'ip[6]tables-restore' % (cmd,)
+            iptables-restore: CommandFilter, iptables-restore, root
+            ip6tables-restore: CommandFilter, ip6tables-restore, root
+            # nova/network/linux_net.py: 'arping', '-U', floating_ip, '-A', '-I', ...
+            # nova/network/linux_net.py: 'arping', '-U', network_ref['dhcp_server'],..
+            arping: CommandFilter, arping, root
+            # nova/network/linux_net.py: 'dhcp_release', dev, address, mac_address
+            dhcp_release: CommandFilter, dhcp_release, root
+            # nova/network/linux_net.py: 'kill', '-9', pid
+            # nova/network/linux_net.py: 'kill', '-HUP', pid
+            kill_dnsmasq: KillFilter, root, /usr/sbin/dnsmasq, -9, -HUP
+            # nova/network/linux_net.py: 'kill', pid
+            kill_radvd: KillFilter, root, /usr/sbin/radvd
+            # nova/network/linux_net.py: dnsmasq call
+            dnsmasq: EnvFilter, env, root, CONFIG_FILE=, NETWORK_ID=, dnsmasq
+            # nova/network/linux_net.py: 'radvd', '-C', '%s' % _ra_file(dev, 'conf'..
+            radvd: CommandFilter, radvd, root
+            # nova/network/linux_net.py: 'brctl', 'addbr', bridge
+            # nova/network/linux_net.py: 'brctl', 'setfd', bridge, 0
+            # nova/network/linux_net.py: 'brctl', 'stp', bridge, 'off'
+            # nova/network/linux_net.py: 'brctl', 'addif', bridge, interface
+            brctl: CommandFilter, brctl, root
+            # nova/virt/libvirt/utils.py: 'mkswap'
+            # nova/virt/xenapi/vm_utils.py: 'mkswap'
+            mkswap: CommandFilter, mkswap, root
+            # nova/virt/libvirt/utils.py: 'nova-idmapshift'
+            nova-idmapshift: CommandFilter, nova-idmapshift, root
+            # nova/virt/xenapi/vm_utils.py: 'mkfs'
+            # nova/utils.py: 'mkfs', fs, path, label
+            mkfs: CommandFilter, mkfs, root
+            # nova/virt/libvirt/utils.py: 'qemu-img'
+            qemu-img: CommandFilter, qemu-img, root
+            # nova/virt/disk/vfs/localfs.py: 'readlink', '-e'
+            readlink: CommandFilter, readlink, root
+            # nova/virt/disk/api.py:
+            mkfs.ext3: CommandFilter, mkfs.ext3, root
+            mkfs.ext4: CommandFilter, mkfs.ext4, root
+            mkfs.ntfs: CommandFilter, mkfs.ntfs, root
+            # nova/virt/libvirt/driver.py:
+            lvremove: CommandFilter, lvremove, root
+            # nova/virt/libvirt/utils.py:
+            lvcreate: CommandFilter, lvcreate, root
+            # nova/virt/libvirt/utils.py:
+            lvs: CommandFilter, lvs, root
+            # nova/virt/libvirt/utils.py:
+            vgs: CommandFilter, vgs, root
+            # nova/utils.py: read_file_as_root: 'cat', file_path
+            # (called from nova/virt/disk/vfs/localfs.py:VFSLocalFS.read_file)
+            read_passwd: RegExpFilter, cat, root, cat, (/var|/usr)?/tmp/openstack-vfs-localfs[^/]+/etc/passwd
+            read_shadow: RegExpFilter, cat, root, cat, (/var|/usr)?/tmp/openstack-vfs-localfs[^/]+/etc/shadow
+            # os-brick needed commands
+            read_initiator: ReadFileFilter, /etc/iscsi/initiatorname.iscsi
+            multipath: CommandFilter, multipath, root
+            # multipathd show status
+            multipathd: CommandFilter, multipathd, root
+            systool: CommandFilter, systool, root
+            vgc-cluster: CommandFilter, vgc-cluster, root
+            # os_brick/initiator/connector.py
+            drv_cfg: CommandFilter, /opt/emc/scaleio/sdc/bin/drv_cfg, root, /opt/emc/scaleio/sdc/bin/drv_cfg, --query_guid
+            # TODO(smcginnis) Temporary fix.
+            # Need to pull in os-brick os-brick.filters file instead and clean
+            # out stale brick values from this file.
+            scsi_id: CommandFilter, /lib/udev/scsi_id, root
+            # os_brick.privileged.default oslo.privsep context
+            # This line ties the superuser privs with the config files, context name,
+            # and (implicitly) the actual python code invoked.
+            privsep-rootwrap: RegExpFilter, privsep-helper, root, privsep-helper, --config-file, /etc/(?!\.\.).*, --privsep_context, os_brick.privileged.default, --privsep_sock_path, /tmp/.*
+            # nova/virt/libvirt/storage/dmcrypt.py:
+            cryptsetup: CommandFilter, cryptsetup, root
+            # nova/virt/xenapi/vm_utils.py:
+            xenstore-read: CommandFilter, xenstore-read, root
+            # nova/virt/libvirt/utils.py:
+            rbd: CommandFilter, rbd, root
+            # nova/virt/libvirt/utils.py: 'shred', '-n3', '-s%d' % volume_size, path
+            shred: CommandFilter, shred, root
+            # nova/virt/libvirt/volume/volume.py: 'cp', '/dev/stdin', delete_control..
+            cp: CommandFilter, cp, root
+            # nova/virt/xenapi/vm_utils.py:
+            sync: CommandFilter, sync, root
+            # nova/virt/libvirt/imagebackend.py:
+            ploop: RegExpFilter, ploop, root, ploop, restore-descriptor, .*
+            prl_disk_tool: RegExpFilter, prl_disk_tool, root, prl_disk_tool, resize, --size, .*M$, --resize_partition, --hdd, .*
+            # nova/virt/libvirt/utils.py:
+            ploop: RegExpFilter, ploop, root, ploop, init, -s, .*, -f, .*, -t, .*, .*
+            # nova/virt/libvirt/utils.py: 'xend', 'status'
+            xend: CommandFilter, xend, root
+            # nova/virt/libvirt/utils.py:
+            touch: CommandFilter, touch, root
+            # nova/virt/libvirt/volume/vzstorage.py
+            pstorage-mount: CommandFilter, pstorage-mount, root
+          append:
+        network:
+          override:
+          append:
+      ceph:
+        enabled: true
+        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        cinder:
+          user: "cinder"
+          keyring: "AQASDcJacIJVDhAA5wrtpnBWsRMXQ27sw6uwjQ=="
+          secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
+      rally_tests:
+        run_tempest: false
+        tests:
+          NovaSecGroup.create_and_delete_secgroups: []
+          NovaSecGroup.create_and_list_secgroups: []
+          NovaSecGroup.create_and_update_secgroups: []
+          NovaAgents.list_agents:
+            - runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaAggregates.create_and_get_aggregate_details:
+            - args:
+                availability_zone: nova
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaAggregates.create_and_update_aggregate:
+            - args:
+                availability_zone: nova
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaAggregates.list_aggregates:
+            - runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaAvailabilityZones.list_availability_zones:
+            - args:
+                detailed: true
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaFlavors.create_and_delete_flavor:
+            - args:
+                disk: 1
+                ram: 500
+                vcpus: 1
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaFlavors.create_and_list_flavor_access:
+            - args:
+                disk: 1
+                ram: 500
+                vcpus: 1
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaFlavors.create_flavor:
+            - args:
+                disk: 1
+                ram: 500
+                vcpus: 1
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaFlavors.create_flavor_and_add_tenant_access:
+            - args:
+                disk: 1
+                ram: 500
+                vcpus: 1
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaFlavors.create_flavor_and_set_keys:
+            - args:
+                disk: 1
+                extra_specs:
+                  'quota:disk_read_bytes_sec': 10240
+                ram: 500
+                vcpus: 1
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaFlavors.list_flavors:
+            - args:
+                detailed: true
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaHosts.list_hosts:
+            - runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaHypervisors.list_and_get_hypervisors:
+            - args:
+                detailed: true
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaHypervisors.list_and_get_uptime_hypervisors:
+            - args:
+                detailed: true
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaHypervisors.list_and_search_hypervisors:
+            - args:
+                detailed: true
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaHypervisors.list_hypervisors:
+            - args:
+                detailed: true
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaHypervisors.statistics_hypervisors:
+            - args: {}
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaImages.list_images:
+            - args:
+                detailed: true
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaKeypair.create_and_delete_keypair:
+            - runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaKeypair.create_and_list_keypairs:
+            - runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaServerGroups.create_and_list_server_groups:
+            - args:
+                all_projects: false
+                kwargs:
+                  policies:
+                    - affinity
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          NovaServices.list_services:
+            - runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+      nova:
+        DEFAULT:
+          scheduler_default_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
+          debug: true
+          config_drive_cdrom: false
+          config_drive_format: "vfat"
+          force_config_drive: true
+        vnc:
+          novncproxy_base_url: http://ctrl01s:30608/vnc_auto.html
+        libvirt:
+          virt_type: qemu
+          rbd_user: "cinder"
+          rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
+        scheduler:
+          discover_hosts_in_cells_interval: 60
+    endpoints:
+      oslo_db_cell0:
+        path: /nova_cell0
+    pod:
+      user:
+        nova:
+          uid: 42436
+      replicas:
+        api_metadata: 3
+        osapi: 3
+        conductor: 3
+        consoleauth: 3
+        scheduler: 3
+        novncproxy: 3
+  source:
+    type: local
+    location: /root/charts/openstack-helm
+    subpath: nova
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: neutron
+data:
+  chart_name: neutron
+  release: neutron
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - name: neutron-db-init
+          type: job
+          labels:
+            application: neutron
+            component: db-init
+        - name: neutron-db-sync
+          type: job
+          labels:
+            application: neutron
+            component: db-sync
+        - name: neutron-ks-endpoints
+          type: job
+          labels:
+            application: neutron
+            component: ks-endpoints
+        - name: neutron-ks-service
+          type: job
+          labels:
+            application: neutron
+            component: ks-service
+        - name: neutron-ks-user
+          type: job
+          labels:
+            application: neutron
+            component: ks-user
+  values:
+    images:
+      tags:
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        neutron_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-neutron-server:0.1.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        neutron_server: registry.cicd.stg.taco/pike/ubuntu-source-neutron-server:0.1.0
+        neutron_dhcp: registry.cicd.stg.taco/pike/ubuntu-source-neutron-dhcp-agent:0.1.0
+        neutron_metadata: registry.cicd.stg.taco/pike/ubuntu-source-neutron-metadata-agent:0.1.0
+        neutron_l3: registry.cicd.stg.taco/pike/ubuntu-source-neutron-l3-agent:0.1.0
+        neutron_openvswitch_agent: registry.cicd.stg.taco/pike/ubuntu-source-neutron-openvswitch-agent:0.1.0
+        neutron_linuxbridge_agent: registry.cicd.stg.taco/pike/ubuntu-source-neutron-linuxbridge-agent:0.1.0
+        neutron_sriov_agent: registry.cicd.stg.taco/pike/ubuntu-source-neutron-sriov-agent:0.1.0
+        neutron_sriov_agent_init: registry.cicd.stg.taco/pike/ubuntu-source-neutron-sriov-agent:0.1.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+      pull_policy: Always
+    pod:
+      replicas:
+        server: 3
+      user:
+        neutron:
+          uid: 42435
+    network:
+      auto_bridge_add:
+        br-ex: eth1
+      backend:
+        - openvswitch
+      share_namespaces: false
+      interface:
+        tunnel: eth0
+    conf:
+      neutron_sudoers: |
+        # This sudoers file supports rootwrap-daemon for both Kolla and LOCI Images.
+        Defaults !requiretty
+        Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/var/lib/openstack/bin:/var/lib/kolla/venv/bin"
+        neutron ALL = (root) NOPASSWD: /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/rootwrap.conf *, /var/lib/openstack/bin/neutron-rootwrap /etc/neutron/rootwrap.conf *, /var/lib/kolla/venv/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf, /var/lib/openstack/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
+      neutron:
+        DEFAULT:
+          debug: True
+          core_plugin: ml2
+          l3_ha: True
+          # NOTE: change mtu to 9000 if jumbo frame is supported
+          global_physnet_mtu: 1500
+          service_plugins: router
+          interface_driver: openvswitch
+        agent:
+          root_helper_daemon: sudo neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
+      plugins:
+        ml2_conf:
+          ml2:
+            mechanism_drivers: openvswitch,l2population
+            type_drivers: flat, vxlan
+            tenant_network_types: vxlan
+        openvswitch_agent:
+          agent:
+            tunnel_types: vxlan
+            l2_population: True
+            arp_responder: True
+          ovs:
+            bridge_mappings: "external:br-ex"
+          securitygroup:
+            firewall_driver: openvswitch
+  source:
+    type: local
+    location: /root/charts/openstack-helm
+    subpath: neutron
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: cinder
+data:
+  chart_name: cinder
+  release: cinder
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - name: cinder-bootstrap
+          type: job
+          labels:
+            application: cinder
+            component: bootstrap
+        - name: cinder-db-init
+          type: job
+          labels:
+            application: cinder
+            component: db-init
+        - name: cinder-db-sync
+          type: job
+          labels:
+            application: cinder
+            component: db-sync
+        - name: cinder-ks-endpoints
+          type: job
+          labels:
+            application: cinder
+            component: ks-endpoints
+        - name: cinder-ks-service
+          type: job
+          labels:
+            application: cinder
+            component: ks-service
+        - name: cinder-ks-user
+          type: job
+          labels:
+            application: cinder
+            component: ks-user
+  values:
+    images:
+      tags:
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        cinder_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-cinder-api:0.1.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        cinder_api: registry.cicd.stg.taco/pike/ubuntu-source-cinder-api:0.1.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        cinder_scheduler: registry.cicd.stg.taco/pike/ubuntu-source-cinder-scheduler:0.1.0
+        cinder_volume: registry.cicd.stg.taco/pike/ubuntu-source-cinder-volume:0.1.0
+        cinder_volume_usage_audit: registry.cicd.stg.taco/pike/ubuntu-source-cinder-volume:0.1.0
+        cinder_storage_init: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
+        cinder_backup: registry.cicd.stg.taco/pike/ubuntu-source-cinder-backup:0.1.0
+        cinder_backup_storage_init: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    pod:
+      user:
+        cinder:
+          uid: 42407
+      replicas:
+        api: 3
+        backup: 1
+        scheduler: 3
+        volume: 1
+    conf:
+      ceph:
+        enabled: true
+        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+      cinder:
+        DEFAULT:
+          debug: true
+          backup_driver: cinder.backup.drivers.ceph
+          backup_ceph_user: "cinder"
+          backup_ceph_pool: "backups-test"
+      backends:
+        rbd1:
+          volume_driver: cinder.volume.drivers.rbd.RBDDriver
+          volume_backend_name: rbd1
+          rbd_ceph_conf: "/etc/ceph/ceph.conf"
+          rbd_flatten_volume_from_snapshot: false
+          rbd_max_clone_depth: 5
+          rbd_store_chunk_size: 4
+          rados_connect_timeout: -1
+          rbd_user: "cinder"
+          rbd_pool: "volumes-test"
+          rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
+  source:
+    type: local
+    location: /root/charts/openstack-helm
+    subpath: cinder
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: heat
+data:
+  chart_name: heat
+  release: heat
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - type: job
+          labels:
+            application: heat
+            component: bootstrap
+        - type: job
+          labels:
+            application: heat
+            component: db-init
+        - type: job
+          labels:
+            application: heat
+            component: db-sync
+        - type: job
+          labels:
+            application: heat
+            component: ks-user
+        - type: job
+          labels:
+            application: heat
+            component: ks-service
+        - type: job
+          labels:
+            application: heat
+            component: ks-endpoints
+  values:
+    images:
+      tags:
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        heat_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:0.1.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        heat_api: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:0.1.0
+        heat_cfn: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:0.1.0
+        heat_cloudwatch: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:0.1.0
+        heat_engine: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        heat_engine_cleaner: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+      pull_policy: Always
+    pod:
+      user:
+        heat:
+          uid: 42418
+      replicas:
+        api: 3
+        cfn: 3
+        cloudwatch: 3
+        engine: 3
+  source:
+    type: local
+    location: /root/charts/openstack-helm
+    subpath: heat
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: horizon
+data:
+  chart_name: horizon
+  release: horizon
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    replicas: 1
+    images:
+      tags:
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-horizon:0.1.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-horizon:0.1.0
+        horizon_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-horizon:0.1.0
+        horizon: registry.cicd.stg.taco/pike/ubuntu-source-horizon:0.1.0
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+      pull_policy: Always
+    pod:
+      replicas:
+        server: 3
+    network:
+      node_port:
+        enabled: true
+        port: 31000
+    conf:
+      horizon:
+        local_settings:
+          config:
+            openstack_neutron_network:
+              enable_router: "True"
+              enable_quotas: "True"
+              enable_ipv6: "False"
+              enable_distributed_router: "False"
+              enable_ha_router: "True"
+              enable_lb: "True"
+              enable_firewall: "False"
+              enable_vpn: "False"
+              enable_fip_topology_check: "True"
+  source:
+    type: local
+    location: /root/charts/openstack-helm
+    subpath: horizon
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: ldap
+data:
+  chart_name: ldap
+  release: ldap
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        ldap: registry.cicd.stg.taco/openldap:1.2.0
+        bootstrap: registry.cicd.stg.taco/openldap:1.2.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    storage:
+      pvc:
+        enabled: true
+        size: 1Gi
+        class_name: ceph
+      host:
+        data_path: /data/openstack-helm/ldap
+        config_path: /data/openstack-helm/config
+    bootstrap:
+      enabled: enabled
+    data:
+      sample: |
+        dn: ou=People,dc=cluster,dc=local
+        objectclass: organizationalunit
+        ou: People
+        description: We the People
+
+        # NOTE: Password is "password" without quotes
+        dn: uid=taco,ou=People,dc=cluster,dc=local
+        objectClass: inetOrgPerson
+        objectClass: top
+        objectClass: posixAccount
+        objectClass: shadowAccount
+        objectClass: person
+        sn: taco
+        cn: taco
+        uid: taco
+        userPassword: {SSHA}l6OsaU3ABgWFdUAKvnhxohExurSDKIO2
+        description: SSHA
+        gidNumber: 1000
+        uidNumber: 1493
+        homeDirectory: /home/taco
+        mail: taco@cluster.local
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: ldap
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: elasticsearch
+data:
+  chart_name: elasticsearch
+  release: elasticsearch
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        apache_proxy: registry.cicd.stg.taco/httpd:2.4
+        memory_init: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+        curator: registry.cicd.stg.taco/curator:5.2.0
+        elasticsearch: registry.cicd.stg.taco/elasticsearch-s3:v0.1.0
+        ceph_key_placement: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
+        s3_bucket: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
+        s3_user: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
+        helm_tests: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+        prometheus_elasticsearch_exporter: registry.cicd.stg.taco/elasticsearch_exporter:1.0.1
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        snapshot_repository: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    conf:
+      curator:
+        #run every 6th hour
+        schedule:  "0 */6 * * *"
+        action_file:
+          # Remember, leave a key empty if there is no value.  None will be a string,
+          # not a Python "NoneType"
+          #
+          # Also remember that all examples have 'disable_action' set to True.  If you
+          # want to use this action as a template, be sure to set this to False after
+          # copying it.
+          actions:
+            1:
+              action: delete_indices
+              description: >-
+                "Delete indices older than 7 days"
+              options:
+                timeout_override:
+                continue_if_exception: False
+                ignore_empty_list: True
+                disable_action: True
+              filters:
+              - filtertype: pattern
+                kind: prefix
+                value: logstash-
+              - filtertype: age
+                source: name
+                direction: older
+                timestring: '%Y.%m.%d'
+                unit: days
+                unit_count: 7
+            2:
+              action: delete_indices
+              description: >-
+                "Delete indices by age if available disk space is
+                 less than 80% total disk"
+              options:
+                timeout_override: 600
+                continue_if_exception: False
+                ignore_empty_list: True
+                disable_action: False
+              filters:
+              - filtertype: pattern
+                kind: prefix
+                value: logstash-
+              - filtertype: space
+                source: creation_date
+                use_age: True
+                # This space assumes the default PVC size of 5Gi times three data
+                # replicas. This must be adjusted if changed due to Curator being
+                # unable to calculate percentages of total disk space
+                disk_space: 12
+            3:
+              action: snapshot
+              description: >-
+                "Snapshot indices older than one day"
+              options:
+                repository: default_repo
+                # Leaving this blank results in the default name format
+                name:
+                wait_for_completion: True
+                max_wait: 3600
+                wait_interval: 10
+                timeout_override: 600
+                ignore_empty_list: True
+                continue_if_exception: False
+                disable_action: True
+              filters:
+              - filtertype: age
+                source: name
+                direction: older
+                timestring: '%Y.%m.%d'
+                unit: days
+                unit_count: 1
+            4:
+              action: delete_snapshots
+              description: >-
+                "Delete snapshots older than 30 days"
+              options:
+                repository: default_repo
+                disable_action: True
+                timeout_override: 600
+                ignore_empty_list: True
+              filters:
+              - filtertype: pattern
+                kind: prefix
+                value: curator-
+                exclude:
+              - filtertype: age
+                source: creation_date
+                direction: older
+                unit: days
+                unit_count: 30
+      elasticsearch:
+        env:
+          java_opts: "-Xms4096m -Xmx4096m"
+    monitoring:
+      prometheus:
+        enabled: true
+    storage:
+      enabled: true
+      pvc:
+        name: pvc-elastic
+        access_mode: [ "ReadWriteOnce" ]
+      requests:
+        storage: 2000Gi
+      storage_class: ceph
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: elasticsearch
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: fluent-logging
+data:
+  chart_name: fluent-logging
+  release: fluent-logging
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        fluentbit: registry.cicd.stg.taco/fluent-bit:0.13.6
+        fluentd: registry.cicd.stg.taco/ubuntu-source-fluentd:ocata
+        prometheus_fluentd_exporter: registry.cicd.stg.taco/fluentd_exporter:v0.1
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        helm_tests: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+        elasticsearch_template: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    dependencies:
+      static:
+        elasticsearch-template:
+          services:
+            - endpoint: internal
+              service: elasticsearch
+        fluentbit:
+          jobs:
+            - elasticsearch-template
+          services:
+            - endpoint: internal
+              service: elasticsearch
+    labels:
+      fluentbit:
+        node_selector_key: fluent-logging
+        node_selector_value: enabled
+        tolerations: true
+    conf:
+      fluentbit:
+      - service:
+          header: service
+          Flush: 5
+          Daemon: Off
+          Log_Level: info
+          Parsers_File: parsers.conf
+      - containers_tail:
+          header: input
+          Name: tail
+          Tag: kube.*
+          Path: /var/log/containers/*.log
+          Parser: docker
+          DB: /var/log/flb_kube.db
+          Mem_Buf_Limit: 5MB
+      - kube_filter:
+          header: filter
+          Name: kubernetes
+          Match: kube.*
+          Merge_JSON_Log: On
+      - syslog_tail:
+          header: input
+          Name: tail
+          Tag: syslog.*
+          Path: /var/log/messages
+          Parser: syslog-kubelet
+          DB: /var/log/flb_kube.db
+          Mem_Buf_Limit: 5MB
+      - syslog_tail:
+          header: input
+          Name: tail
+          Tag: syslog.*
+          Path: /var/log/syslog
+          Parser: syslog-kubelet
+          DB: /var/log/flb_kube.db
+          Mem_Buf_Limit: 5MB
+      - cluster_filter:
+          header: filter
+          Name: record_modifier
+          Match: "*"
+          record: cluster somewhere-cluster
+#          record: tag kube.*
+      - elasticsearch_docker:
+          header: output
+          Name: es
+          Match: "kube.*"
+          Host: elasticsearch-logging
+          Port: 80
+          Logstash_Format: On
+#          Logstash_Prefix: kube
+          HTTP_User: taco
+          HTTP_Passwd: password
+          Type: fluent
+      - elasticsearch_syslog:
+          header: output
+          Name: es
+          Match: "syslog.*"
+          Host: elasticsearch-logging
+          Port: 80
+          Logstash_Format: On
+          Logstash_Prefix: syslog
+          HTTP_User: taco
+          HTTP_Passwd: password
+          Type: syslog
+      parsers:
+      - docker:
+          header: parser
+          Name: docker
+          Format: json
+          Time_Key: time
+          Time_Format: '%Y-%m-%dT%H:%M:%S.%L'
+          Time_Keep: On
+      - syslog-kubelet:
+          header: parser
+          Name: syslog-kubelet
+          Format: regex
+          Regex: '^(?<time>.*[0-9]{2}:[0-9]{2}:[0-9]{2}) (?<host>[^ ]*) (?<app>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? (?<log>.+)$'
+          Time_Key: time
+          Time_Format: '%b %e %H:%M:%S'
+          Time_Offset: ' +0900'
+          Time_Keep: On
+      templates:
+        fluent:
+          template: 'logstash-*'
+          index_patterns: 'logstash-*'
+          settings:
+            number_of_shards: 5
+            number_of_replicas: 1
+          mappings:
+            fluent:
+              properties:
+                kubernetes:
+                  properties:
+                    container_name:
+                      type: keyword
+                      index: true
+                    docker_id:
+                      type: keyword
+                      index: true
+                    host:
+                      type: keyword
+                      index: true
+                    labels:
+                      properties:
+                        app:
+                          type: keyword
+                          index: true
+                        application:
+                          type: keyword
+                          index: true
+                        component:
+                          type: keyword
+                          index: true
+                        release_group:
+                          type: keyword
+                          index: true
+                    namespace_name:
+                      type: keyword
+                      index: true
+                    pod_id:
+                      type: keyword
+                      index: true
+                    pod_name:
+                      type: keyword
+                      index: true
+                log:
+                  type: text
+        syslog:
+          template: 'syslog-*'
+          index_patterns: 'syslog-*'
+          settings:
+            number_of_shards: 5
+            number_of_replicas: 1
+          mappings:
+            syslog:
+              properties:
+                cluster:
+                  type: keyword
+                app:
+                  type: keyword
+                host:
+                  type: keyword
+                pid:
+                  type: integer
+                log:
+                  type: text
+    manifests:
+      configmap_bin: true
+      configmap_etc: true
+      deployment_fluentd: false
+      daemonset_fluentbit: true
+      job_image_repo_sync: true
+      helm_tests: true
+      monitoring:
+        prometheus:
+          configmap_bin: true
+          deployment_exporter: true
+          service_exporter: true
+      secret_elasticsearch: true
+      service_fluentd: false
+      job_elasticsearch_template: true
+
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: fluent-logging
+    reference: master
+  test: false
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: kibana 
+data:
+  chart_name: kibana
+  release: kibana
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        apache_proxy: registry.cicd.stg.taco/httpd:2.4
+        kibana: registry.cicd.stg.taco/kibana:5.6.4
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    network:
+      kibana:
+        ingress:
+          public: true
+          proxy_body_size: 1024M
+        node_port:
+          enabled: true
+          port: 30001
+        port: 5601
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: kibana
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus 
+data:
+  chart_name: prometheus
+  release: prometheus
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        apache_proxy: registry.cicd.stg.taco/httpd:2.4
+        prometheus: registry.cicd.stg.taco/prometheus:v2.3.2
+        helm_tests: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    pod:
+      replicas:
+        prometheus: 3
+    storage:
+      enabled: true
+      pvc:
+        name: prometheus-pvc
+        access_mode: [ "ReadWriteOnce" ]
+      requests:
+        storage: 500Gi
+      storage_class: ceph
+    conf:
+      prometheus:
+        # Consumed by a prometheus helper function to generate the command line flags
+        # for configuring the prometheus service
+        command_line_flags:
+          log.level: info
+          query.max_concurrency: 20
+          query.timeout: 2m
+          storage.tsdb.path: /var/lib/prometheus/data
+          storage.tsdb.retention: 30d
+          # NOTE(srwilkers): These settings default to false, but they are
+          # exposed here to allow enabling if desired. Please note the security
+          # impacts of enabling these flags. More information regarding the impacts
+          # can be found here: https://prometheus.io/docs/operating/security/
+          #
+          # If set to true, all administrative functionality is exposed via the http
+          # /api/*/admin/ path
+          web.enable_admin_api: true
+          # If set to true, allows for http reloads and shutdown of Prometheus
+          web.enable_lifecycle: false
+        scrape_configs:
+          global:
+            scrape_interval: 60s
+            evaluation_interval: 60s
+          scrape_configs:
+            # NOTE(srwilkers): The job definition for Prometheus should always be
+            # listed first, so we can inject the basic auth username and password
+            # via the endpoints section
+            - job_name: 'prometheus-metrics'
+              kubernetes_sd_configs:
+              - role: endpoints
+              scrape_interval: 60s
+              relabel_configs:
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                action: keep
+                regex: "prom-metrics"
+              - source_labels:
+                  - __meta_kubernetes_service_annotation_prometheus_io_scrape
+                action: keep
+                regex: true
+              - source_labels:
+                  - __meta_kubernetes_service_annotation_prometheus_io_scheme
+                action: replace
+                target_label: __scheme__
+                regex: (https?)
+              - source_labels:
+                  - __meta_kubernetes_service_annotation_prometheus_io_path
+                action: replace
+                target_label: __metrics_path__
+                regex: (.+)
+              - source_labels:
+                  - __address__
+                  - __meta_kubernetes_service_annotation_prometheus_io_port
+                action: replace
+                target_label: __address__
+                regex: ([^:]+)(?::\d+)?;(\d+)
+                replacement: $1:$2
+              - action: labelmap
+                regex: __meta_kubernetes_service_label_(.+)
+              - source_labels:
+                  - __meta_kubernetes_namespace
+                action: replace
+                target_label: kubernetes_namespace
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                action: replace
+                target_label: instance
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                action: replace
+                target_label: kubernetes_name
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                target_label: job
+                replacement: ${1}
+            - job_name: kubelet
+              scheme: https
+              # This TLS & bearer token file config is used to connect to the actual scrape
+              # endpoints for cluster components. This is separate to discovery auth
+              # configuration because discovery & scraping are two separate concerns in
+              # Prometheus. The discovery auth config is automatic if Prometheus runs inside
+              # the cluster. Otherwise, more config options have to be provided within the
+              # <kubernetes_sd_config>.
+              tls_config:
+                ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+              kubernetes_sd_configs:
+              - role: node
+              scrape_interval: 45s
+              relabel_configs:
+              - action: labelmap
+                regex: __meta_kubernetes_node_label_(.+)
+              - target_label: __address__
+                replacement: kubernetes.default.svc:443
+              - source_labels:
+                  - __meta_kubernetes_node_name
+                regex: (.+)
+                target_label: __metrics_path__
+                replacement: /api/v1/nodes/${1}/proxy/metrics
+              - source_labels:
+                  - __meta_kubernetes_node_name
+                action: replace
+                target_label: kubernetes_io_hostname
+              # Scrape config for Kubelet cAdvisor.
+              #
+              # This is required for Kubernetes 1.7.3 and later, where cAdvisor metrics
+              # (those whose names begin with 'container_') have been removed from the
+              # Kubelet metrics endpoint.  This job scrapes the cAdvisor endpoint to
+              # retrieve those metrics.
+              #
+              # In Kubernetes 1.7.0-1.7.2, these metrics are only exposed on the cAdvisor
+              # HTTP endpoint; use "replacement: /api/v1/nodes/${1}:4194/proxy/metrics"
+              # in that case (and ensure cAdvisor's HTTP server hasn't been disabled with
+              # the --cadvisor-port=0 Kubelet flag).
+              #
+              # This job is not necessary and should be removed in Kubernetes 1.6 and
+              # earlier versions, or it will cause the metrics to be scraped twice.
+            - job_name: 'kubernetes-cadvisor'
+    
+              # Default to scraping over https. If required, just disable this or change to
+              # `http`.
+              scheme: https
+    
+              # This TLS & bearer token file config is used to connect to the actual scrape
+              # endpoints for cluster components. This is separate to discovery auth
+              # configuration because discovery & scraping are two separate concerns in
+              # Prometheus. The discovery auth config is automatic if Prometheus runs inside
+              # the cluster. Otherwise, more config options have to be provided within the
+              # <kubernetes_sd_config>.
+              tls_config:
+                ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+    
+              kubernetes_sd_configs:
+              - role: node
+    
+              relabel_configs:
+              - action: labelmap
+                regex: __meta_kubernetes_node_label_(.+)
+              - target_label: __address__
+                replacement: kubernetes.default.svc:443
+              - source_labels:
+                  - __meta_kubernetes_node_name
+                regex: (.+)
+                target_label: __metrics_path__
+                replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+              # Scrape config for API servers.
+              #
+              # Kubernetes exposes API servers as endpoints to the default/kubernetes
+              # service so this uses `endpoints` role and uses relabelling to only keep
+              # the endpoints associated with the default/kubernetes service using the
+              # default named port `https`. This works for single API server deployments as
+              # well as HA API server deployments.
+            - job_name: 'apiserver'
+              kubernetes_sd_configs:
+              - role: endpoints
+              scrape_interval: 45s
+              # Default to scraping over https. If required, just disable this or change to
+              # `http`.
+              scheme: https
+              # This TLS & bearer token file config is used to connect to the actual scrape
+              # endpoints for cluster components. This is separate to discovery auth
+              # configuration because discovery & scraping are two separate concerns in
+              # Prometheus. The discovery auth config is automatic if Prometheus runs inside
+              # the cluster. Otherwise, more config options have to be provided within the
+              # <kubernetes_sd_config>.
+              tls_config:
+                ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                # If your node certificates are self-signed or use a different CA to the
+                # master CA, then disable certificate verification below. Note that
+                # certificate verification is an integral part of a secure infrastructure
+                # so this should only be disabled in a controlled environment. You can
+                # disable certificate verification by uncommenting the line below.
+                #
+                # insecure_skip_verify: true
+              bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+              # Keep only the default/kubernetes service endpoints for the https port. This
+              # will add targets for each API server which Kubernetes adds an endpoint to
+              # the default/kubernetes service.
+              relabel_configs:
+              - source_labels:
+                  - __meta_kubernetes_namespace
+                  - __meta_kubernetes_service_name
+                  - __meta_kubernetes_endpoint_port_name
+                action: keep
+                regex: default;kubernetes;https
+            # Scrape config for service endpoints.
+            #
+            # The relabeling allows the actual service scrape endpoint to be configured
+            # via the following annotations:
+            #
+            # * `prometheus.io/scrape`: Only scrape services that have a value of `true`
+            # * `prometheus.io/scheme`: If the metrics endpoint is secured then you will need
+            # to set this to `https` & most likely set the `tls_config` of the scrape config.
+            # * `prometheus.io/path`: If the metrics path is not `/metrics` override this.
+            # * `prometheus.io/port`: If the metrics are exposed on a different port to the
+            # service then set this appropriately.
+            - job_name: 'openstack-exporter'
+              kubernetes_sd_configs:
+              - role: endpoints
+              scrape_interval: 60s
+              relabel_configs:
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                action: keep
+                regex: "openstack-metrics"
+              - source_labels:
+                  - __meta_kubernetes_service_annotation_prometheus_io_scrape
+                action: keep
+                regex: true
+              - source_labels:
+                  - __meta_kubernetes_service_annotation_prometheus_io_scheme
+                action: replace
+                target_label: __scheme__
+                regex: (https?)
+              - source_labels:
+                  - __meta_kubernetes_service_annotation_prometheus_io_path
+                action: replace
+                target_label: __metrics_path__
+                regex: (.+)
+              - source_labels:
+                  - __address__
+                  - __meta_kubernetes_service_annotation_prometheus_io_port
+                action: replace
+                target_label: __address__
+                regex: ([^:]+)(?::\d+)?;(\d+)
+                replacement: $1:$2
+              - action: labelmap
+                regex: __meta_kubernetes_service_label_(.+)
+              - source_labels:
+                  - __meta_kubernetes_namespace
+                action: replace
+                target_label: kubernetes_namespace
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                action: replace
+                target_label: instance
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                action: replace
+                target_label: kubernetes_name
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                target_label: job
+                replacement: ${1}
+            - job_name: 'kubernetes-service-endpoints'
+              kubernetes_sd_configs:
+              - role: endpoints
+              scrape_interval: 60s
+              relabel_configs:
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                action: drop
+                regex: '(openstack-metrics|prom-metrics)'
+              - source_labels:
+                  - __meta_kubernetes_service_annotation_prometheus_io_scrape
+                action: keep
+                regex: true
+              - source_labels:
+                  - __meta_kubernetes_service_annotation_prometheus_io_scheme
+                action: replace
+                target_label: __scheme__
+                regex: (https?)
+              - source_labels:
+                  - __meta_kubernetes_service_annotation_prometheus_io_path
+                action: replace
+                target_label: __metrics_path__
+                regex: (.+)
+              - source_labels:
+                  - __address__
+                  - __meta_kubernetes_service_annotation_prometheus_io_port
+                action: replace
+                target_label: __address__
+                regex: ([^:]+)(?::\d+)?;(\d+)
+                replacement: $1:$2
+              - action: labelmap
+                regex: __meta_kubernetes_service_label_(.+)
+              - source_labels:
+                  - __meta_kubernetes_namespace
+                action: replace
+                target_label: kubernetes_namespace
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                action: replace
+                target_label: kubernetes_name
+              - source_labels:
+                  - __meta_kubernetes_service_name
+                target_label: job
+                replacement: ${1}
+            # Example scrape config for pods
+            #
+            # The relabeling allows the actual pod scrape endpoint to be configured via the
+            # following annotations:
+            #
+            # * `prometheus.io/scrape`: Only scrape pods that have a value of `true`
+            # * `prometheus.io/path`: If the metrics path is not `/metrics` override this.
+            # * `prometheus.io/port`: Scrape the pod on the indicated port instead of the
+            # pod's declared ports (default is a port-free target if none are declared).
+            - job_name: 'kubernetes-pods'
+              kubernetes_sd_configs:
+              - role: pod
+              relabel_configs:
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                action: keep
+                regex: true
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+                action: replace
+                target_label: __metrics_path__
+                regex: (.+)
+              - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+                action: replace
+                regex: ([^:]+)(?::\d+)?;(\d+)
+                replacement: $1:$2
+                target_label: __address__
+              - action: labelmap
+                regex: __meta_kubernetes_pod_label_(.+)
+              - source_labels: [__meta_kubernetes_namespace]
+                action: replace
+                target_label: kubernetes_namespace
+              - source_labels: [__meta_kubernetes_pod_name]
+                action: replace
+                target_label: kubernetes_pod_name
+            - job_name: calico-node
+              kubernetes_sd_configs:
+              - role: node
+              scrape_interval: 45s
+              relabel_configs:
+              - action: labelmap
+                regex: __meta_kubernetes_node_label_(.+)
+              # replace __address__ label with the [cluster node's IP address]:[calico scrape port]
+              - source_labels: [__meta_kubernetes_node_address_InternalIP]
+                regex: (.*)
+                target_label: __address__
+                replacement: ${1}:9091
+              - source_labels:
+                  - __meta_kubernetes_node_name
+                regex: (.+)
+                target_label: __metrics_path__
+                replacement: /metrics
+              - source_labels:
+                  - __meta_kubernetes_node_name
+                action: replace
+                target_label: kubernetes_io_hostname
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: prometheus
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-alertmanager 
+data:
+  chart_name: prometheus-alertmanager
+  release: prometheus-alertmanager
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        alertmanager: registry.cicd.stg.taco/alertmanager:v0.11.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    storage:
+      enabled: true
+      requests:
+        storage: 5Gi
+      storage_class: ceph
+    conf:
+      alertmanager:
+        global:
+          smtp_smarthost: null
+          smtp_from: null
+          smtp_auth_username: null
+          smtp_auth_password: null
+          hipchat_auth_token: null
+          hipchat_api_url: null
+          slack_api_url: "https://hooks.slack.com/services/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"
+        templates:
+          - '/etc/alertmanager/template/alert-templates.tmpl'
+        route:
+          group_by: ['alertname']
+          group_wait: 10s
+          repeat_interval: 1h
+          receiver: 'slack-alert'
+          routes: []
+        receivers:
+        - name: 'slack-alert'
+          slack_configs:
+          - channel: "#taco-dev"
+            username: "Prometheus"
+            send_resolved: true
+            title: '{{ template "custom_title" . }}'
+            text: '{{ template "custom_slack_message" . }}'
+      alert_templates: |
+        {{ define "__single_message_title" }}{{ range .Alerts.Firing }}{{ .Labels.alertname }} @ {{ .Annotations.identifier }}{{ end }}{{ range .Alerts.Resolved }}{{ .Labels.alertname }} @ {{ .Annotations.identifier }}{{ end }}{{ end }}
+
+        {{ define "custom_title" }}[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }}{{ template "__single_message_title" . }}{{ end }}{{ end }}
+
+        {{ define "custom_slack_message" }}
+        {{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }}
+        {{ range .Alerts.Firing }}{{ .Annotations.description }}{{ end }}{{ range .Alerts.Resolved }}{{ .Annotations.description }}{{ end }}
+        {{ else }}
+        {{ if gt (len .Alerts.Firing) 0 }}
+        *Alerts Firing:*
+        {{ range .Alerts.Firing }}- {{ .Annotations.identifier }}: {{ .Annotations.description }}
+        {{ end }}{{ end }}
+        {{ if gt (len .Alerts.Resolved) 0 }}
+        *Alerts Resolved:*
+        {{ range .Alerts.Resolved }}- {{ .Annotations.identifier }}: {{ .Annotations.description }}
+        {{ end }}{{ end }}
+        {{ end }}
+        {{ end }}
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: prometheus-alertmanager
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-kube-state-metrics 
+data:
+  chart_name: prometheus-kube-state-metrics
+  release: prometheus-kube-state-metrics
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        kube_state_metrics: registry.cicd.stg.taco/kube-state-metrics:1.3.1
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: IfNotPresent
+    dummy: Always
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: prometheus-kube-state-metrics
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-node-exporter 
+data:
+  chart_name: prometheus-node-exporter
+  release: prometheus-node-exporter
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        node_exporter: registry.cicd.stg.taco/node-exporter:v0.15.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    labels:
+      node_exporter:
+        node_selector_key: node-exporter
+        node_selector_value: enabled
+        tolerations: true
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: prometheus-node-exporter
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-openstack-exporter 
+data:
+  chart_name: prometheus-openstack-exporter
+  release: prometheus-openstack-exporter
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        prometheus_openstack_exporter: registry.cicd.stg.taco/prometheus-openstack-exporter:3231f14419f0c47547ce2551b7d884cd222104e6
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        ks_user: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+      pull_policy: Always
+    dummy: dummy
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: prometheus-openstack-exporter
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: grafana 
+data:
+  chart_name: grafana
+  release: grafana
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        grafana: registry.cicd.stg.taco/grafana:5.0.0
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        db_init: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+        grafana_db_session_sync: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+        helm_tests: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    network:
+      grafana:
+        node_port:
+          enabled: true
+          port: 30009
+  source:
+    type: local
+    location: /root/charts/openstack-helm-infra
+    subpath: grafana
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-infra
+data:
+  description: "Openstack Infrastructure"
+  sequenced: False
+  chart_group:
+    - ceph-provisioners
+    - ingress
+    - etcd
+    - rabbitmq
+    - memcached
+    - mariadb
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-services
+data:
+  description: "Openstack Services"
+  sequenced: False
+  chart_group:
+    - libvirt
+    - openvswitch
+    - keystone
+    - glance
+    - cinder
+    - heat
+    - nova
+    - neutron
+    - horizon
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: monitoring-infra
+data:
+  description: "Monitoring Infrastructure"
+  sequenced: False
+  chart_group:
+    - grafana
+    - prometheus
+    - prometheus-alertmanager
+    - prometheus-kube-state-metrics
+    - prometheus-node-exporter
+    - prometheus-openstack-exporter
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: logging-infra
+data:
+  description: "Logging Infrastructure"
+  sequenced: False
+  chart_group:
+    - ldap
+    - elasticsearch
+    - fluent-logging
+    - kibana
+---
+schema: armada/Manifest/v1
+metadata:
+  schema: metadata/Document/v1
+  name: ha-manifest
+data:
+  release_prefix: ha
+  chart_groups:
+    - openstack-infra
+    - openstack-services
+    #- logging-infra
+    #- monitoring-infra

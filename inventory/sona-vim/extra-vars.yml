@@ -1,0 +1,72 @@
+# os
+disable_swap: true
+epel_enabled: true
+preinstall_selinux_state: disabled
+
+# k8s
+kube_version: v1.10.4
+kube_api_anonymous_auth: true
+kube_api_pwd: "{{ lookup('password', inventory_dir + '/credentials/kube_user.creds length=15 chars=ascii_letters,digits') }}"
+kube_users:
+  kube:
+    pass: "{{kube_api_pwd}}"
+    role: admin
+    groups:
+      - system:masters
+kube_network_plugin: calico
+kube_service_addresses: 10.233.0.0/18
+kube_pods_subnet: 10.233.64.0/18
+# dashboard is disabled temporarily for private image repo issue
+dashboard_enabled: false
+
+# set true to enable mount propataion
+local_volume_provisioner_enabled: false
+cephfs_provisioner_enabled: false
+pod_infra_version: 3.1
+
+# docker
+# docker version 18.03 is not supported yet from upstream kubespray
+docker_version: "17.03"
+docker_daemon_graph: "/var/lib/docker"
+docker_options: "--default-ulimit nofile=1024:1048576 --insecure-registry tacorepo:5000 --graph={{ docker_daemon_graph }} {{ docker_log_opts }}"
+
+# helm
+helm_enabled: true
+helm_deployment_type: host
+helm_version: "v2.9.1"
+helm_skip_refresh: true
+
+# calico
+# set ipip to false and peer_with_calico_rr to use global bgp rr
+#ipip: true
+#peer_with_calico_rr: false
+#calico_mtu: 1500
+
+# etcd
+etcd_deployment_type: docker
+etcd_memory_limit: 8192M
+
+# kubelet
+kubelet_deployment_type: host
+
+# copy kubectl to ansible host
+kubectl_localhost: true
+kubeconfig_localhost: true
+
+# taco
+openstack_namespace: openstack
+ceph_enabled: true
+config_drive_enabled: true
+pci_passthrough_enabled: true
+
+armada_client_image: tacorepo:5000/kube-tools:stable
+charts_dir: "{{ lookup('env','HOME') }}/taco-deploy/charts"
+armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
+
+# ceph
+ceph_version: luminous
+monitors: 192.168.51.20:6789
+admin_token: QVFERWJZMWFNMi8vTXhBQUFyRm84UHQrS09ZZlc2emtlTHdFM0E9PQ==
+user_token: QVFBUWU2ZGFGVEJwSlJBQVR6dG5uYllWMHl1Y1VJS0lVdk4wd0E9PQ==
+pool_name: sona-vim
+user_id: sona

@@ -1,0 +1,59 @@
+---
+
+# Enable registry.cicd.stg.taco
+- hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: registry.cicd.stg.taco | populate custom entries into hosts file
+      lineinfile:
+        path: /etc/hosts
+        line: 192.168.54.30 registry.cicd.stg.taco
+        state: present
+      when: cicd_registry_enabled|default(false)
+    - name: registry.cicd.stg.taco | create directory for cert
+      file:
+        path: /etc/docker/certs.d/registry.cicd.stg.taco
+        state: directory
+      when: cicd_registry_enabled|default(false)
+    - name: registry.cicd.stg.taco | create cert file
+      copy:
+        src: "{{ ansible_inventory_sources[0] | dirname }}/ca.crt"
+        dest: "/etc/docker/certs.d/registry.cicd.stg.taco/ca.crt"
+      when: cicd_registry_enabled|default(false)
+  tags: always
+
+# Populate registry hosts into hosts file
+- hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: populate taco registry into hosts file
+      blockinfile:
+        dest: /etc/hosts
+        block: |-
+          {% for item in (groups['registry']|default([]))|unique -%}{{ default(hostvars[item]['ip']) }} {{ item }}
+          {% endfor %}
+        state: present
+        create: yes
+        backup: yes
+        marker: "# TACO registry hosts {mark}"
+  tags: always
+
+# Install Ceph
+- import_playbook: ceph-ansible/site.yml
+  tags: ceph
+
+# TODO: add tests for checking status of the new ceph cluster
+
+# Prepare OS for TACO
+- hosts: k8s-cluster
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: setup-os }
+  tags: setup-os
+
+# Install K8S
+- import_playbook: kubespray/scale.yml
+  tags: k8s
+
+# TODO: add tests for checking the status of the updated k8s cluster

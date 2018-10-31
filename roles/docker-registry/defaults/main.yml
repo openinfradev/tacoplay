@@ -1,0 +1,16 @@
+---
+registry_name: "taco-registry"
+
+docker_registry_image: tacorepo:5000/registry:2.6.2
+docker_registry_name: "{{ registry_name }}"
+docker_registry_env:
+docker_registry_command: ""
+docker_registry_expose:
+  - 5000
+docker_registry_ports:
+  - 5000:5000
+
+registry_volume_archived: false
+docker_registry_volume: "{{ registry_volume }}"
+docker_registry_volume_archive: "{{ inventory_dir }}/docker_registry.tar.gz"
+docker_registry_volume_dir: "{{ inventory_dir }}/docker_registry"

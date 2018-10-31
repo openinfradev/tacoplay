@@ -1,0 +1,18 @@
+---
+bin_dir: /usr/local/bin
+
+# Enable config drive
+config_drive_enabled: true
+
+# Enable PCI passthrough
+pci_passthrough_enabled: false
+
+# TC service
+tc_enabled: false
+tc_interface: bond0
+tc_mgmt_vlan: 90
+
+# NAT service
+nat_enabled: false
+nat_interfaces:
+  - bond0

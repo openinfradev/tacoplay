@@ -1,0 +1,55 @@
+#!/bin/bash
+set -x
+
+# Name of the traffic control command.
+TC=/sbin/tc
+
+# The network interface we're planning on limiting bandwidth.
+IF={{ tc_interface }}
+
+start() {
+# use class :20 when no filters applied
+$TC qdisc replace dev $IF root handle 1: hfsc default 20
+
+# don't saturate the link, allow max 9.5Gbps
+$TC class add dev $IF parent 1: classid 1:1 hfsc sc rate 9500mbit ul rate 9500mbit
+
+# class :10 definition
+# allow 100Mbps rate when link is busy but it can borrow up to 9.5Gbps if possible
+$TC class add dev $IF parent 1:1 classid 1:10 hfsc sc rate 100mbit ul rate 9500mbit
+
+# class :20 definition
+# allow 9.4Gbps rate when link is busy but it can borrow up to 9.5Gbps if possible
+$TC class add dev $IF parent 1:1 classid 1:20 hfsc sc rate 9400mbit ul rate 9500mbit
+
+# filter definitions
+# apply class :10 for traffic with VLAN 90
+$TC filter add dev $IF parent 1: basic match "meta(vlan mask 0xfff eq {{ tc_mgmt_vlan }})" flowid 1:10
+
+# fair share
+$TC qdisc add dev $IF parent 1:10 sfq perturb 10
+$TC qdisc add dev $IF parent 1:20 sfq perturb 10
+}
+
+stop() {
+# Stop the bandwidth shaping.
+$TC qdisc del dev $IF root
+}
+
+case "$1" in
+    start)
+       start
+       ;;
+    stop)
+       stop
+       ;;
+    restart)
+       stop
+       start
+       ;;
+    status)
+       ;;
+    *)
+       echo "Usage: $0 {start|stop|status|restart}"
+esac
+exit 0

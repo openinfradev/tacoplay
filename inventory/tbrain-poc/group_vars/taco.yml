@@ -1,0 +1,21 @@
+# default options
+openstack_namespace: openstack
+ceph_enabled: false
+config_drive_enabled: true
+product_vm: false
+
+# ceph options
+ceph_version: luminous
+ceph_repository_enabled: false
+ceph_repository_dir: /var/mirrors/ceph
+
+# override ceph repo url to localrepo when outbound access is not allowed
+#ceph_rh_repo_base_url: https://localrepo/rpm-luminous/el7/x86_64
+#ceph_rh_repo_gpgkey: https://localrepo/keys/release.asc
+
+monitors: 192.168.48.31:6789
+admin_id: admin
+user_id: kube
+pool_name: kube
+admin_token: QVFEKzNJTmExd3RqRWhBQVVGUTF4bWhzYzdQY2NBeDByK05HUEE9PQ==
+user_token: QVFDZ3dkUmFRd0E0QmhBQUNBYUpMY3FubVRISUZ6UzNjSndiQVE9PQ==

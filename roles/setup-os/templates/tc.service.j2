@@ -1,0 +1,12 @@
+[Unit]
+Description=Traffic Shaping Service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart={{ bin_dir }}/tc-service start
+ExecStop={{ bin_dir }}/tc-service stop
+ExecReload={{ bin_dir }}/tc-service restart
+
+[Install]
+WantedBy=multi-user.target

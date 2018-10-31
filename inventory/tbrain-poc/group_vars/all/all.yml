@@ -1,0 +1,15 @@
+# values used in multiple groups or localhost
+
+bin_dir: /usr/local/bin
+artifacts_dir: "{{ inventory_dir }}/artifacts"
+kube_config_dir: /etc/kubernetes
+
+# deploy options
+openstack_enabled: false
+armada_enabled: true
+
+# armada options
+charts_dir: "{{ playbook_dir }}/charts"
+armada_client_image: tacorepo:5000/kube-tools:stable
+armada_manifest: "{{ (ansible_inventory_sources[0] | dirname) }}/armada-manifest.yaml"
+armada_timeout: 3600

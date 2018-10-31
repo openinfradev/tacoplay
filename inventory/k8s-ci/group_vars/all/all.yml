@@ -1,0 +1,5 @@
+# values used in multiple groups
+
+bin_dir: /usr/local/bin
+artifacts_dir: "{{ inventory_dir }}/artifacts"
+kube_config_dir: /etc/kubernetes

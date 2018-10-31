@@ -1,0 +1,37 @@
+#!/bin/bash
+set -x
+
+# Name of the traffic control command.
+IPTABLES=/sbin/iptables
+
+start() {
+iptables -t nat -N taco-POSTROUTING
+iptables -t nat -A POSTROUTING -m comment --comment "taco postrouting rules" -j taco-POSTROUTING
+{% for iface in nat_interfaces %}
+iptables -t nat -A taco-POSTROUTING -m comment --comment "SNAT traffic out going {{ iface }}" -o {{ iface }} -j MASQUERADE
+{% endfor %}
+}
+
+stop() {
+iptables -t nat -D POSTROUTING -m comment --comment "taco postrouting rules" -j taco-POSTROUTING
+iptables -t nat -F taco-POSTROUTING
+iptables -t nat -X taco-POSTROUTING
+}
+
+case "$1" in
+    start)
+       start
+       ;;
+    stop)
+       stop
+       ;;
+    restart)
+       stop
+       start
+       ;;
+    status)
+       ;;
+    *)
+       echo "Usage: $0 {start|stop|status|restart}"
+esac
+exit 0

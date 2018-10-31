@@ -1,0 +1,4 @@
+# Variables used in multiple playbooks, both taco and kubespray for example,
+# are defined here
+
+bin_dir: /usr/local/bin

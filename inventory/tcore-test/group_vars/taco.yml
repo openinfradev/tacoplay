@@ -1,0 +1,20 @@
+# default options
+openstack_enabled: true
+openstack_namespace: openstack
+
+# storage class configs
+ceph_enabled: true
+monitors: 192.168.48.31:6789
+admin_id: admin
+user_id: kube
+pool_name: kube
+admin_token: QVFEKzNJTmExd3RqRWhBQVVGUTF4bWhzYzdQY2NBeDByK05HUEE9PQ==
+user_token: QVFDZ3dkUmFRd0E0QmhBQUNBYUpMY3FubVRISUZ6UzNjSndiQVE9PQ==
+
+# additional host configurations
+config_drive_enabled: true
+tc_enabled: false
+nat_enabled: false
+
+cicd_registry_enabled: true
+armada_venv: "{{ lookup('env','HOME') }}/venv"

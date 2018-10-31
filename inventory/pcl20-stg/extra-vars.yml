@@ -1,0 +1,94 @@
+# os
+disable_swap: true
+epel_enabled: true
+preinstall_selinux_state: disabled
+
+# k8s
+kube_version: v1.10.4
+kube_api_anonymous_auth: true
+kube_api_pwd: "{{ lookup('password', inventory_dir + '/credentials/kube_user.creds length=15 chars=ascii_letters,digits') }}"
+kube_users:
+  kube:
+    pass: "{{kube_api_pwd}}"
+    role: admin
+    groups:
+      - system:masters
+kube_network_plugin: calico
+kube_service_addresses: 192.168.0.0/17
+kube_pods_subnet: 192.168.128.0/17
+# dashboard is disabled temporarily for private image repo issue
+dashboard_enabled: false
+
+# set true to enable mount propataion
+local_volume_provisioner_enabled: false
+cephfs_provisioner_enabled: false
+pod_infra_version: 3.1
+
+# docker
+# docker version 18.03 is not supported yet from upstream kubespray
+docker_version: "17.03"
+docker_options: "--default-ulimit nofile=1024:1048576 --graph={{ docker_daemon_graph }} --insecure-registry tacorepo:5000 {{ docker_log_opts }}"
+
+# helm
+helm_enabled: true
+helm_deployment_type: host
+helm_version: "v2.9.1"
+helm_skip_refresh: true
+
+# calico
+#calico_mtu: 1500
+# set ipip to false and peer_with_calico_rr to use global bgp rr
+ipip: false
+#peer_with_calico_rr: false
+#calico_ip_auto_method: "interface=eth1"
+calico_felix_prometheusmetricsenabled: "true"
+calico_felix_prometheusmetricsport: 9091
+calico_felix_prometheusgometricsenabled: "true"
+calico_felix_prometheusprocessmetricsenabled: "true"
+
+# etcd
+etcd_deployment_type: docker
+etcd_memory_limit: 8192M
+
+# kubelet
+kubelet_deployment_type: host
+
+# copy kubectl to ansible host
+kubectl_localhost: true
+kubeconfig_localhost: true
+
+# image repo
+nginx_image_repo: "tacorepo:5000/nginx"
+hyperkube_image_repo: "tacorepo:5000/google-containers/hyperkube"
+helm_image_repo: "tacorepo:5000/k8s-helm"
+tiller_image_repo: "tacorepo:5000/kubernetes-helm/tiller"
+calico_node_image_repo: "tacorepo:5000/calico/node"
+calico_cni_image_repo: "tacorepo:5000/calico/cni"
+calicoctl_image_repo: "tacorepo:5000/calico/ctl"
+dashboard_image_repo: "tacorepo:5000/google_containers/kubernetes-dashboard-amd64"
+dnsmasq_nanny_image_repo: "tacorepo:5000/google_containers/k8s-dns-dnsmasq-nanny-amd64"
+dnsmasq_sidecar_image_repo: "tacorepo:5000/google_containers/k8s-dns-sidecar-amd64"
+kubedns_image_repo: "tacorepo:5000/google_containers/k8s-dns-kube-dns-amd64"
+pod_infra_image_repo: "tacorepo:5000/google_containers/pause-amd64"
+etcd_image_repo: "tacorepo:5000/coreos/etcd"
+dnsmasqautoscaler_image_repo: "tacorepo:5000/google_containers/cluster-proportional-autoscaler-amd64"
+kubednsautoscaler_image_repo: "tacorepo:5000/google_containers/cluster-proportional-autoscaler-amd64"
+ingress_nginx_default_backend_image_repo: "tacorepo:5000/defaultbackend"
+
+# taco
+openstack_namespace: openstack
+ceph_enabled: true
+config_drive_enabled: true
+
+armada_client_image: tacorepo:5000/kube-tools:stable
+charts_dir: "{{ lookup('env','HOME') }}/taco-deploy/charts"
+armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
+
+# ceph
+ceph_version: luminous
+monitors: 10.10.121.11:6789
+admin_id: admin
+user_id: kube
+pool_name: kube
+admin_token: QVFCb0lRVmIyanhDSnhBQVlEQ3Iwa0wrNGd0aFNGOVVPbHZwU3c9PQ==
+user_token: QVFEUUtBVmIrYU9sQ1JBQWh2TmpBaFpVVnlKdExtdXA1S3JmN3c9PQ==

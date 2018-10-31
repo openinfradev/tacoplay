@@ -1,0 +1,118 @@
+---
+
+# Copy site.yml from site.yml.sample
+- hosts: localhost
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: copy site.yml
+      copy:
+        src: "{{ playbook_dir }}/ceph-ansible/site.yml.sample"
+        dest: "{{ playbook_dir }}/ceph-ansible/site.yml"
+  tags: ceph
+
+- hosts: localhost
+  vars:
+    ansible_python_interpreter: /opt/app-root/bin/python
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: Add docker yum repository
+      command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+      args:
+        creates: /tmp/.docker-repo-added
+
+    - name: Install docker pkg
+      command: yum install -y docker-ce-18.06.1.ce-3.el7
+
+    - name: ensure a list of packages installed
+      yum:
+        name: "{{ packages }}"
+      vars:
+        packages:
+        - device-mapper-persistent-data
+        - lvm2
+        - jq
+
+    - name: Start docker service
+      service:
+        name: docker
+        state: started
+  tags: download
+
+- include: kubespray/cluster.yml
+
+- hosts: localhost
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  handlers:
+    - name: restart docker service
+      service:
+        name: docker
+        state: restarted
+  tasks:
+    - name: pull k8s-dashboard docker image
+      docker_image:
+        name: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.8.3
+
+    # Modify hostfile
+    - lineinfile:
+        path: /etc/hosts
+        regexp: '^127.0.0.1 '
+        line: '127.0.0.1 localhost tacorepo'
+
+    - lineinfile:
+        path: /etc/hosts
+        insertafter: EOF
+        line: '192.168.54.30 registry.cicd.stg.taco'
+
+    # Create docker cert directory
+    - file:
+        path: /etc/docker/certs.d/registry.cicd.stg.taco/
+        state: directory
+        mode: 0755
+
+    - name: Copy registry cert file
+      copy:
+        src: "{{ playbook_dir }}/files/registry-certs"
+        dest: "/etc/docker/certs.d/registry.cicd.stg.taco/ca.crt"
+
+    # Pull all images used in armada manifest
+    - script: "{{ playbook_dir }}/scripts/pull-images.sh {{ ansible_inventory_sources[0] | dirname }}/armada-manifest.yaml"
+      args:
+        creates: /tmp/.image-pull-done
+
+    - name: Pull kube-tools docker image
+      docker_image:
+        name: registry.cicd.stg.taco/kube-tools:stable
+
+    - name: Run registry container
+      docker_container:
+        name: registry
+        image: registry:2.6.2
+        restart_policy: always
+        ports:
+          - 5000:5000
+        volumes:
+          - "{{ ansible_inventory_sources[0] | dirname }}/docker_registry/:/var/lib/registry"
+
+    - name: Copy docker daemon config
+      copy:
+        src: "{{ playbook_dir }}/files/docker-daemon.json"
+        dest: "/etc/docker/daemon.json"
+      notify:
+        - restart docker service
+
+    # Tag images
+    - script: "{{ playbook_dir }}/scripts/tag-images.sh"
+      args:
+        creates: /tmp/.image-tag-done
+
+    # Push tagged images to registry
+    - script: "{{ playbook_dir }}/scripts/push-images.sh"
+      args:
+        creates: /tmp/.image-push-done
+
+    - name: Bundle up taco-deploy
+      shell: tar cvfz taco-deploy.tar.gz taco-deploy/
+      args:
+        chdir: "{{ playbook_dir | dirname }}"
+        creates: /tmp/.bundle-done
+  tags: download

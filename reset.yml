@@ -1,0 +1,21 @@
+---
+
+# TODO: remove openstack resources
+# TODD: remove k8s resources created for TACO
+
+# Reset K8S cluster
+- include: kubespray/reset.yml
+  tags: k8s
+
+# Stop docker registry
+- hosts: registry
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - docker_container:
+        name: "{{ registry_name }}"
+        state: absent
+  tags: registry
+
+# Purge Ceph cluster
+- include: ceph-ansible/infrastructure-playbooks/purge-cluster.yml
+  tags: ceph

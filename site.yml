@@ -1,0 +1,143 @@
+---
+
+# Install python packages required for running tacoplay on ansible host
+- hosts: localhost
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: install python packages required for running taco-deploy
+      pip:
+        requirements: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/requirements.txt"
+        - "{{ playbook_dir }}/ceph-ansible/requirements.txt"
+        - "{{ playbook_dir }}/kubespray/requirements.txt"
+  tags: always
+
+# Enable registry.cicd.stg.taco
+- hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: registry.cicd.stg.taco | populate custom entries into hosts file
+      lineinfile:
+        path: /etc/hosts
+        line: 192.168.54.30 registry.cicd.stg.taco
+        state: present
+      when: cicd_registry_enabled|default(false)
+    - name: registry.cicd.stg.taco | create directory for cert
+      file:
+        path: /etc/docker/certs.d/registry.cicd.stg.taco
+        state: directory
+      when: cicd_registry_enabled|default(false)
+    - name: registry.cicd.stg.taco | create cert file
+      copy:
+        src: "{{ ansible_inventory_sources[0] | dirname }}/ca.crt"
+        dest: "/etc/docker/certs.d/registry.cicd.stg.taco/ca.crt"
+      when: cicd_registry_enabled|default(false)
+  tags: always
+
+# Populate registry hosts into hosts file
+- hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: populate taco registry into hosts file
+      blockinfile:
+        dest: /etc/hosts
+        block: |-
+          {% for item in (groups['registry']|default([]))|unique -%}{{ default(hostvars[item]['ip']) }} {{ item }}
+          {% endfor %}
+        state: present
+        create: yes
+        backup: yes
+        marker: "# TACO registry hosts {mark}"
+  tags: always
+
+# Copy ceph.repo to repository when custom repo is used
+# It assumes registry and repository hosts are the same
+- hosts: registry
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: copy ceph.repo to local repository
+      copy:
+        src: "{{ inventory_dir }}/ceph.repo"
+        dest: "{{ ceph_repository_dir }}/ceph.repo"
+      when: ceph_repository_enabled
+  tags: ceph
+
+# Install Ceph
+- import_playbook: ceph-ansible/site.yml
+  tags: ceph
+
+# TODO: add tests for checking status of the new ceph cluster
+
+# Run docker registry
+- hosts: registry
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: docker }
+    - { role: docker-registry }
+  tags: registry
+
+# Prepare OS for TACO
+- hosts: k8s-cluster
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: setup-os }
+  tags: setup-os
+
+# Install K8S
+- import_playbook: kubespray/cluster.yml
+  tags: k8s
+
+- hosts: taco
+  roles:
+    - { role: taco-defaults }
+    - { role: admin-node }
+  tags: k8s
+
+# TODO: add tests for checking status of the new k8s cluster
+
+# Create K8S resources required for deploying OpenStack
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: bootstrap-taco }
+  tags: taco
+
+# Install python-openstackclient 3.12.0
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: install packages required for openstackclient
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - gcc
+        - python-devel
+      when:
+        - ansible_distribution in ["CentOS","RedHat"]
+    - name: install python-openstackclient
+      pip:
+        name: "{{ item.name }}"
+        version: "{{ item.version }}"
+        state: present
+      loop:
+        - { name: 'python-openstackclient', version: '3.12.0' }
+        - { name: 'python-cinderclient', version: '3.1.0' }
+        - { name: 'python-glanceclient', version: '2.8.0' }
+        - { name: 'python-keystoneclient', version: '3.13.0' }
+        - { name: 'python-novaclient', version: '9.1.2' }
+  tags:
+    - taco
+    - openstack-client
+
+# Make admin-node ready for armada apply
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: armada }
+  tags: armada

@@ -1,0 +1,37 @@
+---
+- name: ensures /tmp/manifests dir exists
+  file: path=/tmp/manifests state=directory
+
+- name: copy namespace, clusterrolebinding yml
+  template:
+    src: "{{item.file}}.j2"
+    dest: "/tmp/manifests/{{item.file}}"
+  with_items:
+    - {name: "{{ openstack_namespace }}", file: namespace.yml, type: namespace}
+    - {name: "{{ openstack_namespace }}", file: clusterrolebinding.yml, type: clusterrolebinding}
+  register: openstack_manifests
+  when: openstack_enabled
+
+- name: copy ceph secret and storageclass yml
+  template:
+    src: "{{item.file}}.j2"
+    dest: "/tmp/manifests/{{item.file}}"
+  with_items:
+    - {name: "{{ user_secret_name }}", file: ceph-secret-user.yml, type: secret}
+    - {name: "{{ admin_secret_name }}", file: ceph-secret-admin.yml, type: secret}
+    - {name: "{{ storageclass_name }}", file: ceph-storageclass.yml, type: storageclass}
+  register: ceph_manifests
+  when: openstack_enabled and ceph_enabled
+
+- name: start k8s resources for taco
+  kube:
+    name: "{{item.item.name}}"
+    kubectl: "{{bin_dir}}/kubectl"
+    resource: "{{item.item.type}}"
+    filename: "/tmp/manifests/{{item.item.file}}"
+    state: "{{item.changed | ternary('latest','present') }}"
+  with_items:
+    - "{{ openstack_manifests.results }}"
+    - "{{ ceph_manifests.results }}"
+  run_once: true
+  become: no
