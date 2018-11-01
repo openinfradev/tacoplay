@@ -1,5 +1,4 @@
 ---
-
 # Install python packages required for running tacoplay on ansible host
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
@@ -103,36 +102,8 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-defaults }
-    - { role: bootstrap-taco }
-  tags: taco
-
-# Install python-openstackclient 3.12.0
-- hosts: admin-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: install packages required for openstackclient
-      yum:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - gcc
-        - python-devel
-      when:
-        - ansible_distribution in ["CentOS","RedHat"]
-    - name: install python-openstackclient
-      pip:
-        name: "{{ item.name }}"
-        version: "{{ item.version }}"
-        state: present
-      loop:
-        - { name: 'python-openstackclient', version: '3.16.0' }
-        - { name: 'python-cinderclient', version: '3.1.0' }
-        - { name: 'python-glanceclient', version: '2.8.0' }
-        - { name: 'python-keystoneclient', version: '3.13.0' }
-        - { name: 'python-novaclient', version: '9.1.2' }
-  tags:
-    - taco
-    - openstack-client
+    - { role: bootstrap-openstack }
+  tags: openstack 
 
 # Make admin-node ready for armada apply
 - hosts: admin-node

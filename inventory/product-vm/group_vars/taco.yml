@@ -1,5 +1,4 @@
 # default options
-openstack_enabled: true
 openstack_namespace: openstack
 
 # storage class configs

@@ -22,10 +22,11 @@
   blockinfile:
     path: "{{ lookup('env','HOME') }}/.bashrc"
     block: |
-      export OSH_PATH="{{ playbook_dir }}/charts"
       export LC_ALL="en_US.UTF-8"
       export WORKON_HOME={{ workon_home }}
       source /usr/bin/virtualenvwrapper.sh
+      export OSH_PATH="{{ playbook_dir }}/charts"
+    marker: "# ARMADA ENVS {mark}"
   become: no  
 
 - name: remove existing armada virtual env
