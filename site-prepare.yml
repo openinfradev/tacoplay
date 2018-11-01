@@ -12,15 +12,10 @@
 
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: docker }
   tasks:
-    - name: Add docker yum repository
-      command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-      args:
-        creates: /tmp/.docker-repo-added
-
-    - name: Install docker pkg
-      command: yum install -y docker-ce-18.06.1.ce-3.el7
-
     - name: ensure a list of packages installed
       yum:
         name: "{{ packages }}"
@@ -29,11 +24,6 @@
         - device-mapper-persistent-data
         - lvm2
         - jq
-
-    - name: Start docker service
-      service:
-        name: docker
-        state: started
   tags: download
 
 - include: kubespray/cluster.yml
@@ -46,7 +36,7 @@
         name: docker
         state: restarted
   tasks:
-    - name: pull k8s-dashboard docker image
+    - name: pull k8s-dashboard image
       docker_image:
         name: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.8.3
 
@@ -77,7 +67,7 @@
       args:
         creates: /tmp/.image-pull-done
 
-    - name: Pull kube-tools docker image
+    - name: Pull kube-tools image
       docker_image:
         name: registry.cicd.stg.taco/kube-tools:stable
 
