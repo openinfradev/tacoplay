@@ -119,7 +119,7 @@
       shell: >-
         kubectl get po -n openstack -o wide |
         grep "^ingress-[^error]" |
-        awk '{print $7}'
+        awk '{print $6}'
       retries: 10
       delay: 10
       register: ingress_host
