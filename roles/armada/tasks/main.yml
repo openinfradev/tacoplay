@@ -88,9 +88,8 @@
 
 - name: it's ready to run Armada!
   debug:
-    msg: >
-     ". ~/.bashrc &&
-      workon armada &&
+    msg:
+     ". ~/.bashrc && workon armada &&
       armada apply
       --tiller-host {{ tiller_host.stdout }}
       --tiller-port {{ tiller_port }}
