@@ -284,7 +284,7 @@ data:
       tags:
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
-        libvirt: registry.cicd.stg.taco/pike/ubuntu-source-nova-libvirt:0.1.0
+        libvirt: registry.cicd.stg.taco/libvirt:ubuntu-xenial-1.3.1-1ubuntu10.24
       pull_policy: Always
     conf:
       ceph:
