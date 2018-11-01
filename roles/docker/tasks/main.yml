@@ -1,4 +1,21 @@
 ---
+- name: gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution|lower }}-{{ ansible_distribution_version|lower|replace('/', '_') }}.yml"
+        - "{{ ansible_distribution|lower }}-{{ ansible_distribution_release|lower }}-{{ host_architecture }}.yml"
+        - "{{ ansible_distribution|lower }}-{{ ansible_distribution_release|lower }}.yml"
+        - "{{ ansible_distribution|lower }}-{{ ansible_distribution_major_version|lower|replace('/', '_') }}.yml"
+        - "{{ ansible_distribution|lower }}-{{ host_architecture }}.yml"
+        - "{{ ansible_distribution|lower }}.yml"
+        - "{{ ansible_os_family|lower }}-{{ host_architecture }}.yml"
+        - "{{ ansible_os_family|lower }}.yml"
+        - defaults.yml
+      paths:
+        - ../vars
+      skip: true
+
 - name: ensure docker-ce repository public key is installed
   action: "{{ docker_repo_key_info.pkg_key }}"
   args:
@@ -9,7 +26,7 @@
   until: keyserver_task_result is succeeded
   retries: 4
   with_items: "{{ docker_repo_key_info.repo_keys }}"
-  when: not (ansible_os_family in ["CoreOS", "Container Linux by CoreOS", "RedHat", "Suse"])
+  when: not ansible_os_family in ["CoreOS", "Container Linux by CoreOS", "RedHat", "Suse"]
 
 - name: ensure docker-ce repository is enabled
   action: "{{ docker_repo_info.pkg_repo }}"
@@ -19,20 +36,20 @@
   with_items: "{{ docker_repo_info.repos }}"
   when: not (ansible_os_family in ["CoreOS", "Container Linux by CoreOS", "RedHat", "Suse"]) and (docker_repo_info.repos|length > 0)
 
-- name: Configure docker repository on RedHat/CentOS
+- name: configure docker repository on RedHat/CentOS
   template:
     src: "rh_docker.repo.j2"
     dest: "{{ yum_repo_dir }}/docker.repo"
   when: ansible_distribution in ["CentOS","RedHat"]
 
-- name: Copy yum.conf for editing
+- name: copy yum.conf for editing
   copy:
     src: "{{ yum_conf }}"
     dest: "{{ docker_yum_conf }}"
     remote_src: yes
   when: ansible_distribution in ["CentOS","RedHat"]
 
-- name: Edit copy of yum.conf to set obsoletes=0
+- name: edit copy of yum.conf to set obsoletes=0
   lineinfile:
     path: "{{ docker_yum_conf }}"
     state: present
@@ -52,9 +69,7 @@
   until: docker_task_result is succeeded
   retries: 4
   with_items: "{{ docker_package_info.pkgs }}"
-  notify: restart docker
   when: not (ansible_os_family in ["CoreOS", "Container Linux by CoreOS"]) and (docker_package_info.pkgs|length > 0)
-  ignore_errors: true
 
 - name: get available packages on Ubuntu
   command: apt-cache policy docker-ce
@@ -71,7 +86,7 @@
     - ansible_distribution == 'Ubuntu'
 
 # This is required to ensure any apt upgrade will not break kubernetes
-- name: Set docker pin priority to apt_preferences on Debian family
+- name: set docker pin priority to apt_preferences on Debian family
   template:
     src: "debian_docker.j2"
     dest: "/etc/apt/preferences.d/docker"
@@ -79,14 +94,11 @@
     mode: 0644
   when: not (ansible_os_family in ["CoreOS", "Container Linux by CoreOS", "RedHat", "Suse"])
 
-- name: ensure service is started if docker packages are already present
+- name: ensure service is started
   service:
     name: docker
     state: started
-  when: docker_task_result is not changed
-
-- name: flush handlers so we can wait for docker to come up
-  meta: flush_handlers
+  when: docker_task_result is not changed or docker_task_result is succeeded
 
 - name: set fact for docker_version
   command: "docker version -f '{{ '{{' }}.Client.Version{{ '}}' }}'"
@@ -103,22 +115,15 @@
     src: docker.service.j2
     dest: /etc/systemd/system/docker.service
   register: docker_service_file
-  notify: restart docker
-  when: not (ansible_os_family in ["CoreOS", "Container Linux by CoreOS"])
 
 - name: Write docker options systemd drop-in
   template:
     src: docker-options.conf.j2
     dest: "/etc/systemd/system/docker.service.d/docker-options.conf"
-  notify: restart docker
-
-- name: flush handlers so we can wait for docker to come up
-  meta: flush_handlers
 
 - name: ensure docker service is started and enabled
   service:
     name: "{{ item }}"
     enabled: yes
     state: started
-  with_items:
-    - docker
+  with_items: docker

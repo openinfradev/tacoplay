@@ -42,7 +42,7 @@
       blockinfile:
         dest: /etc/hosts
         block: |-
-          {% for item in (groups['registry']|default([]))|unique -%}{{ default(hostvars[item]['ip']) }} {{ item }}
+          {% for item in (groups['registry']|default([]))|unique -%}{{ hostvars[item]['ip'] }} {{ item }}
           {% endfor %}
         state: present
         create: yes
