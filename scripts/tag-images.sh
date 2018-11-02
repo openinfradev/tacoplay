@@ -9,7 +9,7 @@ NEW_REGISTRY="tacorepo:5000"
 #    sudo docker push $NEW_REGISTRY/$IMAGE_NAME
 #}
 
-for IMAGE in $(sudo docker images | grep ago | awk '{ print $1":"$2 }'); do
+for IMAGE in $(docker images | grep ago | awk '{ print $1":"$2 }'); do
     depth=$(echo $IMAGE | sed 's/[^/]//g' | awk '{print length}')
     if [ $depth -eq 2 ]; then
          IMAGE_NAME=`echo $IMAGE | cut -d'/' -f2,3`
@@ -23,5 +23,5 @@ for IMAGE in $(sudo docker images | grep ago | awk '{ print $1":"$2 }'); do
     fi
     #tagandpush $IMAGE $IMAGE_NAME
     echo "*** command:" docker tag "$NEW_REGISTRY/$IMAGE_NAME"
-    sudo docker tag $IMAGE "$NEW_REGISTRY/$IMAGE_NAME"
+    docker tag $IMAGE "$NEW_REGISTRY/$IMAGE_NAME"
 done
