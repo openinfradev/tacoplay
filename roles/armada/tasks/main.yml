@@ -21,7 +21,7 @@
     - "{{ manifests.results }}"
   become: no
 
-- name: install packages required for armada
+- name: yum install packages required for armada
   yum:
     name: "{{ item }}"
     state: present
@@ -31,6 +31,19 @@
     - python34-devel
     - gcc
     - jq
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: apt install packages required for armada
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - python-pip
+    - python-devel
+    - gcc
+    - jq
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
 
 - name: install virtual env packages
   pip:
