@@ -39,7 +39,7 @@
     state: present
   loop:
     - python-pip
-    - python-devel
+    - python-dev
     - gcc
     - jq
   when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
