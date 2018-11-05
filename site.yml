@@ -59,7 +59,7 @@
       copy:
         src: "{{ inventory_dir }}/ceph.repo"
         dest: "{{ ceph_repository_dir }}/ceph.repo"
-      when: ceph_repository_enabled
+      when: ceph_repository_enabled|default(false)
   tags: ceph
 
 # Install Ceph
