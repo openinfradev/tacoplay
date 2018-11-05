@@ -1,3 +1,4 @@
 *.retry
 artifacts/
 .idea
+docker_registry/

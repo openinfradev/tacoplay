@@ -58,22 +58,3 @@ helm_enabled: true
 helm_deployment_type: host
 helm_version: "v2.10.0"
 helm_skip_refresh: true
-
-# Image repo URL
-# Uncomment the following lines when local docker registry is used
-#nginx_image_repo: "tacorepo:5000/nginx"
-#hyperkube_image_repo: "tacorepo:5000/google-containers/hyperkube"
-#helm_image_repo: "tacorepo:5000/k8s-helm"
-#tiller_image_repo: "tacorepo:5000/kubernetes-helm/tiller"
-#calico_node_image_repo: "tacorepo:5000/calico/node"
-#calico_cni_image_repo: "tacorepo:5000/calico/cni"
-#calicoctl_image_repo: "tacorepo:5000/calico/ctl"
-#dashboard_image_repo: "tacorepo:5000/google_containers/kubernetes-dashboard-amd64"
-#dnsmasq_nanny_image_repo: "tacorepo:5000/google_containers/k8s-dns-dnsmasq-nanny-amd64"
-#dnsmasq_sidecar_image_repo: "tacorepo:5000/google_containers/k8s-dns-sidecar-amd64"
-#kubedns_image_repo: "tacorepo:5000/google_containers/k8s-dns-kube-dns-amd64"
-#pod_infra_image_repo: "tacorepo:5000/google_containers/pause-amd64"
-#etcd_image_repo: "tacorepo:5000/coreos/etcd"
-#dnsmasqautoscaler_image_repo: "tacorepo:5000/google_containers/cluster-proportional-autoscaler-amd64"
-#kubednsautoscaler_image_repo: "tacorepo:5000/google_containers/cluster-proportional-autoscaler-amd64"
-#ingress_nginx_default_backend_image_repo: "tacorepo:5000/defaultbackend"
