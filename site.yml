@@ -42,7 +42,7 @@
       blockinfile:
         dest: /etc/hosts
         block: |-
-          {% for item in (groups['registry']|default([]))|unique -%}{{ default(hostvars[item]['ip']) }} {{ item }}
+          {% for item in (groups['registry']|default([]))|unique -%}{{ hostvars[item]['ip'] }} {{ item }}
           {% endfor %}
         state: present
         create: yes
@@ -112,3 +112,29 @@
     - { role: taco-defaults }
     - { role: armada }
   tags: armada
+
+- hosts: admin-node
+  tasks:
+    - name: check host where ingress controller is running
+      shell: >-
+        kubectl get po -n openstack -o wide |
+        grep "^ingress-[^error]" |
+        awk '{print $6}'
+      retries: 10
+      delay: 10
+      register: ingress_host
+      until: ingress_host.stdout != ""
+      become: no
+    - name: update hosts file for openstack services access via ingress
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          {{ ingress_host.stdout }} keystone.openstack.svc.cluster.local
+          {{ ingress_host.stdout }} glance.openstack.svc.cluster.local
+          {{ ingress_host.stdout }} nova.openstack.svc.cluster.local
+          {{ ingress_host.stdout }} neutron.openstack.svc.cluster.local
+          {{ ingress_host.stdout }} cinder.openstack.svc.cluster.local
+        state: present
+        marker: "# OPENSTACK SERVICES {mark}"
+      when: ingress_host.stdout != ""
+  tags: openstack

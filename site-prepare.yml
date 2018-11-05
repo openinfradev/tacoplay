@@ -40,17 +40,6 @@
       docker_image:
         name: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.8.3
 
-    # Modify hostfile
-    - lineinfile:
-        path: /etc/hosts
-        regexp: '^127.0.0.1 '
-        line: '127.0.0.1 localhost tacorepo'
-
-    - lineinfile:
-        path: /etc/hosts
-        insertafter: EOF
-        line: '192.168.54.30 registry.cicd.stg.taco'
-
     # Create docker cert directory
     - file:
         path: /etc/docker/certs.d/registry.cicd.stg.taco/

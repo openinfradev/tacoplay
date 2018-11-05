@@ -1,4 +1,26 @@
 ---
+- name: ensures /tmp/manifests dir exists
+  file: path=/tmp/manifests state=directory
+
+- name: copy tiller deploy yml
+  template:
+    src: "{{item.file}}.j2"
+    dest: "/tmp/manifests/{{item.file}}"
+  with_items:
+    - {name: "tiller-deploy", file: tiller-deploy-nodeport.yml, type: service}
+  register: manifests
+
+- name: create nodeport for tiller
+  kube:
+    name: "{{item.item.name}}"
+    kubectl: "{{bin_dir}}/kubectl"
+    resource: "{{item.item.type}}"
+    filename: "/tmp/manifests/{{item.item.file}}"
+    state: "{{item.changed | ternary('latest','present') }}"
+  with_items:
+    - "{{ manifests.results }}"
+  become: no
+
 - name: install packages required for armada
   yum:
     name: "{{ item }}"
@@ -29,18 +51,19 @@
     marker: "# ARMADA ENVS {mark}"
   become: no  
 
-- name: remove existing armada virtual env
-  shell: |
-    . "{{ lookup('env','HOME') }}/.bashrc" &&
-    rmvirtualenv armada
-  ignore_errors: yes
+- name: get existing workon armada
+  shell: >-
+    . {{ lookup('env','HOME') }}/.bashrc &&
+    lsvirtualenv | grep armada | cat
+  register: workon_armada
   become: no
 
-- name: create workon armada
-  shell: |
-    . "{{ lookup('env','HOME') }}/.bashrc" &&
+- name: create workon armada if not exist
+  shell: >-
+    . {{ lookup('env','HOME') }}/.bashrc &&
     mkvirtualenv armada --python=/usr/bin/python3.4
   become: no
+  when: workon_armada.stdout == ""
 
 - name: install required packages for armada in virtual env
   pip:
@@ -52,44 +75,54 @@
 - name: install armada in the virtual env
   args:
     chdir: "{{ playbook_dir }}/armada"
-  command: |
+  command: >-
     "{{ workon_home }}/armada/bin/python3.4"
     setup.py install
   become: no
-    
-- name: ensures /tmp/manifests dir exists
-  file: path=/tmp/manifests state=directory
-
-- name: copy tiller deploy yml
-  template:
-    src: "{{item.file}}.j2"
-    dest: "/tmp/manifests/{{item.file}}"
-  with_items:
-    - {name: "tiller-deploy", file: tiller-deploy-nodeport.yml, type: service}
-  register: manifests
-
-- name: create nodeport for tiller
-  kube:
-    name: "{{item.item.name}}"
-    kubectl: "{{bin_dir}}/kubectl"
-    resource: "{{item.item.type}}"
-    filename: "/tmp/manifests/{{item.item.file}}"
-    state: "{{item.changed | ternary('latest','present') }}"
-  with_items:
-    - "{{ manifests.results }}"
-  become: no
 
 - name: check host where tiller is running
-  shell: |
+  shell: >-
     kubectl get pods -n kube-system -o json |
     jq -r '.items[] | select(.metadata.name|test("tiller")).status.hostIP'
   register: tiller_host
   become: no
 
-- name: it's ready to run Armada!
+- name: get existing armada processes
+  shell: >-
+    ps -ef | grep -v grep | grep -w 'armada apply' | awk '{print $2}'
+  register: armada_processes
+  become: no
+
+- name: kill existing armada processes
+  shell: kill {{ item }}
+  with_items: "{{ armada_processes.stdout_lines }}"
+  become: no
+
+- name: wait until existing armada processes are killed
+  wait_for:
+    path: "/proc/{{ item }}/status"
+    state: absent
+  with_items: "{{ armada_processes.stdout_lines }}"
+
+- name: run armada apply in background
+  shell: >-
+    . ~/.bashrc && workon armada &&
+    armada apply
+    --tiller-host {{ tiller_host.stdout }}
+    --tiller-port {{ tiller_port }}
+    --timeout 3600
+    {{ inventory_dir }}/armada-manifest.yaml >
+    {{ lookup('env','HOME') }}/armada.log
+  async: 3600
+  poll: 0
+  when: tiller_host.stdout != ""
+  become: no
+
+- name: show armada apply usage for next try
   debug:
-    msg:
-     ". ~/.bashrc && workon armada &&
+    msg: >-
+      ". ~/.bashrc &&
+      workon armada &&
       armada apply
       --tiller-host {{ tiller_host.stdout }}
       --tiller-port {{ tiller_port }}

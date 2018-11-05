@@ -2,6 +2,7 @@ ntp_service_enabled: false
 
 ceph_origin: repository
 ceph_repository: community
+ceph_mirror: http://hk.ceph.com
 
 # use custom repo for real deployment
 #ceph_repository: custom
