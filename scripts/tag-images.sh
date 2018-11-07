@@ -1,6 +1,6 @@
 #!/bin/bash
 #set -x
-NEW_REGISTRY="tacorepo:5000"
+NEW_REGISTRY="tacorepo.cicd:5000"
 
 #function tagandpush {
 #    IMAGE=$1
