@@ -23,3 +23,5 @@ user_id: kube
 pool_name: kube
 admin_token: QVFDcUVVVlkzUnZyQlJBQUJtaHR4SzJNdkQvd2hpaVZaNUprd3c9PQ==
 user_token: QVFDUHJyZFlibjZQSnhBQVd5bW9yblVVVmJDa2dXTjZoK21QRmc9PQ==
+
+auto_release_enabled: false

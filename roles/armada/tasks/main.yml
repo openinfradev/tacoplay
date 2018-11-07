@@ -128,7 +128,7 @@
     {{ lookup('env','HOME') }}/armada.log
   async: 3600
   poll: 0
-  when: tiller_host.stdout != ""
+  when: auto_release_enabled and tiller_host.stdout != ""
   become: no
 
 - name: show armada apply usage for next try
