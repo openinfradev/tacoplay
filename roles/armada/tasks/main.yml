@@ -95,7 +95,7 @@
 
 - name: check host where tiller is running
   shell: >-
-    kubectl get pods -n kube-system -o json |
+    {{ bin_dir }}/kubectl get pods -n kube-system -o json |
     jq -r '.items[] | select(.metadata.name|test("tiller")).status.hostIP'
   register: tiller_host
   become: no
