@@ -46,6 +46,11 @@
       docker_image:
         name: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.8.3
 
+    - lineinfile:
+        path: /etc/resolv.conf
+        insertbefore: '^nameserver 10.96.0.10'
+        line: 'nameserver 192.168.54.14'
+
 #    - name: registry.cicd.stg.taco | populate custom entries into hosts file
 #      lineinfile:
 #        path: /etc/hosts
