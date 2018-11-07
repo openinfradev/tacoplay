@@ -65,8 +65,8 @@ armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
 
 # ceph
 ceph_version: luminous
-monitors: 192.168.51.20:6789
-admin_token: QVFERWJZMWFNMi8vTXhBQUFyRm84UHQrS09ZZlc2emtlTHdFM0E9PQ==
-user_token: QVFBUWU2ZGFGVEJwSlJBQVR6dG5uYllWMHl1Y1VJS0lVdk4wd0E9PQ==
+mon_host: 192.168.51.20
+admin_keyring: AQDEbY1aM2//MxAAArFo8Pt+KOYfW6zkeLwE3A==
+user_keyring: AQBcSY5agynAHRAADWDtfoGYrWj0Ru5r9Y1MgA==
 pool_name: sona-vim
 user_id: sona

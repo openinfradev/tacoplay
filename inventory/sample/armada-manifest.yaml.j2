@@ -10,7 +10,7 @@ data:
   values: {}
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: helm-toolkit
     reference: master
   dependencies: []
@@ -54,7 +54,7 @@ data:
         error_page: 1
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: ingress
     reference: master
   dependencies:
@@ -95,7 +95,7 @@ data:
     conf:
       ceph:
         global:
-          mon_host: 192.168.48.31
+          mon_host: "{{ mon_host }}"
     manifests:
       configmap_bin: false
       configmap_bin_common: false
@@ -111,7 +111,7 @@ data:
       storageclass_rbd: false
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: ceph-provisioners
     reference: master
   dependencies:
@@ -154,7 +154,7 @@ data:
           scrape: true
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: mariadb
     reference: master
   dependencies:
@@ -184,7 +184,7 @@ data:
         etcd: 1
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: etcd
     reference: master
   dependencies:
@@ -224,7 +224,7 @@ data:
           scrape: true
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: rabbitmq
     reference: master
   dependencies:
@@ -260,7 +260,7 @@ data:
           scrape: true
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: memcached
     reference: master
   dependencies:
@@ -289,10 +289,10 @@ data:
     conf:
       ceph:
         enabled: true
-        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        admin_keyring: "{{ admin_keyring }}"
         cinder:
           user: "cinder"
-          keyring: "AQASDcJacIJVDhAA5wrtpnBWsRMXQ27sw6uwjQ=="
+          keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
           secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
       libvirt:
         listen_addr: 0.0.0.0
@@ -303,7 +303,7 @@ data:
       daemonset_libvirt: true
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: libvirt
     reference: master
   dependencies:
@@ -332,7 +332,7 @@ data:
       pull_policy: Always
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: openvswitch
     reference: master
   dependencies:
@@ -413,7 +413,7 @@ data:
         api: 3
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm
+    location: "{{ osh_path }}"
     subpath: keystone
     reference: master
   dependencies:
@@ -502,7 +502,7 @@ data:
     conf:
       ceph:
         enabled: true
-        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        admin_keyring: "{{ admin_keyring }}"
       glance:
         glance_store:
           rbd_store_user: glance
@@ -518,7 +518,7 @@ data:
             private: false
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm
+    location: "{{ osh_path }}"
     subpath: glance
     reference: master
   dependencies:
@@ -840,10 +840,10 @@ data:
           append:
       ceph:
         enabled: true
-        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        admin_keyring: "{{ admin_keyring }}"
         cinder:
           user: "cinder"
-          keyring: "AQASDcJacIJVDhAA5wrtpnBWsRMXQ27sw6uwjQ=="
+          keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
           secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
       rally_tests:
         run_tempest: false
@@ -1104,7 +1104,7 @@ data:
         novncproxy: 3
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm
+    location: "{{ osh_path }}"
     subpath: nova
     reference: master
   dependencies:
@@ -1220,7 +1220,7 @@ data:
             firewall_driver: openvswitch
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm
+    location: "{{ osh_path }}"
     subpath: neutron
     reference: master
   dependencies:
@@ -1304,7 +1304,7 @@ data:
     conf:
       ceph:
         enabled: true
-        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        admin_keyring: "{{ admin_keyring }}"
       cinder:
         DEFAULT:
           debug: true
@@ -1325,7 +1325,7 @@ data:
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm
+    location: "{{ osh_path }}"
     subpath: cinder
     reference: master
   dependencies:
@@ -1400,7 +1400,7 @@ data:
         engine: 3
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm
+    location: "{{ osh_path }}"
     subpath: heat
     reference: master
   dependencies:
@@ -1452,7 +1452,7 @@ data:
               enable_fip_topology_check: "True"
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm
+    location: "{{ osh_path }}"
     subpath: horizon
     reference: master
   dependencies:
@@ -1513,7 +1513,7 @@ data:
         mail: taco@cluster.local
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: ldap
     reference: master
   dependencies:
@@ -1656,7 +1656,7 @@ data:
       storage_class: ceph
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: elasticsearch
     reference: master
   dependencies:
@@ -1867,7 +1867,7 @@ data:
 
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: fluent-logging
     reference: master
   test: false
@@ -1905,7 +1905,7 @@ data:
         port: 5601
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: kibana
     reference: master
   dependencies:
@@ -2289,7 +2289,7 @@ data:
                 target_label: kubernetes_io_hostname
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: prometheus
     reference: master
   dependencies:
@@ -2337,6 +2337,7 @@ data:
           repeat_interval: 1h
           receiver: 'slack-alert'
           routes: []
+{% raw %}
         receivers:
         - name: 'slack-alert'
           slack_configs:
@@ -2364,9 +2365,10 @@ data:
         {{ end }}{{ end }}
         {{ end }}
         {{ end }}
+{% endraw %}
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: prometheus-alertmanager
     reference: master
   dependencies:
@@ -2394,7 +2396,7 @@ data:
     dummy: Always
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: prometheus-kube-state-metrics
     reference: master
   dependencies:
@@ -2426,7 +2428,7 @@ data:
         tolerations: true
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: prometheus-node-exporter
     reference: master
   dependencies:
@@ -2455,7 +2457,7 @@ data:
     dummy: dummy
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: prometheus-openstack-exporter
     reference: master
   dependencies:
@@ -2490,7 +2492,7 @@ data:
           port: 30009
   source:
     type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    location: "{{ osh_infra_path }}"
     subpath: grafana
     reference: master
   dependencies:

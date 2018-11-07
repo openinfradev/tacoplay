@@ -93,9 +93,9 @@ armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
 
 # ceph
 ceph_version: luminous
-monitors: 192.168.51.20:6789
+mon_host: 192.168.51.20
 admin_id: admin
 user_id: kube
 pool_name: kube
-admin_token: QVFERWJZMWFNMi8vTXhBQUFyRm84UHQrS09ZZlc2emtlTHdFM0E9PQo=
-user_token: QVFCY1NZNWFneW5BSFJBQURXRHRmb0dZcldqMFJ1NXI5WTFNZ0E9PQo=
+admin_keyring: AQDEbY1aM2//MxAAArFo8Pt+KOYfW6zkeLwE3A==
+user_keyring: AQBcSY5agynAHRAADWDtfoGYrWj0Ru5r9Y1MgA==

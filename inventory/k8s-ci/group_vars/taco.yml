@@ -1,27 +1,19 @@
 # default options
 openstack_namespace: openstack
+
 ceph_enabled: true
-config_drive_enabled: true
-
-# armada options
-armada_client_image: tacorepo:5000/kube-tools:stable
-charts_dir: "{{ lookup('env','HOME') }}/taco-deploy/charts"
-armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
-
-# ceph options
-ceph_version: luminous
-ceph_repository_enabled: false
-ceph_repository_dir: /var/mirrors/ceph
-
-# override ceph repo url to localrepo when outbound access is not allowed
-#ceph_rh_repo_base_url: https://localrepo/rpm-luminous/el7/x86_64
-#ceph_rh_repo_gpgkey: https://localrepo/keys/release.asc
-
-monitors: 192.168.54.21:6789
+mon_host: 192.168.54.21
 admin_id: admin
 user_id: kube
 pool_name: kube
-admin_token: QVFDcUVVVlkzUnZyQlJBQUJtaHR4SzJNdkQvd2hpaVZaNUprd3c9PQ==
-user_token: QVFDUHJyZFlibjZQSnhBQVd5bW9yblVVVmJDa2dXTjZoK21QRmc9PQ==
+admin_keyring: AQCqEUVY3RvrBRAABmhtxK2MvD/whiiVZ5Jkww==
+user_keyring: AQCPrrdYbn6PJxAAWymornUUVbCkgWN6h+mPFg==
 
+# additional host configurations
+config_drive_enabled: true
+tc_enabled: false
+nat_enabled: false
+
+cicd_registry_enabled: false
+armada_venv: "{{ lookup('env','HOME') }}/venv"
 auto_release_enabled: false
