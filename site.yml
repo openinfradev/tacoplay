@@ -117,7 +117,7 @@
   tasks:
     - name: check host where ingress controller is running
       shell: >-
-        kubectl get po -n openstack -o wide |
+        {{ bin_dir }}/kubectl get po -n openstack -o wide |
         grep "^ingress-[^error]" |
         awk '{print $6}'
       retries: 10
