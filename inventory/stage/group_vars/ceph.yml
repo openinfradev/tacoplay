@@ -1,12 +1,12 @@
 ntp_service_enabled: false
 
 ceph_origin: repository
-ceph_repository: community
-ceph_mirror: http://hk.ceph.com
+#ceph_repository: community
+#ceph_mirror: http://hk.ceph.com
 
 # use custom repo for real deployment
-#ceph_repository: custom
-#ceph_custom_repo: "http://tacorepo/ceph/ceph.repo"
+ceph_repository: custom
+ceph_custom_repo: "http://192.168.99.75/ceph/ceph.repo"
 
 ceph_stable_release: luminous
 

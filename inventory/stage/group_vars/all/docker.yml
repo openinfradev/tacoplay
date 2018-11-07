@@ -1,10 +1,10 @@
 # docker options for kubespray and registry
 
 # override docker repo to localrepo when outbound access is not allowed
-#docker_rh_repo_base_url: http://localrepo/docker/linux/centos/7/$basearch/stable
-#docker_rh_repo_gpgkey: http://localrepo/docker/linux/centos/gpg
-#dockerproject_rh_repo_base_url: http://localrepo/dockerproject/repo/main/centos/7
-#dockerproject_rh_repo_gpgkey: http://localrepo/dockerproject/gpg
+docker_rh_repo_base_url: http://192.168.99.75/docker/linux/centos/7/$basearch/stable
+docker_rh_repo_gpgkey: http://192.168.99.75/docker/linux/centos/gpg
+dockerproject_rh_repo_base_url: http://192.168.99.75/dockerproject/repo/main/centos/7
+dockerproject_rh_repo_gpgkey: http://192.168.99.75/dockerproject/gpg
 
 docker_version: "18.06"
 docker_daemon_graph: "/var/lib/docker"
