@@ -27,29 +27,12 @@
 
 - include: kubespray/cluster.yml
 
-#- hosts: localhost
-#  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-#  tasks:
-#    - name: download images for kubespray
-#      args:
-#        chdir: "{{ playbook_dir }}"
-#      shell: >-
-#        ansible-playbook -b -i inventory/preparation/local.ini kubespray/cluster.yml
-#        --tags download --skip-tags upload,upgrade
-#      become: no
-#  tags: download
-
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
     - name: pull k8s-dashboard image
       docker_image:
         name: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.8.3
-
-    - lineinfile:
-        path: /etc/resolv.conf
-        insertbefore: '^nameserver 10.96.0.10'
-        line: 'nameserver 192.168.54.14'
 
 #    - name: registry.cicd.stg.taco | populate custom entries into hosts file
 #      lineinfile:
