@@ -1,4 +1,12 @@
 ---
+# Prepare OS for TACO
+- hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: setup-os }
+  tags: setup-os
+
 # Install python packages required for running tacoplay on ansible host
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
@@ -58,14 +66,6 @@
     - { role: docker }
     - { role: docker-registry }
   tags: registry
-
-# Prepare OS for TACO
-- hosts: taco
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: taco-defaults }
-    - { role: setup-os }
-  tags: setup-os
 
 # Copy ceph.repo to repository when custom repo is used
 # It assumes registry and repository hosts are the same
