@@ -50,6 +50,23 @@
         marker: "# TACO registry hosts {mark}"
   tags: always
 
+# Run docker registry
+- hosts: registry
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: docker }
+    - { role: docker-registry }
+  tags: registry
+
+# Prepare OS for TACO
+- hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: setup-os }
+  tags: setup-os
+
 # Copy ceph.repo to repository when custom repo is used
 # It assumes registry and repository hosts are the same
 - hosts: registry
@@ -67,23 +84,6 @@
   tags: ceph
 
 # TODO: add tests for checking status of the new ceph cluster
-
-# Run docker registry
-- hosts: registry
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: taco-defaults }
-    - { role: docker }
-    - { role: docker-registry }
-  tags: registry
-
-# Prepare OS for TACO
-- hosts: k8s-cluster
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: taco-defaults }
-    - { role: setup-os }
-  tags: setup-os
 
 # Install K8S
 - import_playbook: kubespray/cluster.yml

@@ -97,6 +97,7 @@
   when:
     - ansible_distribution in ["CentOS","RedHat"]
     - localrepo_enabled
+  ignore_errors: yes
 
 - name: add local centos base and epel repo
   template:
