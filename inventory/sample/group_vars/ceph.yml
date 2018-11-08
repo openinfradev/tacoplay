@@ -1,20 +1,21 @@
-ntp_service_enabled: false
-
-ceph_origin: repository
-ceph_repository: community
-ceph_mirror: http://hk.ceph.com
-
 # use custom repo for real deployment
-#ceph_repository: custom
-#ceph_custom_repo: "http://tacorepo/ceph/ceph.repo"
-
 ceph_stable_release: luminous
+ceph_origin: repository
+ceph_repository: custom
+ceph_custom_repo: "http://localrepo/ceph/ceph.repo"
+
+ntp_service_enabled: false
+copy_admin_key: true
+ceph_mgr_modules: [status,dashboard,prometheus]
 
 monitor_interface: eth0
 public_network: 172.80.0.0/24
 cluster_network: 172.80.0.0/24
 
 osd_objectstore: bluestore
+osd_scenario: lvm
+lvm_volumes:
+  - data: /dev/vdb
 
 ceph_conf_overrides:
   global:
@@ -65,13 +66,5 @@ openstack_pools:
   - "{{ openstack_cinder_backup_pool }}"
 
 openstack_keys:
-        - { name: client.kube, caps: { mon: "profile rbd", osd: "profile rbd pool=kube"}, key: "AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==", mode: "0600" }
-        - { name: client.cinder, caps: { mon: "profile rbd", osd: "profile rbd pool=volumes, profile rbd pool=backups, profile rbd pool=images"}, key: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==",  mode: "0600" }
-
-ceph_mgr_modules: [status,dashboard,prometheus]
-
-osd_scenario: lvm
-lvm_volumes:
-  - data: /dev/vdb
-
-copy_admin_key: true
+  - { name: client.kube, caps: { mon: "profile rbd", osd: "profile rbd pool=kube"}, key: "AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==", mode: "0600" }
+  - { name: client.cinder, caps: { mon: "profile rbd", osd: "profile rbd pool=volumes, profile rbd pool=backups, profile rbd pool=images"}, key: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==",  mode: "0600" }
