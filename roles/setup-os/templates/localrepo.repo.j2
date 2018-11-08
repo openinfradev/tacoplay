@@ -1,0 +1,25 @@
+[base]
+name=Local CentOS-$releasever - Base
+baseurl=http://{{ localrepo_yum }}/centos/$releasever/os/$basearch/
+gpgcheck=1
+gpgkey=http://{{ localrepo_yum }}/centos/RPM-GPG-KEY-CentOS-7
+ 
+[updates]
+name=Local CentOS-$releasever - Updates
+baseurl=http://{{ localrepo_yum }}/centos/$releasever/updates/$basearch/
+gpgcheck=1
+gpgkey=http://{{ localrepo_yum }}/centos/RPM-GPG-KEY-CentOS-7
+ 
+[extras]
+name=Local CentOS-$releasever - Extras
+baseurl=http://{{ localrepo_yum }}/centos/$releasever/extras/$basearch/
+gpgcheck=1
+gpgkey=http://{{ localrepo_yum }}/centos/RPM-GPG-KEY-CentOS-7
+ 
+[epel]
+name=Local Extra Packages for Enterprise Linux 7 - $basearch
+baseurl=http://{{ localrepo_yum }}/epel/7/$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=http://{{ localrepo_yum }}/epel/RPM-GPG-KEY-EPEL-7

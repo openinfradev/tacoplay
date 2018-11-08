@@ -16,3 +16,7 @@ tc_mgmt_vlan: 90
 nat_enabled: false
 nat_interfaces:
   - bond0
+
+localrepo_enabled: false
+localrepo_yum: tacorepo
+localrepo_pypi: tacorepo

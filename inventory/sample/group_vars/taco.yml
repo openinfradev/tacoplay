@@ -20,3 +20,7 @@ nat_enabled: false
 
 cicd_registry_enabled: false
 armada_venv: "{{ lookup('env','HOME') }}/venv"
+
+localrepo_enabled: true
+localrepo_pypi: 192.168.99.28
+localrepo_yum: localrepo
