@@ -1,0 +1,7 @@
+[ceph]
+name=Ceph packages for x86_64
+baseurl=http://tacorepo/ceph/rpm-luminous/el7/x86_64
+enabled=1
+priority=2
+gpgcheck=1
+gpgkey=http://tacorepo/ceph/keys/release.asc
