@@ -1,25 +1,4 @@
 ---
-# Prepare OS for TACO
-- hosts: taco
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: taco-defaults }
-    - { role: setup-os }
-  tags: setup-os
-
-# Install python packages required for running tacoplay on ansible host
-- hosts: localhost
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: install python packages required for running taco-deploy
-      pip:
-        requirements: "{{ item }}"
-      loop:
-        - "{{ playbook_dir }}/requirements.txt"
-        - "{{ playbook_dir }}/ceph-ansible/requirements.txt"
-        - "{{ playbook_dir }}/kubespray/requirements.txt"
-  tags: always
-
 # Enable registry.cicd.stg.taco
 - hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
@@ -57,6 +36,14 @@
         backup: yes
         marker: "# TACO registry hosts {mark}"
   tags: always
+
+# Prepare OS for TACO
+- hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: setup-os }
+  tags: setup-os
 
 # Run docker registry
 - hosts: registry

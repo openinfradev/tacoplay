@@ -131,6 +131,7 @@
   poll: 0
   when: auto_release_enabled and tiller_host.stdout != ""
   become: no
+  run_once: yes
 
 - name: show armada apply usage for next try
   debug:
