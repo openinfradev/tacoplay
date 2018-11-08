@@ -15,11 +15,3 @@ name=Local CentOS-$releasever - Extras
 baseurl=http://{{ localrepo_yum }}/centos/$releasever/extras/$basearch/
 gpgcheck=1
 gpgkey=http://{{ localrepo_yum }}/centos/RPM-GPG-KEY-CentOS-7
- 
-[epel]
-name=Local Extra Packages for Enterprise Linux 7 - $basearch
-baseurl=http://{{ localrepo_yum }}/epel/7/$basearch
-failovermethod=priority
-enabled=1
-gpgcheck=1
-gpgkey=http://{{ localrepo_yum }}/epel/RPM-GPG-KEY-EPEL-7
