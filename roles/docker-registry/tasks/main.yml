@@ -17,7 +17,7 @@
     state: present
   loop:
     - { name: 'pip', version: '9.0.3' }
-    - { name: 'docker', version: '3.5.0' }
+    - { name: 'docker', version: '3.5.1' }
 
 - name: get registry image
   synchronize:
