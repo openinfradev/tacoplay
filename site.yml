@@ -112,7 +112,7 @@
       register: ingress_host
       until: ingress_host.stdout != ""
       become: no
-      when: auto_release_enabled|default(true) and ingress_host.stdout != ""
+      when: auto_release_enabled|default(true)
     - name: update hosts file for openstack services access via ingress
       blockinfile:
         path: /etc/hosts
