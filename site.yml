@@ -1,4 +1,15 @@
 ---
+# Populate hostname to hosts file
+- hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: make sure hostname is in hosts file
+      replace:
+        dest: /etc/hosts
+        regexp: '^(127\.0\.0\.1(?!.*\b{{ inventory_hostname }}\b).*)$'
+        replace: '\1 {{ inventory_hostname }}'
+  tags: always
+
 # Enable registry.cicd.stg.taco
 - hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"

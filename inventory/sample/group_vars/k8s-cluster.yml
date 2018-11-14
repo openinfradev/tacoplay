@@ -2,6 +2,7 @@
 disable_swap: true
 epel_enabled: true
 preinstall_selinux_state: disabled
+populate_inventory_to_hosts_file: false
 
 # Docker
 # see all/docker.yml for docker options
@@ -48,7 +49,7 @@ kubectl_localhost: true
 kubeconfig_localhost: true
 
 # Dashboard is disabled temporarily for private image repo issue
-dashboard_enabled: false
+dashboard_enabled: true
 
 # DNS
 dns_mode: coredns
