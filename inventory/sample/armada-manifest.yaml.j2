@@ -1083,7 +1083,7 @@ data:
           config_drive_format: "vfat"
           force_config_drive: true
         vnc:
-          novncproxy_base_url: http://ctrl01s:30608/vnc_auto.html
+          novncproxy_base_url: http://{{ hostvars[groups['controller-node'][0]]['ip'] }}:30608/vnc_auto.html
         libvirt:
           virt_type: qemu
           rbd_user: "cinder"
