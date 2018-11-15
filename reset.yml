@@ -12,7 +12,7 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
     - docker_container:
-        name: "{{ registry_name }}"
+        name: "{{ registry_name|default('taco-registry') }}"
         state: absent
   tags: registry
 

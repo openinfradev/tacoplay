@@ -31,6 +31,7 @@
     - python34-devel
     - gcc
     - jq
+    - git
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: apt install packages required for armada
@@ -44,7 +45,6 @@
     - jq
   when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
 
-
 - name: install virtual env packages
   pip:
     name: "{{ item }}"
@@ -52,6 +52,7 @@
   loop:
     - virtualenv
     - virtualenvwrapper
+    - pbr
 
 - name: update bashrc for running virtual env and armada
   blockinfile:
@@ -95,7 +96,7 @@
 
 - name: check host where tiller is running
   shell: >-
-    kubectl get pods -n kube-system -o json |
+    {{ bin_dir }}/kubectl get pods -n kube-system -o json |
     jq -r '.items[] | select(.metadata.name|test("tiller")).status.hostIP'
   register: tiller_host
   become: no
@@ -128,8 +129,9 @@
     {{ lookup('env','HOME') }}/armada.log
   async: 3600
   poll: 0
-  when: tiller_host.stdout != ""
+  when: auto_release_enabled and tiller_host.stdout != ""
   become: no
+  run_once: yes
 
 - name: show armada apply usage for next try
   debug:

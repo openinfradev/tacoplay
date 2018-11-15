@@ -6,12 +6,12 @@ openstack_namespace: openstack
 # once ceph is installed by ceph-ansible
 # set the values only when using exsiting ceph
 ceph_enabled: true
-mon_host: ''
+mon_host: 192.168.51.20
 admin_id: admin
 user_id: kube
 pool_name: kube
-admin_keyring: ''
-user_keyring: AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==
+admin_keyring: AQDEbY1aM2//MxAAArFo8Pt+KOYfW6zkeLwE3A==
+user_keyring: AQBcSY5agynAHRAADWDtfoGYrWj0Ru5r9Y1MgA==
 
 # additional host configurations
 config_drive_enabled: true
@@ -20,7 +20,3 @@ nat_enabled: false
 
 cicd_registry_enabled: false
 armada_venv: "{{ lookup('env','HOME') }}/venv"
-
-localrepo_enabled: true
-localrepo_pypi: 192.168.99.28
-localrepo_yum: localrepo

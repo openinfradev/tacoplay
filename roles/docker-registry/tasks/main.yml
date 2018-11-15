@@ -17,16 +17,16 @@
     state: present
   loop:
     - { name: 'pip', version: '9.0.3' }
-    - { name: 'docker', version: '3.5.0' }
+    - { name: 'docker', version: '3.5.1' }
 
 - name: get registry image
   synchronize:
-    src: "{{ role_path }}/files/registry-2.6.2.tar"
+    src: "{{ docker_registry_volume_dir }}/registry-2.6.2.tar"
     dest: "/tmp/registry-2.6.2.tar"
 
 - name: load registry image from archive
   docker_image:
-    name: tacorepo:5000/registry
+    name: registry
     tag: 2.6.2
     load_path: "/tmp/registry-2.6.2.tar"
     state: present

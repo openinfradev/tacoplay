@@ -1,10 +1,23 @@
 # docker options for kubespray and registry
 
+# override docker repo to tacorepo when outbound access is not allowed
+docker_rh_repo_base_url: http://tacorepo/docker/linux/centos/7/$basearch/stable
+docker_rh_repo_gpgkey: http://tacorepo/docker/linux/centos/gpg
+dockerproject_rh_repo_base_url: http://tacorepo/dockerproject/repo/main/centos/7
+dockerproject_rh_repo_gpgkey: http://tacorepo/dockerproject/gpg
+
 docker_version: "18.06"
 docker_daemon_graph: "/var/lib/docker"
 docker_log_opts: "--log-opt max-size=50m --log-opt max-file=5"
 docker_insecure_registries:
   - tacorepo:5000
+
+## If non-empty will override default system MounFlags value.
+## This option takes a mount propagation flag: shared, slave
+## or private, which control whether mounts in the file system
+## namespace set up for docker will receive or propagate mounts
+## and unmounts. Leave empty for system default
+# docker_mount_flags:
 
 ## A string of extra options to pass to the docker daemon.
 ## This string should be exactly as you wish it to appear.

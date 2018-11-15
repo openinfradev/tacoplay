@@ -18,77 +18,74 @@
   tasks:
     - name: ensure a list of packages installed
       yum:
-        name: "{{ packages }}"
-      vars:
-        packages:
-        - device-mapper-persistent-data
-        - lvm2
-        - jq
+        name: jq
+    - pip:
+        name: yq
+    - pip:
+        name: docker
   tags: download
 
 - include: kubespray/cluster.yml
 
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  handlers:
-    - name: restart docker service
-      service:
-        name: docker
-        state: restarted
   tasks:
     - name: pull k8s-dashboard image
       docker_image:
         name: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.8.3
 
-    # Create docker cert directory
-    - file:
+#    - name: registry.cicd.stg.taco | populate custom entries into hosts file
+#      lineinfile:
+#        path: /etc/hosts
+#        line: 192.168.54.30 registry.cicd.stg.taco
+#        state: present
+
+    - name: create docker cert directory
+      file:
         path: /etc/docker/certs.d/registry.cicd.stg.taco/
         state: directory
         mode: 0755
 
-    - name: Copy registry cert file
+    - name: copy registry cert file
       copy:
         src: "{{ playbook_dir }}/files/registry-certs"
         dest: "/etc/docker/certs.d/registry.cicd.stg.taco/ca.crt"
 
-    # Pull all images used in armada manifest
-    - script: "{{ playbook_dir }}/scripts/pull-images.sh {{ ansible_inventory_sources[0] | dirname }}/armada-manifest.yaml"
+    - name: pull all images used in armada manifest
+      script: >-
+        {{ playbook_dir }}/scripts/pull-images.sh
+        {{ ansible_inventory_sources[0] | dirname }}/armada-manifest.yaml
       args:
         creates: /tmp/.image-pull-done
 
-    - name: Pull kube-tools image
-      docker_image:
-        name: registry.cicd.stg.taco/kube-tools:stable
-
-    - name: Run registry container
+    - name: run registry container
       docker_container:
-        name: registry
+        name: taco-registry
         image: registry:2.6.2
         restart_policy: always
         ports:
           - 5000:5000
         volumes:
-          - "{{ ansible_inventory_sources[0] | dirname }}/docker_registry/:/var/lib/registry"
+          - "{{ playbook_dir }}/docker_registry/:/var/lib/registry"
 
-    - name: Copy docker daemon config
-      copy:
-        src: "{{ playbook_dir }}/files/docker-daemon.json"
-        dest: "/etc/docker/daemon.json"
-      notify:
-        - restart docker service
-
-    # Tag images
-    - script: "{{ playbook_dir }}/scripts/tag-images.sh"
+    - name: tag images
+      script: "{{ playbook_dir }}/scripts/tag-images.sh"
       args:
         creates: /tmp/.image-tag-done
 
-    # Push tagged images to registry
-    - script: "{{ playbook_dir }}/scripts/push-images.sh"
+    - name: push tagged images to registry
+      script: "{{ playbook_dir }}/scripts/push-images.sh"
       args:
         creates: /tmp/.image-push-done
 
-    - name: Bundle up taco-deploy
-      shell: tar cvfz taco-deploy.tar.gz taco-deploy/
+    - name: archive registry image
+      docker_image:
+        name: registry
+        tag: 2.6.2
+        archive_path: "{{ playbook_dir }}/docker_registry/registry-2.6.2.tar"
+
+    - name: bundle up tacoplay
+      shell: tar cvfz tacoplay.tar.gz tacoplay/
       args:
         chdir: "{{ playbook_dir | dirname }}"
         creates: /tmp/.bundle-done

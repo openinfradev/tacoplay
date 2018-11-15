@@ -1,5 +1,4 @@
 ---
-
 - name: kernel modules | enable modules for supporting config drive
   modprobe:
     name: "{{ item }}"
@@ -80,3 +79,40 @@
   when:
     - ansible_distribution in ["CentOS","RedHat"]
     - firewalld_pkg_query.rc == 0
+
+- name: disable default centos base and epel repo
+  args:
+    chdir: /etc/yum.repos.d
+  shell: mv {{ item }} {{ item }}.bak
+  with_items:
+    - CentOS-Base.repo
+    - CentOS-CR.repo
+    - CentOS-Debuginfo.repo
+    - CentOS-Media.repo
+    - CentOS-Sources.repo
+    - CentOS-Vault.repo
+    - CentOS-fasttrack.repo
+    - epel.repo
+    - epel-testing.repo
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+    - localrepo_enabled
+  ignore_errors: yes
+
+- name: add local centos base repo
+  template:
+    src: localrepo.repo.j2
+    dest: /etc/yum.repos.d/localrepo.repo
+  when: localrepo_enabled
+
+- name: add epel repo
+  template:
+    src: epel.repo.j2
+    dest: /etc/yum.repos.d/epel.repo
+  when: localrepo_enabled
+
+- name: add local pypi repo
+  template:
+    src: pip.conf.j2
+    dest: /etc/pip.conf
+  when: localrepo_enabled

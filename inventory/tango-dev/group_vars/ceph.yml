@@ -2,7 +2,7 @@
 ceph_stable_release: luminous
 ceph_origin: repository
 ceph_repository: custom
-ceph_custom_repo: "http://localrepo/ceph/ceph.repo"
+ceph_custom_repo: "http://tacorepo/ceph/ceph.repo"
 
 ntp_service_enabled: false
 copy_admin_key: true

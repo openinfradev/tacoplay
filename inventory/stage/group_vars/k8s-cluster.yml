@@ -2,7 +2,6 @@
 disable_swap: true
 epel_enabled: true
 preinstall_selinux_state: disabled
-populate_inventory_to_hosts_file: false
 
 # Docker
 # see all/docker.yml for docker options
@@ -30,8 +29,8 @@ kube_pods_subnet: 10.233.64.0/18
 
 # Calico
 # set ipip mode to Never and peer_with_calico_rr to use global bgp rr
-#ipip_mode: Never
-#calico_mtu: 9000
+ipip_mode: Never
+calico_mtu: 9000
 #peer_with_calico_rr: false
 #calico_ip_auto_method: "interface=eth1"
 calico_felix_prometheusmetricsenabled: "true"
@@ -49,7 +48,7 @@ kubectl_localhost: true
 kubeconfig_localhost: true
 
 # Dashboard is disabled temporarily for private image repo issue
-dashboard_enabled: true
+dashboard_enabled: false
 
 # DNS
 dns_mode: coredns
@@ -80,5 +79,3 @@ coredns_image_repo: "tacorepo:5000/google-containers/coredns"
 pod_infra_image_repo: "tacorepo:5000/google_containers/pause-{{ image_arch }}"
 etcd_image_repo: "tacorepo:5000/coreos/etcd"
 ingress_nginx_default_backend_image_repo: "tacorepo:5000/defaultbackend"
-kubeadm_download_url: "http://localrepo/k8s/kubeadm"
-hyperkube_download_url: "http://localrepo/k8s/hyperkube"

@@ -2,7 +2,6 @@
 disable_swap: true
 epel_enabled: true
 preinstall_selinux_state: disabled
-populate_inventory_to_hosts_file: false
 
 # Docker
 # see all/docker.yml for docker options
@@ -49,7 +48,7 @@ kubectl_localhost: true
 kubeconfig_localhost: true
 
 # Dashboard is disabled temporarily for private image repo issue
-dashboard_enabled: true
+dashboard_enabled: false
 
 # DNS
 dns_mode: coredns
@@ -80,5 +79,5 @@ coredns_image_repo: "tacorepo:5000/google-containers/coredns"
 pod_infra_image_repo: "tacorepo:5000/google_containers/pause-{{ image_arch }}"
 etcd_image_repo: "tacorepo:5000/coreos/etcd"
 ingress_nginx_default_backend_image_repo: "tacorepo:5000/defaultbackend"
-kubeadm_download_url: "http://localrepo/k8s/kubeadm"
-hyperkube_download_url: "http://localrepo/k8s/hyperkube"
+kubeadm_download_url: "http://tacorepo/k8s/kubeadm"
+hyperkube_download_url: "http://tacorepo/k8s/hyperkube"
