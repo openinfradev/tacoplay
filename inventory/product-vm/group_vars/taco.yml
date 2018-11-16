@@ -17,3 +17,5 @@ nat_enabled: false
 
 cicd_registry_enabled: true
 armada_venv: "{{ lookup('env','HOME') }}/venv"
+
+localrepo_enabled: false
