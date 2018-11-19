@@ -1191,12 +1191,14 @@ data:
           ml2:
             mechanism_drivers: linuxbridge
             type_drivers: flat,vlan
-            tenant_network_types: null
+            tenant_network_types: vlan
           ml2_type_flat:
             flat_networks: provider
+          ml2_type_vlan:
+            network_vlan_ranges: tenant:4000:4010
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings: provider:bond1.851
+            physical_interface_mappings: tenant:bond1,provider:bond1.851
             bridge_mappings: null
           securitygroup:
             firewall_driver: iptables
@@ -1437,7 +1439,12 @@ data:
     network:
       node_port:
         enabled: true
-        port: 31000
+        port: 30005
+    network:
+      api:
+        ingress:
+          annotations:
+            nginx.ingress.kubernetes.io/proxy-body-size: 102400M
     conf:
       horizon:
         local_settings:

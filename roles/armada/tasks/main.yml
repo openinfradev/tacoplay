@@ -45,7 +45,6 @@
     - jq
   when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
 
-
 - name: install virtual env packages
   pip:
     name: "{{ item }}"
@@ -53,6 +52,7 @@
   loop:
     - virtualenv
     - virtualenvwrapper
+    - pbr
 
 - name: update bashrc for running virtual env and armada
   blockinfile:
