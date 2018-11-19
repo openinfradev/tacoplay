@@ -22,5 +22,5 @@ cicd_registry_enabled: false
 armada_venv: "{{ lookup('env','HOME') }}/venv"
 
 localrepo_enabled: true
-localrepo_pypi: tacorepo
+localrepo_pypi: tacorepo 
 localrepo_yum: tacorepo
