@@ -1,16 +1,16 @@
 # docker options for kubespray and registry
 #
-# override docker repo to admin-stg when outbound access is not allowed
-docker_rh_repo_base_url: http://admin-stg/docker/linux/centos/7/$basearch/stable
-docker_rh_repo_gpgkey: http://admin-stg/docker/linux/centos/gpg
-dockerproject_rh_repo_base_url: http://admin-stg/dockerproject/repo/main/centos/7
-dockerproject_rh_repo_gpgkey: http://admin-stg/dockerproject/gpg
+# override docker repo to {{ localrepo_yum }} when outbound access is not allowed
+docker_rh_repo_base_url: http://{{ localrepo_yum }}/docker/linux/centos/7/$basearch/stable
+docker_rh_repo_gpgkey: http://{{ localrepo_yum }}/docker/linux/centos/gpg
+dockerproject_rh_repo_base_url: http://{{ localrepo_yum }}/dockerproject/repo/main/centos/7
+dockerproject_rh_repo_gpgkey: http://{{ localrepo_yum }}/dockerproject/gpg
 
 docker_version: "18.06"
 docker_daemon_graph: "/var/lib/docker"
 docker_log_opts: "--log-opt max-size=50m --log-opt max-file=5"
 docker_insecure_registries:
-  - admin-stg:5000
+  - "{{ docker_registry }}"
 
 ## If non-empty will override default system MounFlags value.
 ## This option takes a mount propagation flag: shared, slave
