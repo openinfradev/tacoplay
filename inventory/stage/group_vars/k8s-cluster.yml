@@ -31,8 +31,7 @@ kube_pods_subnet: 10.233.64.0/18
 # set ipip mode to Never and peer_with_calico_rr to use global bgp rr
 ipip_mode: Never
 calico_mtu: 9000
-#peer_with_calico_rr: false
-#calico_ip_auto_method: "interface=eth1"
+#peer_with_router: false
 calico_felix_prometheusmetricsenabled: "true"
 calico_felix_prometheusmetricsport: 9091
 calico_felix_prometheusgometricsenabled: "true"
@@ -61,21 +60,23 @@ helm_skip_refresh: true
 
 # Arch of Docker images and needed packages
 image_arch: "{{host_architecture | default('amd64')}}"
-
-# Image repo URL
-# Uncomment the following lines when local docker registry is used
-nginx_image_repo: "tacorepo:5000/nginx"
-hyperkube_image_repo: "tacorepo:5000/google-containers/hyperkube-{{ image_arch }}"
-helm_image_repo: "tacorepo:5000/k8s-helm"
-tiller_image_repo: "tacorepo:5000/kubernetes-helm/tiller"
-calico_node_image_repo: "tacorepo:5000/calico/node"
-calico_cni_image_repo: "tacorepo:5000/calico/cni"
-calicoctl_image_repo: "tacorepo:5000/calico/ctl"
-calico_policy_image_repo: "tacorepo:5000/calico/kube-controllers"
-dashboard_image_repo: "tacorepo:5000/google_containers/kubernetes-dashboard-amd64"
-dnsmasq_nanny_image_repo: "tacorepo:5000/google_containers/k8s-dns-dnsmasq-nanny-{{ image_arch }}"
-dnsmasq_sidecar_image_repo: "tacorepo:5000/google_containers/k8s-dns-sidecar-{{ image_arch }}"
-coredns_image_repo: "tacorepo:5000/google-containers/coredns"
-pod_infra_image_repo: "tacorepo:5000/google_containers/pause-{{ image_arch }}"
-etcd_image_repo: "tacorepo:5000/coreos/etcd"
-ingress_nginx_default_backend_image_repo: "tacorepo:5000/defaultbackend"
+#
+# # Image repo URL
+# # Uncomment the following lines when local docker registry is used
+nginx_image_repo: "admin-stg:5000/nginx"
+hyperkube_image_repo: "admin-stg:5000/google-containers/hyperkube-{{ image_arch }}"
+helm_image_repo: "admin-stg:5000/k8s-helm"
+tiller_image_repo: "admin-stg:5000/kubernetes-helm/tiller"
+calico_node_image_repo: "admin-stg:5000/calico/node"
+calico_cni_image_repo: "admin-stg:5000/calico/cni"
+calicoctl_image_repo: "admin-stg:5000/calico/ctl"
+calico_policy_image_repo: "admin-stg:5000/calico/kube-controllers"
+dashboard_image_repo: "admin-stg:5000/google_containers/kubernetes-dashboard-amd64"
+dnsmasq_nanny_image_repo: "admin-stg:5000/google_containers/k8s-dns-dnsmasq-nanny-{{ image_arch }}"
+dnsmasq_sidecar_image_repo: "admin-stg:5000/google_containers/k8s-dns-sidecar-{{ image_arch }}"
+coredns_image_repo: "admin-stg:5000/google-containers/coredns"
+pod_infra_image_repo: "admin-stg:5000/google_containers/pause-{{ image_arch }}"
+etcd_image_repo: "admin-stg:5000/coreos/etcd"
+ingress_nginx_default_backend_image_repo: "admin-stg:5000/defaultbackend"
+kubeadm_download_url: "http://admin-stg/k8s/kubeadm"
+hyperkube_download_url: "http://admin-stg/k8s/hyperkube"
