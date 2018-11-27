@@ -15,5 +15,4 @@ config_drive_enabled: true
 tc_enabled: false
 nat_enabled: false
 
-cicd_registry_enabled: true
 armada_venv: "{{ lookup('env','HOME') }}/venv"

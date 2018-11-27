@@ -29,7 +29,7 @@ kube_pods_subnet: 10.233.64.0/18
 
 # Calico
 # set ipip mode to Never and peer_with_calico_rr to use global bgp rr
-#ipip_mode: Never
+ipip_mode: Never
 #calico_mtu: 9000
 #peer_with_calico_rr: false
 #calico_ip_auto_method: "interface=eth1"

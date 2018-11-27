@@ -2,3 +2,11 @@
 # are defined here
 
 bin_dir: /usr/local/bin
+
+cicd_registry_enabled: false
+docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
+
+localrepo_enabled: true
+localrepo_pypi: admin-stg
+localrepo_yum: admin-stg
+localrepo_k8s: admin-stg

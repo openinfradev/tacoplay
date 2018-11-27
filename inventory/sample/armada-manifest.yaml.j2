@@ -30,12 +30,12 @@ data:
   values:
     images:
       tags:
-        entrypoint: tacorepo:5000/kubernetes-entrypoint:v0.3.0
-        ingress: tacorepo:5000/nginx-ingress-controller:0.9.0
-        error_pages: tacorepo:5000/defaultbackend:1.0
-        keepalived: tacorepo:5000/keepalived:1.4.5
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.0
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        entrypoint: {{ docker_registry }}/kubernetes-entrypoint:v0.3.0
+        ingress: {{ docker_registry }}/nginx-ingress-controller:0.9.0
+        error_pages: {{ docker_registry }}/defaultbackend:1.0
+        keepalived: {{ docker_registry }}/keepalived:1.4.5
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.0
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     network:
       host_namespace: true
@@ -75,12 +75,12 @@ data:
   values:
     images:
       tags:
-        ceph_bootstrap: tacorepo:5000/ceph-daemon:tag-build-master-luminous-ubuntu-16.04
-        ceph_cephfs_provisioner: tacorepo:5000/cephfs-provisioner:v0.1.1
-        ceph_config_helper: tacorepo:5000/ceph-config-helper:v1.10.3
-        ceph_rbd_provisioner: tacorepo:5000/rbd-provisioner:v0.1.1
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        ceph_bootstrap: {{ docker_registry }}/ceph-daemon:tag-build-master-luminous-ubuntu-16.04
+        ceph_cephfs_provisioner: {{ docker_registry }}/cephfs-provisioner:v0.1.1
+        ceph_config_helper: {{ docker_registry }}/ceph-config-helper:v1.10.3
+        ceph_rbd_provisioner: {{ docker_registry }}/rbd-provisioner:v0.1.1
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: IfNotPresent
     deployment:
       ceph: false
@@ -132,13 +132,13 @@ data:
   values:
     images:
       tags:
-        mariadb: tacorepo:5000/mariadb:10.2.13
-        ingress: tacorepo:5000/nginx-ingress-controller:0.9.0
-        error_pages: tacorepo:5000/defaultbackend:1.0
-        prometheus_create_mysql_user: tacorepo:5000/mariadb:10.2.13
-        prometheus_mysql_exporter: tacorepo:5000/mysqld-exporter:v0.10.0
-        prometheus_mysql_exporter_helm_tests: tacorepo:5000/heat:pike
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
+        mariadb: {{ docker_registry }}/mariadb:10.2.13
+        ingress: {{ docker_registry }}/nginx-ingress-controller:0.9.0
+        error_pages: {{ docker_registry }}/defaultbackend:1.0
+        prometheus_create_mysql_user: {{ docker_registry }}/mariadb:10.2.13
+        prometheus_mysql_exporter: {{ docker_registry }}/mysqld-exporter:v0.10.0
+        prometheus_mysql_exporter_helm_tests: {{ docker_registry }}/heat:pike
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
         image_repo_sync: docker.io/docker:17.07.0
       pull_policy: Always
     pod:
@@ -175,9 +175,9 @@ data:
   values:
     images:
       tags:
-        etcd: tacorepo:5000/etcd-amd64:2.2.5
-        image_repo_sync: tacorepo:5000/docker:17.07.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
+        etcd: {{ docker_registry }}/etcd-amd64:2.2.5
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -205,12 +205,12 @@ data:
   values:
     images:
       tags:
-        rabbitmq: tacorepo:5000/rabbitmq:3.7.4
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        prometheus_rabbitmq_exporter: tacorepo:5000/rabbitmq-exporter:v0.21.0
-        image_repo_sync: tacorepo:5000/docker:17.07.0
-        scripted_test: tacorepo:5000/rabbitmq:3.7.4-management
-        prometheus_rabbitmq_exporter_helm_tests: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
+        rabbitmq: {{ docker_registry }}/rabbitmq:3.7.4
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        prometheus_rabbitmq_exporter: {{ docker_registry }}/rabbitmq-exporter:v0.21.0
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+        scripted_test: {{ docker_registry }}/rabbitmq:3.7.4-management
+        prometheus_rabbitmq_exporter_helm_tests: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -245,10 +245,10 @@ data:
   values:
     images:
       tags:
-        memcached: tacorepo:5000/memcached:1.5.5
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        prometheus_memcached_exporter: tacorepo:5000/memcached-exporter:v0.4.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        memcached: {{ docker_registry }}/memcached:1.5.5
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        prometheus_memcached_exporter: {{ docker_registry }}/memcached-exporter:v0.4.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -282,9 +282,9 @@ data:
     release_group: null
     images:
       tags:
-        image_repo_sync: tacorepo:5000/docker:17.07.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        libvirt: tacorepo:5000/libvirt:ubuntu-xenial-1.3.1-1ubuntu10.24
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        libvirt: {{ docker_registry }}/libvirt:ubuntu-xenial-1.3.1-1ubuntu10.24
       pull_policy: Always
     conf:
       ceph:
@@ -325,10 +325,10 @@ data:
     release_group: null
     images:
       tags:
-        openvswitch_db_server: tacorepo:5000/pike/ubuntu-source-openvswitch-db-server:0.1.0
-        openvswitch_vswitchd: tacorepo:5000/pike/ubuntu-source-openvswitch-vswitchd:0.1.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        openvswitch_db_server: {{ docker_registry }}/pike/ubuntu-source-openvswitch-db-server:0.1.0
+        openvswitch_vswitchd: {{ docker_registry }}/pike/ubuntu-source-openvswitch-vswitchd:0.1.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
   source:
     type: local
@@ -385,21 +385,21 @@ data:
   values:
     images:
       tags:
-        bootstrap: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        test: tacorepo:5000/pike/ubuntu-source-rally:0.1.0
-        db_init: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        keystone_db_sync: tacorepo:5000/pike/ubuntu-source-keystone:0.1.0
-        db_drop: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        rabbit_init: tacorepo:5000/rabbitmq:3.7-management
-        keystone_fernet_setup: tacorepo:5000/pike/ubuntu-source-keystone:0.1.0
-        keystone_fernet_rotate: tacorepo:5000/pike/ubuntu-source-keystone:0.1.0
-        keystone_credential_setup: tacorepo:5000/pike/ubuntu-source-keystone:0.1.0
-        keystone_credential_rotate: tacorepo:5000/pike/ubuntu-source-keystone:0.1.0
-        keystone_api: tacorepo:5000/pike/ubuntu-source-keystone:0.1.0
-        keystone_domain_manage: tacorepo:5000/pike/ubuntu-source-keystone:0.1.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        keystone_db_sync: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
+        keystone_fernet_setup: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
+        keystone_fernet_rotate: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
+        keystone_credential_setup: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
+        keystone_credential_rotate: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
+        keystone_api: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
+        keystone_domain_manage: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     conf:
       keystone:
@@ -472,20 +472,20 @@ data:
     storage: rbd
     images:
       tags:
-        test: tacorepo:5000/pike/ubuntu-source-rally:0.1.0
-        glance_storage_init: tacorepo:5000/ceph-config-helper:v1.10.3
-        db_init: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        glance_db_sync: tacorepo:5000/pike/ubuntu-source-glance-api:0.1.0
-        db_drop: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        rabbit_init: tacorepo:5000/rabbitmq:3.7-management
-        glance_api: tacorepo:5000/pike/ubuntu-source-glance-api:0.1.0
-        glance_registry: tacorepo:5000/pike/ubuntu-source-glance-registry:0.1.0
-        bootstrap: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
+        glance_storage_init: {{ docker_registry }}/ceph-config-helper:v1.10.3
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        glance_db_sync: {{ docker_registry }}/pike/ubuntu-source-glance-api:0.1.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
+        glance_api: {{ docker_registry }}/pike/ubuntu-source-glance-api:0.1.0
+        glance_registry: {{ docker_registry }}/pike/ubuntu-source-glance-registry:0.1.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     pod:
       replicas:
@@ -591,32 +591,32 @@ data:
   values:
     images:
       tags:
-        test: tacorepo:5000/pike/ubuntu-source-rally:0.1.0
-        db_drop: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        db_init: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        nova_api: tacorepo:5000/pike/ubuntu-source-nova-api:0.1.0
-        nova_cell_setup: tacorepo:5000/pike/ubuntu-source-nova-api:0.1.0
-        nova_cell_setup_init: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        nova_compute: tacorepo:5000/pike/ubuntu-source-nova-compute:0.1.0
-        nova_compute_ironic: tacorepo:5000/pike/ubuntu-source-nova-compute-ironic:0.1.0
-        nova_compute_ssh: tacorepo:5000/pike/ubuntu-source-nova-ssh:0.1.0
-        nova_conductor: tacorepo:5000/pike/ubuntu-source-nova-conductor:0.1.0
-        nova_consoleauth: tacorepo:5000/pike/ubuntu-source-nova-consoleauth:0.1.0
-        nova_db_sync: tacorepo:5000/pike/ubuntu-source-nova-api:0.1.0
-        nova_novncproxy: tacorepo:5000/pike/ubuntu-source-nova-novncproxy:0.1.0
-        nova_novncproxy_assets: tacorepo:5000/pike/ubuntu-source-nova-novncproxy:0.1.0
-        nova_placement: tacorepo:5000/pike/ubuntu-source-nova-placement-api:0.1.0
-        nova_scheduler: tacorepo:5000/pike/ubuntu-source-nova-scheduler:0.1.0
-        nova_spiceproxy: tacorepo:5000/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
-        nova_spiceproxy_assets: tacorepo:5000/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
-        bootstrap: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
-        rabbit_init: tacorepo:5000/rabbitmq:3.7-management
-        nova_service_cleaner: tacorepo:5000/ceph-config-helper:v1.10.3
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        nova_api: {{ docker_registry }}/pike/ubuntu-source-nova-api:0.1.0
+        nova_cell_setup: {{ docker_registry }}/pike/ubuntu-source-nova-api:0.1.0
+        nova_cell_setup_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        nova_compute: {{ docker_registry }}/pike/ubuntu-source-nova-compute:0.1.0
+        nova_compute_ironic: {{ docker_registry }}/pike/ubuntu-source-nova-compute-ironic:0.1.0
+        nova_compute_ssh: {{ docker_registry }}/pike/ubuntu-source-nova-ssh:0.1.0
+        nova_conductor: {{ docker_registry }}/pike/ubuntu-source-nova-conductor:0.1.0
+        nova_consoleauth: {{ docker_registry }}/pike/ubuntu-source-nova-consoleauth:0.1.0
+        nova_db_sync: {{ docker_registry }}/pike/ubuntu-source-nova-api:0.1.0
+        nova_novncproxy: {{ docker_registry }}/pike/ubuntu-source-nova-novncproxy:0.1.0
+        nova_novncproxy_assets: {{ docker_registry }}/pike/ubuntu-source-nova-novncproxy:0.1.0
+        nova_placement: {{ docker_registry }}/pike/ubuntu-source-nova-placement-api:0.1.0
+        nova_scheduler: {{ docker_registry }}/pike/ubuntu-source-nova-scheduler:0.1.0
+        nova_spiceproxy: {{ docker_registry }}/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
+        nova_spiceproxy_assets: {{ docker_registry }}/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+        rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
+        nova_service_cleaner: {{ docker_registry }}/ceph-config-helper:v1.10.3
       pull_policy: Always
     bootstrap:
       structured:
@@ -634,6 +634,8 @@ data:
         port: 6080
         targetPort: 6080
     conf:
+      libvirt:
+        live_migration_interface: eth0
       rootwrap_filters:
         api_metadata:
           override:
@@ -1081,7 +1083,7 @@ data:
           config_drive_format: "vfat"
           force_config_drive: true
         vnc:
-          novncproxy_base_url: http://ctrl01s:30608/vnc_auto.html
+          novncproxy_base_url: http://{{ hostvars[groups['controller-node'][0]]['ip'] }}:30608/vnc_auto.html
         libvirt:
           virt_type: qemu
           rbd_user: "cinder"
@@ -1152,25 +1154,25 @@ data:
   values:
     images:
       tags:
-        bootstrap: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        test: tacorepo:5000/pike/ubuntu-source-rally:0.1.0
-        db_init: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        neutron_db_sync: tacorepo:5000/pike/ubuntu-source-neutron-server:0.1.0
-        db_drop: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        neutron_server: tacorepo:5000/pike/ubuntu-source-neutron-server:0.1.0
-        neutron_dhcp: tacorepo:5000/pike/ubuntu-source-neutron-dhcp-agent:0.1.0
-        neutron_metadata: tacorepo:5000/pike/ubuntu-source-neutron-metadata-agent:0.1.0
-        neutron_l3: tacorepo:5000/pike/ubuntu-source-neutron-l3-agent:0.1.0
-        neutron_openvswitch_agent: tacorepo:5000/pike/ubuntu-source-neutron-openvswitch-agent:0.1.0
-        neutron_linuxbridge_agent: tacorepo:5000/pike/ubuntu-source-neutron-linuxbridge-agent:0.1.0
-        neutron_sriov_agent: tacorepo:5000/pike/ubuntu-source-neutron-sriov-agent:0.1.0
-        neutron_sriov_agent_init: tacorepo:5000/pike/ubuntu-source-neutron-sriov-agent:0.1.0
-        rabbit_init: tacorepo:5000/rabbitmq:3.7-management
-        image_repo_sync: tacorepo:5000/docker:17.07.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        neutron_db_sync: {{ docker_registry }}/pike/ubuntu-source-neutron-server:0.1.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        neutron_server: {{ docker_registry }}/pike/ubuntu-source-neutron-server:0.1.0
+        neutron_dhcp: {{ docker_registry }}/pike/ubuntu-source-neutron-dhcp-agent:0.1.0
+        neutron_metadata: {{ docker_registry }}/pike/ubuntu-source-neutron-metadata-agent:0.1.0
+        neutron_l3: {{ docker_registry }}/pike/ubuntu-source-neutron-l3-agent:0.1.0
+        neutron_openvswitch_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-openvswitch-agent:0.1.0
+        neutron_linuxbridge_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-linuxbridge-agent:0.1.0
+        neutron_sriov_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-sriov-agent:0.1.0
+        neutron_sriov_agent_init: {{ docker_registry }}/pike/ubuntu-source-neutron-sriov-agent:0.1.0
+        rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
       pull_policy: Always
     pod:
       replicas:
@@ -1273,24 +1275,24 @@ data:
   values:
     images:
       tags:
-        test: tacorepo:5000/pike/ubuntu-source-rally:0.1.0
-        db_init: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        cinder_db_sync: tacorepo:5000/pike/ubuntu-source-cinder-api:0.1.0
-        db_drop: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        rabbit_init: tacorepo:5000/rabbitmq:3.7-management
-        ks_user: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        cinder_api: tacorepo:5000/pike/ubuntu-source-cinder-api:0.1.0
-        bootstrap: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        cinder_scheduler: tacorepo:5000/pike/ubuntu-source-cinder-scheduler:0.1.0
-        cinder_volume: tacorepo:5000/pike/ubuntu-source-cinder-volume:0.1.0
-        cinder_volume_usage_audit: tacorepo:5000/pike/ubuntu-source-cinder-volume:0.1.0
-        cinder_storage_init: tacorepo:5000/ceph-config-helper:v1.10.3
-        cinder_backup: tacorepo:5000/pike/ubuntu-source-cinder-backup:0.1.0
-        cinder_backup_storage_init: tacorepo:5000/ceph-config-helper:v1.10.3
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        cinder_db_sync: {{ docker_registry }}/pike/ubuntu-source-cinder-api:0.1.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        cinder_api: {{ docker_registry }}/pike/ubuntu-source-cinder-api:0.1.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        cinder_scheduler: {{ docker_registry }}/pike/ubuntu-source-cinder-scheduler:0.1.0
+        cinder_volume: {{ docker_registry }}/pike/ubuntu-source-cinder-volume:0.1.0
+        cinder_volume_usage_audit: {{ docker_registry }}/pike/ubuntu-source-cinder-volume:0.1.0
+        cinder_storage_init: {{ docker_registry }}/ceph-config-helper:v1.10.3
+        cinder_backup: {{ docker_registry }}/pike/ubuntu-source-cinder-backup:0.1.0
+        cinder_backup_storage_init: {{ docker_registry }}/ceph-config-helper:v1.10.3
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     pod:
       user:
@@ -1372,22 +1374,22 @@ data:
   values:
     images:
       tags:
-        test: tacorepo:5000/pike/ubuntu-source-rally:0.1.0
-        bootstrap: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        db_init: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        heat_db_sync: tacorepo:5000/pike/ubuntu-source-heat-api:0.1.0
-        db_drop: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        heat_api: tacorepo:5000/pike/ubuntu-source-heat-api:0.1.0
-        heat_cfn: tacorepo:5000/pike/ubuntu-source-heat-api:0.1.0
-        heat_cloudwatch: tacorepo:5000/pike/ubuntu-source-heat-api:0.1.0
-        heat_engine: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        heat_engine_cleaner: tacorepo:5000/pike/ubuntu-source-heat-engine:0.1.0
-        rabbit_init: tacorepo:5000/rabbitmq:3.7-management
-        image_repo_sync: tacorepo:5000/docker:17.07.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        heat_db_sync: {{ docker_registry }}/pike/ubuntu-source-heat-api:0.1.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        heat_api: {{ docker_registry }}/pike/ubuntu-source-heat-api:0.1.0
+        heat_cfn: {{ docker_registry }}/pike/ubuntu-source-heat-api:0.1.0
+        heat_cloudwatch: {{ docker_registry }}/pike/ubuntu-source-heat-api:0.1.0
+        heat_engine: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        heat_engine_cleaner: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
       pull_policy: Always
     pod:
       user:
@@ -1422,12 +1424,12 @@ data:
     replicas: 1
     images:
       tags:
-        db_init: tacorepo:5000/pike/ubuntu-source-horizon:0.1.0
-        db_drop: tacorepo:5000/pike/ubuntu-source-horizon:0.1.0
-        horizon_db_sync: tacorepo:5000/pike/ubuntu-source-horizon:0.1.0
-        horizon: tacorepo:5000/pike/ubuntu-source-horizon:0.1.0
-        image_repo_sync: tacorepo:5000/docker:17.07.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
+        db_init: {{ docker_registry }}/pike/ubuntu-source-horizon:0.1.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-horizon:0.1.0
+        horizon_db_sync: {{ docker_registry }}/pike/ubuntu-source-horizon:0.1.0
+        horizon: {{ docker_registry }}/pike/ubuntu-source-horizon:0.1.0
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
       pull_policy: Always
     pod:
       replicas:
@@ -1473,10 +1475,10 @@ data:
   values:
     images:
       tags:
-        ldap: tacorepo:5000/openldap:1.2.0
-        bootstrap: tacorepo:5000/openldap:1.2.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        ldap: {{ docker_registry }}/openldap:1.2.0
+        bootstrap: {{ docker_registry }}/openldap:1.2.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     storage:
       pvc:
@@ -1534,18 +1536,18 @@ data:
   values:
     images:
       tags:
-        apache_proxy: tacorepo:5000/httpd:2.4
-        memory_init: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
-        curator: tacorepo:5000/curator:5.2.0
-        elasticsearch: tacorepo:5000/elasticsearch-s3:v0.1.0
-        ceph_key_placement: tacorepo:5000/ceph-config-helper:v1.10.3
-        s3_bucket: tacorepo:5000/ceph-config-helper:v1.10.3
-        s3_user: tacorepo:5000/ceph-config-helper:v1.10.3
-        helm_tests: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
-        prometheus_elasticsearch_exporter: tacorepo:5000/elasticsearch_exporter:1.0.1
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        snapshot_repository: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        apache_proxy: {{ docker_registry }}/httpd:2.4
+        memory_init: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
+        curator: {{ docker_registry }}/curator:5.2.0
+        elasticsearch: {{ docker_registry }}/elasticsearch-s3:v0.1.0
+        ceph_key_placement: {{ docker_registry }}/ceph-config-helper:v1.10.3
+        s3_bucket: {{ docker_registry }}/ceph-config-helper:v1.10.3
+        s3_user: {{ docker_registry }}/ceph-config-helper:v1.10.3
+        helm_tests: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
+        prometheus_elasticsearch_exporter: {{ docker_registry }}/elasticsearch_exporter:1.0.1
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        snapshot_repository: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     conf:
       curator:
@@ -1677,13 +1679,13 @@ data:
   values:
     images:
       tags:
-        fluentbit: tacorepo:5000/fluent-bit:0.13.6
-        fluentd: tacorepo:5000/ubuntu-source-fluentd:ocata
-        prometheus_fluentd_exporter: tacorepo:5000/fluentd_exporter:v0.1
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        helm_tests: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
-        elasticsearch_template: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        fluentbit: {{ docker_registry }}/fluent-bit:0.13.6
+        fluentd: {{ docker_registry }}/ubuntu-source-fluentd:ocata
+        prometheus_fluentd_exporter: {{ docker_registry }}/fluentd_exporter:v0.1
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        helm_tests: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
+        elasticsearch_template: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     dependencies:
       static:
@@ -1889,10 +1891,10 @@ data:
   values:
     images:
       tags:
-        apache_proxy: tacorepo:5000/httpd:2.4
-        kibana: tacorepo:5000/kibana:5.6.4
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        apache_proxy: {{ docker_registry }}/httpd:2.4
+        kibana: {{ docker_registry }}/kibana:5.6.4
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     network:
       kibana:
@@ -1926,11 +1928,11 @@ data:
   values:
     images:
       tags:
-        apache_proxy: tacorepo:5000/httpd:2.4
-        prometheus: tacorepo:5000/prometheus:v2.3.2
-        helm_tests: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        apache_proxy: {{ docker_registry }}/httpd:2.4
+        prometheus: {{ docker_registry }}/prometheus:v2.3.2
+        helm_tests: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     pod:
       replicas:
@@ -2310,9 +2312,9 @@ data:
   values:
     images:
       tags:
-        alertmanager: tacorepo:5000/alertmanager:v0.11.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        alertmanager: {{ docker_registry }}/alertmanager:v0.11.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     storage:
       enabled: true
@@ -2389,9 +2391,9 @@ data:
   values:
     images:
       tags:
-        kube_state_metrics: tacorepo:5000/kube-state-metrics:1.3.1
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        kube_state_metrics: {{ docker_registry }}/kube-state-metrics:1.3.1
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: IfNotPresent
     dummy: Always
   source:
@@ -2417,9 +2419,9 @@ data:
   values:
     images:
       tags:
-        node_exporter: tacorepo:5000/node-exporter:v0.15.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        node_exporter: {{ docker_registry }}/node-exporter:v0.15.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     labels:
       node_exporter:
@@ -2449,10 +2451,10 @@ data:
   values:
     images:
       tags:
-        prometheus_openstack_exporter: tacorepo:5000/prometheus-openstack-exporter:3231f14419f0c47547ce2551b7d884cd222104e6
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: tacorepo:5000/docker:17.07.0
-        ks_user: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
+        prometheus_openstack_exporter: {{ docker_registry }}/prometheus-openstack-exporter:3231f14419f0c47547ce2551b7d884cd222104e6
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+        ks_user: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
       pull_policy: Always
     dummy: dummy
   source:
@@ -2478,12 +2480,12 @@ data:
   values:
     images:
       tags:
-        grafana: tacorepo:5000/grafana:5.0.0
-        dep_check: tacorepo:5000/kubernetes-entrypoint:v0.3.1
-        db_init: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
-        grafana_db_session_sync: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
-        helm_tests: tacorepo:5000/ubuntu-source-heat-engine:3.0.3
-        image_repo_sync: tacorepo:5000/docker:17.07.0
+        grafana: {{ docker_registry }}/grafana:5.0.0
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        db_init: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
+        grafana_db_session_sync: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
+        helm_tests: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     network:
       grafana:

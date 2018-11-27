@@ -1,0 +1,10 @@
+# 1.92TB x 7 and 960GB x 1
+lvm_volumes:
+  - data: /dev/sda
+  - data: /dev/sdb
+  - data: /dev/sdd
+  - data: /dev/sde
+  - data: /dev/sdf
+  - data: /dev/sdg
+  - data: /dev/sdh
+  - data: /dev/sdi

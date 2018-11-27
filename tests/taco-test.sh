@@ -90,6 +90,13 @@ openstack floating ip set --port $PORT $FLOATING_IP
 echo "Done"
 
 openstack server list
+
+if [[ $(openstack volume list | grep test_bfv) ]]; then
+  echo "Removing existing test volume.."
+  openstack volume delete test_bfv
+  echo "Done"
+fi
+
 echo "Creating volume..."
 openstack volume create --size 55 --image $IMAGE test_bfv
 VOLUME=$(openstack volume list | grep test_bfv | awk '{print $2}')

@@ -1,4 +1,14 @@
 ---
+# Populate hostname to hosts file
+- hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: make sure hostname is in hosts file
+      replace:
+        dest: /etc/hosts
+        regexp: '^(127\.0\.0\.1(?!.*\b{{ inventory_hostname }}\b).*)$'
+        replace: '\1 {{ inventory_hostname }}'
+  tags: always
 
 # Enable registry.cicd.stg.taco
 - hosts: taco
@@ -30,7 +40,7 @@
       blockinfile:
         dest: /etc/hosts
         block: |-
-          {% for item in (groups['registry']|default([]))|unique -%}{{ default(hostvars[item]['ip']) }} {{ item }}
+          {% for item in (groups['registry']|default([]))|unique -%}{{ hostvars[item]['ip'] }} {{ item }}
           {% endfor %}
         state: present
         create: yes
@@ -38,19 +48,19 @@
         marker: "# TACO registry hosts {mark}"
   tags: always
 
-# Install Ceph
-- import_playbook: ceph-ansible/site.yml
-  tags: ceph
-
-# TODO: add tests for checking status of the new ceph cluster
-
 # Prepare OS for TACO
-- hosts: k8s-cluster
+- hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-defaults }
     - { role: setup-os }
   tags: setup-os
+
+# Install Ceph
+- import_playbook: ceph-ansible/site.yml
+  tags: ceph
+
+# TODO: add tests for checking status of the new ceph cluster
 
 # Install K8S
 - import_playbook: kubespray/scale.yml

@@ -30,3 +30,4 @@ image_feature: layering
 # armada manifest configs
 osh_infra_path: "{{ playbook_dir }}/charts/openstack-helm-infra"
 osh_path: "{{ playbook_dir }}/charts/openstack-helm"
+docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
