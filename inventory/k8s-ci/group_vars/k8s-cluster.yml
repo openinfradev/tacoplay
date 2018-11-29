@@ -1,6 +1,3 @@
-#k8s ci
-kubespray_tag: a48131f
-
 # OS
 disable_swap: true
 epel_enabled: true
