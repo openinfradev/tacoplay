@@ -1,0 +1,18 @@
+# default options
+openstack_namespace: openstack
+
+# storage class configs
+ceph_enabled: true
+mon_host: 192.168.48.31
+admin_id: admin
+user_id: sona-kube
+pool_name: sona-kube
+admin_keyring: AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA==
+user_keyring: AQCreP9bQFKVEhAAea78k8mxFs3iu6iJpLShIQ==
+
+# additional host configurations
+config_drive_enabled: true
+tc_enabled: false
+nat_enabled: false
+
+armada_venv: "{{ lookup('env','HOME') }}/venv"
