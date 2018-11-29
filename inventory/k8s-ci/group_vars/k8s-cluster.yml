@@ -1,5 +1,5 @@
 #k8s ci
-kubespray_tag: a48131f
+kubespray_tag: cf4dd645a77
 
 # OS
 disable_swap: true
