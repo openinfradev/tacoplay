@@ -57,7 +57,7 @@ dashboard_enabled: false
 
 # DNS
 dns_mode: coredns
-coredns_replicas: 1
+dns_min_replicas: 1
 
 # Helm
 helm_enabled: true
