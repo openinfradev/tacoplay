@@ -7,6 +7,7 @@ kube_config_dir: /etc/kubernetes
 # deploy options
 openstack_enabled: false
 armada_enabled: true
+kubeadm_enabled: true
 
 # armada options
 charts_dir: "{{ playbook_dir }}/charts"
