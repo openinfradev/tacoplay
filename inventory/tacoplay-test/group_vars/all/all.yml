@@ -7,3 +7,4 @@ cicd_registry_enabled: true
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
 
 localrepo_enabled: false
+kubeadm_enabled: true
