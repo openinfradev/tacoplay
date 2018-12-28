@@ -127,7 +127,7 @@
 
 - name: update bashrc for openstack client configs
   blockinfile:
-    path: "{{ lookup('env','HOME') }}/.bashrc"
+    path: "/home/{{ ansible_user }}/.bashrc"
     block: |
       export OS_AUTH_URL={{ os_auth_url }}
       export OS_IDENTITY_API_VERSION=3
