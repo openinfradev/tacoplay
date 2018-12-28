@@ -9,19 +9,17 @@
 
 - name: create kube config dir
   file:
-    path: "{{ ansible_env.HOME }}/.kube"
+    path: "/home/{{ ansible_user }}/.kube"
     mode: "0700"
     state: directory
   become: no
-  become_user: "{{ user_to_become }}"
   when: inventory_hostname in groups['admin-node']
 
 - name: copy admin kubeconfig to home
   copy:
     src: "{{ artifacts_dir }}/admin.conf"
-    dest: "{{ ansible_env.HOME }}/.kube/config"
+    dest: "/home/{{ ansible_user }}/.kube/config"
   become: no
-  become_user: "{{ user_to_become }}"
   when: inventory_hostname in groups['admin-node']
 
 - name: copy kubectl binary to ansible host
