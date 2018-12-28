@@ -13,13 +13,15 @@
     mode: "0700"
     state: directory
   become: no
+  become_user: "{{ user_to_become }}"
   when: inventory_hostname in groups['admin-node']
 
 - name: copy admin kubeconfig to home
   copy:
     src: "{{ artifacts_dir }}/admin.conf"
-    dest: "{{ lookup('env','HOME') }}/.kube/config"
+    dest: "{{ ansible_env.HOME }}/.kube/config"
   become: no
+  become_user: "{{ user_to_become }}"
   when: inventory_hostname in groups['admin-node']
 
 - name: copy kubectl binary to ansible host
