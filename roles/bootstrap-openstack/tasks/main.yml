@@ -15,37 +15,38 @@
   shell: >-
     grep 'mon host' /etc/ceph/ceph.conf | awk '{print $4}'
   register: mon
-  when: not (mon_host|length > 0)
+  when: not (mon_host|length > 0) and ceph_enabled
 
 - name: set fact mon_host for armada-manifest.yml
   set_fact:
     mon_host: "{{ mon.stdout }}"
-  when: mon.changed and mon.stdout != ""
+  when: mon.changed and mon.stdout != "" and ceph_enabled
 
 - name: failed to get ceph mon hosts
   fail:
     msg: "failed to get ceph mon hosts neither from vars nor ceph.conf"
-  when: not (mon_host|length > 0)
+  when: not (mon_host|length > 0) and ceph_enabled
 
 - name: set fact monitors for ceph storage class
   set_fact:
     monitors: "{{ mon_host.split(',') | map('regex_replace', '(.*)', '\\1:6789') | join(',') }}"
+  when: ceph_enabled
 
 - name: fetch admin keyring from ceph.client.admin.keyring
   shell: >-
     grep key /etc/ceph/ceph.client.admin.keyring | awk '{print $3}' | xargs echo -n
   register: keyring
-  when: not (admin_keyring|length > 0)
+  when: not (admin_keyring|length > 0) and ceph_enabled
 
 - name: set fact admin_keyring for armada-manifest.yml
   set_fact:
     admin_keyring: "{{ keyring.stdout }}"
-  when: keyring.changed and keyring.stdout != ""
+  when: keyring.changed and keyring.stdout != "" and ceph_enabled
 
 - name: failed to get ceph admin keyring
   fail:
     msg: "failed to get admin keyring neither from vars nor /etc/ceph"
-  when: not (admin_keyring|length > 0)
+  when: not (admin_keyring|length > 0) and ceph_enabled
 
 - name: encode admin keyring with base64
   shell: echo -n {{ admin_keyring }} | base64
@@ -54,7 +55,7 @@
 - name: set fact admin_keyring_base64 for ceph-secret-admin
   set_fact:
     admin_keyring_base64: "{{ keyring_base64.stdout }}"
-  when: keyring_base64.stdout != ""
+  when: ceph_enabled and keyring_base64.stdout != ""
 
 - name: encode kube user keyring with base64
   shell: echo -n {{ user_keyring }} | base64
@@ -63,7 +64,7 @@
 - name: set fact user_keyring_base64 for ceph-secret-user
   set_fact:
     user_keyring_base64: "{{ keyring_base64.stdout }}"
-  when: keyring_base64.stdout != ""
+  when: keyring_base64.stdout != "" and ceph_enabled
 
 - name: copy ceph secret and storageclass yml
   template:
@@ -88,6 +89,7 @@
     - "{{ ceph_manifests.results }}"
   run_once: true
   become: no
+  when: ceph_enabled
 
 - name: check armada-manifest.yml.j2 exists
   stat:
