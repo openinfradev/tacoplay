@@ -9,7 +9,7 @@
 
 - name: create kube config dir
   file:
-    path: "{{ lookup('env','HOME') }}/.kube"
+    path: "{{ ansible_env.HOME }}/.kube"
     mode: "0700"
     state: directory
   become: no
