@@ -6,6 +6,8 @@ bin_dir: /usr/local/bin
 cicd_registry_enabled: false
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
 
+kube_proxy_mode: iptables
+
 localrepo_enabled: false
 localrepo_pypi: localrepo
 localrepo_yum: localrepo
