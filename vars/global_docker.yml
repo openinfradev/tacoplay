@@ -40,7 +40,6 @@ docker_options: >-
   {{ docker_registry_mirrors | map('regex_replace', '^(.*)$', '--registry-mirror=\1' ) | list | join(' ') }}
   {%- endif %}
   --graph={{ docker_daemon_graph }} {{ docker_log_opts }}
-  --default-ulimit nofile=1024:1048576
   {%- if ansible_architecture == "aarch64" and ansible_os_family == "RedHat" %}
   --add-runtime docker-runc=/usr/libexec/docker/docker-runc-current
   --default-runtime=docker-runc --exec-opt native.cgroupdriver=systemd
