@@ -23,6 +23,7 @@ kube_users:
     groups:
       - system:masters
 kubelet_deployment_type: host
+kube_proxy_mode: iptables
 
 kube_network_plugin: calico
 kube_service_addresses: 10.233.0.0/18

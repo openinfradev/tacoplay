@@ -3,13 +3,14 @@
 
 bin_dir: /usr/local/bin
 
+# kubeadm deployment mode
+# exceptionally and temporarilly, we need this here due to that kubespray checks this value from ansible host
+kubeadm_enabled: true
+
 cicd_registry_enabled: false
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
 
-kube_proxy_mode: iptables
-
-localrepo_enabled: false
+localrepo_enabled: true
 localrepo_pypi: localrepo
 localrepo_yum: localrepo
 localrepo_k8s: localrepo
-yum_repo_dir: "/etc/yum.repos.d"

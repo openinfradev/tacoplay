@@ -1,8 +1,10 @@
 # use custom repo for real deployment
 ceph_stable_release: luminous
 ceph_origin: repository
-ceph_repository: custom
+ceph_repository: >-
+  {%- if localrepo_enabled -%}custom{%- else -%}community{%- endif -%}
 ceph_custom_repo: "http://{{ localrepo_yum }}/ceph/ceph.repo"
+ceph_mirror: http://hk.ceph.com
 
 ntp_service_enabled: false
 copy_admin_key: true
