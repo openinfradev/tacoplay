@@ -12,7 +12,7 @@ etcd_deployment_type: docker
 etcd_memory_limit: 8192M
 
 # K8S
-#kube_version: v1.12.1
+kube_version: v1.12.3
 kubeadm_enabled: true
 kube_api_anonymous_auth: true
 kube_api_pwd: "{{ lookup('password', inventory_dir + '/credentials/kube_user.creds length=15 chars=ascii_letters,digits') }}"
@@ -23,6 +23,7 @@ kube_users:
     groups:
       - system:masters
 kubelet_deployment_type: host
+kube_proxy_mode: iptables
 
 kube_network_plugin: calico
 kube_service_addresses: 10.233.0.0/18
@@ -42,7 +43,7 @@ calico_felix_prometheusprocessmetricsenabled: "true"
 # Set true to enable mount propataion
 local_volume_provisioner_enabled: false
 cephfs_provisioner_enabled: false
-#pod_infra_version: 3.1
+pod_infra_version: 3.1
 
 # Copy kubectl to ansible host
 kubectl_localhost: true
@@ -58,7 +59,7 @@ dns_min_replicas: 1
 # Helm
 helm_enabled: true
 helm_deployment_type: host
-#helm_version: "v2.10.0"
+helm_version: "v2.11.0"
 helm_skip_refresh: true
 
 #RBD Provisioner
@@ -83,7 +84,6 @@ rbd_provisioner_reclaim_policy: Delete
 # Arch of Docker images and needed packages
 image_arch: "{{host_architecture | default('amd64')}}"
 
-# Image repo URL
 # Uncomment the following lines when local docker registry is used
 nginx_image_repo: "{{ docker_registry }}/nginx"
 hyperkube_image_repo: "{{ docker_registry }}/google-containers/hyperkube-{{ image_arch }}"
@@ -100,5 +100,7 @@ coredns_image_repo: "{{ docker_registry }}/google-containers/coredns"
 pod_infra_image_repo: "{{ docker_registry }}/google_containers/pause-{{ image_arch }}"
 etcd_image_repo: "{{ docker_registry }}/coreos/etcd"
 ingress_nginx_default_backend_image_repo: "{{ docker_registry }}/defaultbackend"
+
+# Uncomment the following lines when local k8s repository is used
 kubeadm_download_url: "http://{{ localrepo_k8s }}/k8s/kubeadm"
 hyperkube_download_url: "http://{{ localrepo_k8s }}/k8s/hyperkube"
