@@ -9,10 +9,10 @@ data:
   namespace: helm-tookit
   values: {}
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-skt
     subpath: helm-toolkit
-    reference: master
+    reference: 3.6.0
   dependencies: []
 ---
 schema: armada/Chart/v1
@@ -31,7 +31,9 @@ data:
     images:
       tags:
         entrypoint: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.0
-        ingress: registry.cicd.stg.taco/nginx-ingress-controller:0.9.0
+        ingress: registry.cicd.stg.taco/nginx-ingress-controller:0.20.0
+        ingress_module_init: registry.cicd.stg.taco/pike/ubuntu-source-neutron-server:3.6.0
+        ingress_routed_vip: registry.cicd.stg.taco/pike/ubuntu-source-neutron-server:3.6.0
         error_pages: registry.cicd.stg.taco/defaultbackend:1.0
         keepalived: registry.cicd.stg.taco/keepalived:1.4.5
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.0
@@ -53,10 +55,10 @@ data:
         ingress: 1
         error_page: 1
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: ingress
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -95,7 +97,7 @@ data:
     conf:
       ceph:
         global:
-          mon_host: 192.168.48.31
+          mon_host: 192.168.54.21
     manifests:
       configmap_bin: false
       configmap_bin_common: false
@@ -110,10 +112,10 @@ data:
       storageclass_cephfs: false
       storageclass_rbd: false
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: ceph-provisioners
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -132,7 +134,7 @@ data:
   values:
     images:
       tags:
-        mariadb: registry.cicd.stg.taco/mariadb:10.2.13
+        mariadb: registry.cicd.stg.taco/mariadb:10.2.18
         ingress: registry.cicd.stg.taco/nginx-ingress-controller:0.9.0
         error_pages: registry.cicd.stg.taco/defaultbackend:1.0
         prometheus_create_mysql_user: registry.cicd.stg.taco/mariadb:10.2.13
@@ -153,10 +155,10 @@ data:
         mysqld_exporter:
           scrape: true
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: mariadb
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -183,10 +185,10 @@ data:
       replicas:
         etcd: 1
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: etcd
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -210,7 +212,7 @@ data:
         prometheus_rabbitmq_exporter: registry.cicd.stg.taco/rabbitmq-exporter:v0.21.0
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
         scripted_test: registry.cicd.stg.taco/rabbitmq:3.7.4-management
-        prometheus_rabbitmq_exporter_helm_tests: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        prometheus_rabbitmq_exporter_helm_tests: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -223,10 +225,10 @@ data:
         rabbitmq_exporter:
           scrape: true
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: rabbitmq
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -259,10 +261,10 @@ data:
         memcached_exporter:
           scrape: true
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: memcached
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -289,10 +291,10 @@ data:
     conf:
       ceph:
         enabled: true
-        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        admin_keyring: "AQCqEUVY3RvrBRAABmhtxK2MvD/whiiVZ5Jkww=="
         cinder:
           user: "cinder"
-          keyring: "AQASDcJacIJVDhAA5wrtpnBWsRMXQ27sw6uwjQ=="
+          keyring: "AQASCkZY1nD5KBAAPIP81ViLXzAYC+Xm3pqY/Q=="
           secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
       libvirt:
         listen_addr: 0.0.0.0
@@ -302,10 +304,10 @@ data:
       configmap_etc: true
       daemonset_libvirt: true
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: libvirt
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -325,16 +327,16 @@ data:
     release_group: null
     images:
       tags:
-        openvswitch_db_server: registry.cicd.stg.taco/pike/ubuntu-source-openvswitch-db-server:0.1.0
-        openvswitch_vswitchd: registry.cicd.stg.taco/pike/ubuntu-source-openvswitch-vswitchd:0.1.0
+        openvswitch_db_server: registry.cicd.stg.taco/pike/ubuntu-source-openvswitch-db-server:3.6.0
+        openvswitch_vswitchd: registry.cicd.stg.taco/pike/ubuntu-source-openvswitch-vswitchd:3.6.0
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
       pull_policy: Always
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: openvswitch
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -385,19 +387,19 @@ data:
   values:
     images:
       tags:
-        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
-        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        keystone_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
-        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:3.6.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        keystone_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-keystone:3.6.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
         rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
-        keystone_fernet_setup: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
-        keystone_fernet_rotate: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
-        keystone_credential_setup: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
-        keystone_credential_rotate: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
-        keystone_api: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
-        keystone_domain_manage: registry.cicd.stg.taco/pike/ubuntu-source-keystone:0.1.0
+        keystone_fernet_setup: registry.cicd.stg.taco/pike/ubuntu-source-keystone:3.6.0
+        keystone_fernet_rotate: registry.cicd.stg.taco/pike/ubuntu-source-keystone:3.6.0
+        keystone_credential_setup: registry.cicd.stg.taco/pike/ubuntu-source-keystone:3.6.0
+        keystone_credential_rotate: registry.cicd.stg.taco/pike/ubuntu-source-keystone:3.6.0
+        keystone_api: registry.cicd.stg.taco/pike/ubuntu-source-keystone:3.6.0
+        keystone_domain_manage: registry.cicd.stg.taco/pike/ubuntu-source-keystone:3.6.0
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
       pull_policy: Always
@@ -412,10 +414,10 @@ data:
       replicas:
         api: 3
   source:
-    type: local
-    location: /root/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: keystone
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -472,18 +474,18 @@ data:
     storage: rbd
     images:
       tags:
-        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:3.6.0
         glance_storage_init: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
-        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        glance_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-glance-api:0.1.0
-        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        glance_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-glance-api:3.6.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
         rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
-        glance_api: registry.cicd.stg.taco/pike/ubuntu-source-glance-api:0.1.0
-        glance_registry: registry.cicd.stg.taco/pike/ubuntu-source-glance-registry:0.1.0
-        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        glance_api: registry.cicd.stg.taco/pike/ubuntu-source-glance-api:3.6.0
+        glance_registry: registry.cicd.stg.taco/pike/ubuntu-source-glance-registry:3.6.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
       pull_policy: Always
@@ -502,7 +504,7 @@ data:
     conf:
       ceph:
         enabled: true
-        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        admin_keyring: "AQCqEUVY3RvrBRAABmhtxK2MvD/whiiVZ5Jkww=="
       glance:
         glance_store:
           rbd_store_user: glance
@@ -510,17 +512,17 @@ data:
         DEFAULT:
           show_image_direct_url: true
     bootstrap:
-      enabled: false
+      enabled: true
       structured:
         images:
           cirros:
             id: 201084fc-c276-4744-8504-cb974dbb3610
             private: false
   source:
-    type: local
-    location: /root/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: glance
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -591,28 +593,28 @@ data:
   values:
     images:
       tags:
-        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
-        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        nova_api: registry.cicd.stg.taco/pike/ubuntu-source-nova-api:0.1.0
-        nova_cell_setup: registry.cicd.stg.taco/pike/ubuntu-source-nova-api:0.1.0
-        nova_cell_setup_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        nova_compute: registry.cicd.stg.taco/pike/ubuntu-source-nova-compute:0.1.0
-        nova_compute_ironic: registry.cicd.stg.taco/pike/ubuntu-source-nova-compute-ironic:0.1.0
-        nova_compute_ssh: registry.cicd.stg.taco/pike/ubuntu-source-nova-ssh:0.1.0
-        nova_conductor: registry.cicd.stg.taco/pike/ubuntu-source-nova-conductor:0.1.0
-        nova_consoleauth: registry.cicd.stg.taco/pike/ubuntu-source-nova-consoleauth:0.1.0
-        nova_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-nova-api:0.1.0
-        nova_novncproxy: registry.cicd.stg.taco/pike/ubuntu-source-nova-novncproxy:0.1.0
-        nova_novncproxy_assets: registry.cicd.stg.taco/pike/ubuntu-source-nova-novncproxy:0.1.0
-        nova_placement: registry.cicd.stg.taco/pike/ubuntu-source-nova-placement-api:0.1.0
-        nova_scheduler: registry.cicd.stg.taco/pike/ubuntu-source-nova-scheduler:0.1.0
-        nova_spiceproxy: registry.cicd.stg.taco/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
-        nova_spiceproxy_assets: registry.cicd.stg.taco/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
-        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:3.6.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        nova_api: registry.cicd.stg.taco/pike/ubuntu-source-nova-api:3.6.0
+        nova_cell_setup: registry.cicd.stg.taco/pike/ubuntu-source-nova-api:3.6.0
+        nova_cell_setup_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        nova_compute: registry.cicd.stg.taco/pike/ubuntu-source-nova-compute:3.6.0
+        nova_compute_ironic: registry.cicd.stg.taco/pike/ubuntu-source-nova-compute-ironic:3.6.0
+        nova_compute_ssh: registry.cicd.stg.taco/pike/ubuntu-source-nova-ssh:3.6.0
+        nova_conductor: registry.cicd.stg.taco/pike/ubuntu-source-nova-conductor:3.6.0
+        nova_consoleauth: registry.cicd.stg.taco/pike/ubuntu-source-nova-consoleauth:3.6.0
+        nova_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-nova-api:3.6.0
+        nova_novncproxy: registry.cicd.stg.taco/pike/ubuntu-source-nova-novncproxy:3.6.0
+        nova_novncproxy_assets: registry.cicd.stg.taco/pike/ubuntu-source-nova-novncproxy:3.6.0
+        nova_placement: registry.cicd.stg.taco/pike/ubuntu-source-nova-placement-api:3.6.0
+        nova_scheduler: registry.cicd.stg.taco/pike/ubuntu-source-nova-scheduler:3.6.0
+        nova_spiceproxy: registry.cicd.stg.taco/pike/ubuntu-source-nova-spicehtml5proxy:3.6.0
+        nova_spiceproxy_assets: registry.cicd.stg.taco/pike/ubuntu-source-nova-spicehtml5proxy:3.6.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
         rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
@@ -840,10 +842,10 @@ data:
           append:
       ceph:
         enabled: true
-        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        admin_keyring: "AQCqEUVY3RvrBRAABmhtxK2MvD/whiiVZ5Jkww=="
         cinder:
           user: "cinder"
-          keyring: "AQASDcJacIJVDhAA5wrtpnBWsRMXQ27sw6uwjQ=="
+          keyring: "AQASCkZY1nD5KBAAPIP81ViLXzAYC+Xm3pqY/Q=="
           secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
       rally_tests:
         run_tempest: false
@@ -1083,7 +1085,6 @@ data:
         vnc:
           novncproxy_base_url: http://ctrl01s:30608/vnc_auto.html
         libvirt:
-          virt_type: qemu
           rbd_user: "cinder"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
         scheduler:
@@ -1103,10 +1104,10 @@ data:
         scheduler: 3
         novncproxy: 3
   source:
-    type: local
-    location: /root/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: nova
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -1152,22 +1153,22 @@ data:
   values:
     images:
       tags:
-        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
-        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        neutron_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-neutron-server:0.1.0
-        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        neutron_server: registry.cicd.stg.taco/pike/ubuntu-source-neutron-server:0.1.0
-        neutron_dhcp: registry.cicd.stg.taco/pike/ubuntu-source-neutron-dhcp-agent:0.1.0
-        neutron_metadata: registry.cicd.stg.taco/pike/ubuntu-source-neutron-metadata-agent:0.1.0
-        neutron_l3: registry.cicd.stg.taco/pike/ubuntu-source-neutron-l3-agent:0.1.0
-        neutron_openvswitch_agent: registry.cicd.stg.taco/pike/ubuntu-source-neutron-openvswitch-agent:0.1.0
-        neutron_linuxbridge_agent: registry.cicd.stg.taco/pike/ubuntu-source-neutron-linuxbridge-agent:0.1.0
-        neutron_sriov_agent: registry.cicd.stg.taco/pike/ubuntu-source-neutron-sriov-agent:0.1.0
-        neutron_sriov_agent_init: registry.cicd.stg.taco/pike/ubuntu-source-neutron-sriov-agent:0.1.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:3.6.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        neutron_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-neutron-server:3.6.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        neutron_server: registry.cicd.stg.taco/pike/ubuntu-source-neutron-server:3.6.0
+        neutron_dhcp: registry.cicd.stg.taco/pike/ubuntu-source-neutron-dhcp-agent:3.6.0
+        neutron_metadata: registry.cicd.stg.taco/pike/ubuntu-source-neutron-metadata-agent:3.6.0
+        neutron_l3: registry.cicd.stg.taco/pike/ubuntu-source-neutron-l3-agent:3.6.0
+        neutron_openvswitch_agent: registry.cicd.stg.taco/pike/ubuntu-source-neutron-openvswitch-agent:3.6.0
+        neutron_linuxbridge_agent: registry.cicd.stg.taco/pike/ubuntu-source-neutron-linuxbridge-agent:3.6.0
+        neutron_sriov_agent: registry.cicd.stg.taco/pike/ubuntu-source-neutron-sriov-agent:3.6.0
+        neutron_sriov_agent_init: registry.cicd.stg.taco/pike/ubuntu-source-neutron-sriov-agent:3.6.0
         rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
@@ -1180,12 +1181,12 @@ data:
           uid: 42435
     network:
       auto_bridge_add:
-        br-ex: eth1
+        br-ex: veth0 
       backend:
         - openvswitch
       share_namespaces: false
       interface:
-        tunnel: eth0
+        tunnel: br-data
     conf:
       neutron_sudoers: |
         # This sudoers file supports rootwrap-daemon for both Kolla and LOCI Images.
@@ -1219,10 +1220,10 @@ data:
           securitygroup:
             firewall_driver: openvswitch
   source:
-    type: local
-    location: /root/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: neutron
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -1273,21 +1274,21 @@ data:
   values:
     images:
       tags:
-        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
-        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        cinder_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-cinder-api:0.1.0
-        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:3.6.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        cinder_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-cinder-api:3.6.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
         rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
-        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        cinder_api: registry.cicd.stg.taco/pike/ubuntu-source-cinder-api:0.1.0
-        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        cinder_scheduler: registry.cicd.stg.taco/pike/ubuntu-source-cinder-scheduler:0.1.0
-        cinder_volume: registry.cicd.stg.taco/pike/ubuntu-source-cinder-volume:0.1.0
-        cinder_volume_usage_audit: registry.cicd.stg.taco/pike/ubuntu-source-cinder-volume:0.1.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        cinder_api: registry.cicd.stg.taco/pike/ubuntu-source-cinder-api:3.6.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        cinder_scheduler: registry.cicd.stg.taco/pike/ubuntu-source-cinder-scheduler:3.6.0
+        cinder_volume: registry.cicd.stg.taco/pike/ubuntu-source-cinder-volume:3.6.0
+        cinder_volume_usage_audit: registry.cicd.stg.taco/pike/ubuntu-source-cinder-volume:3.6.0
         cinder_storage_init: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
-        cinder_backup: registry.cicd.stg.taco/pike/ubuntu-source-cinder-backup:0.1.0
+        cinder_backup: registry.cicd.stg.taco/pike/ubuntu-source-cinder-backup:3.6.0
         cinder_backup_storage_init: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
@@ -1302,14 +1303,26 @@ data:
         scheduler: 3
         volume: 1
     conf:
+      logging:
+        loggers:
+          keys:
+            - root
+            - cinder
+            - oslo_service
+        logger_oslo_service:
+          level: DEBUG
+          handlers: stderr
+          qualname: oslo_service
+        logger_cinder:
+          level: DEBUG
       ceph:
         enabled: true
-        admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
+        admin_keyring: "AQCqEUVY3RvrBRAABmhtxK2MvD/whiiVZ5Jkww=="
       cinder:
         DEFAULT:
           debug: true
           backup_driver: cinder.backup.drivers.ceph
-          backup_ceph_user: "cinder"
+          backup_ceph_user: "cinder-backup"
           backup_ceph_pool: "backups-test"
       backends:
         rbd1:
@@ -1324,10 +1337,10 @@ data:
           rbd_pool: "volumes-test"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
   source:
-    type: local
-    location: /root/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: cinder
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -1372,19 +1385,19 @@ data:
   values:
     images:
       tags:
-        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:0.1.0
-        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        heat_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:0.1.0
-        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        heat_api: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:0.1.0
-        heat_cfn: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:0.1.0
-        heat_cloudwatch: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:0.1.0
-        heat_engine: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
-        heat_engine_cleaner: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:0.1.0
+        test: registry.cicd.stg.taco/pike/ubuntu-source-rally:3.6.0
+        bootstrap: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        heat_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:3.6.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        heat_api: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:3.6.0
+        heat_cfn: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:3.6.0
+        heat_cloudwatch: registry.cicd.stg.taco/pike/ubuntu-source-heat-api:3.6.0
+        heat_engine: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
+        heat_engine_cleaner: registry.cicd.stg.taco/pike/ubuntu-source-heat-engine:3.6.0
         rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
@@ -1399,10 +1412,10 @@ data:
         cloudwatch: 3
         engine: 3
   source:
-    type: local
-    location: /root/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: heat
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -1422,10 +1435,10 @@ data:
     replicas: 1
     images:
       tags:
-        db_init: registry.cicd.stg.taco/pike/ubuntu-source-horizon:0.1.0
-        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-horizon:0.1.0
-        horizon_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-horizon:0.1.0
-        horizon: registry.cicd.stg.taco/pike/ubuntu-source-horizon:0.1.0
+        db_init: registry.cicd.stg.taco/pike/ubuntu-source-horizon:3.6.0
+        db_drop: registry.cicd.stg.taco/pike/ubuntu-source-horizon:3.6.0
+        horizon_db_sync: registry.cicd.stg.taco/pike/ubuntu-source-horizon:3.6.0
+        horizon: registry.cicd.stg.taco/pike/ubuntu-source-horizon:3.6.0
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
         dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
       pull_policy: Always
@@ -1451,10 +1464,10 @@ data:
               enable_vpn: "False"
               enable_fip_topology_check: "True"
   source:
-    type: local
-    location: /root/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: horizon
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -1512,10 +1525,10 @@ data:
         homeDirectory: /home/taco
         mail: taco@cluster.local
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: ldap
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -1537,7 +1550,7 @@ data:
         apache_proxy: registry.cicd.stg.taco/httpd:2.4
         memory_init: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
         curator: registry.cicd.stg.taco/curator:5.2.0
-        elasticsearch: registry.cicd.stg.taco/elasticsearch-s3:v0.1.0
+        elasticsearch: registry.cicd.stg.taco/elasticsearch-s3:v3.6.0
         ceph_key_placement: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
         s3_bucket: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
         s3_user: registry.cicd.stg.taco/ceph-config-helper:v1.10.3
@@ -1547,6 +1560,11 @@ data:
         snapshot_repository: registry.cicd.stg.taco/ubuntu-source-heat-engine:3.0.3
         image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
       pull_policy: Always
+    pod:
+      replicas:
+        master: 3
+        data: 3
+        client: 2
     conf:
       curator:
         #run every 6th hour
@@ -1655,10 +1673,10 @@ data:
         storage: 2000Gi
       storage_class: ceph
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: elasticsearch
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -1694,6 +1712,10 @@ data:
         fluentbit:
           jobs:
             - elasticsearch-template
+          services:
+            - endpoint: internal
+              service: elasticsearch
+        tests:
           services:
             - endpoint: internal
               service: elasticsearch
@@ -1866,10 +1888,10 @@ data:
       job_elasticsearch_template: true
 
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: fluent-logging
-    reference: master
+    reference: 3.6.0
   test: false
   dependencies:
     - helm-toolkit
@@ -1904,10 +1926,42 @@ data:
           port: 30001
         port: 5601
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: kibana
-    reference: master
+    reference: 3.6.0
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-process-exporter 
+data:
+  chart_name: prometheus-process-exporter
+  release: prometheus-process-exporter
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        process_exporter: registry.cicd.stg.taco/process-exporter:0.2.11
+        dep_check: registry.cicd.stg.taco/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    labels:
+      process_exporter:
+        process_selector_key: process-exporter
+        process_selector_value: enabled
+        tolerations: true
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: prometheus-process-exporter
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -2288,10 +2342,10 @@ data:
                 action: replace
                 target_label: kubernetes_io_hostname
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: prometheus
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -2365,10 +2419,10 @@ data:
         {{ end }}
         {{ end }}
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: prometheus-alertmanager
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -2393,10 +2447,10 @@ data:
       pull_policy: IfNotPresent
     dummy: Always
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: prometheus-kube-state-metrics
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -2425,10 +2479,10 @@ data:
         node_selector_value: enabled
         tolerations: true
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: prometheus-node-exporter
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -2454,10 +2508,10 @@ data:
       pull_policy: Always
     dummy: dummy
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: prometheus-openstack-exporter
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -2489,10 +2543,10 @@ data:
           enabled: true
           port: 30009
   source:
-    type: local
-    location: /root/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: grafana
-    reference: master
+    reference: 3.6.0
   dependencies:
     - helm-toolkit
 ---
@@ -2566,5 +2620,5 @@ data:
   chart_groups:
     - openstack-infra
     - openstack-services
-    #- logging-infra
-    #- monitoring-infra
+    - logging-infra
+    - monitoring-infra
