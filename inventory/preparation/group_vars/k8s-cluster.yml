@@ -11,7 +11,7 @@ etcd_deployment_type: docker
 etcd_memory_limit: 8192M
 
 # K8S
-kube_version: v1.12.1
+kube_version: v1.12.3
 kubeadm_enabled: true
 kube_api_anonymous_auth: true
 kube_api_pwd: "{{ lookup('password', inventory_dir + '/credentials/kube_user.creds length=15 chars=ascii_letters,digits') }}"
@@ -22,6 +22,7 @@ kube_users:
     groups:
       - system:masters
 kubelet_deployment_type: host
+kube_proxy_mode: iptables
 
 kube_network_plugin: calico
 kube_service_addresses: 10.233.0.0/18
@@ -56,5 +57,5 @@ dns_mode: coredns
 # Helm
 helm_enabled: true
 helm_deployment_type: host
-helm_version: "v2.10.0"
+helm_version: "v2.11.0"
 helm_skip_refresh: true
