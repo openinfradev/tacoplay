@@ -73,12 +73,12 @@ rbd_provisioner_namespace: rbd-provisioner
 rbd_provisioner_replicas: 1
 rbd_provisioner_monitors: "192.168.51.20:6789"
 rbd_provisioner_pool: kube
-rbd_provisioner_admin_id: admin
+rbd_provisioner_admin_id: kube
 rbd_provisioner_secret_name: ceph-secret-admin
-rbd_provisioner_secret: AQDEbY1aM2//MxAAArFo8Pt+KOYfW6zkeLwE3A==
+rbd_provisioner_secret: AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==
 rbd_provisioner_user_id: kube
 rbd_provisioner_user_secret_name: ceph-secret-user
-rbd_provisioner_user_secret: AQBcSY5agynAHRAADWDtfoGYrWj0Ru5r9Y1MgA==
+rbd_provisioner_user_secret: AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==
 rbd_provisioner_user_secret_namespace: rbd-provisioner
 rbd_provisioner_fs_type: ext4
 rbd_provisioner_image_format: "2"
