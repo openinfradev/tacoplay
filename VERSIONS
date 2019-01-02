@@ -1,5 +1,5 @@
 armada https://tde.sktelecom.com/stash/scm/oreotools/armada.git master
 kubespray https://tde.sktelecom.com/stash/scm/oreotools/kubespray.git v2.8.1
-charts/openstack-helm https://tde.sktelecom.com/stash/scm/openstack/openstack-helm.git 3.5.0
-charts/openstack-helm-infra https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra.git 3.5.0
+charts/openstack-helm https://tde.sktelecom.com/stash/scm/openstack/openstack-helm.git 3.6.0
+charts/openstack-helm-infra https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra.git 3.6.0
 ceph-ansible https://github.com/ceph/ceph-ansible.git stable-3.1
