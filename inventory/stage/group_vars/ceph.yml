@@ -7,4 +7,70 @@ ceph_mirror: http://hk.ceph.com
 
 ntp_service_enabled: false
 copy_admin_key: false
-external_cluster_mon_ips: 192.168.51.20
+ceph_mgr_modules: [status,dashboard,prometheus]
+
+monitor_interface: bond0
+public_network: 192.168.51.0/24
+cluster_network: 192.168.51.0/24
+
+osd_objectstore: bluestore
+osd_scenario: lvm
+
+ceph_conf_overrides:
+  global:
+    mon_allow_pool_delete: true
+    osd_pool_default_size: 3
+    osd_pool_default_min_size: 2
+    osd_pg_stat_report_internal_max: 1
+
+openstack_config: true
+# PG Calc: Total 22 OSDs
+#  kube -> 20%
+#  glance -> 10%
+#  cinder -> 60%
+#  cinder-backup -> 10%
+kube_pool:
+  name: "kube"
+  pg_num: 128
+  pgp_num: 128
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+  application: "rbd"
+openstack_glance_pool:
+  name: "images"
+  pg_num: 64
+  pgp_num: 64
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+  application: "rbd"
+openstack_cinder_pool:
+  name: "volumes"
+  pg_num: 512
+  pgp_num: 512
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+  application: "rbd"
+openstack_cinder_backup_pool:
+  name: "backups"
+  pg_num: 64
+  pgp_num: 64
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+
+openstack_pools:
+  - "{{ kube_pool }}"
+  - "{{ openstack_glance_pool }}"
+  - "{{ openstack_cinder_pool }}"
+  - "{{ openstack_cinder_backup_pool }}"
+
+openstack_keys:
+  - { name: client.kube, caps: { mon: "profile rbd", osd: "profile rbd pool=kube"}, key: "AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==", mode: "0600" }
+  - { name: client.cinder, caps: { mon: "profile rbd", osd: "profile rbd pool=volumes, profile rbd pool=backups, profile rbd pool=images"}, key: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==",  mode: "0600" }
