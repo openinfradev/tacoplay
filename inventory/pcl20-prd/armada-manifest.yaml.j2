@@ -12,7 +12,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: helm-toolkit
-    reference: master
   dependencies: []
 ---
 schema: armada/Chart/v1
@@ -31,7 +30,9 @@ data:
     images:
       tags:
         entrypoint: {{ docker_registry }}/kubernetes-entrypoint:v0.3.0
-        ingress: {{ docker_registry }}/nginx-ingress-controller:0.9.0
+        ingress: {{ docker_registry }}/nginx-ingress-controller:0.20.0
+        ingress_module_init: {{ docker_registry }}/pike/ubuntu-source-neutron-server:3.6.0
+        ingress_routed_vip: {{ docker_registry }}/pike/ubuntu-source-neutron-server:3.6.0
         error_pages: {{ docker_registry }}/defaultbackend:1.0
         keepalived: {{ docker_registry }}/keepalived:1.4.5
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.0
@@ -56,7 +57,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: ingress
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -113,7 +113,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: ceph-provisioners
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -132,7 +131,7 @@ data:
   values:
     images:
       tags:
-        mariadb: {{ docker_registry }}/mariadb:10.2.13
+        mariadb: {{ docker_registry }}/mariadb:10.2.18
         ingress: {{ docker_registry }}/nginx-ingress-controller:0.9.0
         error_pages: {{ docker_registry }}/defaultbackend:1.0
         prometheus_create_mysql_user: {{ docker_registry }}/mariadb:10.2.13
@@ -156,7 +155,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: mariadb
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -186,7 +184,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: etcd
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -210,7 +207,7 @@ data:
         prometheus_rabbitmq_exporter: {{ docker_registry }}/rabbitmq-exporter:v0.21.0
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
         scripted_test: {{ docker_registry }}/rabbitmq:3.7.4-management
-        prometheus_rabbitmq_exporter_helm_tests: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        prometheus_rabbitmq_exporter_helm_tests: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -226,7 +223,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: rabbitmq
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -262,7 +258,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: memcached
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -286,6 +281,9 @@ data:
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
         libvirt: {{ docker_registry }}/libvirt:ubuntu-xenial-1.3.1-1ubuntu10.24
       pull_policy: Always
+    network:
+      backend:
+        - linuxbridge
     conf:
       ceph:
         enabled: true
@@ -305,7 +303,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: libvirt
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -325,8 +322,8 @@ data:
     release_group: null
     images:
       tags:
-        openvswitch_db_server: {{ docker_registry }}/pike/ubuntu-source-openvswitch-db-server:0.1.0
-        openvswitch_vswitchd: {{ docker_registry }}/pike/ubuntu-source-openvswitch-vswitchd:0.1.0
+        openvswitch_db_server: {{ docker_registry }}/pike/ubuntu-source-openvswitch-db-server:3.6.0
+        openvswitch_vswitchd: {{ docker_registry }}/pike/ubuntu-source-openvswitch-vswitchd:3.6.0
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
@@ -334,7 +331,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: openvswitch
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -385,19 +381,19 @@ data:
   values:
     images:
       tags:
-        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
-        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        keystone_db_sync: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
-        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:3.6.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        keystone_db_sync: {{ docker_registry }}/pike/ubuntu-source-keystone:3.6.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
-        keystone_fernet_setup: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
-        keystone_fernet_rotate: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
-        keystone_credential_setup: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
-        keystone_credential_rotate: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
-        keystone_api: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
-        keystone_domain_manage: {{ docker_registry }}/pike/ubuntu-source-keystone:0.1.0
+        keystone_fernet_setup: {{ docker_registry }}/pike/ubuntu-source-keystone:3.6.0
+        keystone_fernet_rotate: {{ docker_registry }}/pike/ubuntu-source-keystone:3.6.0
+        keystone_credential_setup: {{ docker_registry }}/pike/ubuntu-source-keystone:3.6.0
+        keystone_credential_rotate: {{ docker_registry }}/pike/ubuntu-source-keystone:3.6.0
+        keystone_api: {{ docker_registry }}/pike/ubuntu-source-keystone:3.6.0
+        keystone_domain_manage: {{ docker_registry }}/pike/ubuntu-source-keystone:3.6.0
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
@@ -415,7 +411,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: keystone
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -472,18 +467,18 @@ data:
     storage: rbd
     images:
       tags:
-        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:3.6.0
         glance_storage_init: {{ docker_registry }}/ceph-config-helper:v1.10.3
-        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        glance_db_sync: {{ docker_registry }}/pike/ubuntu-source-glance-api:0.1.0
-        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        glance_db_sync: {{ docker_registry }}/pike/ubuntu-source-glance-api:3.6.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
-        glance_api: {{ docker_registry }}/pike/ubuntu-source-glance-api:0.1.0
-        glance_registry: {{ docker_registry }}/pike/ubuntu-source-glance-registry:0.1.0
-        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        glance_api: {{ docker_registry }}/pike/ubuntu-source-glance-api:3.6.0
+        glance_registry: {{ docker_registry }}/pike/ubuntu-source-glance-registry:3.6.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
@@ -520,7 +515,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: glance
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -591,28 +585,28 @@ data:
   values:
     images:
       tags:
-        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
-        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        nova_api: {{ docker_registry }}/pike/ubuntu-source-nova-api:0.1.0
-        nova_cell_setup: {{ docker_registry }}/pike/ubuntu-source-nova-api:0.1.0
-        nova_cell_setup_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        nova_compute: {{ docker_registry }}/pike/ubuntu-source-nova-compute:0.1.0
-        nova_compute_ironic: {{ docker_registry }}/pike/ubuntu-source-nova-compute-ironic:0.1.0
-        nova_compute_ssh: {{ docker_registry }}/pike/ubuntu-source-nova-ssh:0.1.0
-        nova_conductor: {{ docker_registry }}/pike/ubuntu-source-nova-conductor:0.1.0
-        nova_consoleauth: {{ docker_registry }}/pike/ubuntu-source-nova-consoleauth:0.1.0
-        nova_db_sync: {{ docker_registry }}/pike/ubuntu-source-nova-api:0.1.0
-        nova_novncproxy: {{ docker_registry }}/pike/ubuntu-source-nova-novncproxy:0.1.0
-        nova_novncproxy_assets: {{ docker_registry }}/pike/ubuntu-source-nova-novncproxy:0.1.0
-        nova_placement: {{ docker_registry }}/pike/ubuntu-source-nova-placement-api:0.1.0
-        nova_scheduler: {{ docker_registry }}/pike/ubuntu-source-nova-scheduler:0.1.0
-        nova_spiceproxy: {{ docker_registry }}/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
-        nova_spiceproxy_assets: {{ docker_registry }}/pike/ubuntu-source-nova-spicehtml5proxy:0.1.0
-        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:3.6.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        nova_api: {{ docker_registry }}/pike/ubuntu-source-nova-api:3.6.0
+        nova_cell_setup: {{ docker_registry }}/pike/ubuntu-source-nova-api:3.6.0
+        nova_cell_setup_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        nova_compute: {{ docker_registry }}/pike/ubuntu-source-nova-compute:3.6.0
+        nova_compute_ironic: {{ docker_registry }}/pike/ubuntu-source-nova-compute-ironic:3.6.0
+        nova_compute_ssh: {{ docker_registry }}/pike/ubuntu-source-nova-ssh:3.6.0
+        nova_conductor: {{ docker_registry }}/pike/ubuntu-source-nova-conductor:3.6.0
+        nova_consoleauth: {{ docker_registry }}/pike/ubuntu-source-nova-consoleauth:3.6.0
+        nova_db_sync: {{ docker_registry }}/pike/ubuntu-source-nova-api:3.6.0
+        nova_novncproxy: {{ docker_registry }}/pike/ubuntu-source-nova-novncproxy:3.6.0
+        nova_novncproxy_assets: {{ docker_registry }}/pike/ubuntu-source-nova-novncproxy:3.6.0
+        nova_placement: {{ docker_registry }}/pike/ubuntu-source-nova-placement-api:3.6.0
+        nova_scheduler: {{ docker_registry }}/pike/ubuntu-source-nova-scheduler:3.6.0
+        nova_spiceproxy: {{ docker_registry }}/pike/ubuntu-source-nova-spicehtml5proxy:3.6.0
+        nova_spiceproxy_assets: {{ docker_registry }}/pike/ubuntu-source-nova-spicehtml5proxy:3.6.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
         rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
@@ -626,6 +620,8 @@ data:
             m1_tiny:
               id: 0c84e220-a258-439f-a6ff-f8e9fd980025
     network:
+      backend:
+        - linuxbridge
       novncproxy:
         name: "nova-novncproxy"
         node_port:
@@ -634,8 +630,6 @@ data:
         port: 6080
         targetPort: 6080
     conf:
-      libvirt:
-        live_migration_interface: bond0
       rootwrap_filters:
         api_metadata:
           override:
@@ -1075,6 +1069,8 @@ data:
               sla:
                 failure_rate:
                   max: 0
+      libvirt:
+        live_migration_interface: bond0
       nova:
         DEFAULT:
           scheduler_default_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
@@ -1085,7 +1081,6 @@ data:
         vnc:
           novncproxy_base_url: http://{{ hostvars[groups['controller-node'][0]]['ip'] }}:30608/vnc_auto.html
         libvirt:
-          virt_type: qemu
           rbd_user: "cinder"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
         scheduler:
@@ -1108,7 +1103,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: nova
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1154,22 +1148,22 @@ data:
   values:
     images:
       tags:
-        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
-        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        neutron_db_sync: {{ docker_registry }}/pike/ubuntu-source-neutron-server:0.1.0
-        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        neutron_server: {{ docker_registry }}/pike/ubuntu-source-neutron-server:0.1.0
-        neutron_dhcp: {{ docker_registry }}/pike/ubuntu-source-neutron-dhcp-agent:0.1.0
-        neutron_metadata: {{ docker_registry }}/pike/ubuntu-source-neutron-metadata-agent:0.1.0
-        neutron_l3: {{ docker_registry }}/pike/ubuntu-source-neutron-l3-agent:0.1.0
-        neutron_openvswitch_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-openvswitch-agent:0.1.0
-        neutron_linuxbridge_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-linuxbridge-agent:0.1.0
-        neutron_sriov_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-sriov-agent:0.1.0
-        neutron_sriov_agent_init: {{ docker_registry }}/pike/ubuntu-source-neutron-sriov-agent:0.1.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:3.6.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        neutron_db_sync: {{ docker_registry }}/pike/ubuntu-source-neutron-server:3.6.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        neutron_server: {{ docker_registry }}/pike/ubuntu-source-neutron-server:3.6.0
+        neutron_dhcp: {{ docker_registry }}/pike/ubuntu-source-neutron-dhcp-agent:3.6.0
+        neutron_metadata: {{ docker_registry }}/pike/ubuntu-source-neutron-metadata-agent:3.6.0
+        neutron_l3: {{ docker_registry }}/pike/ubuntu-source-neutron-l3-agent:3.6.0
+        neutron_openvswitch_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-openvswitch-agent:3.6.0
+        neutron_linuxbridge_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-linuxbridge-agent:3.6.0
+        neutron_sriov_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-sriov-agent:3.6.0
+        neutron_sriov_agent_init: {{ docker_registry }}/pike/ubuntu-source-neutron-sriov-agent:3.6.0
         rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
@@ -1181,13 +1175,12 @@ data:
         neutron:
           uid: 42435
     network:
-      auto_bridge_add:
-        br-ex: bond1.52
       backend:
-        - openvswitch
+        - linuxbridge
+      auto_bridge_add: null
       share_namespaces: false
       interface:
-        tunnel: bond1
+        tunnel: null
     conf:
       neutron_sudoers: |
         # This sudoers file supports rootwrap-daemon for both Kolla and LOCI Images.
@@ -1199,32 +1192,40 @@ data:
           debug: True
           core_plugin: ml2
           l3_ha: True
+          l3_ha_network_type: vlan
           # NOTE: change mtu to 9000 if jumbo frame is supported
           global_physnet_mtu: 9000
           service_plugins: router
-          interface_driver: openvswitch
+          interface_driver: linuxbridge
         agent:
           root_helper_daemon: sudo neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
       plugins:
         ml2_conf:
           ml2:
-            mechanism_drivers: openvswitch,l2population
-            type_drivers: flat, vxlan
-            tenant_network_types: vxlan
-        openvswitch_agent:
-          agent:
-            tunnel_types: vxlan
-            l2_population: True
-            arp_responder: True
-          ovs:
-            bridge_mappings: "external:br-ex"
+            mechanism_drivers: linuxbridge
+            type_drivers: flat,vlan
+            tenant_network_types: vlan
+          ml2_type_flat:
+            flat_networks: provider
+          ml2_type_vlan:
+            network_vlan_ranges: tenant:250:300
+        linuxbridge_agent:
+          linux_bridge:
+            physical_interface_mappings: tenant:bond1,provider:bond1.52
+            bridge_mappings: null
           securitygroup:
-            firewall_driver: openvswitch
+            firewall_driver: iptables
+    manifests:
+      daemonset_lb_agent: true
+      daemonset_dhcp_agent: true
+      daemonset_metadata_agent: false
+      daemonset_ovs_agent: false
+      daemonset_sriov_agent: false
+      daemonset_l3_agent: true
   source:
     type: local
     location: "{{ osh_path }}"
     subpath: neutron
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1275,21 +1276,21 @@ data:
   values:
     images:
       tags:
-        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
-        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        cinder_db_sync: {{ docker_registry }}/pike/ubuntu-source-cinder-api:0.1.0
-        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:3.6.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        cinder_db_sync: {{ docker_registry }}/pike/ubuntu-source-cinder-api:3.6.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
-        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        cinder_api: {{ docker_registry }}/pike/ubuntu-source-cinder-api:0.1.0
-        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        cinder_scheduler: {{ docker_registry }}/pike/ubuntu-source-cinder-scheduler:0.1.0
-        cinder_volume: {{ docker_registry }}/pike/ubuntu-source-cinder-volume:0.1.0
-        cinder_volume_usage_audit: {{ docker_registry }}/pike/ubuntu-source-cinder-volume:0.1.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        cinder_api: {{ docker_registry }}/pike/ubuntu-source-cinder-api:3.6.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        cinder_scheduler: {{ docker_registry }}/pike/ubuntu-source-cinder-scheduler:3.6.0
+        cinder_volume: {{ docker_registry }}/pike/ubuntu-source-cinder-volume:3.6.0
+        cinder_volume_usage_audit: {{ docker_registry }}/pike/ubuntu-source-cinder-volume:3.6.0
         cinder_storage_init: {{ docker_registry }}/ceph-config-helper:v1.10.3
-        cinder_backup: {{ docker_registry }}/pike/ubuntu-source-cinder-backup:0.1.0
+        cinder_backup: {{ docker_registry }}/pike/ubuntu-source-cinder-backup:3.6.0
         cinder_backup_storage_init: {{ docker_registry }}/ceph-config-helper:v1.10.3
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
@@ -1304,6 +1305,18 @@ data:
         scheduler: 3
         volume: 1
     conf:
+      logging:
+        loggers:
+          keys:
+            - root
+            - cinder
+            - oslo_service
+        logger_oslo_service:
+          level: DEBUG
+          handlers: stderr
+          qualname: oslo_service
+        logger_cinder:
+          level: DEBUG
       ceph:
         enabled: true
         admin_keyring: "{{ admin_keyring }}"
@@ -1329,7 +1342,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: cinder
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1374,19 +1386,19 @@ data:
   values:
     images:
       tags:
-        test: {{ docker_registry }}/pike/ubuntu-source-rally:0.1.0
-        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        heat_db_sync: {{ docker_registry }}/pike/ubuntu-source-heat-api:0.1.0
-        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        heat_api: {{ docker_registry }}/pike/ubuntu-source-heat-api:0.1.0
-        heat_cfn: {{ docker_registry }}/pike/ubuntu-source-heat-api:0.1.0
-        heat_cloudwatch: {{ docker_registry }}/pike/ubuntu-source-heat-api:0.1.0
-        heat_engine: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
-        heat_engine_cleaner: {{ docker_registry }}/pike/ubuntu-source-heat-engine:0.1.0
+        test: {{ docker_registry }}/pike/ubuntu-source-rally:3.6.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        heat_db_sync: {{ docker_registry }}/pike/ubuntu-source-heat-api:3.6.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        heat_api: {{ docker_registry }}/pike/ubuntu-source-heat-api:3.6.0
+        heat_cfn: {{ docker_registry }}/pike/ubuntu-source-heat-api:3.6.0
+        heat_cloudwatch: {{ docker_registry }}/pike/ubuntu-source-heat-api:3.6.0
+        heat_engine: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        heat_engine_cleaner: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         rabbit_init: {{ docker_registry }}/rabbitmq:3.7-management
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
@@ -1404,7 +1416,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: heat
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1424,10 +1435,10 @@ data:
     replicas: 1
     images:
       tags:
-        db_init: {{ docker_registry }}/pike/ubuntu-source-horizon:0.1.0
-        db_drop: {{ docker_registry }}/pike/ubuntu-source-horizon:0.1.0
-        horizon_db_sync: {{ docker_registry }}/pike/ubuntu-source-horizon:0.1.0
-        horizon: {{ docker_registry }}/pike/ubuntu-source-horizon:0.1.0
+        db_init: {{ docker_registry }}/pike/ubuntu-source-horizon:3.6.0
+        db_drop: {{ docker_registry }}/pike/ubuntu-source-horizon:3.6.0
+        horizon_db_sync: {{ docker_registry }}/pike/ubuntu-source-horizon:3.6.0
+        horizon: {{ docker_registry }}/pike/ubuntu-source-horizon:3.6.0
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
       pull_policy: Always
@@ -1438,6 +1449,10 @@ data:
       node_port:
         enabled: true
         port: 31000
+      api:
+        ingress:
+          annotations:
+            nginx.ingress.kubernetes.io/proxy-body-size: 102400M
     conf:
       horizon:
         local_settings:
@@ -1456,7 +1471,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: horizon
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1517,7 +1531,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: ldap
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1539,7 +1552,7 @@ data:
         apache_proxy: {{ docker_registry }}/httpd:2.4
         memory_init: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
         curator: {{ docker_registry }}/curator:5.2.0
-        elasticsearch: {{ docker_registry }}/elasticsearch-s3:v0.1.0
+        elasticsearch: {{ docker_registry }}/elasticsearch-s3:v3.6.0
         ceph_key_placement: {{ docker_registry }}/ceph-config-helper:v1.10.3
         s3_bucket: {{ docker_registry }}/ceph-config-helper:v1.10.3
         s3_user: {{ docker_registry }}/ceph-config-helper:v1.10.3
@@ -1549,6 +1562,11 @@ data:
         snapshot_repository: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
+    pod:
+      replicas:
+        master: 3
+        data: 3
+        client: 2
     conf:
       curator:
         #run every 6th hour
@@ -1660,7 +1678,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: elasticsearch
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1696,6 +1713,10 @@ data:
         fluentbit:
           jobs:
             - elasticsearch-template
+          services:
+            - endpoint: internal
+              service: elasticsearch
+        tests:
           services:
             - endpoint: internal
               service: elasticsearch
@@ -1871,7 +1892,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: fluent-logging
-    reference: master
   test: false
   dependencies:
     - helm-toolkit
@@ -1909,7 +1929,37 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: kibana
-    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-process-exporter 
+data:
+  chart_name: prometheus-process-exporter
+  release: prometheus-process-exporter
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        process_exporter: {{ docker_registry }}/process-exporter:0.2.11
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+      pull_policy: Always
+    labels:
+      process_exporter:
+        process_selector_key: process-exporter
+        process_selector_value: enabled
+        tolerations: true
+  source:
+    type: local
+    location: "{{ osh_infra_path }}"
+    subpath: prometheus-process-exporter
   dependencies:
     - helm-toolkit
 ---
@@ -2293,7 +2343,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2372,7 +2421,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus-alertmanager
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2400,7 +2448,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus-kube-state-metrics
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2432,7 +2479,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus-node-exporter
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2461,7 +2507,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus-openstack-exporter
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2496,7 +2541,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: grafana
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2524,7 +2568,6 @@ data:
   sequenced: False
   chart_group:
     - libvirt
-    - openvswitch
     - keystone
     - glance
     - cinder

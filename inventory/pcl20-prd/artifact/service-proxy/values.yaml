@@ -1,0 +1,92 @@
+# Copyright 2017 The Openstack-Helm Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Default values for proxy.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+dependencies:
+  dynamic: null
+  static:
+    proxy:
+      jobs: null
+
+release_group: test
+
+labels:
+  ceph:
+    node_selector_key: openstack-control-plane
+    node_selector_value: enabled
+
+endpoints:
+  cluster_domain_suffix: cluster.local
+  ceph_exporter_proxy:
+    hosts:
+      default: ceph-exporter-proxy
+      ceph_exporter_proxy: ceph-exporter
+    host_fqdn_override:
+      default: null
+    path: null
+    scheme: 'http'
+    port:
+      internal:
+        default: 9283
+#  federate:
+#    hosts:
+#      default: federate-proxy
+#      federate: federation-exporter
+#    host_fqdn_override:
+#      default: null
+#    path: null
+#    scheme: 'http'
+#    port:
+#      internal:
+#        default: 80
+
+proxy:
+# (NOTE:sungil): This is a example for using a exporter from external CEPH
+# you can refer the official web - https://kubernetes.io/docs/concepts/services-networking/service/#services-without-selectors
+  ceph-exporter-proxy:
+    annotations:
+      prometheus.io/scrape: true
+    target:
+    - addresses:
+      - ip: 192.168.48.202 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9283
+    - addresses:
+      - ip: 192.168.48.203 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9283
+    - addresses:
+      - ip: 192.168.48.204 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9283
+# (NOTE:sungil): This is a example for federation with other k8s cluster
+# you can refer the official web - https://prometheus.io/docs/prometheus/latest/federation/
+#  federate:
+#    annotations:
+#      prometheus.io/scrape: true
+#      prometheus.io/path: /federate
+#      prometheus.io/params:
+#        'match[]':
+#          - '{job="prometheus"}'
+#          - '{__name__=~"job:.*"}'
+#    target:
+#    - addresses:
+#      - ip: 192.168.48.204 #your-other-k8s-cluster IP
+#      ports:
+#      - port: 30080 #other-cluster port
+#manifests:
+#  service: true
