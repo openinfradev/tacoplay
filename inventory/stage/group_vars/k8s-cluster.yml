@@ -2,6 +2,7 @@
 disable_swap: true
 epel_enabled: true
 preinstall_selinux_state: disabled
+populate_inventory_to_hosts_file: false
 
 # Docker
 # see all/docker.yml for docker options
@@ -100,10 +101,11 @@ calico_policy_image_repo: "{{ docker_registry }}/calico/kube-controllers"
 dashboard_image_repo: "{{ docker_registry }}/google_containers/kubernetes-dashboard-amd64"
 dnsmasq_nanny_image_repo: "{{ docker_registry }}/google_containers/k8s-dns-dnsmasq-nanny-{{ image_arch }}"
 dnsmasq_sidecar_image_repo: "{{ docker_registry }}/google_containers/k8s-dns-sidecar-{{ image_arch }}"
-coredns_image_repo: "{{ docker_registry }}/google-containers/coredns"
+coredns_image_repo: "{{ docker_registry }}/coredns"
 pod_infra_image_repo: "{{ docker_registry }}/google_containers/pause-{{ image_arch }}"
 etcd_image_repo: "{{ docker_registry }}/coreos/etcd"
 ingress_nginx_default_backend_image_repo: "{{ docker_registry }}/defaultbackend"
+rbd_provisioner_image_repo: "{{ docker_registry }}/external_storage/rbd-provisioner"
 
 # Uncomment the following lines when local k8s repository is used
 kubeadm_download_url: "http://{{ localrepo_k8s }}/k8s/kubeadm"
