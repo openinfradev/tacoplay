@@ -1,0 +1,109 @@
+# OS
+disable_swap: true
+epel_enabled: true
+preinstall_selinux_state: disabled
+
+# Docker
+# see all/docker.yml for docker options
+
+# etcd
+etcd_deployment_type: docker
+etcd_memory_limit: 8192M
+
+# K8S
+kube_version: v1.12.3
+kubeadm_enabled: true
+kube_api_anonymous_auth: true
+kube_api_pwd: "{{ lookup('password', inventory_dir + '/credentials/kube_user.creds length=15 chars=ascii_letters,digits') }}"
+kube_users:
+  kube:
+    pass: "{{kube_api_pwd}}"
+    role: admin
+    groups:
+      - system:masters
+kubelet_deployment_type: host
+kube_proxy_mode: iptables
+
+kube_network_plugin: calico
+kube_service_addresses: 172.18.0.0/17
+kube_pods_subnet: 172.18.128.0/17
+enable_network_policy: true
+
+# Calico
+# set ipip mode to Never and peer_with_calico_rr to use global bgp rr
+#calico_mtu: 1500
+ipip_mode: Never
+peer_with_router: true
+global_as_num: 64512
+peers:
+  - as: 64512
+    router_id: 192.168.90.1
+calico_felix_prometheusmetricsenabled: "true"
+calico_felix_prometheusmetricsport: 9091
+calico_felix_prometheusgometricsenabled: "true"
+calico_felix_prometheusprocessmetricsenabled: "true"
+
+# Set true to enable mount propataion
+local_volume_provisioner_enabled: false
+cephfs_provisioner_enabled: false
+pod_infra_version: 3.1
+
+# Copy kubectl to ansible host
+kubectl_localhost: true
+kubeconfig_localhost: true
+
+# Dashboard is disabled temporarily for private image repo issue
+#dashboard_enabled: false
+
+# DNS
+dns_mode: coredns
+dns_min_replicas: 1
+
+# Helm
+helm_enabled: true
+helm_deployment_type: host
+helm_version: "v2.11.0"
+helm_skip_refresh: true
+
+#RBD Provisioner
+rbd_provisioner_enabled: true
+rbd_provisioner_namespace: rbd-provisioner
+rbd_provisioner_replicas: 1
+rbd_provisioner_monitors: "192.168.101.51:6789,192.168.101.52:6789,192.168.101.53:6789"
+rbd_provisioner_pool: kube
+rbd_provisioner_admin_id: kube
+rbd_provisioner_secret_name: ceph-secret-admin
+rbd_provisioner_secret: AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==
+rbd_provisioner_user_id: kube
+rbd_provisioner_user_secret_name: ceph-secret-user
+rbd_provisioner_user_secret: AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==
+rbd_provisioner_user_secret_namespace: rbd-provisioner
+rbd_provisioner_fs_type: ext4
+rbd_provisioner_image_format: "2"
+rbd_provisioner_image_features: layering
+rbd_provisioner_storage_class: rbd
+rbd_provisioner_reclaim_policy: Delete
+
+# Arch of Docker images and needed packages
+image_arch: "{{host_architecture | default('amd64')}}"
+
+# Uncomment the following lines when local docker registry is used
+nginx_image_repo: "{{ docker_registry }}/nginx"
+hyperkube_image_repo: "{{ docker_registry }}/google-containers/hyperkube-{{ image_arch }}"
+helm_image_repo: "{{ docker_registry }}/k8s-helm"
+tiller_image_repo: "{{ docker_registry }}/kubernetes-helm/tiller"
+calico_node_image_repo: "{{ docker_registry }}/calico/node"
+calico_cni_image_repo: "{{ docker_registry }}/calico/cni"
+calicoctl_image_repo: "{{ docker_registry }}/calico/ctl"
+calico_policy_image_repo: "{{ docker_registry }}/calico/kube-controllers"
+dashboard_image_repo: "{{ docker_registry }}/google_containers/kubernetes-dashboard-amd64"
+dnsmasq_nanny_image_repo: "{{ docker_registry }}/google_containers/k8s-dns-dnsmasq-nanny-{{ image_arch }}"
+dnsmasq_sidecar_image_repo: "{{ docker_registry }}/google_containers/k8s-dns-sidecar-{{ image_arch }}"
+coredns_image_repo: "{{ docker_registry }}/google-containers/coredns"
+pod_infra_image_repo: "{{ docker_registry }}/google_containers/pause-{{ image_arch }}"
+etcd_image_repo: "{{ docker_registry }}/coreos/etcd"
+ingress_nginx_default_backend_image_repo: "{{ docker_registry }}/defaultbackend"
+
+# Uncomment the following lines when local k8s repository is used
+kubeadm_download_url: "http://{{ localrepo_k8s }}/k8s/kubeadm"
+hyperkube_download_url: "http://{{ localrepo_k8s }}/k8s/hyperkube"
