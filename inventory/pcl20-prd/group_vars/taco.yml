@@ -1,0 +1,21 @@
+# default options
+openstack_namespace: openstack
+
+# mon_host and admin_keyring would be set automatically
+# from /etc/ceph/ceph.conf and ceph.client.admin.keyring
+# once ceph is installed by ceph-ansible
+# set the values only when using exsiting ceph
+ceph_enabled: true
+mon_host: ''
+admin_id: admin
+user_id: kube
+pool_name: kube
+admin_keyring: ''
+user_keyring: AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==
+
+# additional host configurations
+config_drive_enabled: true
+tc_enabled: false
+nat_enabled: false
+
+armada_venv: "{{ lookup('env','HOME') }}/venv"
