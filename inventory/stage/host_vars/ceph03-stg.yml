@@ -3,4 +3,4 @@ lvm_volumes:
   - data: /dev/sdc
   - data: /dev/sdd
   - data: /dev/sde
-  - data: /dev/sdg
+  - data: /dev/sdf
