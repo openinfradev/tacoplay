@@ -46,7 +46,6 @@ openstack_glance_pool:
   type: 1
   erasure_profile: ""
   expected_num_objects: ""
-  application: "rbd"
 openstack_cinder_pool:
   name: "volumes"
   pg_num: 512
@@ -55,7 +54,6 @@ openstack_cinder_pool:
   type: 1
   erasure_profile: ""
   expected_num_objects: ""
-  application: "rbd"
 openstack_cinder_backup_pool:
   name: "backups"
   pg_num: 64
