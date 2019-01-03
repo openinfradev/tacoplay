@@ -11,6 +11,19 @@
     - {name: "{{ openstack_namespace }}", file: clusterrolebinding.yml, type: clusterrolebinding}
   register: openstack_manifests
 
+- name: start k8s resources for taco
+  kube:
+    name: "{{item.item.name}}"
+    kubectl: "{{bin_dir}}/kubectl"
+    resource: "{{item.item.type}}"
+    filename: "/tmp/manifests/{{item.item.file}}"
+    state: "{{item.changed | ternary('latest','present') }}"
+  with_items:
+    - "{{ openstack_manifests.results }}"
+  run_once: true
+  become: no
+  when: ceph_enabled
+
 - name: fetch mon hosts from ceph.conf
   shell: >-
     grep 'mon host' /etc/ceph/ceph.conf | awk '{print $4}'
@@ -27,11 +40,6 @@
     msg: "failed to get ceph mon hosts neither from vars nor ceph.conf"
   when: not (mon_host|length > 0) and ceph_enabled
 
-- name: set fact monitors for ceph storage class
-  set_fact:
-    monitors: "{{ mon_host.split(',') | map('regex_replace', '(.*)', '\\1:6789') | join(',') }}"
-  when: ceph_enabled
-
 - name: fetch admin keyring from ceph.client.admin.keyring
   shell: >-
     grep key /etc/ceph/ceph.client.admin.keyring | awk '{print $3}' | xargs echo -n
@@ -47,49 +55,6 @@
   fail:
     msg: "failed to get admin keyring neither from vars nor /etc/ceph"
   when: not (admin_keyring|length > 0) and ceph_enabled
-
-- name: encode admin keyring with base64
-  shell: echo -n {{ admin_keyring }} | base64
-  register: keyring_base64
-
-- name: set fact admin_keyring_base64 for ceph-secret-admin
-  set_fact:
-    admin_keyring_base64: "{{ keyring_base64.stdout }}"
-  when: ceph_enabled and keyring_base64.stdout != ""
-
-- name: encode kube user keyring with base64
-  shell: echo -n {{ user_keyring }} | base64
-  register: keyring_base64
-
-- name: set fact user_keyring_base64 for ceph-secret-user
-  set_fact:
-    user_keyring_base64: "{{ keyring_base64.stdout }}"
-  when: keyring_base64.stdout != "" and ceph_enabled
-
-- name: copy ceph secret and storageclass yml
-  template:
-    src: "{{item.file}}.j2"
-    dest: "/tmp/manifests/{{item.file}}"
-  with_items:
-    - {name: "{{ user_secret_name }}", file: ceph-secret-user.yml, type: secret}
-    - {name: "{{ admin_secret_name }}", file: ceph-secret-admin.yml, type: secret}
-    - {name: "{{ storageclass_name }}", file: ceph-storageclass.yml, type: storageclass}
-  register: ceph_manifests
-  when: ceph_enabled
-
-- name: start k8s resources for taco
-  kube:
-    name: "{{item.item.name}}"
-    kubectl: "{{bin_dir}}/kubectl"
-    resource: "{{item.item.type}}"
-    filename: "/tmp/manifests/{{item.item.file}}"
-    state: "{{item.changed | ternary('latest','present') }}"
-  with_items:
-    - "{{ openstack_manifests.results }}"
-    - "{{ ceph_manifests.results }}"
-  run_once: true
-  become: no
-  when: ceph_enabled
 
 - name: check armada-manifest.yml.j2 exists
   stat:
