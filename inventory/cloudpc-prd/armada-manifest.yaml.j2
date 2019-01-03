@@ -145,7 +145,7 @@ data:
         server: 3
     volume:
       enabled: true
-      class_name: ceph
+      class_name: rbd
     monitoring:
       prometheus:
         enabled: true
@@ -213,7 +213,7 @@ data:
       replicas:
         server: 3
     volume:
-      class_name: ceph
+      class_name: rbd
     monitoring:
       prometheus:
         enabled: true
@@ -1676,7 +1676,7 @@ data:
           access_mode: [ "ReadWriteOnce" ]
         requests:
           storage: 2000Gi
-        storage_class: ceph
+        storage_class: rbd
       filesystem_repository:
         enabled: false
         pvc:
@@ -1684,7 +1684,7 @@ data:
           access_mode: ReadOnlyMany
         requests:
           storage: 500Gi
-        storage_class: ceph
+        storage_class: rbd
   source:
     type: local
     location: "{{ osh_infra_path }}"
@@ -1967,7 +1967,7 @@ data:
         access_mode: [ "ReadWriteOnce" ]
       requests:
         storage: 4000Gi
-      storage_class: ceph
+      storage_class: rbd
     conf:
       prometheus:
         # Consumed by a prometheus helper function to generate the command line flags
@@ -2313,7 +2313,7 @@ data:
       enabled: true
       requests:
         storage: 5Gi
-      storage_class: ceph
+      storage_class: rbd
   source:
     type: local
     location: "{{ osh_infra_path }}"
