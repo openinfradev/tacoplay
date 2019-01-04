@@ -6,3 +6,4 @@ armada/
 ceph-ansible/
 kubespray/
 charts/
+mirrors/
