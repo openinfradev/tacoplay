@@ -85,7 +85,7 @@ openstack_cinder_ssd_pool:
   type: 1
   erasure_profile: ""
   expected_num_objects: ""
-openstack_cinder_hdd__pool:
+openstack_cinder_hdd_pool:
   name: "volumes-hdd"
   pg_num: 128
   pgp_num: 128
