@@ -60,6 +60,7 @@ dashboard_enabled: true
 
 # DNS
 dns_mode: coredns
+dns_cores_per_replica: 256
 
 # Helm
 helm_enabled: true
