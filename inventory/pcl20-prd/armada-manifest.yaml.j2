@@ -1193,37 +1193,53 @@ data:
         DEFAULT:
           debug: True
           core_plugin: ml2
-          l3_ha: True
-          l3_ha_network_type: vlan
           # NOTE: change mtu to 9000 if jumbo frame is supported
-          global_physnet_mtu: 9000
-          service_plugins: router
+          global_physnet_mtu: 1500
+          service_plugins: lbaasv2
           interface_driver: linuxbridge
         agent:
           root_helper_daemon: sudo neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
+      services:
+        loadbalancer:
+          service_providers:
+            service_provider: LOADBALANCERV2:F5Networks:neutron_lbaas.drivers.f5.driver_v2.F5LBaaSV2Driver:default
       plugins:
         ml2_conf:
           ml2:
             mechanism_drivers: linuxbridge
             type_drivers: flat,vlan
-            tenant_network_types: vlan
+            tenant_network_types: ""
           ml2_type_flat:
-            flat_networks: provider
-          ml2_type_vlan:
-            network_vlan_ranges: tenant:250:300
+            flat_networks: provider-vlan-201, provider-vlan-202
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings: tenant:bond1,provider:bond1.52
-            bridge_mappings: null
+            physical_interface_mappings: provider-vlan-201:bond0.201,provider-vlan-202:bond0.202
+            bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
-    manifests:
-      daemonset_lb_agent: true
-      daemonset_dhcp_agent: true
-      daemonset_metadata_agent: false
-      daemonset_ovs_agent: false
-      daemonset_sriov_agent: false
-      daemonset_l3_agent: true
+      lbaas_agent:
+        DEFAULT:
+          interface_driver: linuxbridge
+          f5_ha_type: pair
+          f5_vtep_folder: None
+          f5_vtep_selfip_name: None
+          f5_global_routed_mode: True
+          f5_route_domain_strictness: False
+          f5_snat_mode: True
+          f5_snat_addresses_per_subnet: 0
+          f5_common_external_networks: True
+          f5_bigip_lbaas_device_driver: f5_openstack_agent.lbaasv2.drivers.bigip.icontrol_driver.iControlDriver
+          f5_external_physical_mappings: default:1.0:False
+          f5_common_networks: False
+          use_namespaces: False
+          # F5 devices
+          icontrol_hostname: 172.27.9.48,172.27.9.49
+          icontrol_username: lbaas
+          icontrol_password: anwkddo!@#
+          icontrol_connection_retry_interval: 10
+          icontrol_connection_timeout: 10
+          icontrol_config_mode: objects
+          debug: True
   source:
     type: local
     location: "{{ osh_path }}"
@@ -1460,15 +1476,15 @@ data:
         local_settings:
           config:
             openstack_neutron_network:
-              enable_router: "True"
+              enable_router: "False"
               enable_quotas: "True"
               enable_ipv6: "False"
               enable_distributed_router: "False"
-              enable_ha_router: "True"
+              enable_ha_router: "False"
               enable_lb: "True"
               enable_firewall: "False"
               enable_vpn: "False"
-              enable_fip_topology_check: "True"
+              enable_fip_topology_check: "False"
   source:
     type: local
     location: "{{ osh_path }}"
