@@ -34,11 +34,9 @@
       docker_image:
         name: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.8.3
 
-#    - name: registry.cicd.stg.taco | populate custom entries into hosts file
-#      lineinfile:
-#        path: /etc/hosts
-#        line: 192.168.54.30 registry.cicd.stg.taco
-#        state: present
+    - name: pull rbd-provisioner image
+      docker_image:
+        name: quay.io/external_storage/rbd-provisioner:v2.1.1-k8s1.11
 
     - name: create docker cert directory
       file:
