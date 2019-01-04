@@ -1,7 +1,7 @@
 [ceph]
 name=Ceph packages for x86_64
-baseurl=http://$REPO_BASE_URL/ceph/rpm-luminous/el7/x86_64
+baseurl=http://223.39.122.39/ceph/rpm-luminous/el7/x86_64
 enabled=1
 priority=2
 gpgcheck=1
-gpgkey=http://$REPO_BASE_URL/ceph/keys/release.asc
+gpgkey=http://223.39.122.39/ceph/keys/release.asc
