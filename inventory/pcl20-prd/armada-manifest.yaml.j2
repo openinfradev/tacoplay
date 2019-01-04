@@ -1158,10 +1158,11 @@ data:
         ks_user: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         ks_service: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         ks_endpoints: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
-        neutron_server: {{ docker_registry }}/pike/ubuntu-source-neutron-server:3.6.0
+        neutron_server: {{ docker_registry }}/pike/ubuntu-source-neutron-server:f5
         neutron_dhcp: {{ docker_registry }}/pike/ubuntu-source-neutron-dhcp-agent:3.6.0
         neutron_metadata: {{ docker_registry }}/pike/ubuntu-source-neutron-metadata-agent:3.6.0
         neutron_l3: {{ docker_registry }}/pike/ubuntu-source-neutron-l3-agent:3.6.0
+        neutron_lbaas: {{ docker_registry }}/pike/ubuntu-source-neutron-linuxbridge-agent:f5
         neutron_openvswitch_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-openvswitch-agent:3.6.0
         neutron_linuxbridge_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-linuxbridge-agent:3.6.0
         neutron_sriov_agent: {{ docker_registry }}/pike/ubuntu-source-neutron-sriov-agent:3.6.0
@@ -1210,10 +1211,10 @@ data:
             type_drivers: flat,vlan
             tenant_network_types: ""
           ml2_type_flat:
-            flat_networks: provider-vlan-201, provider-vlan-202
+            flat_networks: provider-201,provider-202,provider-301,provider-302,provider-401,provider-402
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings: provider-vlan-201:bond0.201,provider-vlan-202:bond0.202
+            physical_interface_mappings: provider-201:bond0.201,provider-202:bond0.202,provider-301:bond0.301,provider-302:bond0.302,provider-401:bond0.401,provider-402:bond0.402
             bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
