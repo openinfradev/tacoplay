@@ -1,0 +1,7 @@
+lvm_volumes:
+  - data: /dev/sda
+  - data: /dev/sdb
+  - data: /dev/sdc
+  - data: /dev/sdd
+  - data: /dev/sde
+  - data: /dev/sdf

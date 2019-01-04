@@ -71,7 +71,7 @@ helm_skip_refresh: true
 rbd_provisioner_enabled: true
 rbd_provisioner_namespace: rbd-provisioner
 rbd_provisioner_replicas: 1
-rbd_provisioner_monitors: "192.168.60.23:6789,192.168.60.25:6789,192.168.60.26:6789"
+rbd_provisioner_monitors: "192.168.60.23:6789,192.168.60.24:6789,192.168.60.28:6789"
 rbd_provisioner_pool: kube
 rbd_provisioner_admin_id: kube
 rbd_provisioner_secret_name: ceph-secret-admin

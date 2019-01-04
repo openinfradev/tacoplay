@@ -1,0 +1,13 @@
+lvm_volumes:
+  - data: /dev/sdb
+  - data: /dev/sdc
+  - data: /dev/sdd
+  - data: /dev/sde
+  - data: /dev/sdf
+  - data: /dev/sdg
+  - data: /dev/sdh
+  - data: /dev/sdi
+  - data: /dev/sdj
+  - data: /dev/sdk
+  - data: /dev/sdl
+  - data: /dev/sdm
