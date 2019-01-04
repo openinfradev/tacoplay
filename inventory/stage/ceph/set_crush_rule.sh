@@ -8,4 +8,4 @@ sudo ceph osd pool set images crush_rule ssd
 sudo ceph osd pool set volumes-ssd crush_rule ssd
 sudo ceph osd pool set volumes-hdd crush_rule hdd
 sudo ceph osd pool set lma crush_rule hdd
-sudo ceph osd pool set backup crush_rule ssd
+sudo ceph osd pool set backups crush_rule ssd
