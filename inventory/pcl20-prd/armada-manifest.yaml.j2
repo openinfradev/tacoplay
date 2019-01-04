@@ -1570,7 +1570,7 @@ data:
     conf:
       curator:
         #run every 6th hour
-        schedule:  "0 */6 * * *"
+        schedule:  "0 20 * * *"
         action_file:
           # Remember, leave a key empty if there is no value.  None will be a string,
           # not a Python "NoneType"
@@ -1587,7 +1587,7 @@ data:
                 timeout_override:
                 continue_if_exception: False
                 ignore_empty_list: True
-                disable_action: True
+                disable_action: False
               filters:
               - filtertype: pattern
                 kind: prefix
@@ -1597,8 +1597,27 @@ data:
                 direction: older
                 timestring: '%Y.%m.%d'
                 unit: days
-                unit_count: 7
+                unit_count: 31
             2:
+              action: delete_indices
+              description: >-
+                "Delete indices older than 7 days"
+              options:
+                timeout_override:
+                continue_if_exception: False
+                ignore_empty_list: True
+                disable_action: False
+              filters:
+              - filtertype: pattern
+                kind: prefix
+                value: syslog-
+              - filtertype: age
+                source: name
+                direction: older
+                timestring: '%Y.%m.%d'
+                unit: days
+                unit_count: 100
+            3:
               action: delete_indices
               description: >-
                 "Delete indices by age if available disk space is
@@ -1615,54 +1634,11 @@ data:
               - filtertype: space
                 source: creation_date
                 use_age: True
-                # This space assumes the default PVC size of 5Gi times three data
-                # replicas. This must be adjusted if changed due to Curator being
-                # unable to calculate percentages of total disk space
-                disk_space: 12
-            3:
-              action: snapshot
-              description: >-
-                "Snapshot indices older than one day"
-              options:
-                repository: default_repo
-                # Leaving this blank results in the default name format
-                name:
-                wait_for_completion: True
-                max_wait: 3600
-                wait_interval: 10
-                timeout_override: 600
-                ignore_empty_list: True
-                continue_if_exception: False
-                disable_action: True
-              filters:
-              - filtertype: age
-                source: name
-                direction: older
-                timestring: '%Y.%m.%d'
-                unit: days
-                unit_count: 1
-            4:
-              action: delete_snapshots
-              description: >-
-                "Delete snapshots older than 30 days"
-              options:
-                repository: default_repo
-                disable_action: True
-                timeout_override: 600
-                ignore_empty_list: True
-              filters:
-              - filtertype: pattern
-                kind: prefix
-                value: curator-
-                exclude:
-              - filtertype: age
-                source: creation_date
-                direction: older
-                unit: days
-                unit_count: 30
+                # 500Gi*3*80% = 1200
+                disk_space: 1200
       elasticsearch:
         env:
-          java_opts: "-Xms4096m -Xmx4096m"
+          java_opts: "-Xms16384m -Xmx16384m"
     monitoring:
       prometheus:
         enabled: true
@@ -1672,7 +1648,7 @@ data:
         name: pvc-elastic
         access_mode: [ "ReadWriteOnce" ]
       requests:
-        storage: 2000Gi
+        storage: 500Gi
       storage_class: rbd-lma
   source:
     type: local
@@ -1993,7 +1969,7 @@ data:
         name: prometheus-pvc
         access_mode: [ "ReadWriteOnce" ]
       requests:
-        storage: 500Gi
+        storage: 100Gi
       storage_class: rbd-lma
     conf:
       prometheus:
@@ -2004,7 +1980,7 @@ data:
           query.max_concurrency: 20
           query.timeout: 2m
           storage.tsdb.path: /var/lib/prometheus/data
-          storage.tsdb.retention: 30d
+          storage.tsdb.retention: 31d
           # NOTE(srwilkers): These settings default to false, but they are
           # exposed here to allow enabling if desired. Please note the security
           # impacts of enabling these flags. More information regarding the impacts

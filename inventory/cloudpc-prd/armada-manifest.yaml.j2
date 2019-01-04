@@ -1577,7 +1577,7 @@ data:
     conf:
       curator:
         #run every 6th hour
-        schedule:  "0 */6 * * *"
+        schedule:  "0 20 * * *"
         action_file:
           # Remember, leave a key empty if there is no value.  None will be a string,
           # not a Python "NoneType"
@@ -1589,7 +1589,7 @@ data:
             1:
               action: delete_indices
               description: >-
-                "Delete indices older than 7 days"
+                "Delete container log indices older than 7 days"
               options:
                 timeout_override:
                 continue_if_exception: False
@@ -1608,6 +1608,25 @@ data:
             2:
               action: delete_indices
               description: >-
+                "Delete syslog indices older than 100 days"
+              options:
+                timeout_override:
+                continue_if_exception: False
+                ignore_empty_list: True
+                disable_action: True
+              filters:
+              - filtertype: pattern
+                kind: prefix
+                value: syslog-
+              - filtertype: age
+                source: name
+                direction: older
+                timestring: '%Y.%m.%d'
+                unit: days
+                unit_count: 100
+            3:
+              action: delete_indices
+              description: >-
                 "Delete indices by age if available disk space is
                  less than 80% total disk"
               options:
@@ -1622,51 +1641,8 @@ data:
               - filtertype: space
                 source: creation_date
                 use_age: True
-                # This space assumes the default PVC size of 5Gi times three data
-                # replicas. This must be adjusted if changed due to Curator being
-                # unable to calculate percentages of total disk space
+                # 2000Gi*3*80% = 4800
                 disk_space: 4800
-            3:
-              action: snapshot
-              description: >-
-                "Snapshot indices older than one day"
-              options:
-                repository: default_repo
-                # Leaving this blank results in the default name format
-                name:
-                wait_for_completion: True
-                max_wait: 3600
-                wait_interval: 10
-                timeout_override: 600
-                ignore_empty_list: True
-                continue_if_exception: False
-                disable_action: True
-              filters:
-              - filtertype: age
-                source: name
-                direction: older
-                timestring: '%Y.%m.%d'
-                unit: days
-                unit_count: 1
-            4:
-              action: delete_snapshots
-              description: >-
-                "Delete snapshots older than 30 days"
-              options:
-                repository: default_repo
-                disable_action: True
-                timeout_override: 600
-                ignore_empty_list: True
-              filters:
-              - filtertype: pattern
-                kind: prefix
-                value: curator-
-                exclude:
-              - filtertype: age
-                source: creation_date
-                direction: older
-                unit: days
-                unit_count: 30
       elasticsearch:
         env:
           java_opts: "-Xms16384m -Xmx16384m"
