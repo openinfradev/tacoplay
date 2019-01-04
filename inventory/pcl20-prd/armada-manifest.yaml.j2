@@ -1241,6 +1241,14 @@ data:
           icontrol_connection_timeout: 10
           icontrol_config_mode: objects
           debug: True
+    manifests:
+      daemonset_lb_agent: true
+      daemonset_dhcp_agent: true
+      daemonset_metadata_agent: false
+      daemonset_ovs_agent: false
+      daemonset_sriov_agent: false
+      daemonset_l3_agent: false
+      daemonset_lbaas_agent: true
   source:
     type: local
     location: "{{ osh_path }}"
