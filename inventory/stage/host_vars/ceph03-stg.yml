@@ -4,3 +4,4 @@ lvm_volumes:
   - data: /dev/sdd
   - data: /dev/sde
   - data: /dev/sdf
+    crush_device_class: hdd
