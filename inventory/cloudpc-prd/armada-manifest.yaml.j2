@@ -373,6 +373,7 @@ data:
       keystone:
         DEFAULT:
           debug: true
+{% raw %}
       wsgi_keystone: |
         {{- $portInt := tuple "identity" "internal" "api" $ | include "helm-toolkit.endpoints.endpoint_port_lookup" }}
 
@@ -400,6 +401,7 @@ data:
             CustomLog /dev/stdout combined env=!forwarded
             CustomLog /dev/stdout proxy env=forwarded
         </VirtualHost>
+{% endraw %}
     pod:
       user:
         keystone:
@@ -1237,7 +1239,7 @@ data:
         linuxbridge_agent:
           linux_bridge:
             physical_interface_mappings: tenant:bond0,adm-dmz:bond0.340,adm-internal:bond0.122,vpc-internet:bond0.341,vpc-intra-32:bond0.32,vpc-intra-33:bond0.33,vpc-intra-34:bond0.34,vpc-intra-35:bond0.35,vpc-intra-36:bond0.36,vpc-intra-37:bond0.37,vpc-intra-38:bond0.38,vpc-intra-39:bond0.39,vpc-intra-40:bond0.40,vpc-intra-41:bond0.41
-            bridge_mappings: null
+            bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
       dhcp_agent:
