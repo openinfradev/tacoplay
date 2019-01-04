@@ -7,6 +7,6 @@ cicd_registry_enabled: false
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
 
 localrepo_enabled: true
-localrepo_pypi: localrepo
-localrepo_yum: localrepo
-localrepo_k8s: localrepo
+localrepo_pypi: $REPO_BASE_URL
+localrepo_yum: $REPO_BASE_URL
+localrepo_k8s: DDP-PCL-ADMIN01

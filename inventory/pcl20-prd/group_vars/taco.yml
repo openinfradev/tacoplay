@@ -7,15 +7,13 @@ openstack_namespace: openstack
 # set the values only when using exsiting ceph
 ceph_enabled: true
 mon_host: ''
-admin_id: admin
-user_id: kube
-pool_name: kube
 admin_keyring: ''
-user_keyring: AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==
 
 # additional host configurations
 config_drive_enabled: true
 tc_enabled: false
-nat_enabled: false
+nat_enabled: true
+nat_interfaces:
+  - bond1
 
 armada_venv: "{{ lookup('env','HOME') }}/venv"
