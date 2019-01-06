@@ -42,17 +42,17 @@ endpoints:
     port:
       internal:
         default: 9283
-#  federate:
-#    hosts:
-#      default: federate-proxy
-#      federate: federation-exporter
-#    host_fqdn_override:
-#      default: null
-#    path: null
-#    scheme: 'http'
-#    port:
-#      internal:
-#        default: 80
+  node_exporter_proxy:
+    hosts:
+      default: node-exporter-proxy
+      node_exporeter_proxy: node-exporter-proxy
+    host_fqdn_override:
+      default: null
+    path: null
+    scheme: 'http'
+    port:
+      internal:
+        default: 80
 
 proxy:
 # (NOTE:sungil): This is a example for using a exporter from external CEPH
@@ -62,31 +62,76 @@ proxy:
       prometheus.io/scrape: true
     target:
     - addresses:
-      - ip: 192.168.48.202 #your-external-ceph-mon1 IP
+      - ip: 172.27.14.23 #your-external-ceph-mon1 IP
       ports:
       - port: 9283
     - addresses:
-      - ip: 192.168.48.203 #your-external-ceph-mon1 IP
+      - ip: 172.27.14.24 #your-external-ceph-mon1 IP
       ports:
       - port: 9283
     - addresses:
-      - ip: 192.168.48.204 #your-external-ceph-mon1 IP
+      - ip: 172.27.14.25 #your-external-ceph-mon1 IP
       ports:
       - port: 9283
-# (NOTE:sungil): This is a example for federation with other k8s cluster
-# you can refer the official web - https://prometheus.io/docs/prometheus/latest/federation/
-#  federate:
-#    annotations:
-#      prometheus.io/scrape: true
-#      prometheus.io/path: /federate
-#      prometheus.io/params:
-#        'match[]':
-#          - '{job="prometheus"}'
-#          - '{__name__=~"job:.*"}'
-#    target:
-#    - addresses:
-#      - ip: 192.168.48.204 #your-other-k8s-cluster IP
-#      ports:
-#      - port: 30080 #other-cluster port
-#manifests:
-#  service: true
+# (NOTE:sungil): This is a example for using a exporter from external CEPH
+# you can refer the official web - https://kubernetes.io/docs/concepts/services-networking/service/#services-without-selectors
+  node-exporter-proxy:
+    annotations:
+      prometheus.io/scrape: true
+    target:
+    - addresses:
+      - ip: 172.27.14.18 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.19 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.23 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.24 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.25 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.26 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.27 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.28 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.29 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.30 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+
+    - addresses:
+      - ip: 172.27.14.31 #your-external-ceph-mon1 IP
+      ports:
+      - port: 9100
+manifests:
+  service: true
