@@ -407,6 +407,15 @@ data:
           uid: 42425
       replicas:
         api: 3
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          keystone:
+            username: keystone
+            password: {{ db_keystone_password }}
   source:
     type: local
     location: "{{ osh_path }}"
@@ -511,6 +520,15 @@ data:
           cirros:
             id: 201084fc-c276-4744-8504-cb974dbb3610
             private: false
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          glance:
+            username: glance
+            password: {{ db_glance_password }}
   source:
     type: local
     location: "{{ osh_path }}"
@@ -1090,6 +1108,30 @@ data:
     endpoints:
       oslo_db_cell0:
         path: /nova_cell0
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          nova:
+            username: nova
+            password: {{ db_nova_password }}
+      oslo_db_api:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          nova:
+            username: nova
+            password: {{ db_nova_password }}   
+      oslo_db_cell0:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          nova:
+            username: nova
+            password: {{ db_nova_password }}   
     pod:
       user:
         nova:
@@ -1150,7 +1192,7 @@ data:
   values:
     images:
       tags:
-        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+          bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         test: {{ docker_registry }}/pike/ubuntu-source-rally:3.6.0
         db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         neutron_db_sync: {{ docker_registry }}/pike/ubuntu-source-neutron-server:3.6.0
@@ -1241,6 +1283,15 @@ data:
           icontrol_connection_timeout: 10
           icontrol_config_mode: objects
           debug: True
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          neutron:
+            username: neutron
+            password: {{ db_neutron_password }}
     manifests:
       daemonset_lb_agent: true
       daemonset_dhcp_agent: true
@@ -1353,7 +1404,7 @@ data:
           backup_driver: cinder.backup.drivers.ceph
           backup_ceph_user: "cinder"
           backup_ceph_pool: "backups"
-          enabled_backends: rbd-ssd,rbd-hdd
+                    enabled_backends: rbd-ssd,rbd-hdd
       backends:
         rbd-ssd:
           volume_driver: cinder.volume.drivers.rbd.RBDDriver
@@ -1376,7 +1427,7 @@ data:
           rados_connect_timeout: -1
           rbd_user: "cinder"
           rbd_pool: "volumes-hdd"
-          rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
+          rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"  
   source:
     type: local
     location: "{{ osh_path }}"
@@ -1451,6 +1502,15 @@ data:
         cfn: 3
         cloudwatch: 3
         engine: 3
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          heat:
+            username: heat
+            password: {{ db_heat_password }}
   source:
     type: local
     location: "{{ osh_path }}"
@@ -1506,6 +1566,15 @@ data:
               enable_firewall: "False"
               enable_vpn: "False"
               enable_fip_topology_check: "False"
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          horizon:
+            username: horizon
+            password: {{ db_horizon_password }}
   source:
     type: local
     location: "{{ osh_path }}"
@@ -2299,7 +2368,7 @@ data:
               - source_labels:
                   - __meta_kubernetes_service_name
                 target_label: job
-                replacement: ${1}
+                replacement: ${1}            
             # Example scrape config for pods
             #
             # The relabeling allows the actual pod scrape endpoint to be configured via the
@@ -2552,6 +2621,23 @@ data:
         node_port:
           enabled: true
           port: 30009
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          grafana:
+            username: grafana
+            password: {{ db_grafana_password }}
+      oslo_db_session:
+        auth:
+          admin:
+            username: root
+            password: {{ db_root_password }}
+          grafana_session:
+            username: grafana_session
+            password: {{ db_grafana_session_password }}
   source:
     type: local
     location: "{{ osh_infra_path }}"
