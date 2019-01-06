@@ -53,6 +53,17 @@ endpoints:
     port:
       internal:
         default: 80
+  mariadb:
+    hosts:
+      default: mariadb
+      mariadb: mariadb
+    host_fqdn_override:
+      default: null
+    path: null
+    scheme: 'http'
+    port:
+      internal:
+        default: 3306
 
 proxy:
 # (NOTE:sungil): This is a example for using a exporter from external CEPH
@@ -83,55 +94,53 @@ proxy:
       - ip: 172.27.14.18 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.19 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.23 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.24 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.25 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.26 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.27 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.28 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.29 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.30 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
-
     - addresses:
       - ip: 172.27.14.31 #your-external-ceph-mon1 IP
       ports:
       - port: 9100
+  mariadb:
+    annotations:
+      prometheus.io/scrape: true
+    target:
+    - addresses:
+      - ip: 172.27.14.52 #your-external-ceph-mon1 IP
+      ports:
+      - port: 3306
 manifests:
   service: true
