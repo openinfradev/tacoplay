@@ -1144,7 +1144,7 @@ data:
             password: {{ db_root_password }}
           nova:
             username: nova
-            password: {{ db_nova_password }}   
+            password: {{ db_nova_password }}
       oslo_db_cell0:
         auth:
           admin:
@@ -1152,7 +1152,7 @@ data:
             password: {{ db_root_password }}
           nova:
             username: nova
-            password: {{ db_nova_password }}   
+            password: {{ db_nova_password }}
     pod:
       user:
         nova:
@@ -1213,7 +1213,7 @@ data:
   values:
     images:
       tags:
-          bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
+        bootstrap: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         test: {{ docker_registry }}/pike/ubuntu-source-rally:3.6.0
         db_init: {{ docker_registry }}/pike/ubuntu-source-heat-engine:3.6.0
         neutron_db_sync: {{ docker_registry }}/pike/ubuntu-source-neutron-server:3.6.0
@@ -1425,7 +1425,7 @@ data:
           backup_driver: cinder.backup.drivers.ceph
           backup_ceph_user: "cinder"
           backup_ceph_pool: "backups"
-                    enabled_backends: rbd-ssd,rbd-hdd
+          enabled_backends: rbd-ssd,rbd-hdd
       backends:
         rbd-ssd:
           volume_driver: cinder.volume.drivers.rbd.RBDDriver
@@ -1448,7 +1448,7 @@ data:
           rados_connect_timeout: -1
           rbd_user: "cinder"
           rbd_pool: "volumes-hdd"
-          rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"  
+          rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
   source:
     type: local
     location: "{{ osh_path }}"
@@ -2389,7 +2389,7 @@ data:
               - source_labels:
                   - __meta_kubernetes_service_name
                 target_label: job
-                replacement: ${1}            
+                replacement: ${1}
             # Example scrape config for pods
             #
             # The relabeling allows the actual pod scrape endpoint to be configured via the

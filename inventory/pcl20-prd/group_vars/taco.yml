@@ -17,3 +17,13 @@ nat_interfaces:
   - bond1
 
 armada_venv: "{{ lookup('env','HOME') }}/venv"
+
+db_root_password: "vlzmf21!"
+db_nova_password: "vlzmf21!"
+db_cinder_password: "vlzmf21!"
+db_glance_password: "vlzmf21!"
+db_neutron_password: "vlzmf21!"
+db_heat_password: "vlzmf21!"
+db_horizon_password: "vlzmf21!"
+db_grafana_password: "vlzmf21!"
+db_grafana_session_password: "vlzmf21!"
