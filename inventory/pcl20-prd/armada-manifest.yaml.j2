@@ -119,6 +119,27 @@ data:
 schema: armada/Chart/v1
 metadata:
   schema: metadata/Document/v1
+  name: service-proxy
+data:
+  chart_name: service-proxy
+  release: mariadb
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images: null
+  source:
+    type: local
+    location: "{{ osh_infra_path }}"
+    subpath: service-proxy
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
   name: mariadb
 data:
   chart_name: mariadb
@@ -2658,6 +2679,7 @@ data:
     - etcd
     - rabbitmq
     - memcached
+    - service-proxy
 #    - mariadb
 ---
 schema: armada/ChartGroup/v1
