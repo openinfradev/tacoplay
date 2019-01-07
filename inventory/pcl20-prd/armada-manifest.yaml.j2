@@ -1691,6 +1691,16 @@ data:
         snapshot_repository: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
+    labels:
+      elasticsearch:
+        node_selector_key: elasticsearch
+        node_selector_value: enabled
+      job:
+        node_selector_key: elasticsearch
+        node_selector_value: enabled
+      test:
+        node_selector_key: elasticsearch
+        node_selector_value: enabled
     pod:
       replicas:
         master: 3
@@ -1809,6 +1819,16 @@ data:
         elasticsearch_template: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
+    labels:
+      prometheus:
+        node_selector_key: prometheus
+        node_selector_value: enabled
+      job:
+        node_selector_key: prometheus
+        node_selector_value: enabled
+      test:
+        node_selector_key: prometheus
+        node_selector_value: enabled
     dependencies:
       static:
         elasticsearch-template:
