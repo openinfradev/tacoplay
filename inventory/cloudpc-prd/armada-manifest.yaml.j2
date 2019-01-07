@@ -1683,14 +1683,13 @@ data:
       prometheus:
         enabled: true
     storage:
-      elasticsearch:
-        enabled: true
-        pvc:
-          name: pvc-elastic
-          access_mode: [ "ReadWriteOnce" ]
-        requests:
-          storage: 2000Gi
-        storage_class: rbd
+      enabled: true
+      pvc:
+        name: pvc-elastic
+        access_mode: [ "ReadWriteOnce" ]
+      requests:
+        storage: 2000Gi
+      storage_class: rbd
   source:
     type: local
     location: "{{ osh_infra_path }}"
@@ -1973,6 +1972,7 @@ data:
   source:
     type: local
     location: "{{ osh_infra_path }}"
+    subpath: prometheus-process-exporter
   dependencies:
     - helm-toolkit
   test:
