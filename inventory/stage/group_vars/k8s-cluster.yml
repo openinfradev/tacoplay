@@ -90,6 +90,7 @@ rbd_provisioner_reclaim_policy: Delete
 image_arch: "{{host_architecture | default('amd64')}}"
 
 # Uncomment the following lines when local docker registry is used
+kube_image_repo: "{{ docker_registry }}/google-containers"
 nginx_image_repo: "{{ docker_registry }}/nginx"
 hyperkube_image_repo: "{{ docker_registry }}/google-containers/hyperkube-{{ image_arch }}"
 helm_image_repo: "{{ docker_registry }}/k8s-helm"
@@ -106,7 +107,10 @@ pod_infra_image_repo: "{{ docker_registry }}/google_containers/pause-{{ image_ar
 etcd_image_repo: "{{ docker_registry }}/coreos/etcd"
 ingress_nginx_default_backend_image_repo: "{{ docker_registry }}/defaultbackend"
 rbd_provisioner_image_repo: "{{ docker_registry }}/external_storage/rbd-provisioner"
+dnsmasqautoscaler_image_repo: "{{ docker_registry }}/google_containers/cluster-proportional-autoscaler-amd64"
+dnsautoscaler_image_repo: "{{ docker_registry }}/google_containers/cluster-proportional-autoscaler-amd64"
 
 # Uncomment the following lines when local k8s repository is used
 kubeadm_download_url: "http://{{ localrepo_k8s }}/k8s/kubeadm"
 hyperkube_download_url: "http://{{ localrepo_k8s }}/k8s/hyperkube"
+cni_download_url: "http://{{ localrepo_k8s }}/k8s/cni-plugins-amd64-v0.6.0.tgz"
