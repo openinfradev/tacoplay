@@ -20,6 +20,7 @@ armada_venv: "{{ lookup('env','HOME') }}/venv"
 
 db_root_user: "pcl_admin"
 db_root_password: "Pcl.6831!"
+db_keystone_password: "Pcl.6831!"
 db_nova_password: "vlzmf21!"
 db_cinder_password: "vlzmf21!"
 db_glance_password: "vlzmf21!"
