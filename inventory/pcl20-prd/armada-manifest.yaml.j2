@@ -432,7 +432,7 @@ data:
       oslo_db:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           keystone:
             username: keystone
@@ -545,7 +545,7 @@ data:
       oslo_db:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           glance:
             username: glance
@@ -1133,7 +1133,7 @@ data:
       oslo_db:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           nova:
             username: nova
@@ -1141,7 +1141,7 @@ data:
       oslo_db_api:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           nova:
             username: nova
@@ -1149,7 +1149,7 @@ data:
       oslo_db_cell0:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           nova:
             username: nova
@@ -1528,7 +1528,7 @@ data:
       oslo_db:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           heat:
             username: heat
@@ -1592,7 +1592,7 @@ data:
       oslo_db:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           horizon:
             username: horizon
@@ -2667,7 +2667,7 @@ data:
       oslo_db:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           grafana:
             username: grafana
@@ -2675,7 +2675,7 @@ data:
       oslo_db_session:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           grafana_session:
             username: grafana_session

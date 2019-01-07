@@ -31,6 +31,7 @@ image_feature: layering
 osh_infra_path: "{{ playbook_dir }}/charts/openstack-helm-infra"
 osh_path: "{{ playbook_dir }}/charts/openstack-helm"
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
+db_root_user: "root"
 db_root_password: "password"
 db_nova_password: "password"
 db_cinder_password: "password"

@@ -18,6 +18,7 @@ nat_interfaces:
 
 armada_venv: "{{ lookup('env','HOME') }}/venv"
 
+db_root_user: "pcl_admin"
 db_root_password: "vlzmf21!"
 db_nova_password: "vlzmf21!"
 db_cinder_password: "vlzmf21!"
