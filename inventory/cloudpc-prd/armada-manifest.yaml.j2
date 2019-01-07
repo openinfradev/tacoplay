@@ -1602,7 +1602,7 @@ data:
         snapshot_repository: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
-          pod:
+    pod:
       replicas:
         master: 3
         data: 3
