@@ -1622,7 +1622,7 @@ data:
             1:
               action: delete_indices
               description: >-
-                "Delete container log indices older than 7 days"
+                "Delete container log indices older than 31 days"
               options:
                 timeout_override:
                 continue_if_exception: False
@@ -1637,7 +1637,7 @@ data:
                 direction: older
                 timestring: '%Y.%m.%d'
                 unit: days
-                unit_count: 7
+                unit_count: 31
             2:
               action: delete_indices
               description: >-
@@ -1800,6 +1800,18 @@ data:
           HTTP_User: taco
           HTTP_Passwd: password
           Type: syslog
+      - kafka_producer_container:
+          header: output
+          Name: kafka
+          Match: "kube.*"
+          Brokers: 192.168.91.48:9092,192.168.91.49:9092,192.168.91.50:9092
+          Topics: taco-container-log
+      - kafka_producer_syslog:
+          header: output
+          Name: kafka
+          Match: "syslog.*"
+          Brokers: 192.168.91.48:9092,192.168.91.49:9092,192.168.91.50:9092
+          Topics: taco-syslog-log
       parsers:
       - docker:
           header: parser
