@@ -1450,6 +1450,15 @@ data:
           rbd_user: "cinder"
           rbd_pool: "volumes-hdd"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: {{ db_root_user }}
+            password: {{ db_root_password }}
+          cinder:
+            username: cinder
+            password: {{ db_cinder_password }}
   source:
     type: local
     location: "{{ osh_path }}"
