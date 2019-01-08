@@ -38,7 +38,9 @@ peer_with_router: true
 global_as_num: 64512
 peers:
   - as: 64512
-    router_id: 192.168.90.1
+    router_id: 192.168.90.2
+  - as: 64512
+    router_id: 192.168.90.3
 calico_felix_prometheusmetricsenabled: "true"
 calico_felix_prometheusmetricsport: 9091
 calico_felix_prometheusgometricsenabled: "true"
