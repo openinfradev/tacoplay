@@ -32,13 +32,14 @@ kube_pods_subnet: 10.233.128.0/17
 # set ipip mode to Never and peer_with_calico_rr to use global bgp rr
 ipip_mode: Never
 calico_mtu: 1500
-peer_with_calico_rr: true
+peer_with_router: true
 global_as_num: 65101
 peers:
   - as: 65101
     router_id: 172.27.14.2
   - as: 65101
     router_id: 172.27.14.3
+calico_node_ignorelooserpf: true
 calico_felix_prometheusmetricsenabled: "true"
 calico_felix_prometheusmetricsport: 9091
 calico_felix_prometheusgometricsenabled: "true"
