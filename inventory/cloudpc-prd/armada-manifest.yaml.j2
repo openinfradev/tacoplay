@@ -1622,7 +1622,7 @@ data:
             1:
               action: delete_indices
               description: >-
-                "Delete container log indices older than 31 days"
+                "Delete container log indices older than 15 days"
               options:
                 timeout_override:
                 continue_if_exception: False
@@ -1637,7 +1637,7 @@ data:
                 direction: older
                 timestring: '%Y.%m.%d'
                 unit: days
-                unit_count: 31
+                unit_count: 15
             2:
               action: delete_indices
               description: >-
