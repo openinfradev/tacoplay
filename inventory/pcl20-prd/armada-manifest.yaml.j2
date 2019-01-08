@@ -2678,7 +2678,7 @@ data:
           admin:
             username: {{ db_root_user }}
             password: {{ db_root_password }}
-          grafana:
+          user:
             username: grafana
             password: {{ db_grafana_password }}
       oslo_db_session:
@@ -2686,7 +2686,7 @@ data:
           admin:
             username: {{ db_root_user }}
             password: {{ db_root_password }}
-          grafana_session:
+          user:
             username: grafana_session
             password: {{ db_grafana_session_password }}
   source:
