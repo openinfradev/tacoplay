@@ -20,11 +20,13 @@
         line: 192.168.54.30 registry.cicd.stg.taco
         state: present
       when: cicd_registry_enabled|default(false)
+
     - name: registry.cicd.stg.taco | create directory for cert
       file:
         path: /etc/docker/certs.d/registry.cicd.stg.taco
         state: directory
       when: cicd_registry_enabled|default(false)
+
     - name: registry.cicd.stg.taco | create cert file
       copy:
         src: "{{ ansible_inventory_sources[0] | dirname }}/ca.crt"
@@ -111,7 +113,11 @@
     - { role: armada }
   tags: armada
 
-- hosts: admin-node
+- hosts: admin-node:controller-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: openstack/client }
   tasks:
     - name: check host where ingress controller is running
       shell: >-
@@ -123,7 +129,13 @@
       register: ingress_host
       until: ingress_host.stdout != ""
       become: no
+      delegate_to: "{{ groups['admin-node']|first }}"
       when: auto_release_enabled|default(true)
+
+    - fail:
+        msg: "ingress controller is not running"
+      when: auto_release_enabled|default(true) and ingress_host.stdout == ""
+
     - name: update hosts file for openstack services access via ingress
       blockinfile:
         path: /etc/hosts
@@ -135,12 +147,5 @@
           {{ ingress_host.stdout }} cinder.openstack.svc.cluster.local
         state: present
         marker: "# OPENSTACK SERVICES {mark}"
-      when: auto_release_enabled|default(true) and ingress_host.stdout != ""
-  tags: openstack
-
-- hosts: admin-node:controller-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: taco-defaults }
-    - { role: openstack/client }
+      when: auto_release_enabled|default(true)
   tags: openstack
