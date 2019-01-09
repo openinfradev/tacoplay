@@ -7,7 +7,7 @@ openstack_namespace: openstack
 # set the values only when using exsiting ceph
 ceph_enabled: true
 mon_host: '192.168.60.23,192.168.60.25,192.168.60.26'
-admin_keyring: '' # XXX: MUST BE FILLED, 'sudo ceph --cluster ssd_ceph get-key client.admin'
+admin_keyring: 'AQA8GjNcwnCSJhAAOmqeo1iAGWv/RZx4PXHDmw==' # XXX: MUST BE FILLED, 'sudo ceph --cluster ssd_ceph get-key client.admin'
 
 # additional host configurations
 config_drive_enabled: true

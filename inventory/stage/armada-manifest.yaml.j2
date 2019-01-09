@@ -63,56 +63,50 @@ data:
 schema: armada/Chart/v1
 metadata:
   schema: metadata/Document/v1
-  name: ceph-provisioners
+  name: ceph-conf
 data:
-  chart_name: ceph-provisioners
-  release: ceph-provisioners
+  chart_name: ceph-conf
+  release: ceph-conf
   namespace: openstack
   install:
     no_hooks: false
   upgrade:
     no_hooks: false
   values:
-    images:
-      tags:
-        ceph_bootstrap: {{ docker_registry }}/ceph-daemon:tag-build-master-luminous-ubuntu-16.04
-        ceph_cephfs_provisioner: {{ docker_registry }}/cephfs-provisioner:v0.1.1
-        ceph_config_helper: {{ docker_registry }}/ceph-config-helper:v1.10.3
-        ceph_rbd_provisioner: {{ docker_registry }}/rbd-provisioner:v0.1.1
-        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: {{ docker_registry }}/docker:17.07.0
-      pull_policy: IfNotPresent
-    deployment:
-      ceph: false
-      client_secrets: true
-      rbd_provisioner: false
-      cephfs_provisioner: false
-    storageclass:
-      rbd:
-        provision_storage_class: false
-      cephfs:
-        provision_storage_class: false
     conf:
       ceph:
         global:
-          mon_host: "{{ mon_host }}"
-    manifests:
-      configmap_bin: false
-      configmap_bin_common: false
-      configmap_etc: true
-      deployment_rbd_provisioner: false
-      deployment_cephfs_provisioner: false
-      job_bootstrap: false
-      job_cephfs_client_key: false
-      job_image_repo_sync: false
-      job_namespace_client_key_cleaner: false
-      job_namespace_client_key: false
-      storageclass_cephfs: false
-      storageclass_rbd: false
+          # auth
+          mon_host: 192.168.51.20,192.168.51.21,192.168.51.22
+          public_network: 192.168.51.0/24
+          cluster_network: 192.168.51.0/24
+        osd:
+          ms_bind_port_min: 6800
+          ms_bind_port_max: 7100
+      ceph1: null
+      ceph2: null
+      ceph-ssd:
+        global:
+          # auth
+          mon_host: 192.168.48.31
+          public_network: 192.168.48.0/24
+          cluster_network: 192.168.48.0/24
+        osd:
+          ms_bind_port_min: 6800
+          ms_bind_port_max: 7100
+      ceph-hdd:
+        global:
+          # auth
+          mon_host: 192.168.51.20,192.168.51.21,192.168.51.22
+          public_network: 192.168.51.0/24
+          cluster_network: 192.168.51.0/24
+        osd:
+          ms_bind_port_min: 6800
+          ms_bind_port_max: 7100
   source:
     type: local
     location: "{{ osh_infra_path }}"
-    subpath: ceph-provisioners
+    subpath: ceph-conf
   dependencies:
     - helm-toolkit
 ---
@@ -1319,7 +1313,6 @@ data:
           level: DEBUG
       ceph:
         enabled: true
-        admin_keyring: "{{ admin_keyring }}"
       cinder:
         DEFAULT:
           debug: true
@@ -1331,18 +1324,19 @@ data:
         rbd-ssd:
           volume_driver: cinder.volume.drivers.rbd.RBDDriver
           volume_backend_name: rbd-ssd
-          rbd_ceph_conf: "/etc/ceph/ceph.conf"
+          rbd_ceph_conf: "/etc/ceph/ceph-ssd.conf"
           rbd_flatten_volume_from_snapshot: false
           rbd_max_clone_depth: 5
           rbd_store_chunk_size: 4
           rados_connect_timeout: -1
           rbd_user: "cinder"
-          rbd_pool: "volumes-ssd"
+          rbd_pool: "volumes"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
+          admin_keyring: "AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=="
         rbd-hdd:
           volume_driver: cinder.volume.drivers.rbd.RBDDriver
           volume_backend_name: rbd-hdd
-          rbd_ceph_conf: "/etc/ceph/ceph.conf"
+          rbd_ceph_conf: "/etc/ceph/ceph-hdd.conf"
           rbd_flatten_volume_from_snapshot: false
           rbd_max_clone_depth: 5
           rbd_store_chunk_size: 4
@@ -1350,6 +1344,7 @@ data:
           rbd_user: "cinder"
           rbd_pool: "volumes-hdd"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
+          admin_keyring: "AQBuajNcd7yuORAAOXh/rvNVXwVrf97XR3MuPQ=="
   source:
     type: local
     location: "{{ osh_path }}"
@@ -2564,7 +2559,7 @@ data:
   description: "Openstack Infrastructure"
   sequenced: False
   chart_group:
-    - ceph-provisioners
+    - ceph-conf
     - ingress
     - etcd
     - rabbitmq
@@ -2579,14 +2574,14 @@ data:
   description: "Openstack Services"
   sequenced: False
   chart_group:
-    - libvirt
+    #- libvirt
     - keystone
-    - glance
+    #- glance
     - cinder
-    - heat
-    - nova
-    - neutron
-    - horizon
+    #- heat
+    #- nova
+    #- neutron
+    #- horizon
 ---
 schema: armada/ChartGroup/v1
 metadata:
