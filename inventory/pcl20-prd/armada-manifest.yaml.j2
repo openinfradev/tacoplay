@@ -1398,6 +1398,49 @@ data:
         backup: 1
         scheduler: 3
         volume: 1
+    dependencies:
+      static:
+        api:
+          jobs:
+            - cinder-db-sync
+            - cinder-ks-user
+            - cinder-ks-endpoints
+            - cinder-rabbit-init
+            - cinder-storage-init-rbd-ssd
+            - cinder-storage-init-rbd-hdd
+        scheduler:
+          jobs:
+            - cinder-db-sync
+            - cinder-ks-user
+            - cinder-ks-endpoints
+            - cinder-rabbit-init
+            - cinder-storage-init-rbd-ssd
+            - cinder-storage-init-rbd-hdd
+        volume:
+          jobs:
+            - cinder-db-sync
+            - cinder-ks-user
+            - cinder-ks-endpoints
+            - cinder-rabbit-init
+            - cinder-storage-init-rbd-ssd
+            - cinder-storage-init-rbd-hdd
+        volume_usage_audit:
+          jobs:
+            - cinder-db-sync
+            - cinder-ks-user
+            - cinder-ks-endpoints
+            - cinder-rabbit-init
+            - cinder-storage-init-rbd-ssd
+            - cinder-storage-init-rbd-hdd
+        backup:
+          jobs:
+            - cinder-db-sync
+            - cinder-ks-user
+            - cinder-ks-endpoints
+            - cinder-rabbit-init
+            - cinder-storage-init-rbd-ssd
+            - cinder-storage-init-rbd-hdd
+            - cinder-backup-storage-init
     conf:
       logging:
         loggers:
