@@ -12,20 +12,8 @@ os_auth_url: http://keystone.openstack.svc.cluster.local:80/v3
 
 # Storageclass configs
 ceph_enabled: true
-storageclass_name: ceph
-system_namespace: kube-system
 mon_host: ''
-admin_id: admin
-admin_secret_name: ceph-secret-admin
-admin_secret_namespace: kube-system
 admin_keyring: ''
-pool_name: kube
-user_id: kube
-user_secret_name: ceph-secret-user
-user_secret_namespace: "{{ openstack_namespace }}"
-user_keyring: AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==
-image_format: 2
-image_feature: layering
 
 # armada manifest configs
 osh_infra_path: "{{ playbook_dir }}/charts/openstack-helm-infra"
