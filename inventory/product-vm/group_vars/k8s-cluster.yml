@@ -60,3 +60,22 @@ helm_enabled: true
 helm_deployment_type: host
 helm_version: "v2.10.0"
 helm_skip_refresh: true
+
+#RBD Provisioner
+rbd_provisioner_enabled: true
+rbd_provisioner_namespace: rbd-provisioner
+rbd_provisioner_replicas: 1
+rbd_provisioner_monitors: "192.168.48.31:6789"
+rbd_provisioner_pool: kube
+rbd_provisioner_admin_id: admin
+rbd_provisioner_secret_name: ceph-secret-admin
+rbd_provisioner_secret: AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA==
+rbd_provisioner_user_id: kube
+rbd_provisioner_user_secret_name: ceph-secret-user
+rbd_provisioner_user_secret: AQCgwdRaQwA4BhAACAaJLcqnmTHIFzS3cJwbAQ==
+rbd_provisioner_user_secret_namespace: rbd-provisioner
+rbd_provisioner_fs_type: ext4
+rbd_provisioner_image_format: "2"
+rbd_provisioner_image_features: layering
+rbd_provisioner_storage_class: rbd
+rbd_provisioner_reclaim_policy: Delete

@@ -4,11 +4,7 @@ openstack_namespace: openstack
 # storage class configs
 ceph_enabled: true
 mon_host: 192.168.48.31
-admin_id: admin
-user_id: kube
-pool_name: kube
 admin_keyring: AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA==
-user_keyring: AQCgwdRaQwA4BhAACAaJLcqnmTHIFzS3cJwbAQ==
 
 # additional host configurations
 config_drive_enabled: true

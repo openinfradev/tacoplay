@@ -12,7 +12,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: helm-toolkit
-    reference: master
   dependencies: []
 ---
 schema: armada/Chart/v1
@@ -31,7 +30,9 @@ data:
     images:
       tags:
         entrypoint: {{ docker_registry }}/kubernetes-entrypoint:v0.3.0
-        ingress: {{ docker_registry }}/nginx-ingress-controller:0.9.0
+        ingress: {{ docker_registry }}/nginx-ingress-controller:0.20.0
+        ingress_module_init: {{ docker_registry }}/pike/ubuntu-source-neutron-server:0.1.0
+        ingress_routed_vip: {{ docker_registry }}/pike/ubuntu-source-neutron-server:0.1.0
         error_pages: {{ docker_registry }}/defaultbackend:1.0
         keepalived: {{ docker_registry }}/keepalived:1.4.5
         dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.0
@@ -56,7 +57,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: ingress
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -113,7 +113,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: ceph-provisioners
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -132,7 +131,7 @@ data:
   values:
     images:
       tags:
-        mariadb: {{ docker_registry }}/mariadb:10.2.13
+        mariadb: {{ docker_registry }}/mariadb:10.2.18
         ingress: {{ docker_registry }}/nginx-ingress-controller:0.9.0
         error_pages: {{ docker_registry }}/defaultbackend:1.0
         prometheus_create_mysql_user: {{ docker_registry }}/mariadb:10.2.13
@@ -146,7 +145,7 @@ data:
         server: 3
     volume:
       enabled: true
-      class_name: ceph
+      class_name: rbd
     monitoring:
       prometheus:
         enabled: true
@@ -156,7 +155,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: mariadb
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -186,7 +184,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: etcd
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -216,7 +213,7 @@ data:
       replicas:
         server: 3
     volume:
-      class_name: ceph
+      class_name: rbd
     monitoring:
       prometheus:
         enabled: true
@@ -226,7 +223,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: rabbitmq
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -262,7 +258,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: memcached
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -292,7 +287,7 @@ data:
         admin_keyring: "{{ admin_keyring }}"
         cinder:
           user: "cinder"
-          keyring: "AQASDcJacIJVDhAA5wrtpnBWsRMXQ27sw6uwjQ=="
+          keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
           secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
       libvirt:
         listen_addr: 0.0.0.0
@@ -305,7 +300,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: libvirt
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -334,7 +328,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: openvswitch
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -415,7 +408,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: keystone
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -506,7 +498,7 @@ data:
       glance:
         glance_store:
           rbd_store_user: glance
-          rbd_store_pool: images-test
+          rbd_store_pool: images
         DEFAULT:
           show_image_direct_url: true
     bootstrap:
@@ -520,7 +512,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: glance
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -625,7 +616,6 @@ data:
           options:
             m1_tiny:
               id: 0c84e220-a258-439f-a6ff-f8e9fd980025
-    network:
       novncproxy:
         name: "nova-novncproxy"
         node_port:
@@ -634,8 +624,6 @@ data:
         port: 6080
         targetPort: 6080
     conf:
-      libvirt:
-        live_migration_interface: eth0
       rootwrap_filters:
         api_metadata:
           override:
@@ -845,7 +833,7 @@ data:
         admin_keyring: "{{ admin_keyring }}"
         cinder:
           user: "cinder"
-          keyring: "AQASDcJacIJVDhAA5wrtpnBWsRMXQ27sw6uwjQ=="
+          keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
           secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
       rally_tests:
         run_tempest: false
@@ -1075,6 +1063,8 @@ data:
               sla:
                 failure_rate:
                   max: 0
+      libvirt:
+        live_migration_interface: bond0
       nova:
         DEFAULT:
           scheduler_default_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
@@ -1085,7 +1075,6 @@ data:
         vnc:
           novncproxy_base_url: http://{{ hostvars[groups['controller-node'][0]]['ip'] }}:30608/vnc_auto.html
         libvirt:
-          virt_type: qemu
           rbd_user: "cinder"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
         scheduler:
@@ -1108,7 +1097,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: nova
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1181,13 +1169,10 @@ data:
         neutron:
           uid: 42435
     network:
-      auto_bridge_add:
-        br-ex: eth1
-      backend:
-        - openvswitch
+      auto_bridge_add: null
       share_namespaces: false
       interface:
-        tunnel: eth0
+        tunnel: null
     conf:
       neutron_sudoers: |
         # This sudoers file supports rootwrap-daemon for both Kolla and LOCI Images.
@@ -1220,11 +1205,17 @@ data:
             bridge_mappings: "external:br-ex"
           securitygroup:
             firewall_driver: openvswitch
+    manifests:
+      daemonset_lb_agent: false
+      daemonset_dhcp_agent: true
+      daemonset_metadata_agent: false
+      daemonset_ovs_agent: true
+      daemonset_sriov_agent: false
+      daemonset_l3_agent: true
   source:
     type: local
     location: "{{ osh_path }}"
     subpath: neutron
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1304,6 +1295,18 @@ data:
         scheduler: 3
         volume: 1
     conf:
+      logging:
+        loggers:
+          keys:
+            - root
+            - cinder
+            - oslo_service
+        logger_oslo_service:
+          level: DEBUG
+          handlers: stderr
+          qualname: oslo_service
+        logger_cinder:
+          level: DEBUG
       ceph:
         enabled: true
         admin_keyring: "{{ admin_keyring }}"
@@ -1312,24 +1315,35 @@ data:
           debug: true
           backup_driver: cinder.backup.drivers.ceph
           backup_ceph_user: "cinder"
-          backup_ceph_pool: "backups-test"
+          backup_ceph_pool: "backups"
+          enabled_backends: rbd-ssd,rbd-hdd
       backends:
-        rbd1:
+        rbd-ssd:
           volume_driver: cinder.volume.drivers.rbd.RBDDriver
-          volume_backend_name: rbd1
+          volume_backend_name: rbd-ssd
           rbd_ceph_conf: "/etc/ceph/ceph.conf"
           rbd_flatten_volume_from_snapshot: false
           rbd_max_clone_depth: 5
           rbd_store_chunk_size: 4
           rados_connect_timeout: -1
           rbd_user: "cinder"
-          rbd_pool: "volumes-test"
+          rbd_pool: "volumes-ssd"
+          rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
+        rbd-hdd:
+          volume_driver: cinder.volume.drivers.rbd.RBDDriver
+          volume_backend_name: rbd-hdd
+          rbd_ceph_conf: "/etc/ceph/ceph.conf"
+          rbd_flatten_volume_from_snapshot: false
+          rbd_max_clone_depth: 5
+          rbd_store_chunk_size: 4
+          rados_connect_timeout: -1
+          rbd_user: "cinder"
+          rbd_pool: "volumes-hdd"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
   source:
     type: local
     location: "{{ osh_path }}"
     subpath: cinder
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1404,7 +1418,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: heat
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1438,6 +1451,10 @@ data:
       node_port:
         enabled: true
         port: 31000
+      api:
+        ingress:
+          annotations:
+            nginx.ingress.kubernetes.io/proxy-body-size: 102400M
     conf:
       horizon:
         local_settings:
@@ -1456,7 +1473,6 @@ data:
     type: local
     location: "{{ osh_path }}"
     subpath: horizon
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1484,7 +1500,7 @@ data:
       pvc:
         enabled: true
         size: 1Gi
-        class_name: ceph
+        class_name: rbd
       host:
         data_path: /data/openstack-helm/ldap
         config_path: /data/openstack-helm/config
@@ -1517,7 +1533,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: ldap
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1549,6 +1564,11 @@ data:
         snapshot_repository: {{ docker_registry }}/ubuntu-source-heat-engine:3.0.3
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
+    pod:
+      replicas:
+        master: 3
+        data: 3
+        client: 2
     conf:
       curator:
         #run every 6th hour
@@ -1655,12 +1675,11 @@ data:
         access_mode: [ "ReadWriteOnce" ]
       requests:
         storage: 2000Gi
-      storage_class: ceph
+      storage_class: rbd
   source:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: elasticsearch
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -1696,6 +1715,10 @@ data:
         fluentbit:
           jobs:
             - elasticsearch-template
+          services:
+            - endpoint: internal
+              service: elasticsearch
+        tests:
           services:
             - endpoint: internal
               service: elasticsearch
@@ -1871,7 +1894,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: fluent-logging
-    reference: master
   test: false
   dependencies:
     - helm-toolkit
@@ -1909,7 +1931,37 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: kibana
-    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-process-exporter 
+data:
+  chart_name: prometheus-process-exporter
+  release: prometheus-process-exporter
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        process_exporter: {{ docker_registry }}/process-exporter:0.2.11
+        dep_check: {{ docker_registry }}/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: {{ docker_registry }}/docker:17.07.0
+      pull_policy: Always
+    labels:
+      process_exporter:
+        process_selector_key: process-exporter
+        process_selector_value: enabled
+        tolerations: true
+  source:
+    type: local
+    location: "{{ osh_infra_path }}"
+    subpath: prometheus-process-exporter
   dependencies:
     - helm-toolkit
 ---
@@ -1944,7 +1996,7 @@ data:
         access_mode: [ "ReadWriteOnce" ]
       requests:
         storage: 500Gi
-      storage_class: ceph
+      storage_class: rbd
     conf:
       prometheus:
         # Consumed by a prometheus helper function to generate the command line flags
@@ -2293,7 +2345,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2320,7 +2371,7 @@ data:
       enabled: true
       requests:
         storage: 5Gi
-      storage_class: ceph
+      storage_class: rbd
     conf:
       alertmanager:
         global:
@@ -2372,7 +2423,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus-alertmanager
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2400,7 +2450,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus-kube-state-metrics
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2432,7 +2481,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus-node-exporter
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2461,7 +2509,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: prometheus-openstack-exporter
-    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -2496,7 +2543,6 @@ data:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: grafana
-    reference: master
   dependencies:
     - helm-toolkit
 ---
