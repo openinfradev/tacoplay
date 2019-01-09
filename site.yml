@@ -100,7 +100,7 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-defaults }
-    - { role: bootstrap-openstack }
+    - { role: openstack/preinstall }
   tags: openstack 
 
 # Make admin-node ready for armada apply
@@ -136,4 +136,11 @@
         state: present
         marker: "# OPENSTACK SERVICES {mark}"
       when: auto_release_enabled|default(true) and ingress_host.stdout != ""
+  tags: openstack
+
+- hosts: admin-node:controller-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: openstack/client }
   tags: openstack

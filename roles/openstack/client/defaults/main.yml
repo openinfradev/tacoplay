@@ -1,0 +1,8 @@
+---
+# OpenStack client configs
+os_project_domain: default
+os_user_domain: default
+os_project_name: admin
+os_user_name: admin
+os_password: password
+os_auth_url: http://keystone.openstack.svc.cluster.local:80/v3

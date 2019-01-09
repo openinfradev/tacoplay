@@ -1,0 +1,37 @@
+---
+- name: install packages required for openstack client packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - gcc
+    - python-devel
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: install python-openstackclient
+  pip:
+    name: "{{ item.name }}"
+    version: "{{ item.version }}"
+    state: present
+  loop:
+    - { name: 'python-openstackclient', version: '3.16.0' }
+    - { name: 'python-cinderclient', version: '3.1.0' }
+    - { name: 'python-glanceclient', version: '2.8.0' }
+    - { name: 'python-keystoneclient', version: '3.17.0' }
+    - { name: 'python-novaclient', version: '9.1.2' }
+
+- name: update bashrc for openstack client configs
+  blockinfile:
+    path: "{{ lookup('env','HOME') }}/.bashrc"
+    block: |
+      export OS_AUTH_URL={{ os_auth_url }}
+      export OS_IDENTITY_API_VERSION=3
+      export OS_IMAGE_API_VERSION=2
+      export OS_PROJECT_DOMAIN_NAME={{ os_project_domain }}
+      export OS_USER_DOMAIN_NAME={{ os_user_domain }}
+      export OS_PROJECT_NAME={{ os_project_name }}
+      export OS_USERNAME={{ os_user_name }}
+      export OS_PASSWORD={{ os_password }}
+    marker: "# OPENSTACK CLIENT ENVS {mark}"
+  become: no
