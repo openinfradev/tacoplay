@@ -49,10 +49,11 @@
         src: "{{ playbook_dir }}/files/registry-certs"
         dest: "/etc/docker/certs.d/registry.cicd.stg.taco/ca.crt"
 
+    # Should I run fetch-sub-projects.sh here instead of Jenkinsfile?
     - name: pull all images used in armada manifest
       script: >-
         {{ playbook_dir }}/scripts/pull-images.sh
-        {{ ansible_inventory_sources[0] | dirname }}/armada-manifest.yaml
+        {{ playbook_dir }}/manifests/sources/global.yaml
       args:
         creates: /tmp/.image-pull-done
 
