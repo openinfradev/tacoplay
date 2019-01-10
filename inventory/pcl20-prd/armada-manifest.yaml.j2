@@ -1902,7 +1902,10 @@ data:
       fluentbit:
         node_selector_key: fluent-logging
         node_selector_value: enabled
-        tolerations: true
+    pod:
+      tolerations:
+        fluentbit:                                                                                                                                                                                                                
+          enabled: true
     conf:
       fluentbit:
       - service:
@@ -2133,7 +2136,10 @@ data:
       process_exporter:
         process_selector_key: process-exporter
         process_selector_value: enabled
-        tolerations: true
+    pod:
+      tolerations:
+        process_exporter:                                                                                                                                                                                                                
+          enabled: true
   source:
     type: local
     location: "{{ osh_infra_path }}"
@@ -2652,7 +2658,10 @@ data:
       node_exporter:
         node_selector_key: node-exporter
         node_selector_value: enabled
-        tolerations: true
+    pod:
+      tolerations:
+        node_exporter:                                                                                                                                                                                                                
+          enabled: true
   source:
     type: local
     location: "{{ osh_infra_path }}"
