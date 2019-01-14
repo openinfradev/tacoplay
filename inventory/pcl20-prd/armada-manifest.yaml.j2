@@ -1460,14 +1460,12 @@ data:
       cinder:
         DEFAULT:
           debug: true
-          backup_driver: cinder.backup.drivers.ceph
-          backup_ceph_user: "cinder-backup"
-          backup_ceph_pool: "backups"
-          enabled_backends: rbd-ssd,rbd-hdd
+          enabled_backends: SSD,HDD
+          default_volume_type: SSD
       backends:
-        rbd-ssd:
+        SSD:
           volume_driver: cinder.volume.drivers.rbd.RBDDriver
-          volume_backend_name: ssd_ceph
+          volume_backend_name: rbd-ssd
           rbd_cluster_name: "ssd_ceph"
           rbd_ceph_conf: "/etc/ceph/ssd_ceph.conf"
           rbd_flatten_volume_from_snapshot: false
@@ -1479,9 +1477,9 @@ data:
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
           admin_keyring: "AQA8GjNcwnCSJhAAOmqeo1iAGWv/RZx4PXHDmw=="
           rbd_pool_secret: cinder-volume-rbd-ssd-keyring
-        rbd-hdd:
+        HDD:
           volume_driver: cinder.volume.drivers.rbd.RBDDriver
-          volume_backend_name: hdd_ceph
+          volume_backend_name: rbd-hdd
           rbd_cluster_name: "hdd_ceph"
           rbd_ceph_conf: "/etc/ceph/hdd_ceph.conf"
           rbd_flatten_volume_from_snapshot: false
@@ -1502,6 +1500,10 @@ data:
           cinder:
             username: cinder
             password: {{ db_cinder_password }}
+    manifests:
+      deployment_backup: false
+      job_backup_storage_init: false
+      pvc_backup: false
   source:
     type: local
     location: "{{ osh_path }}"
