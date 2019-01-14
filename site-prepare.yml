@@ -30,7 +30,7 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
-    - name: pull k8s-dashboard image
+    - name: pull kubernetes control plane images
       docker_image:
         name: "{{ item }}"
       with_items:
