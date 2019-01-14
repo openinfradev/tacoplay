@@ -7,3 +7,4 @@ ceph-ansible/
 kubespray/
 charts/
 mirrors/
+manifests/
