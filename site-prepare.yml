@@ -8,7 +8,7 @@
       copy:
         src: "{{ playbook_dir }}/ceph-ansible/site.yml.sample"
         dest: "{{ playbook_dir }}/ceph-ansible/site.yml"
-  tags: ceph
+  tags: always
 
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
