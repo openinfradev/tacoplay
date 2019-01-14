@@ -32,11 +32,12 @@
   tasks:
     - name: pull k8s-dashboard image
       docker_image:
-        name: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.8.3
-
-    - name: pull rbd-provisioner image
-      docker_image:
-        name: quay.io/external_storage/rbd-provisioner:v2.1.1-k8s1.11
+        name: "{{ item }}"
+      with_items:
+        - "gcr.io/google-containers/kube-apiserver:{{ kube_version }}"
+        - "gcr.io/google-containers/kube-proxy:{{ kube_version }}"
+        - "gcr.io/google-containers/kube-controller-manager:{{ kube_version }}"
+        - "gcr.io/google-containers/kube-scheduler:{{ kube_version }}"
 
     - name: create docker cert directory
       file:
