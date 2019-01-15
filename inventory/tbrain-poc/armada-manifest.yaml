@@ -144,17 +144,6 @@ data:
   upgrade:
     no_hooks: false
   values:
-    images:
-      tags:
-        mariadb: ddp-pcl-admin01:5000/mariadb:10.2.18
-        ingress: ddp-pcl-admin01:5000/nginx-ingress-controller:0.9.0
-        error_pages: ddp-pcl-admin01:5000/defaultbackend:1.0
-        prometheus_create_mysql_user: ddp-pcl-admin01:5000/mariadb:10.2.13
-        prometheus_mysql_exporter: ddp-pcl-admin01:5000/mysqld-exporter:v0.10.0
-        prometheus_mysql_exporter_helm_tests: ddp-pcl-admin01:5000/heat:pike
-        dep_check: ddp-pcl-admin01:5000/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: docker.io/docker:17.07.0
-      pull_policy: Always
     pod:
       replicas:
         server: 3
