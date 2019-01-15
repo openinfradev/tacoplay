@@ -9,7 +9,7 @@
 
 - name: create kube config dir
   file:
-    path: "/home/{{ ansible_user }}/.kube"
+    path: "{{ ansible_env.HOME }}/.kube"
     mode: "0700"
     state: directory
   become: no
@@ -18,7 +18,7 @@
 - name: copy admin kubeconfig to home
   copy:
     src: "{{ artifacts_dir }}/admin.conf"
-    dest: "/home/{{ ansible_user }}/.kube/config"
+    dest: "{{ ansible_env.HOME }}/.kube/config"
   become: no
   when: inventory_hostname in groups['admin-node']
 

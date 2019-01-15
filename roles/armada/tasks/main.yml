@@ -56,7 +56,7 @@
 
 - name: update bashrc for running virtual env and armada
   blockinfile:
-    path: "/home/{{ ansible_user }}/.bashrc"
+    path: "{{ lookup('env','HOME') }}/.bashrc"
     block: |
       export LC_ALL="en_US.UTF-8"
       export WORKON_HOME={{ workon_home }}
@@ -67,14 +67,14 @@
 
 - name: get existing workon armada
   shell: >-
-    . /home/{{ ansible_user }}/.bashrc &&
+    . {{ lookup('env','HOME') }}/.bashrc &&
     lsvirtualenv | grep armada | cat
   register: workon_armada
   become: no
 
 - name: create workon armada if not exist
   shell: >-
-    . /home/{{ ansible_user }}/.bashrc &&
+    . {{ lookup('env','HOME') }}/.bashrc &&
     mkvirtualenv armada --python=/usr/bin/python3.4
   become: no
   when: workon_armada.stdout == ""
@@ -126,7 +126,7 @@
     --tiller-port {{ tiller_port }}
     --timeout 3600
     {{ inventory_dir }}/armada-manifest.yaml >
-    /home/{{ ansible_user }}/armada.log
+    {{ lookup('env','HOME') }}/armada.log
   async: 3600
   poll: 0
   when: auto_release_enabled and tiller_host.stdout != ""

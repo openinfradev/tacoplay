@@ -2,7 +2,7 @@
 .idea
 artifacts/
 docker_registry/
-armada/
+/armada/
 ceph-ansible/
 kubespray/
 charts/

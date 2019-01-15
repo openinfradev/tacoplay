@@ -1,4 +1,4 @@
 ---
-workon_home: "/home/{{ ansible_user }}/venv"
+workon_home: "{{ lookup('env','HOME') }}/venv"
 tiller_port: 32134
 auto_release_enabled: true
