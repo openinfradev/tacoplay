@@ -146,7 +146,7 @@ data:
   values:
     pod:
       replicas:
-        server: 3
+        server: 1
     volume:
       enabled: true
       class_name: rbd
@@ -1796,7 +1796,7 @@ data:
                 source: creation_date
                 use_age: True
                 # 500Gi*3*80% = 1200
-                disk_space: 1200
+                disk_space: 700
       elasticsearch:
         env:
           java_opts: "-Xms1024m -Xmx1024m"
