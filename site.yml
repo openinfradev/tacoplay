@@ -95,6 +95,13 @@
     - { role: admin-node }
   tags: k8s
 
+## Deploy rbd provisioner and storage class
+- hosts: kube-master
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: rbd_provisioner }
+  tags: k8s
+
 # TODO: add tests for checking status of the new k8s cluster
 
 # Create K8S resources required for deploying OpenStack
