@@ -1316,9 +1316,9 @@ data:
           backup_driver: cinder.backup.drivers.ceph
           backup_ceph_user: "cinder"
           backup_ceph_pool: "backups"
-          enabled_backends: rbd-ssd,rbd-hdd
+          enabled_backends: rbd1
       backends:
-        rbd-ssd:
+        rbd1:
           volume_driver: cinder.volume.drivers.rbd.RBDDriver
           volume_backend_name: rbd-ssd
           rbd_ceph_conf: "/etc/ceph/ceph.conf"
@@ -1327,18 +1327,7 @@ data:
           rbd_store_chunk_size: 4
           rados_connect_timeout: -1
           rbd_user: "cinder"
-          rbd_pool: "volumes-ssd"
-          rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
-        rbd-hdd:
-          volume_driver: cinder.volume.drivers.rbd.RBDDriver
-          volume_backend_name: rbd-hdd
-          rbd_ceph_conf: "/etc/ceph/ceph.conf"
-          rbd_flatten_volume_from_snapshot: false
-          rbd_max_clone_depth: 5
-          rbd_store_chunk_size: 4
-          rados_connect_timeout: -1
-          rbd_user: "cinder"
-          rbd_pool: "volumes-hdd"
+          rbd_pool: "volumes"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
   source:
     type: local
