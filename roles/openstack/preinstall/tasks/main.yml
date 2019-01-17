@@ -22,7 +22,6 @@
     - "{{ openstack_manifests.results }}"
   run_once: true
   become: no
-  when: ceph_enabled
 
 - name: fetch mon hosts from ceph.conf
   shell: >-
