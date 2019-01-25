@@ -1,14 +1,15 @@
 ---
+bin_dir: /usr/local/bin
+podsecuritypolicy_enabled: false
+
 rbd_provisioner_image_repo: "quay.io/external_storage/rbd-provisioner"
 rbd_provisioner_image_tag: "v2.1.1-k8s1.11"
-kube_config_dir: /etc/kubernetes
-podsecuritypolicy_enabled: false
 
 rbd_provisioner_namespace: "rbd-provisioner"
 rbd_provisioner_replicas: 2
 rbd_provisioner_monitors: ~
 rbd_provisioner_pool: kube
-rbd_provisioner_admin_id: admin
+rbd_provisioner_admin_id: kube
 rbd_provisioner_secret_name: ceph-secret-admin
 rbd_provisioner_secret_token: ceph-key-admin
 rbd_provisioner_user_id: kube

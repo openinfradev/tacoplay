@@ -10,6 +10,23 @@
         dest: "{{ playbook_dir }}/ceph-ansible/site.yml"
   tags: always
 
+- hosts: localhost:all
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: use cicd registry and disable localrepo
+      set_fact:
+        cicd_registry_enabled: true
+        localrepo_enabled: false
+
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_taco.yml"
+        - "{{ playbook_dir }}/vars/global_docker.yml"
+        - "{{ playbook_dir }}/vars/global_ceph.yml"
+        - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
+  tags: always
+
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
@@ -38,6 +55,7 @@
         - "gcr.io/google-containers/kube-proxy:{{ kube_version }}"
         - "gcr.io/google-containers/kube-controller-manager:{{ kube_version }}"
         - "gcr.io/google-containers/kube-scheduler:{{ kube_version }}"
+        - "quay.io/external_storage/rbd-provisioner:v2.1.1-k8s1.11"
 
     - name: create docker cert directory
       file:

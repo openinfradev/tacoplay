@@ -1,41 +1,41 @@
 ---
-
-- name: RBD Provisioner | Remove legacy addon dir and manifests
+- name: RBD Provisioner | Remove legacy rbd_provisioner dir and manifests
   file:
-    path: "{{ kube_config_dir }}/addons/rbd_provisioner"
+    path: "/tmp/manifests/rbd_provisioner"
     state: absent
-  when:
-    - inventory_hostname == groups['kube-master'][0]
-  tags:
-    - upgrade
 
 - name: RBD Provisioner | Remove legacy namespace
   shell: |
     {{ bin_dir }}/kubectl delete namespace {{ rbd_provisioner_namespace }}
   ignore_errors: yes
-  when:
-    - inventory_hostname == groups['kube-master'][0]
-  tags:
-    - upgrade
+  become: no
 
 - name: RBD Provisioner | Remove legacy storageclass
   shell: |
     {{ bin_dir }}/kubectl delete storageclass {{ rbd_provisioner_storage_class }}
   ignore_errors: yes
-  when:
-    - inventory_hostname == groups['kube-master'][0]
-  tags:
-    - upgrade
+  become: no
 
-- name: RBD Provisioner | Create addon dir
+- name: RBD Provisioner | Create rbd_provisioner dir
   file:
-    path: "{{ kube_config_dir }}/addons/rbd_provisioner"
+    path: "/tmp/manifests/rbd_provisioner"
     state: directory
-    owner: root
-    group: root
-    mode: 0755
-  when:
-    - inventory_hostname == groups['kube-master'][0]
+
+- name: fetch mon hosts from ceph.conf if rbd_provisioner_monitors is empty
+  shell: >-
+    grep 'mon host' /etc/ceph/ceph.conf | awk '{print $4}'
+  register: mon
+  when: not (rbd_provisioner_monitors|length > 0)
+
+- name: set rbd_provisioner_monitors for rbd storage class
+  set_fact:
+    rbd_provisioner_monitors: "{{ mon.stdout.split(',') | map('regex_replace', '(.*)', '\\1:6789') | join(',') }}"
+  when: mon.changed and mon.stdout != ""
+
+- name: fail getting ceph mon hosts
+  fail:
+    msg: "failed to get ceph mon hosts neither from vars nor ceph.conf"
+  when: not (rbd_provisioner_monitors|length > 0)
 
 - name: RBD Provisioner | Templates list
   set_fact:
@@ -62,10 +62,9 @@
 - name: RBD Provisioner | Create manifests
   template:
     src: "{{ item.file }}.j2"
-    dest: "{{ kube_config_dir }}/addons/rbd_provisioner/{{ item.file }}"
+    dest: "/tmp/manifests/rbd_provisioner/{{ item.file }}"
   with_items: "{{ rbd_provisioner_templates }}"
   register: rbd_provisioner_manifests
-  when: inventory_hostname == groups['kube-master'][0]
 
 - name: RBD Provisioner | Apply manifests
   kube:
@@ -73,7 +72,8 @@
     namespace: "{{ rbd_provisioner_namespace }}"
     kubectl: "{{ bin_dir }}/kubectl"
     resource: "{{ item.item.type }}"
-    filename: "{{ kube_config_dir }}/addons/rbd_provisioner/{{ item.item.file }}"
+    filename: "/tmp/manifests/rbd_provisioner/{{ item.item.file }}"
     state: "latest"
   with_items: "{{ rbd_provisioner_manifests.results }}"
-  when: inventory_hostname == groups['kube-master'][0]
+  run_once: true
+  become: no

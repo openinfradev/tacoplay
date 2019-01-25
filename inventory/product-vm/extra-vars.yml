@@ -1,0 +1,34 @@
+# tacoplay
+cicd_registry_enabled: true
+localrepo_enabled: false
+
+# ceph
+ceph_monitors: 192.168.48.31
+ceph_admin_keyring: AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA==
+
+# k8s
+kube_pods_subnet: 10.233.0.0/18
+kube_service_addresses: 10.233.64.0/18
+ipip_mode: Always
+peer_with_router: false
+
+rbd_provisioner_enabled: true
+rbd_provisioner_admin_id: admin
+rbd_provisioner_secret: "{{ ceph_admin_keyring }}"
+rbd_provisioner_user_id: kube
+rbd_provisioner_user_secret: AQCgwdRaQwA4BhAACAaJLcqnmTHIFzS3cJwbAQ==
+
+# openstack
+openstack_ceph_enabled: true
+
+db_root_user: admin
+db_root_password: password
+db_keystone_password: password
+db_nova_password: password
+db_cinder_password: password
+db_glance_password: password
+db_neutron_password: password
+db_heat_password: password
+db_horizon_password: password
+db_grafana_password: password
+db_grafana_session_password: password

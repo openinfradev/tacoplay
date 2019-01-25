@@ -5,7 +5,8 @@ openstack_namespace: openstack
 config_drive_enabled: true
 pci_passthrough_enabled: false
 
-ceph_enabled: true
+# ceph information for nova, libvirt, cinder and glance
+openstack_ceph_enabled: true
 mon_host: ''
 admin_keyring: ''
 
@@ -13,6 +14,8 @@ admin_keyring: ''
 osh_infra_path: "{{ playbook_dir }}/charts/openstack-helm-infra"
 osh_path: "{{ playbook_dir }}/charts/openstack-helm"
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
+
+# DB user and password
 db_root_user: "root"
 db_root_password: "password"
 db_keystone_password: "password"

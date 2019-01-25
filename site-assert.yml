@@ -1,0 +1,132 @@
+---
+
+- hosts: localhost
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_taco.yml"
+        - "{{ playbook_dir }}/vars/global_docker.yml"
+        - "{{ playbook_dir }}/vars/global_ceph.yml"
+        - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
+        - "{{ playbook_dir }}/vars/site_specific.yml"
+
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_k8s-images.yml"
+      when: localrepo_enabled
+  tags: always
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Assert tacoplay specific variables are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - cicd_registry_enabled
+        - localrepo_enabled
+      tags: always
+
+    - name: Assert localrepo urls are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - localrepo_pypi
+        - localrepo_yum
+        - localrepo_k8s
+      when: localrepo_enabled
+      tags: always
+
+    # NOTE: groups['ceph'] is used figuring out ceph is enabled or not
+    # NOTE: 'ceph_monitors' is used to figuring out using existing or intalling new
+    - name: Assert ceph monitors and admin keyring are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - ceph_monitors
+        - ceph_admin_keyring
+      when:
+        - groups["ceph"] is defined
+      tags: always
+
+    - name: Assert ceph specific variables when using existing ceph
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - external_cluster_mon_ips
+      when: groups["ceph"] is defined and ceph_monitors != ''
+      tags: ceph
+
+    - name: Assert ceph specific variables when deploying new ceph
+      assert:
+        that:
+          - "{{ item }} is defined"
+          - "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - monitor_interface
+        - public_network
+        - cluster_network
+        - osd_objectstore
+        - lvm_volumes
+        - openstack_config
+      when:
+        - groups["ceph"] is defined and ceph_monitors == ''
+      tags: ceph
+
+    - name: Assert ceph OpenStack configs when deploying new ceph
+      assert:
+        that:
+          - "{{ item.pg_num }} != 'TACOFIXME'"
+          - "{{ item.pgp_num }} != 'TACOFIXME'"
+      with_items: "{{ openstack_pools }}"
+      when:
+        - groups["ceph"] is defined and ceph_monitors == ''
+        - openstack_config
+      loop_control:
+        label: "{{ item.name }}"
+      tags: ceph
+
+    - name: Assert k8s specific variables are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - kube_pods_subnet
+        - kube_service_addresses
+        - ipip_mode
+        - peer_with_router
+        - rbd_provisioner_enabled
+      tags: k8s
+
+    - name: Assert RBD provisioner monitor is set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - rbd_provisioner_admin_id
+        - rbd_provisioner_secret
+        - rbd_provisioner_user_id
+        - rbd_provisioner_user_secret
+      when:
+        - rbd_provisioner_enabled
+        - groups["ceph"] is defined and ceph_monitors != ''
+      tags: k8s
+
+    - name: Assert OpenStack variables are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - openstack_ceph_enabled
+        - db_root_user
+        - db_root_password
+        - db_keystone_password
+        - db_nova_password
+        - db_cinder_password
+        - db_glance_password
+        - db_neutron_password
+        - db_heat_password
+        - db_horizon_password
+        - db_grafana_password
+        - db_grafana_session_password
+      tags: openstack

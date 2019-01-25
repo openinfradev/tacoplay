@@ -1,0 +1,95 @@
+# Variables with TACOFIXME must be overrided, or tacoplay will generate errors
+# Note that most of the values listed here should be agreed with site administrator
+
+# TACO
+# there should be at least one registry node when cicd_registry_enabled is false
+cicd_registry_enabled: TACOFIXME
+
+# set localrepo_yum, k8s, pypi as well when localrepo is enabled
+localrepo_enabled: TACOFIXME
+localrepo_yum: TACOFIXME
+localrepo_k8s: TACOFIXME
+localrepo_pypi: TACOFIXME
+
+# Ceph
+# ceph_monitors and ceph_admin_keyring would be set automatically
+# from /etc/ceph/ceph.conf and ceph.client.admin.keyring
+# once ceph is installed by ceph-ansible
+# set the values only when using exsiting ceph or leave it ''
+# note that ceph_monitors value is used figuring out installing new ceph or using existing ceph
+ceph_monitors: TACOFIXME
+ceph_admin_keyring: TACOFIXME
+
+# when using existing ceph
+external_cluster_mon_ips: >-
+  {%- if ceph_monitors != '' -%}ceph_monitors{%- else -%}TACOFIXME{%- endif -%}
+
+# when deploying new ceph
+monitor_interface: TACOFIXME
+public_network: TACOFIXME
+cluster_network: TACOFIXME
+osd_objectstore: TACOFIXME
+
+# lvm_volumes must be overrided in either extra-vars or hosts_vars
+# note that we don't override it here with TACOFIXME since include_vars has higher priority than host_vars
+#lvm_volumes:
+
+openstack_config: TACOFIXME
+kube_pool_pg:
+  pg_num: TACOFIXME
+  pgp_num: TACOFIXME
+glance_pool_pg:
+  pg_num: TACOFIXME
+  pgp_num: TACOFIXME
+cinder_pool_pg:
+  pg_num: TACOFIXME
+  pgp_num: TACOFIXME
+cinder_backups_pool_pg:
+  pg_num: TACOFIXME
+  pgp_num: TACOFIXME
+
+# K8S
+kube_pods_subnet: TACOFIXME
+kube_service_addresses: TACOFIXME
+
+# Calico
+# use IP-over-IP encapsulation
+# set "Always" in VM environment, otherwise use "Never"
+ipip_mode: TACOFIXME
+
+# distribute pod routes with border routers
+# set false if the cluster size is smaller then 100 nodes
+# as number and border router IP should be set only if it is enabled
+peer_with_router: TACOFIXME
+#global_as_num:
+#peers:
+#  - as:
+#    router_id:
+
+# RBD provisioner
+rbd_provisioner_enabled: TACOFIXME
+
+# set below only when using existing ceph
+rbd_provisioner_admin_id: >-
+  {%- if ceph_monitors != '' -%}TACOFIXME{%- else -%}kube{%- endif -%}
+rbd_provisioner_secret: >-
+  {%- if ceph_monitors != '' -%}TACOFIXME{%- else -%}AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=={%- endif -%}
+rbd_provisioner_user_id: >-
+  {%- if ceph_monitors != '' -%}TACOFIXME{%- else -%}kube{%- endif -%}
+rbd_provisioner_user_secret: >-
+  {%- if ceph_monitors != '' -%}TACOFIXME{%- else -%}AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=={%- endif -%}
+
+# OpenStack
+openstack_ceph_enabled: TACOFIXME
+
+db_root_user: TACOFIXME
+db_root_password: TACOFIXME
+db_keystone_password: TACOFIXME
+db_nova_password: TACOFIXME
+db_cinder_password: TACOFIXME
+db_glance_password: TACOFIXME
+db_neutron_password: TACOFIXME
+db_heat_password: TACOFIXME
+db_horizon_password: TACOFIXME
+db_grafana_password: TACOFIXME
+db_grafana_session_password: TACOFIXME

@@ -1,4 +1,38 @@
 ---
+
+# Make sure ceph-ansible/site.yml exists
+- hosts: localhost
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: copy site.yml
+      copy:
+        src: "{{ playbook_dir }}/ceph-ansible/site.yml.sample"
+        dest: "{{ playbook_dir }}/ceph-ansible/site.yml"
+  tags: always
+
+# Assert inventory
+- import_playbook: site-assert.yml
+  tags: assert
+
+- hosts: localhost:all
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_taco.yml"
+        - "{{ playbook_dir }}/vars/global_docker.yml"
+        - "{{ playbook_dir }}/vars/global_ceph.yml"
+        - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
+        - "{{ playbook_dir }}/vars/site_specific.yml"
+
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_k8s-images.yml"
+      when: localrepo_enabled
+  tags: always
+
 # Populate hostname to hosts file
 - hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
@@ -29,7 +63,7 @@
 
     - name: registry.cicd.stg.taco | create cert file
       copy:
-        src: "{{ ansible_inventory_sources[0] | dirname }}/ca.crt"
+        src: "registry-certs"
         dest: "/etc/docker/certs.d/registry.cicd.stg.taco/ca.crt"
       when: cicd_registry_enabled|default(false)
   tags: always
@@ -95,11 +129,11 @@
     - { role: admin-node }
   tags: k8s
 
-## Deploy rbd provisioner and storage class
-- hosts: kube-master
+- hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: rbd_provisioner }
+    - { role: taco-defaults }
+    - { role: rbd_provisioner, when: rbd_provisioner_enabled }
   tags: k8s
 
 # TODO: add tests for checking status of the new k8s cluster
