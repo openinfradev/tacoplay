@@ -1,12 +1,6 @@
 ---
 bin_dir: /usr/local/bin
 
-# Enable config drive
-config_drive_enabled: true
-
-# Enable PCI passthrough
-pci_passthrough_enabled: false
-
 # TC service
 tc_enabled: false
 tc_interface: bond0

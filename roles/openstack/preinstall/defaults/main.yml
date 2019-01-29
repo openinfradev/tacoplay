@@ -2,7 +2,9 @@
 bin_dir: /usr/local/bin
 openstack_namespace: openstack
 
-# Storageclass configs
+config_drive_enabled: true
+pci_passthrough_enabled: false
+
 ceph_enabled: true
 mon_host: ''
 admin_keyring: ''

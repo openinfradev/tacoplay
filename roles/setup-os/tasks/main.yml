@@ -1,20 +1,4 @@
 ---
-- name: kernel modules | enable modules for supporting config drive
-  modprobe:
-    name: "{{ item }}"
-    state: present
-  when: config_drive_enabled
-  with_items:
-    - loop
-    - vfat
-
-- name: kernel modules | enable vfio-pci module
-  modprobe:
-    name: "{{ item }}"
-    state: present
-  when: pci_passthrough_enabled
-  with_items:
-    - vfio-pci
 
 - name: TC | install TC script
   template:
