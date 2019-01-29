@@ -96,23 +96,32 @@
     - epel-testing.repo
     - ceph_stable.repo
     - docker.repo
-  when: ansible_distribution in ["CentOS","RedHat"] and localrepo_enabled
+  when:
+    - localrepo_enabled
+    - replace_repo_file
+    - ansible_distribution in ["CentOS","RedHat"]
   ignore_errors: yes
 
 - name: add local centos base repo
   template:
     src: localrepo.repo.j2
     dest: /etc/yum.repos.d/localrepo.repo
-  when: ansible_distribution in ["CentOS","RedHat"] and localrepo_enabled
+  when:
+    - localrepo_enabled
+    - replace_repo_file
+    - ansible_distribution in ["CentOS","RedHat"]
 
 - name: add epel repo
   template:
     src: epel.repo.j2
     dest: /etc/yum.repos.d/epel.repo
-  when: ansible_distribution in ["CentOS","RedHat"] and localrepo_enabled
+  when:
+    - localrepo_enabled
+    - replace_repo_file
+    - ansible_distribution in ["CentOS","RedHat"]
 
 - name: add local pypi repo
   template:
     src: pip.conf.j2
     dest: /etc/pip.conf
-  when: localrepo_enabled
+  when: localrepo_enabled and replace_repo_file

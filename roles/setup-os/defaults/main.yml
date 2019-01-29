@@ -18,5 +18,6 @@ nat_interfaces:
   - bond0
 
 localrepo_enabled: false
+replace_repo_file: false
 localrepo_yum: tacorepo
 localrepo_pypi: tacorepo
