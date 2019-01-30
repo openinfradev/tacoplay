@@ -287,7 +287,6 @@ data:
         admin_keyring: "{{ admin_keyring }}"
         cinder:
           user: "cinder"
-          keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
           secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
       libvirt:
         listen_addr: 0.0.0.0
@@ -833,7 +832,6 @@ data:
         admin_keyring: "{{ admin_keyring }}"
         cinder:
           user: "cinder"
-          keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
           secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
       rally_tests:
         run_tempest: false
@@ -1063,8 +1061,6 @@ data:
               sla:
                 failure_rate:
                   max: 0
-      libvirt:
-        live_migration_interface: bond0
       nova:
         DEFAULT:
           scheduler_default_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
@@ -1075,6 +1071,7 @@ data:
         vnc:
           novncproxy_base_url: http://{{ hostvars[groups['controller-node'][0]]['ip'] }}:30608/vnc_auto.html
         libvirt:
+          virt_type: qemu
           rbd_user: "cinder"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
         scheduler:
@@ -1169,10 +1166,11 @@ data:
         neutron:
           uid: 42435
     network:
-      auto_bridge_add: null
+      auto_bridge_add:
+        br-ex: eth1
       share_namespaces: false
       interface:
-        tunnel: null
+        tunnel: eth0
     conf:
       neutron_sudoers: |
         # This sudoers file supports rootwrap-daemon for both Kolla and LOCI Images.
@@ -1320,7 +1318,7 @@ data:
       backends:
         rbd1:
           volume_driver: cinder.volume.drivers.rbd.RBDDriver
-          volume_backend_name: rbd-ssd
+          volume_backend_name: rbd1
           rbd_ceph_conf: "/etc/ceph/ceph.conf"
           rbd_flatten_volume_from_snapshot: false
           rbd_max_clone_depth: 5
