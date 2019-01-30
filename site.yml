@@ -1,15 +1,5 @@
 ---
 
-# Make sure ceph-ansible/site.yml exists
-- hosts: localhost
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: copy site.yml
-      copy:
-        src: "{{ playbook_dir }}/ceph-ansible/site.yml.sample"
-        dest: "{{ playbook_dir }}/ceph-ansible/site.yml"
-  tags: always
-
 # Assert inventory
 - import_playbook: site-assert.yml
   tags: assert
