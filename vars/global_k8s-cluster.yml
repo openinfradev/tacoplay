@@ -1,0 +1,38 @@
+# OS
+disable_swap: true
+epel_enabled: true
+preinstall_selinux_state: disabled
+populate_inventory_to_hosts_file: false
+
+# etcd
+etcd_deployment_type: docker
+etcd_memory_limit: 8192M
+
+# K8S
+kube_version: v1.12.3
+kube_api_anonymous_auth: true
+kube_network_plugin: calico
+kube_proxy_mode: iptables
+
+kubeadm_enabled: true
+kubelet_deployment_type: host
+kubectl_localhost: true
+kubeconfig_localhost: true
+
+local_volume_provisioner_enabled: false
+cephfs_provisioner_enabled: false
+
+# Applications
+dns_mode: coredns
+dns_cores_per_replica: 256
+
+helm_enabled: true
+helm_deployment_type: host
+helm_version: "v2.11.0"
+helm_skip_refresh: true
+
+# Prometheus metrics for calico
+calico_felix_prometheusmetricsenabled: "true"
+calico_felix_prometheusmetricsport: 9091
+calico_felix_prometheusgometricsenabled: "true"
+calico_felix_prometheusprocessmetricsenabled: "true"

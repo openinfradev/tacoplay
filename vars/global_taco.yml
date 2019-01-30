@@ -1,0 +1,26 @@
+# Host
+bin_dir: /usr/local/bin
+
+nat_enabled: false
+tc_enabled: false
+
+# RBD provisioner
+rbd_provisioner_namespace: kube-system
+rbd_provisioner_replicas: 1
+rbd_provisioner_monitors: "{{ ceph_monitors }}"
+rbd_provisioner_pool: kube
+rbd_provisioner_secret_name: ceph-secret-admin
+rbd_provisioner_user_secret_name: ceph-secret-user
+rbd_provisioner_user_secret_namespace: kube-system
+rbd_provisioner_fs_type: ext4
+rbd_provisioner_image_format: "2"
+rbd_provisioner_image_features: layering
+rbd_provisioner_storage_class: rbd
+rbd_provisioner_reclaim_policy: Delete
+
+# Armada
+armada_venv: "{{ lookup('env','HOME') }}/venv"
+
+# OpenStack
+openstack_namespace: openstack
+config_drive_enabled: true

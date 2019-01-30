@@ -1,8 +1,27 @@
-# Docker options for kubespray and taco registry
+# Docker options for kubespray and registry
+docker_rh_repo_base_url: >-
+  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}/docker/linux/centos/7/$basearch/stable
+  {%- else -%}https://download.docker.com/linux/centos/7/$basearch/stable{%- endif -%}
+docker_rh_repo_gpgkey: >-
+  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}/docker/linux/centos/gpg
+  {%- else -%}https://download.docker.com/linux/centos/gpg{%- endif -%}
+dockerproject_rh_repo_base_url: >-
+  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}/dockerproject/repo/main/centos/7
+  {%- else -%}https://yum.dockerproject.org/repo/main/centos/7{%- endif -%}
+dockerproject_rh_repo_gpgkey: >-
+  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}/dockerproject/gpg
+  {%- else -%}https://yum.dockerproject.org/gpg{%- endif -%}
+
+docker_container_storage_setup: false
+docker_storage_options: -s overlay2
 
 docker_version: "18.06"
 docker_daemon_graph: "/var/lib/docker"
 docker_log_opts: "--log-opt max-size=50m --log-opt max-file=5"
+
+docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
+docker_insecure_registries:
+  - "{{ docker_registry }}"
 
 ## If non-empty will override default system MounFlags value.
 ## This option takes a mount propagation flag: shared, slave

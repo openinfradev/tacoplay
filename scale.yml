@@ -1,4 +1,24 @@
 ---
+
+- hosts: localhost:all
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_taco.yml"
+        - "{{ playbook_dir }}/vars/global_docker.yml"
+        - "{{ playbook_dir }}/vars/global_ceph.yml"
+        - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
+        - "{{ playbook_dir }}/vars/site_specific.yml"
+
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_k8s-images.yml"
+      when: localrepo_enabled
+  tags: always
+
 # Populate hostname to hosts file
 - hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
