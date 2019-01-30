@@ -72,7 +72,7 @@
     - name: pull all images used in armada manifest
       script: >-
         {{ playbook_dir }}/scripts/pull-images.sh
-        {{ playbook_dir }}/manifests/source/global.yaml
+        {{ playbook_dir }}/manifests/ha.yaml
       args:
         creates: /tmp/.image-pull-done
 
