@@ -2,3 +2,4 @@
 ansible~=2.6,<2.7
 ansible-modules-hashivault>=3.9.4
 netaddr
+prettytable
