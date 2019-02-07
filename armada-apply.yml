@@ -1,0 +1,71 @@
+---
+
+# Assert inventory
+- hosts: localhost:all
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_taco.yml"
+        - "{{ playbook_dir }}/vars/global_docker.yml"
+        - "{{ playbook_dir }}/vars/global_ceph.yml"
+        - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
+        - "{{ playbook_dir }}/vars/site_specific.yml"
+
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_k8s-images.yml"
+      when: localrepo_enabled
+  tags: always
+
+# Create K8S resources required for deploying OpenStack
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: openstack/preinstall }
+  tags: openstack 
+
+# Make admin-node ready for armada apply
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: armada }
+  tags: armada
+
+- hosts: admin-node:controller-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: check host where ingress controller is running
+      shell: >-
+        {{ bin_dir }}/kubectl get po -n openstack -o wide |
+        grep "^ingress-[^error]" |
+        awk '{print $6}'
+      retries: 10
+      delay: 10
+      register: ingress_host
+      until: ingress_host.stdout != ""
+      become: no
+      delegate_to: "{{ groups['admin-node']|first }}"
+      when: auto_release_enabled|default(true)
+
+    - fail:
+        msg: "ingress controller is not running"
+      when: auto_release_enabled|default(true) and ingress_host.stdout == ""
+
+    - name: update hosts file for openstack services access via ingress
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          {{ ingress_host.stdout }} keystone.openstack.svc.cluster.local
+          {{ ingress_host.stdout }} glance.openstack.svc.cluster.local
+          {{ ingress_host.stdout }} nova.openstack.svc.cluster.local
+          {{ ingress_host.stdout }} neutron.openstack.svc.cluster.local
+          {{ ingress_host.stdout }} cinder.openstack.svc.cluster.local
+        state: present
+        marker: "# OPENSTACK SERVICES {mark}"
+      when: auto_release_enabled|default(true)
+  tags: openstack
