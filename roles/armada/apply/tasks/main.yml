@@ -1,0 +1,54 @@
+---
+
+- include_vars: ../vars/main.yml
+
+- name: check host where tiller is running
+  shell: >-
+    {{ bin_dir }}/kubectl get pods -n kube-system -o json |
+    jq -r '.items[] | select(.metadata.name|test("tiller")).status.hostIP'
+  register: tiller_host
+  become: no
+
+- name: get existing armada processes
+  shell: >-
+    ps -ef | grep -v grep | grep -w 'armada apply' | awk '{print $2}'
+  register: armada_processes
+  become: no
+
+- name: kill existing armada processes
+  shell: kill {{ item }}
+  with_items: "{{ armada_processes.stdout_lines }}"
+  become: no
+
+- name: wait until existing armada processes are killed
+  wait_for:
+    path: "/proc/{{ item }}/status"
+    state: absent
+  with_items: "{{ armada_processes.stdout_lines }}"
+
+- name: run armada apply in background
+  shell: >-
+    . ~/.bashrc && workon armada &&
+    armada apply
+    --tiller-host {{ tiller_host.stdout }}
+    --tiller-port {{ tiller_port }}
+    --timeout 3600
+    {{ inventory_dir }}/armada-manifest.yaml >
+    {{ lookup('env','HOME') }}/armada.log
+  async: 3600
+  poll: 0
+  when: auto_release_enabled|default(true) and tiller_host.stdout != ""
+  become: no
+  run_once: yes
+
+- name: show armada apply usage for next try
+  debug:
+    msg: >-
+      ". ~/.bashrc &&
+      workon armada &&
+      armada apply
+      --tiller-host {{ tiller_host.stdout }}
+      --tiller-port {{ tiller_port }}
+      --timeout 3600
+      {{ inventory_dir }}/armada-manifest.yaml"
+  when: tiller_host.stdout != ""

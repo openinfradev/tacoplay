@@ -1,4 +1,4 @@
 ---
+bin_dir: /usr/local/bin
 workon_home: "{{ lookup('env','HOME') }}/venv"
 tiller_port: 32134
-auto_release_enabled: true

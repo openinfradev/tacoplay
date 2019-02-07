@@ -141,7 +141,8 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-defaults }
-    - { role: armada }
+    - { role: armada/install }
+    - { role: armada/apply }
   tags: armada
 
 - hosts: admin-node:controller-node

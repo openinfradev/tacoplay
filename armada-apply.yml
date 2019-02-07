@@ -1,6 +1,4 @@
 ---
-
-# Assert inventory
 - hosts: localhost:all
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
@@ -33,7 +31,7 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-defaults }
-    - { role: armada }
+    - { role: armada/apply }
   tags: armada
 
 - hosts: admin-node:controller-node
