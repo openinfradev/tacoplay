@@ -1,0 +1,58 @@
+# tacoplay
+cicd_registry_enabled: false
+
+localrepo_enabled: true
+localrepo_yum: admin-prd
+localrepo_k8s: admin-prd
+localrepo_pypi: admin-prd
+
+# ceph
+monitor_interface: bond1
+public_network: 192.168.96.0/24
+cluster_network: 192.168.95.0/24
+
+osd_objectstore: bluestore
+lvm_volumes:
+  - data: /dev/vdb
+
+openstack_config: true
+kube_pool_pg:
+  pg_num: 1
+  pgp_num: 1
+glance_pool_pg:
+  pg_num: 2
+  pgp_num: 2
+cinder_pool_pg:
+  pg_num: 16
+  pgp_num: 16
+cinder_backup_pool_pg:
+  pg_num: 8
+  pgp_num: 8
+
+# k8s
+kube_pods_subnet: 10.233.0.0/17
+kube_service_addresses: 10.233.128.0/17
+ipip_mode: Never
+peer_with_router: true
+global_as_num: 64517
+peers:
+  - as: 64517
+    router_id: 192.168.95.2
+  - as: 64517
+    router_id: 192.168.95.3
+rbd_provisioner_enabled: true
+
+# openstack
+openstack_ceph_enabled: true
+
+db_root_user: root
+db_root_password: password
+db_keystone_password: password
+db_nova_password: password
+db_cinder_password: password
+db_glance_password: password
+db_neutron_password: password
+db_heat_password: password
+db_horizon_password: password
+db_grafana_password: password
+db_grafana_session_password: password
