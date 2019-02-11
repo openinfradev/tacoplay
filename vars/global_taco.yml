@@ -1,10 +1,14 @@
 # Host
 bin_dir: /usr/local/bin
-
 nat_enabled: false
 tc_enabled: false
 
+# Ceph
+ceph_enabled: true
+
 # RBD provisioner
+rbd_provisioner_enabled: >-
+  {%- if ceph_enabled -%}true{%- else -%}false{%- endif -%}
 rbd_provisioner_namespace: kube-system
 rbd_provisioner_replicas: 1
 rbd_provisioner_monitors: "{{ ceph_monitors }}"
@@ -23,4 +27,6 @@ armada_venv: "{{ lookup('env','HOME') }}/venv"
 
 # OpenStack
 openstack_namespace: openstack
+openstack_ceph_enabled: >-
+  {%- if ceph_enabled -%}true{%- else -%}false{%- endif -%}
 config_drive_enabled: true

@@ -100,12 +100,15 @@
       copy:
         src: "{{ inventory_dir }}/ceph.repo"
         dest: "{{ ceph_repository_dir }}/ceph.repo"
-      when: ceph_repository_enabled|default(false)
+      when:
+        - ceph_enabled
+        - ceph_repository_enabled|default(false)
   tags: ceph
 
 # Install Ceph
 - import_playbook: ceph-ansible/site.yml
   tags: ceph
+  when: ceph_enabled
 
 # TODO: add tests for checking status of the new ceph cluster
 

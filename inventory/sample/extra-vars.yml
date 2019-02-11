@@ -1,6 +1,5 @@
 # tacoplay
 cicd_registry_enabled: false
-
 localrepo_enabled: true
 localrepo_yum: 192.168.99.75
 localrepo_k8s: 192.168.99.75
@@ -28,9 +27,6 @@ cinder_pool_pg:
 cinder_backup_pool_pg:
   pg_num: 8
   pgp_num: 8
-
-ceph_monitors: ''
-ceph_admin_keyring: ''
 
 # k8s
 kube_pods_subnet: 10.233.0.0/18
