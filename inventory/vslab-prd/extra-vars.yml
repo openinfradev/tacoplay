@@ -2,6 +2,7 @@
 cicd_registry_enabled: false
 
 localrepo_enabled: true
+replace_repo_file: true
 localrepo_yum: admin-prd
 localrepo_k8s: admin-prd
 localrepo_pypi: admin-prd
