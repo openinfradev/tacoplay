@@ -8,7 +8,7 @@ localrepo_pypi: admin-prd
 
 # ceph
 monitor_interface: bond1
-public_network: 192.168.96.0/24
+public_network: 10.0.5.0/24
 cluster_network: 192.168.95.0/24
 
 ceph_stable_release: mimic
