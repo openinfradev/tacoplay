@@ -38,3 +38,4 @@
 # Purge Ceph cluster
 - include: ceph-ansible/infrastructure-playbooks/purge-cluster.yml
   tags: ceph
+  when: ceph_enabled

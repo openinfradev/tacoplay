@@ -79,6 +79,7 @@
 # Install Ceph
 - import_playbook: ceph-ansible/site.yml
   tags: ceph
+  when: ceph_enabled
 
 # TODO: add tests for checking status of the new ceph cluster
 
