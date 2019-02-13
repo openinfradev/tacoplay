@@ -35,18 +35,25 @@
     - gcc
     - jq
     - git
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: apt install packages required for armada
+  apt_repository:
+    repo: ppa:deadsnakes/ppa
+    state: present
+  when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: apt install packages required for armada
   apt:
     name: "{{ item }}"
     state: present
   loop:
-    - python-pip
-    - python-dev
+    - python3.4
+    - python3-pip
+    - python3-dev
     - gcc
     - jq
-  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+  when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: install virtual env packages
   pip:
@@ -67,7 +74,21 @@
       export OSH_PATH="{{ playbook_dir }}/charts"
     marker: "# ARMADA ENVS {mark}"
   become: no  
+  when: ansible_distribution in ["CentOS","RedHat"]
 
+- name: update bashrc for running virtual env and armada
+  blockinfile:
+    path: "{{ lookup('env','HOME') }}/.bashrc"
+    block: |
+      export LC_ALL="en_US.UTF-8"
+      export WORKON_HOME={{ workon_home }}
+      source /usr/local/bin/virtualenvwrapper.sh
+      export OSH_PATH="{{ playbook_dir }}/charts"
+    marker: "# ARMADA ENVS {mark}"
+  become: no
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+# FIXME: this does not work in Ubuntu machine
 - name: get existing workon armada
   shell: >-
     . {{ lookup('env','HOME') }}/.bashrc &&
@@ -75,6 +96,8 @@
   register: workon_armada
   become: no
 
+# FIXME: this does not work in Ubuntu machine
+# please create virtualenv with name armada manually to proceed
 - name: create workon armada if not exist
   shell: >-
     . {{ lookup('env','HOME') }}/.bashrc &&
