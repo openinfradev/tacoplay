@@ -19,6 +19,7 @@ osd_scenario: lvm
 ceph_conf_overrides:
   global:
     mon_allow_pool_delete: true
+    mon_osd_down_out_subtree_limit: host
     osd_pool_default_size: 3
     osd_pool_default_min_size: 2
     osd_pg_stat_report_internal_max: 1
