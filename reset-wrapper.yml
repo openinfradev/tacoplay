@@ -1,0 +1,14 @@
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: Install pexpect module
+      pip:
+        name: pexpect
+    - name: Confirm prompt
+      expect:
+        chdir: "{{ playbook_dir }}"
+        echo: yes
+        command: ansible-playbook -vv -u taco -b -i {{ inventory_dir }}/hosts.ini {{ playbook_dir }}/reset.yml
+        responses:
+          Are you sure you want to: 'yes'
+        timeout: 600
