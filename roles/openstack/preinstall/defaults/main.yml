@@ -2,9 +2,6 @@
 bin_dir: /usr/local/bin
 openstack_namespace: openstack
 
-config_drive_enabled: true
-pci_passthrough_enabled: false
-
 # ceph information for nova, libvirt, cinder and glance
 openstack_ceph_enabled: true
 mon_host: ''

@@ -1,0 +1,24 @@
+---
+
+- name: Removes the acl mask for /dev/kvm
+  acl:
+    path: /dev/kvm
+    entry: "mask:"
+    state: absent
+
+- name: load modules for config drive
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - loop
+    - vfat
+  when: config_drive_enabled
+
+- name: load vfio-pci module for pci passthrough
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - vfio-pci
+  when: pci_passthrough_enabled

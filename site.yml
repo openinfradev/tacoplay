@@ -131,6 +131,14 @@
 
 # TODO: add tests for checking status of the new k8s cluster
 
+# Tune system for OpenStack
+- hosts: controller-node:compute-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: openstack/setup-os }
+  tags: openstack
+
 # Create K8S resources required for deploying OpenStack
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
