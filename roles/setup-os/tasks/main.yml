@@ -1,5 +1,13 @@
 ---
 
+- name: disable zeroconf for CentOS
+  lineinfile:
+    path: "/etc/sysconfig/network"
+    line: "NOZEROCONF=yes"
+    create: yes
+    state: present
+  when: ansible_distribution in ["CentOS","RedHat"]
+
 - name: TC | install TC script
   template:
     src: tc-service.j2
