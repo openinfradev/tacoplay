@@ -83,6 +83,16 @@
 
 # TODO: add tests for checking status of the new ceph cluster
 
+# Tune system for OpenStack
+# We call this role before kubespray/scale so that the system could be ready
+# before openstack pods up and run
+- hosts: controller-node:compute-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-defaults }
+    - { role: openstack/setup-os }
+  tags: openstack
+
 # Install K8S
 - import_playbook: kubespray/scale.yml
   tags: k8s
