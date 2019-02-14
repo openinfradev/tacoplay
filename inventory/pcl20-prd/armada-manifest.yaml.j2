@@ -51,7 +51,7 @@ data:
       worker-processes: "8"
     pod:
       replicas:
-        ingress: 1
+        ingress: 3
         error_page: 1
   source:
     type: local
@@ -229,6 +229,7 @@ data:
         server: 3
     volume:
       class_name: rbd
+      size: 16Gi
     monitoring:
       prometheus:
         enabled: true
@@ -416,6 +417,7 @@ data:
       keystone:
         DEFAULT:
           debug: true
+		security_compliance: null
     pod:
       user:
         keystone:
@@ -1243,6 +1245,9 @@ data:
       interface:
         tunnel: null
     conf:
+      logging:
+        logger_neutron:
+          level: DEBUG
       neutron_sudoers: |
         # This sudoers file supports rootwrap-daemon for both Kolla and LOCI Images.
         Defaults !requiretty
@@ -1293,17 +1298,34 @@ data:
           use_namespaces: False
           # F5 devices
           icontrol_hostname: 172.27.9.48,172.27.9.49
-          icontrol_username: lbaas
-          icontrol_password: tidc1234!@#
+          icontrol_password: tidc1234!
           icontrol_connection_retry_interval: 10
           icontrol_connection_timeout: 10
           icontrol_config_mode: objects
-          debug: True
+      metering_agent: {}
+      overrides:
+        neutron_lbaas-agent:
+          hosts:
+          - name: ddp-pcl-control01
+            conf:
+              lbaas_agent:
+                DEFAULT:
+                  icontrol_username: lbaas_api1
+          - name: ddp-pcl-control02
+            conf:
+              lbaas_agent:
+                DEFAULT:
+                  icontrol_username: lbaas_api2
+          - name: ddp-pcl-control03
+            conf:
+              lbaas_agent:
+                DEFAULT:
+                  icontrol_username: lbaas_api3
     endpoints:
       oslo_db:
         auth:
           admin:
-            username: root
+            username: {{ db_root_user }}
             password: {{ db_root_password }}
           neutron:
             username: neutron
@@ -1578,7 +1600,7 @@ data:
         cfn: 3
         cloudwatch: 3
         engine: 3
-    endpoints:
+    endpoints:        
       oslo_db:
         auth:
           admin:
@@ -1607,7 +1629,6 @@ data:
   upgrade:
     no_hooks: false
   values:
-    replicas: 1
     images:
       tags:
         db_init: {{ docker_registry }}/pike/ubuntu-source-horizon:3.6.0
@@ -1619,11 +1640,11 @@ data:
       pull_policy: Always
     pod:
       replicas:
-        server: 3
+        server: 1
     network:
       node_port:
         enabled: true
-        port: 31000
+        port: 30005
       api:
         ingress:
           annotations:
@@ -1696,21 +1717,21 @@ data:
         description: We the People
 
         # NOTE: Password is "password" without quotes
-        dn: uid=taco,ou=People,dc=cluster,dc=local
+        dn: uid=piuser,ou=People,dc=cluster,dc=local
         objectClass: inetOrgPerson
         objectClass: top
         objectClass: posixAccount
         objectClass: shadowAccount
         objectClass: person
-        sn: taco
+        sn: piuser
         cn: taco
-        uid: taco
-        userPassword: {SSHA}l6OsaU3ABgWFdUAKvnhxohExurSDKIO2
+        uid: piuser
+        userPassword: {SSHA}ZWMjDSKknFAiAvdMD8IvHo68V/2IVaj9
         description: SSHA
         gidNumber: 1000
         uidNumber: 1493
-        homeDirectory: /home/taco
-        mail: taco@cluster.local
+        homeDirectory: /home/svcapp_su
+        mail: pcl-admin@sk.com
   source:
     type: local
     location: "{{ osh_infra_path }}"
@@ -1764,7 +1785,7 @@ data:
     conf:
       curator:
         #run every 6th hour
-        schedule:  "0 20 * * *"
+        schedule:  "0 4 * * *"
         action_file:
           # Remember, leave a key empty if there is no value.  None will be a string,
           # not a Python "NoneType"
@@ -1832,7 +1853,7 @@ data:
                 disk_space: 1200
       elasticsearch:
         env:
-          java_opts: "-Xms16384m -Xmx16384m"
+          java_opts: "-Xms12288m -Xmx12288m"
     monitoring:
       prometheus:
         enabled: true
@@ -1875,9 +1896,6 @@ data:
         image_repo_sync: {{ docker_registry }}/docker:17.07.0
       pull_policy: Always
     labels:
-      prometheus:
-        node_selector_key: prometheus
-        node_selector_value: enabled
       job:
         node_selector_key: prometheus
         node_selector_value: enabled
@@ -1906,7 +1924,7 @@ data:
         node_selector_value: enabled
     pod:
       tolerations:
-        fluentbit:                                                                                                                                                                                                                
+        fluentbit:
           enabled: true
     conf:
       fluentbit:
@@ -1959,8 +1977,8 @@ data:
           Port: 80
           Logstash_Format: On
 #          Logstash_Prefix: kube
-          HTTP_User: taco
-          HTTP_Passwd: password
+          HTTP_User: "piuser"
+          HTTP_Passwd: "pi0!@#"
           Type: fluent
       - elasticsearch_syslog:
           header: output
@@ -1970,8 +1988,8 @@ data:
           Port: 80
           Logstash_Format: On
           Logstash_Prefix: syslog
-          HTTP_User: taco
-          HTTP_Passwd: password
+          HTTP_User: "piuser"
+          HTTP_Passwd: "pi0!@#"
           Type: syslog
       parsers:
       - docker:
@@ -2055,6 +2073,12 @@ data:
                   type: integer
                 log:
                   type: text
+    endpoints:
+      elasticsearch:
+        auth:
+          admin:
+            username: piuser
+            password: pi0!@#
     manifests:
       configmap_bin: true
       configmap_etc: true
@@ -2092,6 +2116,13 @@ data:
   upgrade:
     no_hooks: false
   values:
+    labels:
+      kibana:
+        node_selector_key: elasticsearch
+        node_selector_value: enabled
+      job:
+        node_selector_key: elasticsearch
+        node_selector_value: enabled
     images:
       tags:
         apache_proxy: {{ docker_registry }}/httpd:2.4
@@ -2140,7 +2171,7 @@ data:
         process_selector_value: enabled
     pod:
       tolerations:
-        process_exporter:                                                                                                                                                                                                                
+        process_exporter:
           enabled: true
   source:
     type: local
@@ -2162,6 +2193,16 @@ data:
   upgrade:
     no_hooks: false
   values:
+    labels:
+      prometheus:
+        node_selector_key: prometheus
+        node_selector_value: enabled
+      job:
+        node_selector_key: prometheus
+        node_selector_value: enabled
+      test:
+        node_selector_key: prometheus
+        node_selector_value: enabled
     images:
       tags:
         apache_proxy: {{ docker_registry }}/httpd:2.4
@@ -2172,14 +2213,14 @@ data:
       pull_policy: Always
     pod:
       replicas:
-        prometheus: 3
+        prometheus: 1
     storage:
       enabled: true
       pvc:
         name: prometheus-pvc
         access_mode: [ "ReadWriteOnce" ]
       requests:
-        storage: 100Gi
+        storage: 300Gi
       storage_class: rbd-lma
     conf:
       prometheus:
@@ -2573,7 +2614,11 @@ data:
           group_wait: 10s
           repeat_interval: 1h
           receiver: 'slack-alert'
-          routes: []
+          routes: 
+          - receiver: 'telegram-alert'
+            group_by: ['alertname']
+            match:
+              severity: page
 {% raw %}
         receivers:
         - name: 'slack-alert'
@@ -2583,6 +2628,10 @@ data:
             send_resolved: true
             title: '{{ template "custom_title" . }}'
             text: '{{ template "custom_slack_message" . }}'
+        - name: 'telegram-alert'
+          webhook_configs:
+          - send_resolved: True
+            url: http://prometheus-bot:9087/alert/-273560617
       alert_templates: |
         {{ define "__single_message_title" }}{{ range .Alerts.Firing }}{{ .Labels.alertname }} @ {{ .Annotations.identifier }}{{ end }}{{ range .Alerts.Resolved }}{{ .Labels.alertname }} @ {{ .Annotations.identifier }}{{ end }}{{ end }}
 
@@ -2662,7 +2711,7 @@ data:
         node_selector_value: enabled
     pod:
       tolerations:
-        node_exporter:                                                                                                                                                                                                                
+        node_exporter:
           enabled: true
   source:
     type: local
@@ -2712,6 +2761,16 @@ data:
   upgrade:
     no_hooks: false
   values:
+    labels:
+      grafana:
+        node_selector_key: prometheus
+        node_selector_value: enabled
+      job:
+        node_selector_key: prometheus
+        node_selector_value: enabled
+      test:
+        node_selector_key: prometheus
+        node_selector_value: enabled
     images:
       tags:
         grafana: {{ docker_registry }}/grafana:5.0.0
@@ -2743,10 +2802,43 @@ data:
           user:
             username: grafana_session
             password: {{ db_grafana_session_password }}
+      grafana:
+        auth:
+          admin:
+            username: piuser
+            password: pi0!@#
   source:
     type: local
     location: "{{ osh_infra_path }}"
     subpath: grafana
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-bot
+data:
+  chart_name: prometheus-bot
+  release: prometheus-bot
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        prometheus-bot: {{ docker_registry }}/prometheus_bot:test
+      pull_policy: Always
+    pod:
+      replicas:
+        server: 1
+    telegram_token: "755710908:AAEdIJZvk2YzbDSZnQ_1j81jBAmBk6s2sWk"
+  source:
+    type: local
+    location: {{ osh_path }}-infra
+    subpath: prometheus-bot
   dependencies:
     - helm-toolkit
 ---
@@ -2797,6 +2889,8 @@ data:
     - prometheus-kube-state-metrics
     - prometheus-node-exporter
     - prometheus-openstack-exporter
+    - prometheus-process-exporter
+    - prometheus-bot
 ---
 schema: armada/ChartGroup/v1
 metadata:
@@ -2820,5 +2914,5 @@ data:
   chart_groups:
     - openstack-infra
     - openstack-services
-    #- logging-infra
-    #- monitoring-infra
+    - logging-infra
+    - monitoring-infra
