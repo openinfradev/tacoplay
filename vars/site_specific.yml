@@ -18,9 +18,9 @@ localrepo_pypi: TACOFIXME
 # set the values only when using exsiting ceph or leave it ''
 # note that groups["osds"] is used figuring out installing new ceph or using existing ceph
 ceph_monitors: >-
-  {%- if groups["osds"] is defined -%}''{%- else -%}TACOFIXME{%- endif -%}
+  {%- if groups["osds"] is defined -%}{%- else -%}TACOFIXME{%- endif -%}
 ceph_admin_keyring: >-
-  {%- if groups["osds"] is defined -%}''{%- else -%}TACOFIXME{%- endif -%}
+  {%- if groups["osds"] is defined -%}{%- else -%}TACOFIXME{%- endif -%}
 
 # when using existing ceph
 external_cluster_mon_ips: "{{ ceph_monitors }}"
