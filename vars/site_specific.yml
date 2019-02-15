@@ -35,20 +35,6 @@ osd_objectstore: TACOFIXME
 # note that we don't override it here with TACOFIXME since include_vars has higher priority than host_vars
 #lvm_volumes:
 
-openstack_config: TACOFIXME
-kube_pool_pg:
-  pg_num: TACOFIXME
-  pgp_num: TACOFIXME
-glance_pool_pg:
-  pg_num: TACOFIXME
-  pgp_num: TACOFIXME
-cinder_pool_pg:
-  pg_num: TACOFIXME
-  pgp_num: TACOFIXME
-cinder_backups_pool_pg:
-  pg_num: TACOFIXME
-  pgp_num: TACOFIXME
-
 # K8S
 kube_pods_subnet: TACOFIXME
 kube_service_addresses: TACOFIXME

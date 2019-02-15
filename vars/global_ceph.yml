@@ -19,46 +19,6 @@ ceph_conf_overrides:
 
 osd_scenario: lvm
 
-kube_pool:
-  name: "kube"
-  pg_num: "{{ kube_pool_pg['pg_num'] }}"
-  pgp_num: "{{ kube_pool_pg['pgp_num'] }}"
-  rule_name: "replicated_rule"
-  type: 1
-  erasure_profile: ""
-  expected_num_objects: ""
-  application: "rbd"
-openstack_glance_pool:
-  name: "images"
-  pg_num: "{{ glance_pool_pg['pg_num'] }}"
-  pgp_num: "{{ glance_pool_pg['pgp_num'] }}"
-  rule_name: "replicated_rule"
-  type: 1
-  erasure_profile: ""
-  expected_num_objects: ""
-openstack_cinder_pool:
-  name: "volumes"
-  pg_num: "{{ cinder_pool_pg['pg_num'] }}"
-  pgp_num: "{{ cinder_pool_pg['pgp_num'] }}"
-  rule_name: "replicated_rule"
-  type: 1
-  erasure_profile: ""
-  expected_num_objects: ""
-openstack_cinder_backup_pool:
-  name: "backups"
-  pg_num: "{{ cinder_backup_pool_pg['pg_num'] }}"
-  pgp_num: "{{ cinder_backup_pool_pg['pgp_num'] }}"
-  rule_name: "replicated_rule"
-  type: 1
-  erasure_profile: ""
-  expected_num_objects: ""
-
-openstack_pools:
-  - "{{ kube_pool }}"
-  - "{{ openstack_glance_pool }}"
-  - "{{ openstack_cinder_pool }}"
-  - "{{ openstack_cinder_backup_pool }}"
-
 openstack_keys:
   - { name: client.kube, caps: { mon: "profile rbd", osd: "profile rbd pool=kube"}, key: "AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==", mode: "0600" }
   - { name: client.cinder, caps: { mon: "profile rbd", osd: "profile rbd pool=volumes, profile rbd pool=backups, profile rbd pool=images"}, key: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==",  mode: "0600" }
