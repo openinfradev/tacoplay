@@ -25,18 +25,45 @@ lvm_volumes:
   - data: /dev/sdh
 
 openstack_config: true
-kube_pool_pg:
+kube_pool:
+  name: "kube"
   pg_num: 512
   pgp_num: 512
-glance_pool_pg:
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+  application: "rbd"
+openstack_glance_pool:
+  name: "images"
   pg_num: 512
   pgp_num: 512
-cinder_pool_pg:
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+openstack_cinder_pool:
+  name: "volumes"
   pg_num: 1024
   pgp_num: 1024
-cinder_backup_pool_pg:
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+openstack_cinder_backup_pool:
+  name: "backups"
   pg_num: 256
   pgp_num: 256
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+
+openstack_pools:
+  - "{{ kube_pool }}"
+  - "{{ openstack_glance_pool }}"
+  - "{{ openstack_cinder_pool }}"
+  - "{{ openstack_cinder_backup_pool }}"
 
 # k8s
 kube_pods_subnet: 10.233.0.0/17
