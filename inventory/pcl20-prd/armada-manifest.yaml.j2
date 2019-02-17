@@ -2566,6 +2566,7 @@ data:
                   - __meta_kubernetes_node_name
                 action: replace
                 target_label: kubernetes_io_hostname
+{% raw %}
         rules:
           alertmanager:
             groups:
@@ -3387,6 +3388,7 @@ data:
                 annotations:
                   description: Elasticsearch exporter is not collecting metrics or is not available for past 10 minutes
                   title: Elasticsearch exporter is not collecting metrics or is not available
+{% endraw %}
   source:
     type: local
     location: "{{ osh_infra_path }}"
