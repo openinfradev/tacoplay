@@ -2597,7 +2597,9 @@ data:
                   description: Reloading Alertmanager's configuration has failed for {{ $labels.namespace }}/{{ $labels.pod }}.
                   summary: Alertmanager configuration reload has failed
           etcd3:
-            groups: null
+            groups:
+            - name: etcd.rules
+              rules: []
           kube_apiserver:
             groups:
             - name: kube-apiserver.rules
@@ -2633,6 +2635,8 @@ data:
                   summary: Controller manager is down
           kubelet:
             groups:
+            - name: kubelet.rules
+              rules:
               - alert: K8SNodeNotReady
                 annotations:
                   description: The Kubelet on {{ $labels.node }} has not checked in with the API,
@@ -2658,7 +2662,9 @@ data:
                   description: Kubelet {{$labels.instance}} is running {{$value}} pods, close to the limit of 110
                   summary: Kubelet is close to pod limit
           kubernetes:
-            groups: 
+            groups:
+            - name: kubernetes.rules
+              rules:          
               - alert: calico_pod_down
                 expr: kube_pod_container_status_running{pod=~"calico-node.*"}!=1
                 labels:
@@ -2776,7 +2782,7 @@ data:
                     by instance {{ $labels.instance }} of job {{ $labels.job }}.
                   summary: Server has a high swap usage
               - alert: node_high_network_drop_rcv
-                expr: increase(node_network_receive_drop{device!="lo"})[2m] > 100
+                expr: increase(node_network_receive_drop{device!="lo"}[2m]) > 100
                 for: 30s
                 labels:
                   severity: warning
@@ -2786,7 +2792,7 @@ data:
                     $labels.job }}
                   summary: Server has a high receive drop
               - alert: node_high_network_drop_send
-                expr: increase(node_network_transmit_drop{device!="lo"})[2m] > 100
+                expr: increase(node_network_transmit_drop{device!="lo"}[2m]) > 100
                 for: 30s
                 labels:
                   severity: warning
@@ -3319,7 +3325,14 @@ data:
                 annotations:
                   description: 'There are only {{$value}} < 3 ElasticSearch data nodes running'
                   summary: 'ElasticSearch running on less than 3 data nodes'
-          mariadb: null
+          mariadb: 
+            groups:
+            - name: mariadb.rules
+              rules: []
+          postgresql:
+            groups:
+            - name: postgresql.rules
+              rules: []
           prometheus_exporters:
             groups:
             - name: prometheus_exporters.rules
