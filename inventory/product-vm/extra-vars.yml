@@ -1,6 +1,7 @@
 # tacoplay
 cicd_registry_enabled: false
 localrepo_enabled: true
+replace_repo_file: true
 localrepo_yum: 192.168.95.11
 localrepo_k8s: 192.168.95.11
 localrepo_pypi: 192.168.95.11
