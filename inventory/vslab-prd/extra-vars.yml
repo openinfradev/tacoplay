@@ -2,15 +2,14 @@
 cicd_registry_enabled: false
 
 localrepo_enabled: true
-replace_repo_file: true
 localrepo_yum: admin-prd
 localrepo_k8s: admin-prd
 localrepo_pypi: admin-prd
 
 # ceph
-monitor_interface: bond1
-public_network: 10.0.5.0/24
-cluster_network: 10.0.6.0/24
+monitor_interface: bond0
+public_network: 192.168.95.0/24
+cluster_network: 10.0.5.0/24
 
 ceph_stable_release: mimic
 osd_objectstore: bluestore
@@ -66,16 +65,10 @@ openstack_pools:
   - "{{ openstack_cinder_backup_pool }}"
 
 # k8s
-kube_pods_subnet: 10.233.0.0/17
-kube_service_addresses: 10.233.128.0/17
+kube_pods_subnet: 10.234.0.0/17
+kube_service_addresses: 10.234.128.0/17
 ipip_mode: Never
 peer_with_router: true
-global_as_num: 64517
-peers:
-  - as: 64517
-    router_id: 192.168.95.2
-  - as: 64517
-    router_id: 192.168.95.3
 rbd_provisioner_enabled: true
 
 # openstack

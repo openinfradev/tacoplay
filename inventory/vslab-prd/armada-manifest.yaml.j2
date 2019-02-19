@@ -648,13 +648,16 @@ data:
     network:
       backend:
         - linuxbridge
-      spiceproxy:
+      novncproxy:
+        name: "nova-novncproxy"
         node_port:
           enabled: true
-          port: 30682
+          port: 30608
+        port: 6080
+        targetPort: 6080
     conf:
       libvirt:
-        live_migration_interface: bond0.95
+        live_migration_interface: bond0
       rootwrap_filters:
         api_metadata:
           override:
@@ -1227,13 +1230,9 @@ data:
           daemonsets:
             dhcp_agent:
               enabled: true
-            l3_agent:
-              enabled: true
     labels:
       agent:
         dhcp:
-          node_selector_key: openstack-network-node
-        l3:
           node_selector_key: openstack-network-node
     network:
       backend:
@@ -1252,31 +1251,69 @@ data:
         DEFAULT:
           debug: True
           core_plugin: ml2
-          l3_ha: True
-          l3_ha_network_type: vlan
           # NOTE: change mtu to 9000 if jumbo frame is supported
           global_physnet_mtu: 9000
-          service_plugins: router, trunk
+          service_plugins: trunk, segments
           interface_driver: linuxbridge
           api_workers: 8
         agent:
           root_helper_daemon: sudo neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
+        placement:
+          auth_version: v3
+          auth_type: password
+          auth_uri: http://keystone-api.openstack.svc.cluster.local:5000/v3
+          auth_url: http://keystone-api.openstack.svc.cluster.local:5000/v3
+          endpoint_type: internal
+          project_domain_name: service
+          project_name: service
+          user_domain_name: service
+          region_name: RegionOne
+          password: password
+          username: nova
       plugins:
         ml2_conf:
           ml2:
             mechanism_drivers: linuxbridge
             type_drivers: flat, vlan
-            tenant_network_types: vlan
+            tenant_network_types: ""
           ml2_type_flat:
-            flat_networks: provider-97, provider-98
+            flat_networks: provider-97, provider-98, provider-197, provider-198
           ml2_type_vlan:
-            network_vlan_ranges: tenant:1001:1100
+            network_vlan_ranges: ""
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings: provider-97:bond0.97, provider-98:bond0.98, tenant:bond0
+            physical_interface_mappings: ""
             bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
+        ml2_conf_sriov: {}
+        macvtap_agent: {}
+      dhcp_agent:
+        DEFAULT:
+          force_metadata: False
+          enable_isolated_metadata: False
+      metering_agent: {}
+      overrides:
+        neutron_lb-agent:
+          labels:
+          - label:
+              key: location
+              values:
+              - r06
+            conf:
+              plugins:
+                linuxbridge_agent:
+                  linux_bridge:
+                    physical_interface_mappings: provider-97:bond1.97,provider-197:bond1.197
+          - label:
+              key: location
+              values:
+                - r04
+            conf:
+              plugins:
+                linuxbridge_agent:
+                  linux_bridge:
+                    physical_interface_mappings: provider-98:eno50.98,provider-198:eno50.198
     endpoints:
       oslo_db:
         auth:
@@ -1289,7 +1326,7 @@ data:
     manifests:
       daemonset_lb_agent: true
       daemonset_dhcp_agent: true
-      daemonset_l3_agent: true
+      daemonset_l3_agent: false
       daemonset_metadata_agent: false
       daemonset_ovs_agent: false
       daemonset_sriov_agent: false
@@ -1536,7 +1573,7 @@ data:
       pull_policy: Always
     pod:
       replicas:
-        server: 3
+        server: 1
     network:
       node_port:
         enabled: true
@@ -1550,15 +1587,15 @@ data:
         local_settings:
           config:
             openstack_neutron_network:
-              enable_router: "True"
+              enable_router: "False"
               enable_quotas: "True"
               enable_ipv6: "False"
               enable_distributed_router: "False"
-              enable_ha_router: "True"
+              enable_ha_router: "False"
               enable_lb: "False"
               enable_firewall: "False"
               enable_vpn: "False"
-              enable_fip_topology_check: "True"
+              enable_fip_topology_check: "False"
     endpoints:
       oslo_db:
         auth:
@@ -2678,5 +2715,5 @@ data:
   chart_groups:
     - openstack-infra
     - openstack-services
-    - logging-infra
-    - monitoring-infra
+    #- logging-infra
+    #- monitoring-infra
