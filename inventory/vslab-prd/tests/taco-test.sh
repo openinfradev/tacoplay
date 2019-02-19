@@ -27,22 +27,39 @@ if [ "x${PUBLIC_NAME_TEMP}" != "xpublic-net" ]; then
 fi
 echo "Done"
 
-echo "Creating private network..."
-PRIVATE_NAME_TEMP=$(openstack network list | grep closed-net | awk '{print $4}')
-if [ "x${PRIVATE_NAME_TEMP}" != "xclosed-net" ]; then
-    openstack network create --share --provider-physical-network provider-197 --provider-network-type flat closed-net
-    SEGMENT=$(openstack network segment list --network closed-net | grep flat | awk '{print $2}')
+echo "Creating closed management network..."
+PRIVATE_NAME_TEMP=$(openstack network list | grep closed-mgmt-net | awk '{print $4}')
+if [ "x${PRIVATE_NAME_TEMP}" != "xclosed-mgmt-net" ]; then
+    openstack network create --share --provider-physical-network provider-197 --provider-network-type flat closed-mgmt-net
+    SEGMENT=$(openstack network segment list --network closed-mgmt-net | grep flat | awk '{print $2}')
     openstack network segment set --name segment-197 $SEGMENT
-    openstack subnet create --network closed-net --network-segment segment-197 \
+    openstack subnet create --network closed-mgmt-net --network-segment segment-197 \
       --subnet-range 192.168.197.0/24 --allocation-pool start=192.168.197.10,end=192.168.197.250 \
       --host-route destination=192.168.198.0/24,gateway=192.168.197.1 closed-segment-197
-    neutron subnet-update closed-segment-197 --no-gateway
 
-    openstack network segment create --physical-network provider-198 --network-type flat --network closed-net segment-198
-    openstack subnet create --network closed-net --network-segment segment-198 \
+    openstack network segment create --physical-network provider-198 --network-type flat --network closed-mgmt-net segment-198
+    openstack subnet create --network closed-mgmt-net --network-segment segment-198 \
       --subnet-range 192.168.198.0/24 --allocation-pool start=192.168.198.10,end=192.168.198.250 \
       --host-route destination=192.168.197.0/24,gateway=192.168.198.1 closed-segment-198
-    neutron subnet-update closed-segment-198 --no-gateway
+fi
+echo "Done"
+
+echo "Creating closed data network..."
+PRIVATE_NAME_TEMP=$(openstack network list | grep closed-data-net | awk '{print $4}')
+if [ "x${PRIVATE_NAME_TEMP}" != "xclosed-data-net" ]; then
+    openstack network create --share --provider-physical-network provider-199 --provider-network-type flat closed-data-net
+    SEGMENT=$(openstack network segment list --network closed-data-net | grep flat | awk '{print $2}')
+    openstack network segment set --name segment-199 $SEGMENT
+    openstack subnet create --network closed-data-net --network-segment segment-199 \
+      --subnet-range 192.168.199.0/24 --allocation-pool start=192.168.199.10,end=192.168.199.250 \
+      --host-route destination=192.168.200.0/24,gateway=192.168.199.1 closed-segment-199
+    neutron subnet-update closed-segment-199 --no-gateway
+
+    openstack network segment create --physical-network provider-200 --network-type flat --network closed-data-net segment-200
+    openstack subnet create --network closed-data-net --network-segment segment-200 \
+      --subnet-range 192.168.200.0/24 --allocation-pool start=192.168.200.10,end=192.168.200.250 \
+      --host-route destination=192.168.199.0/24,gateway=192.168.200.1 closed-segment-200
+    neutron subnet-update closed-segment-200 --no-gateway
 fi
 echo "Done"
 

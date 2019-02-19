@@ -1277,7 +1277,7 @@ data:
             type_drivers: flat, vlan
             tenant_network_types: ""
           ml2_type_flat:
-            flat_networks: provider-97, provider-98, provider-197, provider-198
+            flat_networks: provider-97, provider-98, provider-197, provider-198, provider-199, provider-200
           ml2_type_vlan:
             network_vlan_ranges: ""
         linuxbridge_agent:
@@ -1304,7 +1304,7 @@ data:
               plugins:
                 linuxbridge_agent:
                   linux_bridge:
-                    physical_interface_mappings: provider-97:bond1.97,provider-197:bond1.197
+                    physical_interface_mappings: provider-97:bond1.97,provider-197:bond1.197,provider-199:bond1.199
           - label:
               key: location
               values:
@@ -1313,7 +1313,7 @@ data:
               plugins:
                 linuxbridge_agent:
                   linux_bridge:
-                    physical_interface_mappings: provider-98:eno50.98,provider-198:eno50.198
+                    physical_interface_mappings: provider-98:eno50.98,provider-198:eno50.198,provider-200:eno50.200
     endpoints:
       oslo_db:
         auth:
