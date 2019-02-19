@@ -1136,6 +1136,7 @@ data:
         vnc:
           novncproxy_base_url: http://{{ hostvars[groups['controller-node'][0]]['ip'] }}:30608/vnc_auto.html
         libvirt:
+          virt_type: qemu
           rbd_user: "cinder"
           rbd_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
         scheduler:
