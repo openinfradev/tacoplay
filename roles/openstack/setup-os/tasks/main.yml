@@ -6,7 +6,7 @@
     entry: "mask:"
     state: absent
 
-- name: load modules for config drive
+- name: Load modules for config drive
   modprobe:
     name: "{{ item }}"
     state: present
@@ -15,10 +15,28 @@
     - vfat
   when: config_drive_enabled
 
-- name: load vfio-pci module for pci passthrough
+- name: Persist loop modules
+  copy:
+    dest: /etc/modules-load.d/tacoplay-loop.conf
+    content: loop
+  when: config_drive_enabled
+
+- name: Persist vfat modules
+  copy:
+    dest: /etc/modules-load.d/tacoplay-vfat.conf
+    content: vfat
+  when: config_drive_enabled
+
+- name: Load vfio-pci module for pci passthrough
   modprobe:
     name: "{{ item }}"
     state: present
   with_items:
     - vfio-pci
+  when: pci_passthrough_enabled
+
+- name: Persist vfio-pci modules
+  copy:
+    dest: /etc/modules-load.d/tacoplay-vfio-pci.conf
+    content: vfio-pci
   when: pci_passthrough_enabled
