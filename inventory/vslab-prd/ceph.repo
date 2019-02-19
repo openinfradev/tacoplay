@@ -1,5 +1,0 @@
-[ceph]
-name=Ceph Mimic
-baseurl=http://admin-prd/ceph/rpm-mimic/el7/x86_64
-gpgkey=http://admin-prd/ceph/keys/release.asc
-gpgcheck=0

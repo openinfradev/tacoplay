@@ -1,5 +1,0 @@
-# calico
-global_as_num: 64518
-peers:
-  - as: 64518
-    router_id: 192.168.96.1
