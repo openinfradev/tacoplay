@@ -27,6 +27,14 @@
   register: mon
   when: not (rbd_provisioner_monitors|length > 0)
 
+- name: fetch mon hosts from rbd_provisioner_monitors
+  shell: >-
+    echo {{ rbd_provisioner_monitors }}
+  register: mon
+  when:
+    - rbd_provisioner_monitors|length > 0
+    - not (":6789" in rbd_provisioner_monitors)
+
 - name: set rbd_provisioner_monitors for rbd storage class
   set_fact:
     rbd_provisioner_monitors: "{{ mon.stdout.split(',') | map('regex_replace', '(.*)', '\\1:6789') | join(',') }}"
