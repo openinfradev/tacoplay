@@ -5,6 +5,7 @@
     path: /dev/kvm
     entry: "mask:"
     state: absent
+  ignore_errors: yes
 
 - name: Load modules for config drive
   modprobe:
