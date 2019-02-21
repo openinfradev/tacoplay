@@ -1,4 +1,4 @@
 ---
 
-config_drive_enabled: true
+vfat_config_drive_enabled: false
 pci_passthrough_enabled: false

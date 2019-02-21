@@ -14,19 +14,19 @@
   with_items:
     - loop
     - vfat
-  when: config_drive_enabled
+  when: vfat_config_drive_enabled
 
 - name: Persist loop modules
   copy:
     dest: /etc/modules-load.d/tacoplay-loop.conf
     content: loop
-  when: config_drive_enabled
+  when: vfat_config_drive_enabled
 
 - name: Persist vfat modules
   copy:
     dest: /etc/modules-load.d/tacoplay-vfat.conf
     content: vfat
-  when: config_drive_enabled
+  when: vfat_config_drive_enabled
 
 - name: Load vfio-pci module for pci passthrough
   modprobe:

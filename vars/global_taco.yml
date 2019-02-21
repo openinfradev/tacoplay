@@ -29,4 +29,4 @@ armada_venv: "{{ lookup('env','HOME') }}/venv"
 openstack_namespace: openstack
 openstack_ceph_enabled: >-
   {%- if ceph_enabled -%}true{%- else -%}false{%- endif -%}
-config_drive_enabled: true
+vfat_config_drive_enabled: false
