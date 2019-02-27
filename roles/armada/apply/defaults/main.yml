@@ -1,0 +1,16 @@
+---
+bin_dir: /usr/local/bin
+
+# the image used to render armada manifests
+yaml_merge_image: "{{ docker_registry }}/yaml-merge:latest"
+
+# the location of armada manifest source files to be rendered
+manifests_dir: "{{ playbook_dir }}/manifests"
+
+docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
+
+# "local" or "git" is allowed for source_type
+# note that proper source location should be set inside the armada manifest in both cases
+source_type: local
+
+tiller_port: 32134

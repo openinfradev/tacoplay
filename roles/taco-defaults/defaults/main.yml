@@ -1,5 +1,0 @@
----
-# Variables used in multiple roles, both bootstrap-openstack and setup-os
-# for example, are defined here
-
-bin_dir: /usr/local/bin

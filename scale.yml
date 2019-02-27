@@ -72,7 +72,6 @@
 - hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
     - { role: setup-os }
   tags: setup-os
 
@@ -89,7 +88,6 @@
 - hosts: controller-node:compute-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
     - { role: openstack/setup-os }
   tags: openstack
 

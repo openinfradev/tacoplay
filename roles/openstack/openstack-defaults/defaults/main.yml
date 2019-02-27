@@ -1,25 +1,16 @@
-# tacoplay
-cicd_registry_enabled: false
-localrepo_enabled: true
-replace_repo_file: true
-localrepo_yum: 192.168.95.11
-localrepo_k8s: 192.168.95.11
-localrepo_pypi: 192.168.95.11
+---
 
-# ceph
-ceph_monitors: 192.168.48.31
-ceph_admin_keyring: AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA==
+# the location of openstack helm charts
+osh_path: "{{ playbook_dir }}/charts/openstack-helm"
 
-# k8s
-kube_pods_subnet: 10.233.0.0/18
-kube_service_addresses: 10.233.64.0/18
-ipip_mode: Always
-peer_with_router: false
+# ceph information for nova, libvirt, cinder and glance
+openstack_ceph_enabled: true
+mon_host: ''
+admin_keyring: ''
+libvirt_ceph_cinder_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
 
-rbd_provisioner_admin_id: admin
-rbd_provisioner_secret: "{{ ceph_admin_keyring }}"
-rbd_provisioner_user_id: kube
-rbd_provisioner_user_secret: AQCgwdRaQwA4BhAACAaJLcqnmTHIFzS3cJwbAQ==
+# this will be removed
+cinder_keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
 
 # DB ACCOUNT
 db_root_user: root

@@ -18,21 +18,12 @@
       when: localrepo_enabled
   tags: always
 
-# Create K8S resources required for deploying OpenStack
+# Prepare armada-manifests and then run armada apply
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
-    - { role: openstack/preinstall }
-  tags: openstack 
-
-# Make admin-node ready for armada apply
-- hosts: admin-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: taco-defaults }
-    - { role: armada/apply }
-  tags: armada
+    - { role: openstack/openstack-defaults, tags: openstack }
+    - { role: armada/apply, tags: armada }
 
 - hosts: admin-node:controller-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"

@@ -1,6 +1,41 @@
 ---
 
-- include_vars: ../vars/main.yml
+- name: remove existing armada container
+  docker_container:
+    name: manifest-render
+    state: absent
+  tags: render
+
+- name: run manifest render container
+  docker_container:
+    name: manifest-render
+    image: "{{ yaml_merge_image }}"
+    command: "/bin/bash -c 'cd /manifests/source; ./render-manifest.sh'"
+    network_mode: host
+    volumes:
+      - "{{ manifests_dir }}:/manifests"
+    state: started
+  tags: render
+
+- name: wait for render manifests finished
+  shell: "docker ps | grep manifest-render | xargs echo -n"
+  retries: 20
+  delay: 5
+  register: render_state
+  until: render_state.stdout == ""
+  tags: render
+
+- name: get site name from inventory directory name
+  set_fact:
+    site_name: "{{ inventory_dir.split('/')[-1] }}"
+  tags: render
+
+- name: create armada-manifest.yml
+  template:
+    src: "{{ playbook_dir }}/manifests/output/site-{{ site_name }}.yaml.j2"
+    dest: "{{ inventory_dir }}/armada-manifest.yaml"
+  run_once: true
+  tags: render
 
 - name: check host where tiller is running
   shell: >-
@@ -8,23 +43,27 @@
     jq -r '.items[] | select(.metadata.name|test("tiller")).status.hostIP'
   register: tiller_host
   become: no
+  tags: apply
 
 - name: get existing armada processes
   shell: >-
     ps -ef | grep -v grep | grep -w 'armada apply' | awk '{print $2}'
   register: armada_processes
   become: no
+  tags: apply
 
 - name: kill existing armada processes
   shell: kill {{ item }}
   with_items: "{{ armada_processes.stdout_lines }}"
   become: no
+  tags: apply
 
 - name: wait until existing armada processes are killed
   wait_for:
     path: "/proc/{{ item }}/status"
     state: absent
   with_items: "{{ armada_processes.stdout_lines }}"
+  tags: apply
 
 - name: run armada apply in background
   shell: >-
@@ -40,6 +79,7 @@
   when: auto_release_enabled|default(true) and tiller_host.stdout != ""
   become: no
   run_once: yes
+  tags: apply
 
 - name: show armada apply usage for next try
   debug:
@@ -52,3 +92,4 @@
       --timeout 3600
       {{ inventory_dir }}/armada-manifest.yaml"
   when: tiller_host.stdout != ""
+  tags: apply

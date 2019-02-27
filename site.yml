@@ -78,7 +78,6 @@
 - hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
     - { role: setup-os }
   tags: setup-os
 
@@ -86,7 +85,6 @@
 - hosts: registry
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
     - { role: docker }
     - { role: docker-registry }
   tags: registry
@@ -116,16 +114,10 @@
 - import_playbook: kubespray/cluster.yml
   tags: k8s
 
-- hosts: taco
-  roles:
-    - { role: taco-defaults }
-    - { role: admin-node }
-  tags: k8s
-
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
+    - { role: admin-node }
     - { role: rbd_provisioner, when: rbd_provisioner_enabled }
   tags: k8s
 
@@ -135,30 +127,21 @@
 - hosts: controller-node:compute-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
     - { role: openstack/setup-os }
   tags: openstack
 
-# Create K8S resources required for deploying OpenStack
+# Prepare armada-manifests and then run armada apply
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
-    - { role: openstack/preinstall }
-  tags: openstack 
-
-# Make admin-node ready for armada apply
-- hosts: admin-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: taco-defaults }
-    - { role: armada/install }
-    - { role: armada/apply }
-  tags: armada
+    - { role: armada/install, tags: armada }
+    - { role: openstack/pre-install, tags: openstack }
+    - { role: openstack/openstack-defaults, tags: openstack }
+    - { role: armada/apply, tags: armada }
 
 - hosts: admin-node:controller-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
+    - { role: openstack/openstack-defaults }
     - { role: openstack/client }
   tags: openstack

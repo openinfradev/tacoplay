@@ -3,8 +3,13 @@ bin_dir: /usr/local/bin
 nat_enabled: false
 tc_enabled: false
 
+# Docker registry
+docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
+
 # Ceph
 ceph_enabled: true
+# this will be removed soon
+cinder_keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
 
 # RBD provisioner
 rbd_provisioner_enabled: >-

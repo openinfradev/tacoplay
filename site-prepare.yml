@@ -30,7 +30,6 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-defaults }
     - { role: docker }
   tasks:
     - name: ensure a list of packages installed
@@ -47,16 +46,6 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
-    - name: pull kubernetes control plane images
-      docker_image:
-        name: "{{ item }}"
-      with_items:
-        - "gcr.io/google-containers/kube-apiserver:{{ kube_version }}"
-        - "gcr.io/google-containers/kube-proxy:{{ kube_version }}"
-        - "gcr.io/google-containers/kube-controller-manager:{{ kube_version }}"
-        - "gcr.io/google-containers/kube-scheduler:{{ kube_version }}"
-        - "quay.io/external_storage/rbd-provisioner:v2.1.1-k8s1.11"
-
     - name: create docker cert directory
       file:
         path: /etc/docker/certs.d/registry.cicd.stg.taco/
@@ -67,6 +56,17 @@
       copy:
         src: "{{ playbook_dir }}/files/registry-certs"
         dest: "/etc/docker/certs.d/registry.cicd.stg.taco/ca.crt"
+
+    - name: pull kubernetes control plane images
+      docker_image:
+        name: "{{ item }}"
+      with_items:
+        - "gcr.io/google-containers/kube-apiserver:{{ kube_version }}"
+        - "gcr.io/google-containers/kube-proxy:{{ kube_version }}"
+        - "gcr.io/google-containers/kube-controller-manager:{{ kube_version }}"
+        - "gcr.io/google-containers/kube-scheduler:{{ kube_version }}"
+        - "quay.io/external_storage/rbd-provisioner:v2.1.1-k8s1.11"
+        - "registry.cicd.stg.taco/yaml-merge:latest"
 
     # Should I run fetch-sub-projects.sh here instead of Jenkinsfile?
     - name: pull all images used in armada manifest

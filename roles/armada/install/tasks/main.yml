@@ -1,7 +1,4 @@
 ---
-
-- include_vars: ../vars/main.yml
-
 - name: ensures /tmp/manifests dir exists
   file: path=/tmp/manifests state=directory
 

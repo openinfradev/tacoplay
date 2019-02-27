@@ -1,4 +1,5 @@
 ---
+
 - name: install packages required for openstack client packages
   yum:
     name: "{{ item }}"

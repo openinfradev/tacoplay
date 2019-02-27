@@ -5,7 +5,7 @@
     dest: "{{ artifacts_dir }}/admin.conf"
     flat: yes
     validate_checksum: no
-  when: inventory_hostname == groups['kube-master'][0]
+  delegate_to: "{{ groups['kube-master']|first }}"
 
 - name: create kube config dir
   file:
@@ -13,14 +13,12 @@
     mode: "0700"
     state: directory
   become: no
-  when: inventory_hostname in groups['admin-node']
 
 - name: copy admin kubeconfig to home
   copy:
     src: "{{ artifacts_dir }}/admin.conf"
     dest: "{{ lookup('env','HOME') }}/.kube/config"
   become: no
-  when: inventory_hostname in groups['admin-node']
 
 - name: copy kubectl binary to ansible host
   fetch:
@@ -28,14 +26,13 @@
     dest: "{{ artifacts_dir }}/kubectl"
     flat: yes
     validate_checksum: no
-  when: inventory_hostname == groups['kube-master'][0]
+  delegate_to: "{{ groups['kube-master']|first }}"
 
 - name: copy kubectl to bin_dir
   copy:
     src: "{{ artifacts_dir }}/kubectl"
     dest: "{{ bin_dir }}/kubectl"
     mode: 0755
-  when: inventory_hostname in groups['admin-node']
 
 - name: copy helm binary to ansible host
   fetch:
@@ -44,11 +41,10 @@
     flat: yes
     validate_checksum: no
   become: no
-  when: inventory_hostname == groups['kube-master'][0]
+  delegate_to: "{{ groups['kube-master']|first }}"
 
 - name: copy helm to bin_dir
   copy:
     src: "{{ artifacts_dir }}/helm"
     dest: "{{ bin_dir }}/helm"
     mode: 0755
-  when: inventory_hostname in groups['admin-node']
