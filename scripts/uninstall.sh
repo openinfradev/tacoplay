@@ -7,5 +7,6 @@ do
 done
 
 kubectl delete pvc --all -n openstack --force --grace-period=0
+kubectl delete configmap --all -n openstack --force --grace-period=0
 kubectl delete secret --all -n openstack --force --grace-period=0
 
