@@ -17,23 +17,17 @@
     state: absent
   tags: render
 
-- name: run manifest render container
+- name: render manifest
   docker_container:
     name: manifest-render
     image: "{{ yaml_merge_image }}"
     command: "/bin/bash -c 'cd /manifests/source; ./render-manifest.sh'"
     network_mode: host
+    detach: false
     volumes:
       - "{{ manifests_dir }}:/manifests"
     state: started
-  tags: render
-
-- name: wait for render manifests finished
-  shell: "docker ps | grep manifest-render | xargs echo -n"
-  retries: 20
-  delay: 5
-  register: render_state
-  until: render_state.stdout == ""
+  register: render_output
   tags: render
 
 - name: create armada-manifest.yml
