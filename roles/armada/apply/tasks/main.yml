@@ -11,7 +11,7 @@
     dest: "{{ manifests_dir }}/source/site-{{ site_name }}.yaml"
   tags: render
 
-- name: remove existing armada container
+- name: remove existing manifest render container
   docker_container:
     name: manifest-render
     state: absent
@@ -21,7 +21,7 @@
   docker_container:
     name: manifest-render
     image: "{{ yaml_merge_image }}"
-    command: "/bin/bash -c 'cd /manifests/source; ./render-manifest.sh'"
+    command: "/bin/bash -c 'cd /manifests/source; ./render-imported-manifest.sh'"
     network_mode: host
     detach: false
     volumes:
