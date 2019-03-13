@@ -1,15 +1,33 @@
 ---
 bin_dir: /usr/local/bin
 
-# TC service
+# True to add TC rules based on VLAN tag
+# Note that it only provides limited rules for balancing
+# management and other network bandwidth to 100mbit and 9400mbit respectively
+# for 10Gbps link in a saturated situation
 tc_enabled: false
-tc_interface: bond0
-tc_mgmt_vlan: 90
+# Set interface where management VLAN is on
+# and management VLAN ID
+#tc_interface: bond0
+#tc_mgmt_vlan: 90
 
-# NAT service
+# True to add SNAT rules for a specific interface
 nat_enabled: false
-nat_interfaces:
-  - bond0
+# Set interfaces to set masquerade
+#nat_interfaces:
+#  - bond0.91
+
+# True to enable auto-configuring network interfaces.
+interface_config_enabled: false
+# Interfaces need to be configured automatically
+# can be listed as below.
+# Note that the last part of the mgmt ip will be assigned
+# as the last part of the new device's ip.
+# interfaces:
+#   - device: bond0.90
+#     subnet: 10.0.0.0/24
+#   - device: bond0.91
+#     subnet: 10.0.1.0/24
 
 localrepo_enabled: false
 replace_repo_file: false

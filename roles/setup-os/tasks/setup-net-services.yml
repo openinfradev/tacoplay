@@ -1,0 +1,65 @@
+---
+
+- name: check firewalld installation on redhat
+  command: rpm -q firewalld
+  args:
+    warn: no
+  register: firewalld_pkg_query
+  ignore_errors: true
+  check_mode: no
+  changed_when: false
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: make sure firewalld stoppend and disabled
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+    - firewalld_pkg_query.rc == 0
+
+- name: NAT | install NAT script
+  template:
+    src: nat-service.j2
+    dest: "{{ bin_dir }}/nat-service"
+    mode: 755
+  when: nat_enabled
+
+- name: NAT | create NAT service
+  template:
+    src: nat.service.j2
+    dest: /etc/systemd/system/nat.service
+    mode: 644
+  when: nat_enabled
+
+- name: NAT | start NAT service
+  service:
+    name: nat.service
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+  when: nat_enabled
+
+- name: TC | install TC script
+  template:
+    src: tc-service.j2
+    dest: "{{ bin_dir }}/tc-service"
+    mode: 755
+  when: tc_enabled
+
+- name: TC | create TC service
+  template:
+    src: tc.service.j2
+    dest: /etc/systemd/system/tc.service
+    mode: 644
+  when: tc_enabled
+
+- name: TC | start TC service
+  service:
+    name: tc.service
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+  when: tc_enabled

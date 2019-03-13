@@ -1,0 +1,53 @@
+---
+
+- name: disable zeroconf for CentOS
+  lineinfile:
+    path: "/etc/sysconfig/network"
+    line: "NOZEROCONF=yes"
+    create: yes
+    state: present
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: get the last part of the management ip address
+  set_fact:
+    tmp_address: "{{ ip.split('.')[-1] }}"
+  when:
+    - interface_config_enabled
+    - interfaces is defined
+
+- name: create network interface list to add
+  set_fact:
+    iface:
+      device: "{{ item.device }}"
+      vlan: "{{ '.' in item.device }}"
+      address: "{{ item.subnet | ipaddr('net') | ipaddr( tmp_address ) if item.subnet is defined else '' }}"
+  with_items: "{{ interfaces }}"
+  register: tmp_ifaces_to_add 
+  when:
+    - interface_config_enabled
+    - interfaces is defined
+
+- set_fact:
+    ifaces_to_add: "{{ tmp_ifaces_to_add.results | map(attribute='ansible_facts.iface') | list }}"
+  when:
+    - interface_config_enabled
+    - tmp_ifaces_to_add.results | length > 0
+
+- name: create network interface file
+  template:
+    src: "eth-redhat.j2"
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.device }}"
+  with_items: "{{ ifaces_to_add }}"
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+    - interface_config_enabled
+    - ifaces_to_add is defined and ifaces_to_add | length > 0
+
+- name: reload network
+  service:
+    name: network
+    state: restarted
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+    - interface_config_enabled
+    - ifaces_to_add is defined and ifaces_to_add | length > 0
