@@ -23,8 +23,7 @@ echo "Creating external network..."
 PUBLIC_NAME_TEMP=$(openstack network list | grep public-net | awk '{print $4}')
 if [ "x${PUBLIC_NAME_TEMP}" != "xpublic-net" ]; then
     openstack network create --external --share --provider-network-type flat --provider-physical-network external public-net
-    openstack subnet create --network public-net --subnet-range 192.168.98.0/24 \
-        --allocation-pool start=192.168.98.126,end=192.168.98.150 --dns-nameserver 8.8.8.8 public-subnet
+    openstack subnet create --network public-net --subnet-range 10.10.10.0/24 --dns-nameserver 8.8.8.8 public-subnet
 fi
 echo "Done"
 
