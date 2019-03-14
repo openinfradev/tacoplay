@@ -82,6 +82,17 @@
   tags: setup-os
 
 # Run docker registry
+- hosts: localhost, registry
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: install rsync on ansible-host and registry nodes
+      yum:
+        name: rsync
+        state: present
+      when:
+        - ansible_distribution in ["CentOS","RedHat"]
+  tags: registry
+
 - hosts: registry
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
