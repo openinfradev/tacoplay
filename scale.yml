@@ -78,7 +78,7 @@
 # Install Ceph
 - import_playbook: ceph-ansible/site.yml
   tags: ceph
-  when: ceph_enabled
+  when: taco_storage == 'ceph'
 
 # TODO: add tests for checking status of the new ceph cluster
 

@@ -4,7 +4,6 @@
 osh_path: "{{ playbook_dir }}/charts/openstack-helm"
 
 # ceph information for nova, libvirt, cinder and glance
-openstack_ceph_enabled: true
 mon_host: ''
 admin_keyring: ''
 libvirt_ceph_cinder_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
