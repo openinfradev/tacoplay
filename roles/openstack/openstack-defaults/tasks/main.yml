@@ -9,40 +9,40 @@
   shell: >-
     grep 'mon host' /etc/ceph/ceph.conf | awk '{print $4}'
   register: mon
-  when: openstack_ceph_enabled and not (ceph_monitors|length > 0)
+  when: taco_storage == 'ceph' and not (ceph_monitors|length > 0)
 
 - name: set fact mon_host for armada-manifest.yml
   set_fact:
     mon_host: "{{ mon.stdout }}"
-  when: openstack_ceph_enabled and mon.changed and mon.stdout != ""
+  when: taco_storage == 'ceph' and mon.changed and mon.stdout != ""
 
 - name: set fact mon_host for armada-manifest.yml
   set_fact:
     mon_host: "{{ ceph_monitors }}"
-  when: openstack_ceph_enabled and (ceph_monitors|length > 0)
+  when: taco_storage == 'ceph' and (ceph_monitors|length > 0)
 
 - name: failed to get ceph mon hosts
   fail:
     msg: "failed to get ceph mon hosts neither from vars nor ceph.conf"
-  when: openstack_ceph_enabled and not (mon_host|length > 0)
+  when: taco_storage == 'ceph' and not (mon_host|length > 0)
 
 - name: fetch admin keyring from ceph.client.admin.keyring
   shell: >-
     grep key /etc/ceph/ceph.client.admin.keyring | awk '{print $3}' | xargs echo -n
   register: keyring
-  when: openstack_ceph_enabled and not (ceph_admin_keyring|length > 0)
+  when: taco_storage == 'ceph' and not (ceph_admin_keyring|length > 0)
 
 - name: set fact ceph_admin_keyring for armada-manifest.yml
   set_fact:
     admin_keyring: "{{ keyring.stdout }}"
-  when: openstack_ceph_enabled and keyring.changed and keyring.stdout != ""
+  when: taco_storage == 'ceph' and keyring.changed and keyring.stdout != ""
 
 - name: set fact ceph_admin_keyring for armada-manifest.yml
   set_fact:
     admin_keyring: "{{ ceph_admin_keyring }}"
-  when: openstack_ceph_enabled and (ceph_admin_keyring|length > 0)
+  when: taco_storage == 'ceph' and (ceph_admin_keyring|length > 0)
 
 - name: failed to get ceph admin keyring
   fail:
     msg: "failed to get admin keyring neither from vars nor /etc/ceph"
-  when: not (admin_keyring|length > 0) and openstack_ceph_enabled
+  when: not (admin_keyring|length > 0) and taco_storage == 'ceph'
