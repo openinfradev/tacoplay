@@ -1,0 +1,67 @@
+---
+
+- name: install ironic repository on centos
+  yum:
+    name: centos-release-openstack-{{ ironic_release }}
+    state: present
+  when:
+    - localrepo_enabled | bool == false
+    - ansible_distribution in ["CentOS","RedHat"]
+  
+- name: create ironic database
+  mysql_db:
+    name: "ironic"
+    state: present
+    login_user: "ironic"
+    login_password: "password"
+  register: check_created_db
+
+- name: yum install packages required for ironic standalone
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - openstack-ironic-api
+    - openstack-ironic-conductor
+    - python-ironicclient
+    - qemu-img
+    - genisoimage
+    - iscsi-initiator-utils
+    - psmisc
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: apt install packages required for ironic standalone
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - ironic-api
+    - ironic-conductor
+    - python-ironicclient
+    - open-iscsi
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: ensures /etc/ironic directory exists
+  file: path=/etc/ironic state=directory
+
+- name: edit ironic configuration file
+  template:
+    src: "ironic.conf.j2"
+    dest: "/etc/ironic/ironic.conf"
+
+- name: create ironic db schema
+  command: ironic-dbsync --config-file /etc/ironic/ironic.conf create_schema
+  when: check_created_db.changed | bool == true
+
+- name: upgrade ironic db schema
+  command: ironic-dbsync --config-file /etc/ironic/ironic.conf upgrade
+  when: check_created_db.changed | bool == false
+
+- name: restart ironic services
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  loop:
+    - openstack-ironic-api
+    - openstack-ironic-conductor

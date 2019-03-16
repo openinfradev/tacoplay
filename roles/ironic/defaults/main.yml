@@ -1,0 +1,20 @@
+---
+
+localrepo_enabled: false
+ironic_release: pike
+
+dhcp_interfaces: ens786f0
+dhcp_server: 192.168.48.11
+dhcp_subnet: 192.168.48.0
+dhcp_netmask: 255.255.255.0
+dhcp_hosts:
+  - name: node01
+    mac: '00:11:22:33:44:55'
+    ip: 192.168.48.101
+  - name: node02
+    mac: '00:de:ad:be:ef:00'
+    ip: 192.168.48.102
+
+
+ironic_server: 192.168.48.11
+tftp_path: '/var/lib/tftpboot'

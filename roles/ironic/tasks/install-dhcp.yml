@@ -1,0 +1,32 @@
+---
+
+- name: yum install packages required for isc-dhcp-server
+  yum:
+    name: dhcp
+    state: present
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: apt install packages required for isc-dhcp-server
+  apt:
+    name: isc-dhcp-server
+    state: present
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: copy dhcpd systemd file
+  template:
+    src: "dhcpd.service.j2"
+    dest: "/etc/systemd/system/dhcpd.service"
+
+- name: ensure started service dhcpd on centos
+  systemd:
+    name: dhcpd
+    daemon_reload: yes
+    enabled: yes
+
+- name: edit dhcpd conf file
+  template:
+    src: "dhcpd.conf.j2"
+    dest: "/etc/dhcp/dhcpd.conf"
+  notify: restart dhcpd
+  tags: dhcp

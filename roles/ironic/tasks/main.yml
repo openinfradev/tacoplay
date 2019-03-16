@@ -1,0 +1,16 @@
+---
+
+- name: "Install RabbitMQ Service"
+  include: install-rabbitmq.yml
+
+- name: "Install MariaDB Service"
+  include: install-mariadb.yml
+
+- name: "Install ISC DHCP Service"
+  include: install-dhcp.yml
+
+- name: "Install IRONIC Standalone"
+  include: install-ironic.yml
+
+- name: "Setup TFTP Service"
+  include: setup-tftp.yml

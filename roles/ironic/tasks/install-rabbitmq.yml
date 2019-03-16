@@ -1,0 +1,39 @@
+---
+
+- name: install rabbitmq packages
+  yum:
+    name: rabbitmq-server
+    state: present
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: install rabbitmq packages
+  yum:
+    name: rabbitmq-server
+    state: present
+  when:
+    - ansible_distribution == "Ubuntu"
+
+- name: ensure started rabbitmq service
+  systemd:
+    name: rabbitmq-server
+    state: started
+    enabled: yes
+  register: check_installed_rabbitmq
+
+- name: "wait for rabbitmq"
+  wait_for:
+    port: 5672
+    delay: 5
+  when: check_installed_rabbitmq.changed | bool == true
+
+- name: "create openstack user in rabbitmq"
+  rabbitmq_user:
+    user: openstack
+    password: password
+    force: yes
+    state: present
+    configure_priv: ".*"
+    write_priv: ".*"
+    read_priv: ".*"
+  no_log: true

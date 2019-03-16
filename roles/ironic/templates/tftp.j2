@@ -1,0 +1,14 @@
+service tftp
+{
+  protocol        = udp
+  port            = 69
+  socket_type     = dgram
+  wait            = yes
+  user            = root
+  server          = /usr/sbin/in.tftpd
+  server_args     = -v -v -v -v -v --map-file {{ tftp_path }}/map-file {{ tftp_path }}
+  disable         = no
+  # This is a workaround for Fedora, where TFTP will listen only on
+  # IPv6 endpoint, if IPv4 flag is not used.
+  flags           = IPv4
+}

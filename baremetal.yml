@@ -1,0 +1,17 @@
+
+
+# Prepare OS for TACO
+- hosts: localhost
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  become: yes
+  roles:
+    - { role: setup-os }
+  tags: setup-os
+
+# Install ironic standalone
+- hosts: localhost
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  become: yes
+  roles:
+    - { role: ironic }
+  tags: ironic

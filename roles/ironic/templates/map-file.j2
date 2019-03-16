@@ -1,0 +1,4 @@
+re ^({{ tftp_path }}/) {{ tftp_path }}/\2
+re ^{{ tftp_path }}/ {{ tftp_path }}/
+re ^(^/) {{ tftp_path }}/\1
+re ^([^/]) {{ tftp_path }}/\1
