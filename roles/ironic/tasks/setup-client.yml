@@ -1,0 +1,30 @@
+---
+
+- name: create scripts directory
+  file:
+    path: "{{ lookup('env','HOME') }}/scripts"
+    state: directory
+  become: no
+
+- name: copy ironic utility shell files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ lookup('env','HOME') }}/scripts"
+    mode: 0775
+  with_items:
+    - centos-user-image-update.sh
+    - real-ubuntu-deploy.sh
+    - create-configdrive-file.sh
+  become: no
+
+- name: copy sample configdrive file into scripts directory
+  copy:
+    src: sample_configdrive.tar
+    dest: "{{ lookup('env','HOME') }}/scripts"
+  become: no
+
+- name: copy ironicrc into scripts directory
+  template:
+    src: "ironicrc.j2"
+    dest: "{{ lookup('env','HOME') }}/scripts/ironicrc"
+  become: no

@@ -65,3 +65,35 @@
   loop:
     - openstack-ironic-api
     - openstack-ironic-conductor
+
+- name: create ironic lib directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: ironic
+    group: ironic
+    mode: 0777
+    recurse: yes
+  with_items:
+    - /var/lib/ironic
+    - /var/lib/ironic/ubuntu-deploy
+    - /var/lib/ironic/centos7-user
+
+- name: copy ubuntu deploy image to ironic lib directory
+  copy:
+    src: "{{ item }}"
+    dest: /var/lib/ironic/ubuntu-deploy
+    mode: 0777
+  with_items:
+    - ubuntu-deploy.initramfs
+    - ubuntu-deploy.kernel
+
+- name: copy centos user image to ironic lib directory
+  copy:
+    src: "{{ item }}"
+    dest: /var/lib/ironic/centos7-user
+    mode: 0777
+  with_items:
+    - user-centos7.initramfs
+    - user-centos7.kernel
+    - user-centos7.qcow2
