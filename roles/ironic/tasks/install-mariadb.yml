@@ -22,11 +22,27 @@
 
 - name: ensures /etc/my.cnf.d directory exists
   file: path=/etc/my.cnf.d state=directory
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: ensures /etc/mysql/mariadb.conf.d directory exists
+  file: path=/etc/mysql/mariadb.conf.d state=directory
+  when:
+    - ansible_distribution in ["Ubuntu","Debian"]
 
 - name: copy mariadb configuration file
   template:
     src: "mariadb_ironic.cnf.j2"
     dest: "/etc/my.cnf.d/ironic.cnf"
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: copy mariadb configuration file
+  template:
+    src: "mariadb_ironic.cnf.j2"
+    dest: "/etc/mysql/mariadb.conf.d/99-ironic.cnf"
+  when:
+    - ansible_distribution in ["Ubuntu","Debian"]
 
 - name: ensure started mariadb service
   systemd:
@@ -34,6 +50,17 @@
     state: started
     enabled: yes
   register: check_installed_mariadb
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: ensure started mariadb service
+  systemd:
+    name: mysql
+    state: started
+    enabled: yes
+  register: check_installed_mariadb
+  when:
+    - ansible_distribution in ["Ubuntu","Debian"]
 
 - name: "wait for mariadb"
   wait_for:

@@ -1,5 +1,10 @@
 ---
-- name: restart dhcpd
+- name: restart dhcpd on centos
   service:
     name: dhcpd
+    state: restarted
+
+- name: restart isc-dhcp-server on ubuntu
+  service:
+    name: isc-dhcp-server
     state: restarted

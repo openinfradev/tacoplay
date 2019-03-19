@@ -1,7 +1,7 @@
 ---
 
 localrepo_enabled: false
-ironic_release: pike
+ironic_release: queens
 
 dhcp_interfaces: ens786f0
 dhcp_server: 192.168.48.11

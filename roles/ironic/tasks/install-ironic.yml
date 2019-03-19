@@ -1,6 +1,20 @@
 ---
 
-- name: install ironic repository on centos
+
+- name: apt install software-properties packages on ubuntu
+  apt:
+    name: software-properties-common
+    state: present
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: add ironic repository on ubuntu
+  apt_repository:
+    repo: cloud-archive:{{ ironic_release }}
+  when:
+    - localrepo_enabled | bool == false
+    - ansible_distribution in ["Ubuntu","Debian"]
+
+- name: add ironic repository on centos
   yum:
     name: centos-release-openstack-{{ ironic_release }}
     state: present
@@ -34,6 +48,7 @@
   apt:
     name: "{{ item }}"
     state: present
+    update_cache: yes
   loop:
     - ironic-api
     - ironic-conductor

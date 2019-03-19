@@ -12,7 +12,7 @@
     name: rabbitmq-server
     state: present
   when:
-    - ansible_distribution == "Ubuntu"
+    - ansible_distribution in ["Ubuntu","Debian"]
 
 - name: ensure started rabbitmq service
   systemd:

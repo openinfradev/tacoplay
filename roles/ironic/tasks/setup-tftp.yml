@@ -23,7 +23,7 @@
     - syslinux
   when: ansible_distribution in ["CentOS","RedHat"]
 
-- name: apt install packages required for ironic standalone
+- name: apt install packages required for tftp service
   apt:
     name: "{{ item }}"
     state: present
@@ -38,7 +38,6 @@
   template:
     src: "tftp.j2"
     dest: "/etc/xinetd.d/tftp"
-
 
 - name: ensure disabled tftp service
   service:
@@ -66,13 +65,31 @@
       src: /usr/share/syslinux/pxelinux.0
       dest: /var/lib/tftpboot
       remote_src: true
-
   - name: copy netboot system file to tftpboot directory
     copy:
       src: /usr/share/syslinux/chain.c32
       dest: /var/lib/tftpboot
       remote_src: true
   when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: copy required files to tftpboot directory
+  block:
+  - name: copy pxe image file to tftpboot directory
+    copy:
+      src: /usr/lib/PXELINUX/pxelinux.0
+      dest: /tftpboot
+      remote_src: true
+  - name: copy netboot system file to tftpboot directory
+    copy:
+      src: /usr/lib/syslinux/modules/bios/chain.c32
+      dest: /tftpboot
+      remote_src: true
+  - name: copy library modules to tftpboot directory
+    copy:
+      src: /usr/lib/syslinux/modules/*/ldlinux.*
+      dest: /tftpboot
+      remote_src: true
+  when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: copy map-file
   template:
