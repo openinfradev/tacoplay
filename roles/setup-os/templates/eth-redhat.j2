@@ -1,0 +1,17 @@
+ONBOOT=yes
+BOOTPROTO=none
+TYPE=Ethernet
+USERCTL=no
+DEVICE={{ item.device }}
+{% if item.address is defined and ( item.address | ipaddr ) %}
+IPADDR={{ item.address | ipaddr('address') }}
+NETMASK={{ item.address | ipaddr('netmask') }}
+{% endif -%}
+{% if item.mtu is defined %}
+MTU={{ item.mtu }}
+{% endif -%}
+{% if item.vlan is defined and item.vlan | bool %}
+VLAN=yes
+PHYSDEV={{ item.device.rpartition('.')[0] }}
+VLAN_ID={{ item.device.rpartition('.')[2] }}
+{% endif -%}
