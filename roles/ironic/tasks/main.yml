@@ -1,18 +1,9 @@
 ---
-
-- name: Include Debian Family Specific Defaults
+- name: Include OS Family Specific Defaults
   include_vars: "{{ item }}"
   with_first_found:
-    - "../defaults/required_defaults_RedHat_family.yml"
+    - "../defaults/required_defaults_{{ ansible_os_family }}_family.yml"
     - "../defaults/dummy-defaults.yml"
-  when: ansible_distribution in ["CentOS","RedHat"]
-
-- name: Include Debian Family Specific Defaults
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "../defaults/required_defaults_Debian_family.yml"
-    - "../defaults/dummy-defaults.yml"
-  when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: Install packages
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"

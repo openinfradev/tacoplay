@@ -19,6 +19,12 @@
   when:
     - localrepo_enabled | bool == false
     - ansible_distribution in ["CentOS","RedHat"]
+
+- name: update yum repositories cache
+  yum:
+    name: '*'
+    state: latest
+  when: ansible_distribution in ["CentOS","RedHat"]
   
 - name: create ironic database
   mysql_db:
