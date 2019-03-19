@@ -1,18 +1,5 @@
 ---
 
-- name: yum install packages required for isc-dhcp-server
-  yum:
-    name: dhcp
-    state: present
-  when: ansible_distribution in ["CentOS","RedHat"]
-
-- name: apt install packages required for isc-dhcp-server
-  apt:
-    name: isc-dhcp-server
-    state: present
-  when: ansible_distribution in ["Ubuntu","Debian"]
-
-
 - name: copy isc-dhcp-server file on debian family
   template:
     src: "isc-dhcp-server.j2"
@@ -25,44 +12,20 @@
     dest: "/etc/systemd/system/dhcpd.service"
   when: ansible_distribution in ["CentOS","RedHat"]
 
-- name: ensure started service dhcpd on redhat family
+- name: ensure reloaded service dhcp
   systemd:
-    name: dhcpd
+    name: "{{ dhcp_service_name }}"
     daemon_reload: yes
     enabled: yes
-  when: ansible_distribution in ["CentOS","RedHat"]
-
-- name: ensure started service dhcpd on debian family
-  systemd:
-    name: isc-dhcp-server
-    daemon_reload: yes
-    enabled: yes
-  when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: edit dhcpd conf file on redhat family
   template:
     src: "dhcpd.conf.j2"
     dest: "/etc/dhcp/dhcpd.conf"
-  notify: restart dhcpd on centos
-  when: ansible_distribution in ["CentOS","RedHat"]
+  notify: restart dhcp service
   tags: dhcp
 
-- name: edit dhcpd conf file on debian family
-  template:
-    src: "dhcpd.conf.j2"
-    dest: "/etc/dhcp/dhcpd.conf"
-  notify: restart isc-dhcp-server on ubuntu
-  when: ansible_distribution in ["Ubuntu","Debian"]
-  tags: dhcp
-
-- name: ensure started service dhcpd
+- name: ensure started service dhcp
   systemd:
     state: started
-    name: dhcpd
-  when: ansible_distribution in ["CentOS","RedHat"]
-
-- name: ensure started service isc-dhcp-server
-  systemd:
-    state: started
-    name: isc-dhcp-server
-  when: ansible_distribution in ["Ubuntu","Debian"]
+    name: "{{ dhcp_service_name }}"

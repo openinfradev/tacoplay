@@ -1,10 +1,5 @@
 ---
-- name: restart dhcpd on centos
+- name: restart dhcp service
   service:
-    name: dhcpd
-    state: restarted
-
-- name: restart isc-dhcp-server on ubuntu
-  service:
-    name: isc-dhcp-server
+    name: "{{ dhcp_service_name }}"
     state: restarted

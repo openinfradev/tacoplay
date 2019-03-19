@@ -1,19 +1,5 @@
 ---
 
-- name: install rabbitmq packages
-  yum:
-    name: rabbitmq-server
-    state: present
-  when:
-    - ansible_distribution in ["CentOS","RedHat"]
-
-- name: install rabbitmq packages
-  yum:
-    name: rabbitmq-server
-    state: present
-  when:
-    - ansible_distribution in ["Ubuntu","Debian"]
-
 - name: ensure started rabbitmq service
   systemd:
     name: rabbitmq-server

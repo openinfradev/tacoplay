@@ -1,19 +1,37 @@
 ---
 
-- name: "Install RabbitMQ Service"
+- name: Include Debian Family Specific Defaults
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "../defaults/required_defaults_RedHat_family.yml"
+    - "../defaults/dummy-defaults.yml"
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: Include Debian Family Specific Defaults
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "../defaults/required_defaults_Debian_family.yml"
+    - "../defaults/dummy-defaults.yml"
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: Install packages
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
+  with_items: "{{ required_packages }}"
+
+- name: Install RabbitMQ Service
   include: install-rabbitmq.yml
 
-- name: "Install MariaDB Service"
+- name: Install MariaDB Service
   include: install-mariadb.yml
 
-- name: "Install ISC DHCP Service"
+- name: Install ISC DHCP Service
   include: install-dhcp.yml
 
-- name: "Install IRONIC Standalone"
+- name: Install IRONIC Standalone
   include: install-ironic.yml
 
-- name: "Setup TFTP Service"
+- name: Setup TFTP Service
   include: setup-tftp.yml
 
-- name: "Setup Client"
+- name: Setup Client
   include: setup-client.yml

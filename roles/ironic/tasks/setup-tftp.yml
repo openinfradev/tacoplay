@@ -12,28 +12,6 @@
   with_items:
     - /tftpboot
 
-- name: yum install packages required for tftp service
-  yum:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - tftp-server
-    - syslinux-tftpboot
-    - xinetd
-    - syslinux
-  when: ansible_distribution in ["CentOS","RedHat"]
-
-- name: apt install packages required for tftp service
-  apt:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - xinetd
-    - tftpd-hpa
-    - syslinux-common
-    - pxelinux
-  when: ansible_distribution in ["Ubuntu","Debian"]
-
 - name: edit tftp configuration file
   template:
     src: "tftp.j2"
@@ -41,19 +19,11 @@
 
 - name: ensure disabled tftp service
   service:
-    name: tftp
+    name: "{{ tftp_service_name }}"
     state: stopped
     enabled: no
-  when: ansible_distribution in ["CentOS","RedHat"]
 
-- name: ensure disabled tftp service
-  service:
-    name: tftpd-hpa
-    state: stopped
-    enabled: no
-  when: ansible_distribution in ["Ubuntu","Debian"]
-
-- name: restart ironic services
+- name: restart xinetd services
   systemd:
     name: xinetd
     state: restarted
@@ -63,12 +33,12 @@
   - name: copy pxe image file to tftpboot directory
     copy:
       src: /usr/share/syslinux/pxelinux.0
-      dest: /var/lib/tftpboot
+      dest: "{{ tftp_path }}"
       remote_src: true
   - name: copy netboot system file to tftpboot directory
     copy:
       src: /usr/share/syslinux/chain.c32
-      dest: /var/lib/tftpboot
+      dest: "{{ tftp_path }}"
       remote_src: true
   when: ansible_distribution in ["CentOS","RedHat"]
 
@@ -77,17 +47,17 @@
   - name: copy pxe image file to tftpboot directory
     copy:
       src: /usr/lib/PXELINUX/pxelinux.0
-      dest: /tftpboot
+      dest: "{{ tftp_path }}"
       remote_src: true
   - name: copy netboot system file to tftpboot directory
     copy:
       src: /usr/lib/syslinux/modules/bios/chain.c32
-      dest: /tftpboot
+      dest: "{{ tftp_path }}"
       remote_src: true
   - name: copy library modules to tftpboot directory
     copy:
       src: /usr/lib/syslinux/modules/*/ldlinux.*
-      dest: /tftpboot
+      dest: "{{ tftp_path }}"
       remote_src: true
   when: ansible_distribution in ["Ubuntu","Debian"]
 

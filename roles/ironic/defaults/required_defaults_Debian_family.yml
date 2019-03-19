@@ -1,0 +1,37 @@
+---
+dhcp_service_name: dhcpd
+tftp_service_name: tftpd-hpa
+tftp_path: '/tftpboot'
+required_packages:
+  - python-dev
+  - python-pip
+  - rabbitmq-server
+  - mysql-server
+  - python-pymysql
+  - python-mysqldb
+  - isc-dhcp-server
+  - software-properties-common
+  - open-iscsi
+  - tftpd-hpa
+  - tftp-hpa
+  - xinetd
+  - syslinux-common
+  - pxelinux
+  - python-configparser
+  - libffi-dev
+  - libxslt1-dev
+  - libssl-dev
+  - libxml2-dev
+  - ipxe
+  - parted
+  - ipmitool
+  - psmisc
+  - nginx
+  - wget
+  - genisoimage
+  - kpartx
+  - qemu-utils
+  - python-openwsman
+  - debootstrap
+  - uuid-runtime
+  - curl

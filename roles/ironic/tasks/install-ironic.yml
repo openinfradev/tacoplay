@@ -1,18 +1,16 @@
 ---
 
-
-- name: apt install software-properties packages on ubuntu
-  apt:
-    name: software-properties-common
-    state: present
-  when: ansible_distribution in ["Ubuntu","Debian"]
-
 - name: add ironic repository on ubuntu
   apt_repository:
     repo: cloud-archive:{{ ironic_release }}
   when:
     - localrepo_enabled | bool == false
     - ansible_distribution in ["Ubuntu","Debian"]
+
+- name: update apt repositories cache
+  apt:
+    update_cache: yes
+  when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: add ironic repository on centos
   yum:
@@ -35,15 +33,11 @@
     name: "{{ item }}"
     state: present
     update_cache: yes
-    ignore_errors: true
   loop:
     - openstack-ironic-api
     - openstack-ironic-conductor
     - python-ironicclient
-    - qemu-img
-    - genisoimage
-    - iscsi-initiator-utils
-    - psmisc
+  ignore_errors: true
   when: ansible_distribution in ["CentOS","RedHat"]
 
 - name: apt install packages required for ironic standalone
@@ -55,7 +49,6 @@
     - ironic-api
     - ironic-conductor
     - python-ironicclient
-    - open-iscsi
   when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: ensures /etc/ironic directory exists

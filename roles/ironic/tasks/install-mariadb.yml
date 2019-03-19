@@ -1,25 +1,5 @@
 ---
 
-- name: yum install packages required for mariadb
-  yum:
-    name: "{{ item }}" 
-    state: present
-  loop:
-    - mariadb
-    - mariadb-server
-    - python2-PyMySQL
-  when:
-    - ansible_distribution in ["CentOS","RedHat"]
-
-- name: apt install packages required for mariadb
-  apt:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - mariadb-server
-    - python-pymysql
-  when: ansible_distribution in ["Ubuntu","Debian"]
-
 - name: ensures /etc/my.cnf.d directory exists
   file: path=/etc/my.cnf.d state=directory
   when:
