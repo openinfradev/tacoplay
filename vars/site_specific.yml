@@ -64,6 +64,10 @@ rbd_provisioner_user_id: >-
 rbd_provisioner_user_secret: >-
   {%- if groups["osds"] is not defined -%}TACOFIXME{%- else -%}AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=={%- endif -%}
 
+# external NFS server
+nfs_server: TACOFIXME
+nfs_path: TACOFIXME
+
 # OpenStack
 db_root_user: TACOFIXME
 db_root_password: TACOFIXME

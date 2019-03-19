@@ -127,3 +127,13 @@
         - db_grafana_password
         - db_grafana_session_password
       tags: openstack
+
+    - name: Assert external NFS server configurations are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - nfs_server
+        - nfs_path
+      when:
+        - taco_storage == 'nfs'
+      tags: openstack
