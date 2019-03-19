@@ -30,12 +30,14 @@
     name: dhcpd
     daemon_reload: yes
     enabled: yes
+  when: ansible_distribution in ["CentOS","RedHat"]
 
 - name: ensure started service dhcpd on debian family
   systemd:
     name: isc-dhcp-server
     daemon_reload: yes
     enabled: yes
+  when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: edit dhcpd conf file on redhat family
   template:
