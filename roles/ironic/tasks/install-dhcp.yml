@@ -44,6 +44,7 @@
     src: "dhcpd.conf.j2"
     dest: "/etc/dhcp/dhcpd.conf"
   notify: restart dhcpd on centos
+  when: ansible_distribution in ["CentOS","RedHat"]
   tags: dhcp
 
 - name: edit dhcpd conf file on debian family
@@ -51,4 +52,17 @@
     src: "dhcpd.conf.j2"
     dest: "/etc/dhcp/dhcpd.conf"
   notify: restart isc-dhcp-server on ubuntu
+  when: ansible_distribution in ["Ubuntu","Debian"]
   tags: dhcp
+
+- name: ensure started service dhcpd
+  systemd:
+    state: started
+    name: dhcpd
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: ensure started service isc-dhcp-server
+  systemd:
+    state: started
+    name: isc-dhcp-server
+  when: ansible_distribution in ["Ubuntu","Debian"]
