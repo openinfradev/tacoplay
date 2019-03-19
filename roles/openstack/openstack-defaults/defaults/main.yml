@@ -2,6 +2,7 @@
 
 # the location of openstack helm charts
 osh_path: "{{ playbook_dir }}/charts/openstack-helm"
+nfs_client_provisioner_path: "{{ playbook_dir }}/charts/nfs-client-provisioner"
 
 # ceph information for nova, libvirt, cinder and glance
 mon_host: ''
