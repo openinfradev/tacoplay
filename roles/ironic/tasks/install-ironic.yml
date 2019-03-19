@@ -30,24 +30,15 @@
     login_password: "password"
   register: check_created_db
 
-
-- name: yum install ironic-api package required for ironic standalone
-  yum:
-    name: openstack-ironic-api
-    state: present
-  when: ansible_distribution in ["CentOS","RedHat"]
-
-- name: yum install ironic-conductor package required for ironic standalone
-  yum:
-    name: openstack-ironic-conductor
-    state: present
-  when: ansible_distribution in ["CentOS","RedHat"]
-
 - name: yum install packages required for ironic standalone
   yum:
     name: "{{ item }}"
     state: present
+    update_cache: yes
+    ignore_errors: true
   loop:
+    - openstack-ironic-api
+    - openstack-ironic-conductor
     - python-ironicclient
     - qemu-img
     - genisoimage
