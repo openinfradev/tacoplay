@@ -30,8 +30,6 @@
     state: started
     enabled: yes
   register: check_installed_mariadb
-  when:
-    - ansible_distribution in ["CentOS","RedHat"]
 
 - name: "wait for mariadb"
   wait_for:
