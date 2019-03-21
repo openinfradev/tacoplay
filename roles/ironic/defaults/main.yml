@@ -1,7 +1,6 @@
 ---
 
 localrepo_enabled: false
-ironic_release: pike
 
 dhcp_interfaces: ens786f0
 dhcp_server: 192.168.48.11
@@ -17,3 +16,6 @@ dhcp_hosts:
 
 
 ironic_server: 192.168.48.11
+ironic_base_container_image: kolla/centos-source-ironic-base:5.0.5
+ironic_api_container_image: kolla/centos-source-ironic-api:5.0.5
+ironic_conductor_container_image: kolla/centos-source-ironic-conductor:5.0.5

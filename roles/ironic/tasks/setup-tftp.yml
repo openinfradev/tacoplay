@@ -1,7 +1,4 @@
 ---
-
-# do not skip this task on centos even though it doesn't use /tftpboot
-# otherwise ironic conductor service cannot start
 - name: create tftpboot directory
   file:
     path: "{{ item }}"
@@ -65,6 +62,26 @@
   template:
     src: "map-file.j2"
     dest: "{{ tftp_path }}/map-file"
+
+- name: create ironic_images directory
+  file:
+    path: "{{ tftp_path }}/ironic_images"
+    state: directory
+    owner: ironic
+    group: ironic
+    mode: 0777
+
+- name: copy ironic images to ironic_images directory
+  copy:
+    src: "{{ item }}"
+    dest: "{{ tftp_path }}/ironic_images"
+    mode: 0777
+  with_items:
+    - "{{ playbook_dir }}/ironic-image/ubuntu-deploy/ubuntu-deploy.initramfs"
+    - "{{ playbook_dir }}/ironic-image/ubuntu-deploy/ubuntu-deploy.kernel"
+    - "{{ playbook_dir }}/ironic-image/centos7-user/user-centos7.initramfs"
+    - "{{ playbook_dir }}/ironic-image/centos7-user/user-centos7.kernel"
+    - "{{ playbook_dir }}/ironic-image/centos7-user/user-centos7.qcow2"
 
 - name: ensure permission and owner of tftpboot directory
   file:

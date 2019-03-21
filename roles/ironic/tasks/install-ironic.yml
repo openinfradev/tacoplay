@@ -1,62 +1,5 @@
 ---
 
-- name: add ironic repository on ubuntu
-  apt_repository:
-    repo: cloud-archive:{{ ironic_release }}
-  when:
-    - localrepo_enabled | bool == false
-    - ansible_distribution in ["Ubuntu","Debian"]
-
-- name: update apt repositories cache
-  apt:
-    update_cache: yes
-  when: ansible_distribution in ["Ubuntu","Debian"]
-
-- name: add ironic repository on centos
-  yum:
-    name: centos-release-openstack-{{ ironic_release }}
-    state: present
-  when:
-    - localrepo_enabled | bool == false
-    - ansible_distribution in ["CentOS","RedHat"]
-
-- name: update yum repositories cache
-  yum:
-    name: '*'
-    state: latest
-  when: ansible_distribution in ["CentOS","RedHat"]
-  
-- name: create ironic database
-  mysql_db:
-    name: "ironic"
-    state: present
-    login_user: "ironic"
-    login_password: "password"
-  register: check_created_db
-
-- name: yum install packages required for ironic standalone
-  yum:
-    name: "{{ item }}"
-    state: present
-    update_cache: yes
-  loop:
-    - openstack-ironic-api
-    - openstack-ironic-conductor
-    - python-ironicclient
-  ignore_errors: true
-  when: ansible_distribution in ["CentOS","RedHat"]
-
-- name: apt install packages required for ironic standalone
-  apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: yes
-  loop:
-    - ironic-api
-    - ironic-conductor
-    - python-ironicclient
-  when: ansible_distribution in ["Ubuntu","Debian"]
-
 - name: ensures /etc/ironic directory exists
   file: path=/etc/ironic state=directory
 
@@ -65,51 +8,57 @@
     src: "ironic.conf.j2"
     dest: "/etc/ironic/ironic.conf"
 
+- name: create ironic database
+  mysql_db:
+    name: "ironic"
+    state: present
+    login_user: "ironic"
+    login_password: "password"
+  register: check_created_db
+
+- name: ensure ironic dbsync container is removed
+  docker_container:
+    name: ironic-dbsync
+    state: absent
+
 - name: create ironic db schema
-  command: ironic-dbsync --config-file /etc/ironic/ironic.conf create_schema
+  docker_container:
+    name: ironic-dbsync
+    image: "{{ ironic_base_container_image }}"
+    command: ironic-dbsync --config-file /etc/ironic/ironic.conf create_schema
+    volumes:
+      - /etc/ironic:/etc/ironic
   when: check_created_db.changed | bool == true
 
 - name: upgrade ironic db schema
-  command: ironic-dbsync --config-file /etc/ironic/ironic.conf upgrade
+  docker_container:
+    name: ironic-dbsync
+    image: "{{ ironic_base_container_image }}"
+    command: ironic-dbsync --config-file /etc/ironic/ironic.conf upgrade
+    volumes:
+      - /etc/ironic:/etc/ironic
   when: check_created_db.changed | bool == false
 
-- name: restart ironic services
-  systemd:
-    name: "{{ item }}"
-    state: restarted
-    enabled: yes
-  loop:
-    - openstack-ironic-api
-    - openstack-ironic-conductor
+- name: run ironic-api container
+  docker_container:
+    name: ironic-api
+    image: "{{ ironic_api_container_image }}"
+    published_ports:
+      - 6385:6385
+    command: ironic-api --config-file /etc/ironic/ironic.conf
+    volumes:
+      - /etc/ironic:/etc/ironic
 
-- name: create ironic lib directory
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: ironic
-    group: ironic
-    mode: 0777
-    recurse: yes
-  with_items:
-    - /var/lib/ironic
-    - /var/lib/ironic/ubuntu-deploy
-    - /var/lib/ironic/centos7-user
-
-- name: copy ubuntu deploy image to ironic lib directory
-  copy:
-    src: "{{ item }}"
-    dest: /var/lib/ironic/ubuntu-deploy
-    mode: 0777
-  with_items:
-    - ubuntu-deploy.initramfs
-    - ubuntu-deploy.kernel
-
-- name: copy centos user image to ironic lib directory
-  copy:
-    src: "{{ item }}"
-    dest: /var/lib/ironic/centos7-user
-    mode: 0777
-  with_items:
-    - user-centos7.initramfs
-    - user-centos7.kernel
-    - user-centos7.qcow2
+- name: run ironic-conductor container
+  docker_container:
+    name: ironic-conductor
+    image: "{{ ironic_conductor_container_image }}"
+    ipc_mode: host
+    network_mode: host
+    privileged: yes
+    command: ironic-conductor --config-file /etc/ironic/ironic.conf
+    volumes:
+      - /etc/ironic:/etc/ironic
+      - /var/lib/tftpboot:/var/lib/tftpboot
+      - /etc/iscsi:/etc/iscsi
+      - /dev:/dev

@@ -17,7 +17,6 @@
   rabbitmq_user:
     user: openstack
     password: password
-    force: yes
     state: present
     configure_priv: ".*"
     write_priv: ".*"

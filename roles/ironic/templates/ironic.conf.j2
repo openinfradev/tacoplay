@@ -15,15 +15,16 @@ clean_callback_timeout = 3600
 deploy_callback_timeout = 3600
 
 [database]
-connection = mysql+pymysql://ironic:password@localhost/ironic?charset=utf8
+connection = mysql+pymysql://ironic:password@{{ ironic_server }}/ironic?charset=utf8
 
 [dhcp]
 dhcp_provider = none
 
 [agent]
-deploy_logs_collect = always
+deploy_logs_collect = never
 
 [pxe]
-tftp_root = "{{ tftp_path }}"
+tftp_root = {{ tftp_path }}
+tftp_master_path = {{ tftp_path }}/master_images
 tftp_server = {{ ironic_server }}
 

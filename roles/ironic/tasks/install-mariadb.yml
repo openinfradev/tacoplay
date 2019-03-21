@@ -26,21 +26,12 @@
 
 - name: ensure started mariadb service
   systemd:
-    name: mariadb
+    name: "{{ mysql_service_name }}"
     state: started
     enabled: yes
   register: check_installed_mariadb
   when:
     - ansible_distribution in ["CentOS","RedHat"]
-
-- name: ensure started mariadb service
-  systemd:
-    name: mysql
-    state: started
-    enabled: yes
-  register: check_installed_mariadb
-  when:
-    - ansible_distribution in ["Ubuntu","Debian"]
 
 - name: "wait for mariadb"
   wait_for:
@@ -51,6 +42,12 @@
 - name: Ensure ironic user is present on all hosts.
   mysql_user:
     name: "ironic"
+    host: "{{ item }}"
     password: "password"
     priv: '*.*:ALL,GRANT'
     state: present
+  with_items:
+    - 127.0.0.1
+    - localhost
+    - "{{ ansible_hostname }}" 
+    - "{{ ironic_server }}"

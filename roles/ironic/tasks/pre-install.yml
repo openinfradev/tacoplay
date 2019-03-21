@@ -1,0 +1,30 @@
+---
+- name: include os family specific defaults
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "../defaults/required_defaults_{{ ansible_os_family }}_family.yml"
+    - "../defaults/dummy-defaults.yml"
+
+- name: install dependent packages
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
+  with_items: "{{ required_packages }}"
+
+- name: disable selinux
+  selinux:
+    state: disabled
+
+- name: add docker repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docer-ce.repo
+
+- name: Install Docker
+  package:
+    name: docker-ce
+    state: latest
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
