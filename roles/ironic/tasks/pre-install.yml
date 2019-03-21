@@ -30,22 +30,17 @@
     enabled: yes
 
 - name: Load ironic-base image from file and push to a private registry
-  docker_image:
-    name: "{{ ironic_base_container_image_name }}"
-    tag: "{{ ironic_base_container_image_version }}"
-    push: yes
-    load_path: "{{ playbook_dir }}/ironic-image/ironic-base-pike.tar"
+  shell: docker load < "{{ ironic_base_container_file }}"
+  args:
+    chdir: "{{ playbook_dir }}/ironic-image/"
 
 - name: Load ironic-api image from file and push to a private registry
-  docker_image:
-    name: "{{ ironic_api_container_image_name }}"
-    tag: "{{ ironic_api_container_image_version }}"
-    push: yes
-    load_path: "{{ playbook_dir }}/ironic-image/ironic-api-pike.tar"
+  shell: docker load < "{{ ironic_api_container_file }}"
+  args:
+    chdir: "{{ playbook_dir }}/ironic-image/"
 
 - name: Load ironic-conductor image from file and push to a private registry
-  docker_image:
-    name: "{{ ironic_conductor_container_image_name }}"
-    tag: "{{ ironic_conductor_container_image_version }}"
-    push: yes
-    load_path: "{{ playbook_dir }}/ironic-image/ironic-conductor-pike.tar"
+  shell: docker load < "{{ ironic_conductor_container_file }}"
+  args:
+    chdir: "{{ playbook_dir }}/ironic-image/"
+
