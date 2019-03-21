@@ -10,7 +10,8 @@ cinder_keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
 # TODO: remove the values below once all jinja2 variables are elimiated from template
 # the location of openstack helm charts
 osh_path: "{{ playbook_dir }}/charts/openstack-helm"
-nfs_client_provisioner_path: "{{ playbook_dir }}/charts/nfs-client-provisioner"
+# the localtion of helm charts for nfs-client-provisioner
+helm_chart_path: "{{ playbook_dir }}/charts/helm"
 
 libvirt_ceph_cinder_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
 
