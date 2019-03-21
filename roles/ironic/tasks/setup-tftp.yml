@@ -1,4 +1,13 @@
 ---
+- name: create ironic group 
+  group:
+    name: ironic
+
+- name: create ironic user
+  user:
+    name: ironic
+    group: ironic
+
 - name: create tftpboot directory
   file:
     path: "{{ item }}"
