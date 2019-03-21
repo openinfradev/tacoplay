@@ -34,18 +34,18 @@
     name: "{{ ironic_base_container_image_name }}"
     tag: "{{ ironic_base_container_image_version }}"
     push: yes
-    load_path: "{{ ansible_dir }}/ironic-image/ironic-base-pike.tar }}"
+    load_path: "{{ playbook_dir }}/ironic-image/ironic-base-pike.tar }}"
 
 - name: Load ironic-api image from file and push to a private registry
   docker_image:
     name: "{{ ironic_api_container_image_name }}"
     tag: "{{ ironic_api_container_image_version }}"
     push: yes
-    load_path: "{{ ansible_dir }}/ironic-image/ironic-api-pike.tar }}"
+    load_path: "{{ playbook_dir }}/ironic-image/ironic-api-pike.tar }}"
 
 - name: Load ironic-conductor image from file and push to a private registry
   docker_image:
     name: "{{ ironic_conductor_container_image_name }}"
     tag: "{{ ironic_conductor_container_image_version }}"
     push: yes
-    load_path: "{{ ansible_dir }}/ironic-image/ironic-conductor-pike.tar }}"
+    load_path: "{{ playbook_dir }}/ironic-image/ironic-conductor-pike.tar }}"
