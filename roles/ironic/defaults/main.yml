@@ -19,11 +19,14 @@ ironic_server: 192.168.48.11
 
 
 ### container file
-ironi_api_container_file: ironic-api-pike.tar
+ironic_api_container_file: ironic-api-pike.tar
 ironic_conductor_container_file: ironic-conductor-pike.tar
 ironic_base_container_file: ironic-base-pike.tar
 
 ### container image name
-ironic_base_container_image: kolla/centos-source-ironic-base:5.0.5
-ironic_api_container_image: kolla/centos-source-ironic-api:5.0.5
-ironic_conductor_container_image: kolla/centos-source-ironic-conductor:5.0.5
+ironic_base_container_image_name: kolla/centos-source-ironic-base
+ironic_base_container_image_version: 5.0.5
+ironic_api_container_image_name: kolla/centos-source-ironic-api
+ironic_api_container_image_version: 5.0.5
+ironic_conductor_container_image_name: kolla/centos-source-ironic-conductor
+ironic_conductor_container_image_version: 5.0.5
