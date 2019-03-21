@@ -28,3 +28,24 @@
     name: docker
     state: started
     enabled: yes
+
+- name: Load ironic-base image from file and push to a private registry
+  docker_image:
+    name: "{{ ironic_base_container_image_name }}"
+    tag: "{{ ironic_base_container_image_version }}"
+    push: yes
+    load_path: "{{ ansible_dir }}/files/ironic-base-pike.tar }}"
+
+- name: Load ironic-api image from file and push to a private registry
+  docker_image:
+    name: "{{ ironic_api_container_image_name }}"
+    tag: "{{ ironic_api_container_image_version }}"
+    push: yes
+    load_path: "{{ ansible_dir }}/files/ironic-api-pike.tar }}"
+
+- name: Load ironic-conductor image from file and push to a private registry
+  docker_image:
+    name: "{{ ironic_conductor_container_image_name }}"
+    tag: "{{ ironic_conductor_container_image_version }}"
+    push: yes
+    load_path: "{{ ansible_dir }}/files/ironic-conductor-pike.tar }}"
