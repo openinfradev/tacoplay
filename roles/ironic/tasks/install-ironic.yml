@@ -3,10 +3,36 @@
 - name: ensures /etc/ironic directory exists
   file: path=/etc/ironic state=directory
 
+- name: ensures rootwrap directory exists
+  file: path=/etc/ironic/rootwrap.d state=directory
+
 - name: edit ironic configuration file
   template:
     src: "ironic.conf.j2"
     dest: "/etc/ironic/ironic.conf"
+
+- name: copy policy.json file
+  copy:
+    src: policy.json
+    dest: /etc/ironic
+
+- name: copy ironic filter files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/ironic/rootwrap.d
+  with_items:
+    - ironic-images.filters
+    - ironic-lib.filters
+    - ironic-utils.filters
+
+- name: ensure permission and owner of /etc/ironic
+  file:
+    path: "/etc/ironic"
+    state: directory
+    owner: ironic
+    group: ironic
+    mode: 0777
+    recurse: yes
 
 - name: create ironic database
   mysql_db:
