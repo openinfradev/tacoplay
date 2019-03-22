@@ -11,10 +11,13 @@
     src: "ironic.conf.j2"
     dest: "/etc/ironic/ironic.conf"
 
-- name: copy policy.json file
+- name: copy policy.json and rootwrap.conf file
   copy:
-    src: policy.json
+    src: "{{ item }}"
     dest: /etc/ironic
+  with_items:
+    - policy.json
+    - rootwrap.conf
 
 - name: copy ironic filter files
   copy:
