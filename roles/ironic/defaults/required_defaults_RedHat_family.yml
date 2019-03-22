@@ -4,10 +4,12 @@ mysql_service_name: mariadb
 tftp_service_name: tftp
 tftp_path: '/var/lib/tftpboot'
 required_packages:
+  - epel-release
   - yum-utils
   - device-mapper-persistent-data
   - lvm2
   - python-devel
+  - python-pip
   - rabbitmq-server
   - mariadb-server
   - MySQL-python

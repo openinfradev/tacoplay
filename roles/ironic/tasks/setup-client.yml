@@ -1,5 +1,9 @@
 ---
 
+- name: install ironicclient
+  pip:
+    name: python-ironicclient
+
 - name: create scripts directory
   file:
     path: "{{ lookup('env','HOME') }}/scripts"
