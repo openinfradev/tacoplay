@@ -1,14 +1,4 @@
 ---
-- name: Include OS Family Specific Defaults
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "../defaults/required_defaults_{{ ansible_os_family }}_family.yml"
-    - "../defaults/dummy-defaults.yml"
-
-- name: Install Packages
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
-  with_items: "{{ required_packages }}"
-
 - name: Prerequisites
   include: pre-install.yml
 
