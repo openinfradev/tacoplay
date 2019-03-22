@@ -2,7 +2,11 @@
 
 - name: install ironicclient
   pip:
-    name: python-ironicclient
+    name: "{{ item }}"
+  with_items:
+    - python-ironicclient==2.7.0
+    - decorator==4.4.0
+    - oslo.config==6.8.1
 
 - name: create scripts directory
   file:
