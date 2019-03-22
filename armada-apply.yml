@@ -15,7 +15,7 @@
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/vars/global_k8s-images.yml"
-      when: localrepo_enabled
+      when: groups['registry'] is defined and (groups['registry'] | length > 0)
   tags: always
 
 # Prepare armada-manifests and then run armada apply
@@ -57,6 +57,4 @@
         state: present
         marker: "# OPENSTACK SERVICES {mark}"
       when: auto_release_enabled|default(true)
-  tags:
-    - openstack
-    - apply
+  tags: openstack

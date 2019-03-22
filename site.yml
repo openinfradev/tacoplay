@@ -20,7 +20,7 @@
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/vars/global_k8s-images.yml"
-      when: localrepo_enabled
+      when: groups['registry'] is defined and (groups['registry'] | length > 0)
   tags: always
 
 # Populate hostname to hosts file
@@ -82,6 +82,17 @@
   tags: setup-os
 
 # Run docker registry
+- hosts: localhost, registry
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: install rsync on ansible-host and registry nodes
+      yum:
+        name: rsync
+        state: present
+      when:
+        - ansible_distribution in ["CentOS","RedHat"]
+  tags: registry
+
 - hosts: registry
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
@@ -99,14 +110,14 @@
         src: "{{ inventory_dir }}/ceph.repo"
         dest: "{{ ceph_repository_dir }}/ceph.repo"
       when:
-        - ceph_enabled
+        - taco_storage == 'ceph'
         - ceph_repository_enabled|default(false)
   tags: ceph
 
 # Install Ceph
 - import_playbook: ceph-ansible/site.yml
   tags: ceph
-  when: ceph_enabled
+  when: taco_storage == 'ceph'
 
 # TODO: add tests for checking status of the new ceph cluster
 

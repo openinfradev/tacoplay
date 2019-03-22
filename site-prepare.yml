@@ -68,11 +68,42 @@
         - "quay.io/external_storage/rbd-provisioner:v2.1.1-k8s1.11"
         - "registry.cicd.stg.taco/yaml-merge:latest"
 
+    - name: check if {{ armada_manifest }} exists
+      stat:
+        path: "{{ armada_manifest }}"
+      register: stat_result
+    
+    - name: copy .netrc file to home directory
+      copy:
+        src: "{{ inventory_dir }}/.netrc"
+        dst: "~/.netrc"
+      become: no
+
+    - name: clone vslab-inventories
+      git:
+        repo: 'https://tde.sktelecom.com/stash/scm/oreotools/vslab-inventories.git'
+        dest: "{{ playbook_dir }}/vslab-inventories"
+        version: master
+
+    - name: copy extra-vars from {{ site_name }} inventories
+      copy:
+        src: "{{ playbook_dir }}/vslab-inventories/{{ site_name }}/extra-vars.yml"
+        dest: "{{ inventory_dir }}/extra-vars.yml"
+      become: no
+
+    - name: create {{ armada_manifest }} from template
+      template:
+        src: "{{ playbook_dir }}/manifests/output/site-{{ site_name }}.yaml.j2"
+        dest: "{{ armada_manifest }}"
+      when: stat_result.stat.exists == False
+      run_once: true
+      become: no
+
     # Should I run fetch-sub-projects.sh here instead of Jenkinsfile?
     - name: pull all images used in armada manifest
       script: >-
         {{ playbook_dir }}/scripts/pull-images.sh
-        {{ playbook_dir }}/manifests/ha.yaml
+        {{ armada_manifest }}
       args:
         creates: /tmp/.image-pull-done
 

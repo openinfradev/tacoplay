@@ -1,16 +1,19 @@
 ---
 
-# the location of openstack helm charts
-osh_path: "{{ playbook_dir }}/charts/openstack-helm"
-
 # ceph information for nova, libvirt, cinder and glance
-openstack_ceph_enabled: true
 mon_host: ''
 admin_keyring: ''
-libvirt_ceph_cinder_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
 
 # this will be removed
 cinder_keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
+
+# TODO: remove the values below once all jinja2 variables are elimiated from template
+# the location of openstack helm charts
+osh_path: "{{ playbook_dir }}/charts/openstack-helm"
+# the localtion of helm charts for nfs-client-provisioner
+helm_chart_path: "{{ playbook_dir }}/charts/helm"
+
+libvirt_ceph_cinder_secret_uuid: "582393ff-9a5c-4a2e-ae0d-86ec18c36afc"
 
 # DB ACCOUNT
 db_root_user: root
@@ -22,6 +25,8 @@ db_neutron_password: password
 db_nova_password: password
 db_grafana_password: password
 db_grafana_session_password: password
+db_heat_password: password
+db_horizon_password: password
 
 # Openstack ACCOUNT
 os_root_user: admin
@@ -31,6 +36,7 @@ os_glance_password: password
 os_cinder_password: password
 os_neutron_password: password
 os_nova_password: password
+os_heat_password: password
 os_ironic_password: password
 os_exporter_password: password
 os_test_password: password
@@ -44,6 +50,7 @@ mq_glance_password: password
 mq_cinder_password: password
 mq_neutron_password: password
 mq_nova_password: password
+mq_heat_password: password
 
 # GRAFANA ACCOUNT
 grafana_admin_user: admin

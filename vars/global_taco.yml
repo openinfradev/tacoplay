@@ -6,14 +6,18 @@ tc_enabled: false
 # Docker registry
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
 
+# storage configurations: ceph or nfs
+taco_storage: "ceph"
+storage_class_name: >-
+  {%- if taco_storage == 'ceph' -%}rbd{%- elif taco_storage == 'nfs' -%}nfs-client{%- endif -%}
+
 # Ceph
-ceph_enabled: true
 # this will be removed soon
 cinder_keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
 
 # RBD provisioner
 rbd_provisioner_enabled: >-
-  {%- if ceph_enabled -%}true{%- else -%}false{%- endif -%}
+  {%- if taco_storage == 'ceph' -%}true{%- else -%}false{%- endif -%}
 rbd_provisioner_namespace: kube-system
 rbd_provisioner_replicas: 1
 rbd_provisioner_monitors: "{{ ceph_monitors }}"
@@ -29,9 +33,8 @@ rbd_provisioner_reclaim_policy: Delete
 
 # Armada
 armada_venv: "{{ lookup('env','HOME') }}/venv"
+armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
 
 # OpenStack
 openstack_namespace: openstack
-openstack_ceph_enabled: >-
-  {%- if ceph_enabled -%}true{%- else -%}false{%- endif -%}
 vfat_config_drive_enabled: false

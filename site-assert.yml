@@ -16,7 +16,7 @@
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/vars/global_k8s-images.yml"
-      when: localrepo_enabled
+      when: groups['registry'] is defined and (groups['registry'] | length > 0)
   tags: always
 
 - hosts: localhost
@@ -48,7 +48,7 @@
         - ceph_monitors
         - ceph_admin_keyring
       when:
-        - ceph_enabled
+        - taco_storage == 'ceph'
       tags: always
 
     - name: Assert ceph specific variables when using existing ceph
@@ -56,7 +56,7 @@
         that: "{{ item }} != 'TACOFIXME'"
       with_items:
         - external_cluster_mon_ips
-      when: ceph_enabled and groups["osds"] is not defined
+      when: taco_storage == 'ceph' and groups["osds"] is not defined
       tags: ceph
 
     - name: Assert ceph specific variables when deploying new ceph
@@ -72,7 +72,7 @@
         - lvm_volumes
         - openstack_config
       when:
-        - ceph_enabled and groups["osds"] is defined
+        - taco_storage == 'ceph' and groups["osds"] is defined
       tags: ceph
 
     - name: Assert ceph OpenStack configs when deploying new ceph
@@ -82,7 +82,7 @@
           - "{{ item.pgp_num }} != 'TACOFIXME'"
       with_items: "{{ openstack_pools }}"
       when:
-        - ceph_enabled and groups["osds"] is defined
+        - taco_storage == 'ceph' and groups["osds"] is defined
         - openstack_config
       loop_control:
         label: "{{ item.name }}"
@@ -107,7 +107,7 @@
         - rbd_provisioner_user_id
         - rbd_provisioner_user_secret
       when:
-        - ceph_enabled and groups["osds"] is not defined
+        - taco_storage == 'ceph' and groups["osds"] is not defined
         - rbd_provisioner_enabled
       tags: k8s
 
@@ -126,4 +126,14 @@
         - db_horizon_password
         - db_grafana_password
         - db_grafana_session_password
+      tags: openstack
+
+    - name: Assert external NFS server configurations are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - nfs_server
+        - nfs_path
+      when:
+        - taco_storage == 'nfs'
       tags: openstack
