@@ -44,3 +44,7 @@
   args:
     chdir: "{{ playbook_dir }}/ironic-image/"
 
+- name: Add iscsi_tcp module
+  modprobe:
+    name: iscsi_tcp
+    state: present
