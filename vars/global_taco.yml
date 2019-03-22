@@ -33,6 +33,7 @@ rbd_provisioner_reclaim_policy: Delete
 
 # Armada
 armada_venv: "{{ lookup('env','HOME') }}/venv"
+armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
 
 # OpenStack
 openstack_namespace: openstack
