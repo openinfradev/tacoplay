@@ -42,7 +42,7 @@
 - name: wait ironic-dbsync is finished
   command: docker inspect --format '{% raw %}{{ .State.Status }}{% endraw %}' ironic-dbsync
   retries: 10
-  delay: 1
+  delay: 3
   register: status
   until: status.stdout == "exited"
 
