@@ -39,6 +39,13 @@
       - /etc/ironic:/etc/ironic
   when: check_created_db.changed | bool == false
 
+- name: wait ironic-dbsync is finished
+  command: docker inspect --format '{% raw %}{{ .State.Status }}{% endraw %}' ironic-dbsync
+  retries: 10
+  delay: 1
+  register: status
+  until: status.stdout == "exited"
+
 - name: run ironic-api container
   docker_container:
     name: ironic-api

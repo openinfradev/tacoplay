@@ -46,6 +46,7 @@
     state: present
   with_items:
     - 127.0.0.1
+    - 172.17.0.2
     - localhost
     - "{{ ansible_hostname }}" 
     - "{{ ironic_server }}"
