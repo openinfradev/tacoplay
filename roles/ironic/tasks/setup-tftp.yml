@@ -8,15 +8,13 @@
     name: ironic
     group: ironic
 
-- name: create tftpboot directory
+- name: ensure tftpboot directory exists
   file:
-    path: "{{ item }}"
+    path: "{{ tftp_path }}"
     state: directory
     owner: ironic
     group: ironic
     mode: 0777
-  with_items:
-    - /tftpboot
 
 - name: edit tftp configuration file
   template:
