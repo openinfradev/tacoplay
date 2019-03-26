@@ -29,17 +29,17 @@
     state: started
     enabled: yes
 
-- name: Load ironic-base image from file and push to a private registry
+- name: Load ironic-base image from file
   shell: docker load < "{{ ironic_base_container_file }}"
   args:
     chdir: "{{ playbook_dir }}/ironic-image/"
 
-- name: Load ironic-api image from file and push to a private registry
+- name: Load ironic-api image from file
   shell: docker load < "{{ ironic_api_container_file }}"
   args:
     chdir: "{{ playbook_dir }}/ironic-image/"
 
-- name: Load ironic-conductor image from file and push to a private registry
+- name: Load ironic-conductor image from file
   shell: docker load < "{{ ironic_conductor_container_file }}"
   args:
     chdir: "{{ playbook_dir }}/ironic-image/"
