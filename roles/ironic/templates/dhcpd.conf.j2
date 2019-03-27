@@ -18,11 +18,11 @@ log-facility local7;
 
 subnet {{ dhcp_subnet }} netmask {{ dhcp_netmask }} {
   group {
-{% if dhcp_hosts is defined %}
-{% for host in dhcp_hosts %}
-    host {{ host.name }} {
-      hardware ethernet {{ host.mac }};
-      fixed-address {{ host.ip }};
+{% if ironic_nodes is defined %}
+{% for node in ironic_nodes %}
+    host {{ node.name }} {
+      hardware ethernet {{ node.mac }};
+      fixed-address {{ node.ip }};
       allow booting;
       allow bootp;
       next-server {{ dhcp_server }};

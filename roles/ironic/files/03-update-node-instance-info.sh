@@ -1,4 +1,4 @@
-### Usage : ./centos-user-image-update.sh {node-name}
+### Usage : ./03-update-node-instance-info.sh {node-name}
 
 MD5=`md5sum /var/lib/tftpboot/ironic_images/user-centos7.qcow2 | awk '{print $1}'`
 

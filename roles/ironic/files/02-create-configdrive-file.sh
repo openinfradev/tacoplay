@@ -1,4 +1,5 @@
-### generate iso file
+### This script generates configdrive file from a directory
+### USAGE: ./02-create-configdrive-file.sh {configdrive directory}
 
 uuid=$1
 prefix=`echo $uuid | awk -F- '{print $1}'`

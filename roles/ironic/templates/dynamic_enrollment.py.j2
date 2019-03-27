@@ -1,0 +1,130 @@
+#!/usr/bin/env python
+
+
+from ironicclient import client
+import os
+import subprocess
+
+if os.environ.get('OS_AUTH_TOKEN'):
+    OS_AUTH_TOKEN = os.environ['OS_AUTH_TOKEN']
+else:
+    OS_AUTH_TOKEN = 'fake-token'
+if os.environ.get('IRONIC_URL'):
+    IRONIC_URL = os.environ['IRONIC_URL']
+else:
+    IRONIC_URL = 'http://{{ ironic_server }}:6385'
+
+FILENAME = "{{ lookup('env','HOME') }}/ironic_scripts/nodes.txt"
+DRIVER = "{{ ironic_driver }}"
+DEPLOY_KERNEL = "file:///var/lib/tftpboot/ironic_images/{{ deploy_kernel }}"
+DEPLOY_RAMDISK =  "file:///var/lib/tftpboot/ironic_images/{{ deploy_ramdisk }}"
+USER_KERNEL = "file:///var/lib/tftpboot/ironic_images/{{ user_kernel }}"
+USER_RAMDISK = "file:///var/lib/tftpboot/ironic_images/{{ user_ramdisk }}"
+USER_IMAGE = "file:///var/lib/tftpboot/ironic_images/{{ user_image }}"
+USER_IMAGE_CHECKSUM = "{{ user_image_checksum }}"
+
+
+def generate_nodes_dict_from_file():
+    nodes_dict = []
+    with open(FILENAME, 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            a = line.strip().split()
+            node_dict = {
+                'name': a[0],
+                'ipmi_address': a[1],
+                'ipmi_username': a[2],
+                'ipmi_password': a[3],
+                'mac_address': a[4],
+            }
+            nodes_dict.append(node_dict) 
+    return nodes_dict
+
+
+def get_node_dict_from_ironic(ironic, node):
+    node_obj = ironic.node.get(node['name'])
+    port = ironic.node.list_ports(node_obj.uuid)[0]
+    node_dict = {
+        'name': node_obj.name,
+        'ipmi_address': node_obj.driver_info['ipmi_address'],
+        'mac_address': port.address,
+    }
+    return node_dict
+
+
+def validate_same_node(node, ironic_node):
+    if not node['name'] == ironic_node['name']:
+        return False
+    if not node['ipmi_address'] == ironic_node['ipmi_address']:
+        return False
+    if not node['mac_address'] == ironic_node['mac_address']:
+        return False
+    return True
+
+
+def do_create_node(ironic, node):
+    kwargs = {
+        'name': node['name'],
+        'driver': DRIVER,
+        'driver_info': {
+            'ipmi_address': node['ipmi_address'],
+            'ipmi_username': node['ipmi_username'],
+            'ipmi_password': node['ipmi_password'],
+            'deploy_kernel': DEPLOY_KERNEL,
+            'deploy_ramdisk': DEPLOY_RAMDISK,
+        },
+    }
+    result = ironic.node.create(**kwargs)
+    return result.uuid
+
+
+def do_create_port(ironic, node, uuid):
+    kwargs = {
+        'address': node['mac_address'],
+        'node_uuid': uuid,
+    }
+    ironic.port.create(**kwargs)
+  
+
+def do_update_instance_info(ironic, uuid):
+    params = [
+        {"path": "/instance_info/kernel", "value": USER_KERNEL, "op": "add"}, 
+        {"path": "/instance_info/ramdisk", "value": USER_RAMDISK, "op": "add"},
+        {"path": "/instance_info/image_source", "value": USER_IMAGE, "op": "add"},
+        {"path": "/instance_info/image_checksum", "value": USER_IMAGE_CHECKSUM, "op": "add"},
+        {"path": "/instance_info/root_gb", "value": 10, "op": "add"},
+    ]
+    ironic.node.update(uuid, params)
+
+
+def do_update_node_state(ironic, uuid, state):
+    ironic.node.set_provision_state(uuid, state)
+
+
+def main():
+    kwargs = {'os_auth_token': OS_AUTH_TOKEN, 'ironic_url': IRONIC_URL}
+    ironic = client.get_client(1, **kwargs)
+
+    file_nodes = generate_nodes_dict_from_file()
+
+    ironic_nodes = ironic.node.list()
+
+    node_name_list = [i.name for i in ironic_nodes]
+    for node in file_nodes:
+        same_node_flag = False
+        if node['name'] in node_name_list:
+            ironic_node = get_node_dict_from_ironic(ironic, node)
+            if validate_same_node(node, ironic_node):
+                same_node_flag = True
+                print(' %s is already enrolled. not try to enroll this node.' % node['name'])
+        if not same_node_flag:
+            uuid = do_create_node(ironic, node)
+            do_create_port(ironic, node, uuid)
+            do_update_instance_info(ironic, uuid)
+            do_update_node_state(ironic, uuid, 'manage')
+            do_update_node_state(ironic, uuid, 'provide')
+        
+
+if __name__ == '__main__':
+    main()
+
