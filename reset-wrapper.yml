@@ -4,6 +4,7 @@
     - name: Install pexpect module
       pip:
         name: pexpect
+      become: yes
     - name: Confirm prompt
       expect:
         chdir: "{{ playbook_dir }}"
