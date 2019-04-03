@@ -72,7 +72,7 @@
         - lvm_volumes
         - openstack_config
       when:
-        - taco_storage == 'ceph' and groups["osds"] is defined
+        - taco_storage == 'ceph' and groups["osds"] is defined and (groups["osds"] | length > 0)
       tags: ceph
 
     - name: Assert ceph OpenStack configs when deploying new ceph
@@ -82,7 +82,7 @@
           - "{{ item.pgp_num }} != 'TACOFIXME'"
       with_items: "{{ openstack_pools }}"
       when:
-        - taco_storage == 'ceph' and groups["osds"] is defined
+        - taco_storage == 'ceph' and groups["osds"] is defined and (groups["osds"] | length > 0)
         - openstack_config
       loop_control:
         label: "{{ item.name }}"
