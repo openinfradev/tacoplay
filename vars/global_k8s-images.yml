@@ -1,6 +1,5 @@
-# Arch of Docker images and needed packages
-image_arch: "{{host_architecture | default('amd64')}}"
-
+# Containers
+# Refer to kubespray/roles/download/defaults/main.yml for the original image URLs
 kube_image_repo: "{{ docker_registry }}/google-containers"
 nginx_image_repo: "{{ docker_registry }}/nginx"
 hyperkube_image_repo: "{{ docker_registry }}/google-containers/hyperkube-{{ image_arch }}"
@@ -20,7 +19,3 @@ ingress_nginx_default_backend_image_repo: "{{ docker_registry }}/defaultbackend"
 rbd_provisioner_image_repo: "{{ docker_registry }}/external_storage/rbd-provisioner"
 dnsmasqautoscaler_image_repo: "{{ docker_registry }}/google_containers/cluster-proportional-autoscaler-amd64"
 dnsautoscaler_image_repo: "{{ docker_registry }}/google_containers/cluster-proportional-autoscaler-amd64"
-
-kubeadm_download_url: "http://{{ localrepo_k8s }}/k8s/kubeadm"
-hyperkube_download_url: "http://{{ localrepo_k8s }}/k8s/hyperkube"
-cni_download_url: "http://{{ localrepo_k8s }}/k8s/cni-plugins-amd64-v0.6.0.tgz"
