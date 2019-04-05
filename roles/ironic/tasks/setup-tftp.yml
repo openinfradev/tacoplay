@@ -1,0 +1,100 @@
+---
+- name: create ironic group 
+  group:
+    name: ironic
+
+- name: create ironic user
+  user:
+    name: ironic
+    group: ironic
+
+- name: ensure tftpboot directory exists
+  file:
+    path: "{{ tftp_path }}"
+    state: directory
+    owner: ironic
+    group: ironic
+    mode: 0777
+
+- name: edit tftp configuration file
+  template:
+    src: "tftp.j2"
+    dest: "/etc/xinetd.d/tftp"
+
+- name: ensure disabled tftp service
+  service:
+    name: "{{ tftp_service_name }}"
+    state: stopped
+    enabled: no
+
+- name: restart xinetd services
+  systemd:
+    name: xinetd
+    state: restarted
+
+- name: copy required files to tftpboot directory
+  block:
+  - name: copy pxe image file to tftpboot directory
+    copy:
+      src: /usr/share/syslinux/pxelinux.0
+      dest: "{{ tftp_path }}"
+      remote_src: true
+  - name: copy netboot system file to tftpboot directory
+    copy:
+      src: /usr/share/syslinux/chain.c32
+      dest: "{{ tftp_path }}"
+      remote_src: true
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: copy required files to tftpboot directory
+  block:
+  - name: copy pxe image file to tftpboot directory
+    copy:
+      src: /usr/lib/PXELINUX/pxelinux.0
+      dest: "{{ tftp_path }}"
+      remote_src: true
+  - name: copy netboot system file to tftpboot directory
+    copy:
+      src: /usr/lib/syslinux/modules/bios/chain.c32
+      dest: "{{ tftp_path }}"
+      remote_src: true
+  - name: copy library modules to tftpboot directory
+    copy:
+      src: /usr/lib/syslinux/modules/*/ldlinux.*
+      dest: "{{ tftp_path }}"
+      remote_src: true
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: copy map-file
+  template:
+    src: "map-file.j2"
+    dest: "{{ tftp_path }}/map-file"
+
+- name: create ironic_images directory
+  file:
+    path: "{{ tftp_path }}/ironic_images"
+    state: directory
+    owner: ironic
+    group: ironic
+    mode: 0777
+
+- name: copy ironic images to ironic_images directory
+  copy:
+    src: "{{ item }}"
+    dest: "{{ tftp_path }}/ironic_images"
+    mode: 0777
+  with_items:
+    - "{{ playbook_dir }}/ironic-image/ubuntu-deploy/ubuntu-deploy.initramfs"
+    - "{{ playbook_dir }}/ironic-image/ubuntu-deploy/ubuntu-deploy.kernel"
+    - "{{ playbook_dir }}/ironic-image/centos7-user/user-centos7.initramfs"
+    - "{{ playbook_dir }}/ironic-image/centos7-user/user-centos7.kernel"
+    - "{{ playbook_dir }}/ironic-image/centos7-user/user-centos7.qcow2"
+
+- name: ensure permission and owner of tftpboot directory
+  file:
+    path: "{{ tftp_path }}"
+    state: directory
+    owner: ironic
+    group: ironic
+    mode: 0777
+    recurse: yes

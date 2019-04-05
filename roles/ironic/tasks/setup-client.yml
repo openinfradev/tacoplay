@@ -1,0 +1,54 @@
+---
+
+- name: install ironicclient
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - python-ironicclient==2.7.0
+    - decorator==4.4.0
+    - oslo.config==6.8.1
+
+- name: create scripts directory
+  file:
+    path: "{{ lookup('env','HOME') }}/ironic_scripts"
+    state: directory
+  become: no
+
+- name: copy ironic utility shell files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ lookup('env','HOME') }}/ironic_scripts"
+    mode: 0775
+  with_items:
+    - 01-node-enrollment.sh
+    - 02-create-configdrive-file.sh
+    - 03-update-node-instance-info.sh
+    - 04-provision-node.sh
+  become: no
+
+- name: copy sample configdrive file into scripts directory
+  copy:
+    src: sample_configdrive.tar
+    dest: "{{ lookup('env','HOME') }}/ironic_scripts"
+  become: no
+
+- name: copy ironicrc into scripts directory
+  template:
+    src: "ironicrc.j2"
+    dest: "{{ lookup('env','HOME') }}/ironic_scripts/ironicrc"
+  become: no
+
+- name: generate nodes file for dynamic enrollment
+  template:
+    src: "nodes.txt.j2"
+    dest: "{{ lookup('env','HOME') }}/ironic_scripts/nodes.txt"
+
+- name: copy dynamic_enrollment script
+  template:
+    src: "dynamic_enrollment.py.j2"
+    dest: "{{ lookup('env','HOME') }}/ironic_scripts/dynamic_enrollment.py"
+  become: no
+
+- name: execute dynamic enrollment script
+  command: python "{{ lookup('env','HOME') }}/ironic_scripts/dynamic_enrollment.py"
+  become: no

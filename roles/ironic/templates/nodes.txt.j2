@@ -1,0 +1,5 @@
+{% if ironic_nodes is defined %}
+{% for node in ironic_nodes %}
+{{ node.name }}	{{ node.ipmi_address }}	{{ node.ipmi_user }}	{{ node.ipmi_password }}	{{ node.mac }}	{{ node.ip }}
+{% endfor %}
+{% endif %}

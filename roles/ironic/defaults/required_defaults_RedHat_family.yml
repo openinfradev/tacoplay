@@ -1,0 +1,42 @@
+---
+dhcp_service_name: dhcpd
+mysql_service_name: mariadb
+tftp_service_name: tftp
+tftp_path: '/var/lib/tftpboot'
+required_packages:
+  - epel-release
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+  - python-devel
+  - python-pip
+  - rabbitmq-server
+  - mariadb-server
+  - MySQL-python
+  - dhcp
+  - qemu-img
+  - genisoimage
+  - iscsi-initiator-utils
+  - psmisc
+  - tftp-server
+  - xinetd
+  - syslinux
+  - syslinux-tftpboot
+  - python-iniparse
+  - libffi-devel
+  - libxslt-devel
+  - openssl-devel
+  - libxml2-devel
+  - ipxe-bootimgs
+  - parted
+  - ipmitool
+  - wget
+  - kpartx
+  - qemu-kvm-tools
+  - openwsman-python
+  - libselinux-python
+  - policycoreutils-python
+  - debootstrap
+  - gcc
+  - socat
+  - gdisk

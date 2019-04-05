@@ -1,0 +1,100 @@
+---
+
+- name: ensures /etc/ironic directory exists
+  file: path=/etc/ironic state=directory
+
+- name: ensures rootwrap directory exists
+  file: path=/etc/ironic/rootwrap.d state=directory
+
+- name: edit ironic configuration file
+  template:
+    src: "ironic.conf.j2"
+    dest: "/etc/ironic/ironic.conf"
+
+- name: copy policy.json and rootwrap.conf file
+  copy:
+    src: "{{ item }}"
+    dest: /etc/ironic
+  with_items:
+    - policy.json
+    - rootwrap.conf
+
+- name: copy ironic filter files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/ironic/rootwrap.d
+  with_items:
+    - ironic-images.filters
+    - ironic-lib.filters
+    - ironic-utils.filters
+
+- name: ensure permission and owner of /etc/ironic
+  file:
+    path: "/etc/ironic"
+    state: directory
+    owner: ironic
+    group: ironic
+    mode: 0777
+    recurse: yes
+
+- name: create ironic database
+  mysql_db:
+    name: "ironic"
+    state: present
+    login_user: "ironic"
+    login_password: "password"
+  register: check_created_db
+
+- name: ensure ironic dbsync container is removed
+  docker_container:
+    name: ironic-dbsync
+    state: absent
+
+- name: create ironic db schema
+  docker_container:
+    name: ironic-dbsync
+    image: "{{ ironic_base_container_image }}"
+    command: ironic-dbsync --config-file /etc/ironic/ironic.conf create_schema
+    volumes:
+      - /etc/ironic:/etc/ironic
+  when: check_created_db.changed | bool == true
+
+- name: upgrade ironic db schema
+  docker_container:
+    name: ironic-dbsync
+    image: "{{ ironic_base_container_image }}"
+    command: ironic-dbsync --config-file /etc/ironic/ironic.conf upgrade
+    volumes:
+      - /etc/ironic:/etc/ironic
+  when: check_created_db.changed | bool == false
+
+- name: wait ironic-dbsync is finished
+  command: docker inspect --format '{% raw %}{{ .State.Status }}{% endraw %}' ironic-dbsync
+  retries: 10
+  delay: 3
+  register: status
+  until: status.stdout == "exited"
+
+- name: run ironic-api container
+  docker_container:
+    name: ironic-api
+    image: "{{ ironic_api_container_image }}"
+    published_ports:
+      - 6385:6385
+    command: ironic-api --config-file /etc/ironic/ironic.conf
+    volumes:
+      - /etc/ironic:/etc/ironic
+
+- name: run ironic-conductor container
+  docker_container:
+    name: ironic-conductor
+    image: "{{ ironic_conductor_container_image }}"
+    ipc_mode: host
+    network_mode: host
+    privileged: yes
+    command: ironic-conductor --config-file /etc/ironic/ironic.conf
+    volumes:
+      - /etc/ironic:/etc/ironic
+      - /var/lib/tftpboot:/var/lib/tftpboot
+      - /etc/iscsi:/etc/iscsi
+      - /dev:/dev

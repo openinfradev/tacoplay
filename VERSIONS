@@ -5,3 +5,4 @@ charts/openstack-helm-infra https://tde.sktelecom.com/stash/scm/openstack/openst
 manifests https://tde.sktelecom.com/stash/scm/oreotools/armada-manifests.git 3.6.0
 ceph-ansible https://tde.sktelecom.com/stash/scm/oreotools/ceph-ansible.git stable-3.1
 charts/helm https://tde.sktelecom.com/stash/scm/oreotools/helm-charts.git master
+ironic-image https://tde.sktelecom.com/stash/scm/oreotools/ironic-image.git master

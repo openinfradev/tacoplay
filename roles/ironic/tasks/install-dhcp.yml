@@ -1,0 +1,31 @@
+---
+
+- name: copy isc-dhcp-server file on debian family
+  template:
+    src: "isc-dhcp-server.j2"
+    dest: "/etc/default/isc-dhcp-server"
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: copy dhcpd systemd file
+  template:
+    src: "dhcpd.service.j2"
+    dest: "/etc/systemd/system/dhcpd.service"
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: ensure reloaded service dhcp
+  systemd:
+    name: "{{ dhcp_service_name }}"
+    daemon_reload: yes
+    enabled: yes
+
+- name: edit dhcpd conf file on redhat family
+  template:
+    src: "dhcpd.conf.j2"
+    dest: "/etc/dhcp/dhcpd.conf"
+  notify: restart dhcp service
+  tags: dhcp
+
+- name: ensure started service dhcp
+  systemd:
+    state: started
+    name: "{{ dhcp_service_name }}"
