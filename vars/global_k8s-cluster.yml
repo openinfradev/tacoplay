@@ -15,6 +15,9 @@ kube_network_plugin: calico
 kube_proxy_mode: iptables
 
 kubeadm_enabled: true
+kubeadm_version: "{{ kube_version }}"
+
+cni_version: "v0.6.0"
 kubelet_deployment_type: host
 kubectl_localhost: true
 kubeconfig_localhost: true
@@ -36,3 +39,16 @@ calico_felix_prometheusmetricsenabled: "true"
 calico_felix_prometheusmetricsport: 9091
 calico_felix_prometheusgometricsenabled: "true"
 calico_felix_prometheusprocessmetricsenabled: "true"
+
+# Download URLs
+# Refer to kubespray/roles/download/defaults/main.yml for the original URLs
+image_arch: "{{host_architecture | default('amd64')}}"
+kubeadm_download_url: >-
+  {%- if localrepo_enabled -%}http://{{ localrepo_k8s }}/k8s/kubeadm
+  {%- else -%}https://storage.googleapis.com/kubernetes-release/release/{{ kubeadm_version }}/bin/linux/{{ image_arch }}/kubeadm{%- endif -%}
+hyperkube_download_url: >-
+  {%- if localrepo_enabled -%}http://{{ localrepo_k8s }}/k8s/hyperkube
+  {%- else -%}https://storage.googleapis.com/kubernetes-release/release/{{ kube_version }}/bin/linux/amd64/hyperkube{%- endif -%}
+cni_download_url: >-
+  {%- if localrepo_enabled -%}http://{{ localrepo_k8s }}/k8s/cni-plugins-amd64-v0.6.0.tgz
+  {%- else -%}https://github.com/containernetworking/plugins/releases/download/{{ cni_version }}/cni-plugins-{{ image_arch }}-{{ cni_version }}.tgz{%- endif -%}
