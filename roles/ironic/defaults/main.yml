@@ -16,7 +16,7 @@ deploy_ramdisk:  ubuntu-deploy.initramfs
 user_kernel: user-centos7.kernel
 user_ramdisk: user-centos7.initramfs
 user_image: user-centos7.qcow2
-user_image_checksum: 47333de3642b1ed136a9a98276ce8646
+user_image_checksum: 1628706adac12fe4a1298f19489cce68
 
 ironic_nodes:
   - name: tp12
