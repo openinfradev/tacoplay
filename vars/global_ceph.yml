@@ -10,6 +10,7 @@ copy_admin_key: >-
   {%- if (groups["mons"]|length>0) -%}true{%- else -%}false{%- endif -%}
 ceph_mgr_modules: [status,dashboard,prometheus]
 
+cluster: ceph
 ceph_conf_overrides:
   global:
     mon_allow_pool_delete: true

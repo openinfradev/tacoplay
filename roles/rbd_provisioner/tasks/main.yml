@@ -21,15 +21,20 @@
     path: "/tmp/manifests/rbd_provisioner"
     state: directory
 
-- name: fetch mon hosts from ceph.conf if rbd_provisioner_monitors is empty
+- name: fetch mon hosts from {{ cluster }}.conf if rbd_provisioner_monitors is empty
   shell: >-
-    grep 'mon host' /etc/ceph/ceph.conf | awk '{print $4}'
+    grep 'mon host' /etc/ceph/{{ cluster }}.conf | awk '{print $4}'
   register: mon
   when: not (rbd_provisioner_monitors|length > 0)
 
+- name: set rbd_provisioner_monitors
+  set_fact:
+    rbd_provisioner_monitors: "{{ mon.stdout }}"
+  when: mon | succeeded
+
 - name: fail getting ceph mon hosts
   fail:
-    msg: "failed to get ceph mon hosts neither from vars nor ceph.conf"
+    msg: "failed to get ceph mon hosts neither from vars nor {{ cluster }}.conf"
   when: not (rbd_provisioner_monitors|length > 0)
 
 - name: RBD Provisioner | Templates list

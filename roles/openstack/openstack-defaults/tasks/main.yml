@@ -5,9 +5,9 @@
   tags:
     - always
 
-- name: fetch mon hosts from ceph.conf
+- name: fetch mon hosts from {{ cluster }}.conf
   shell: >-
-    grep 'mon host' /etc/ceph/ceph.conf | awk '{print $4}'
+    grep 'mon host' /etc/ceph/{{ cluster }}.conf | awk '{print $4}'
   register: mon
   when: taco_storage == 'ceph' and not (ceph_monitors|length > 0)
 
@@ -23,12 +23,12 @@
 
 - name: failed to get ceph mon hosts
   fail:
-    msg: "failed to get ceph mon hosts neither from vars nor ceph.conf"
+    msg: "failed to get ceph mon hosts neither from vars nor {{ cluster }}.conf"
   when: taco_storage == 'ceph' and not (mon_host|length > 0)
 
-- name: fetch admin keyring from ceph.client.admin.keyring
+- name: fetch admin keyring from {{ cluster }}.client.admin.keyring
   shell: >-
-    grep key /etc/ceph/ceph.client.admin.keyring | awk '{print $3}' | xargs echo -n
+    grep key /etc/ceph/{{ cluster }}.client.admin.keyring | awk '{print $3}' | xargs echo -n
   register: keyring
   when: taco_storage == 'ceph' and not (ceph_admin_keyring|length > 0)
 
