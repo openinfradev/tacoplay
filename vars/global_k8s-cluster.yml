@@ -9,7 +9,6 @@ etcd_deployment_type: docker
 etcd_memory_limit: 8192M
 
 # K8S
-kube_version: v1.12.3
 kube_api_anonymous_auth: true
 kube_network_plugin: calico
 kube_proxy_mode: iptables
@@ -17,7 +16,6 @@ kube_proxy_mode: iptables
 kubeadm_enabled: true
 kubeadm_version: "{{ kube_version }}"
 
-cni_version: "v0.6.0"
 kubelet_deployment_type: host
 kubectl_localhost: true
 kubeconfig_localhost: true
@@ -31,7 +29,6 @@ dns_cores_per_replica: 256
 
 helm_enabled: true
 helm_deployment_type: host
-helm_version: "v2.11.0"
 helm_skip_refresh: true
 
 # Prometheus metrics for calico
@@ -50,5 +47,5 @@ hyperkube_download_url: >-
   {%- if localrepo_enabled -%}http://{{ localrepo_k8s }}/k8s/hyperkube
   {%- else -%}https://storage.googleapis.com/kubernetes-release/release/{{ kube_version }}/bin/linux/amd64/hyperkube{%- endif -%}
 cni_download_url: >-
-  {%- if localrepo_enabled -%}http://{{ localrepo_k8s }}/k8s/cni-plugins-amd64-v0.6.0.tgz
+  {%- if localrepo_enabled -%}http://{{ localrepo_k8s }}/k8s/cni-plugins-{{ image_arch }}-{{ cni_version }}.tgz
   {%- else -%}https://github.com/containernetworking/plugins/releases/download/{{ cni_version }}/cni-plugins-{{ image_arch }}-{{ cni_version }}.tgz{%- endif -%}
