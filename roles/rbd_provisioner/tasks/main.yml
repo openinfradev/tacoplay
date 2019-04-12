@@ -30,7 +30,7 @@
 - name: set rbd_provisioner_monitors
   set_fact:
     rbd_provisioner_monitors: "{{ mon.stdout }}"
-  when: mon | succeeded
+  when: mon.changed and mon.stdout != ""
 
 - name: fail getting ceph mon hosts
   fail:
