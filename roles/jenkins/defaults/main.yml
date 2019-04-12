@@ -1,0 +1,7 @@
+---
+bin_dir: /usr/local/bin
+rbd_provisioner_storage_class: rbd-retain
+rbd_provisioner_reclaim_policy: Retain
+plugin_filename: jenkins_plugins.tar.gz
+ci_infra_url: https://tde.sktelecom.com/stash/scm/oreotools/ci-infra-tools.git
+ci_infra_namespace: ci-infra

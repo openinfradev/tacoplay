@@ -75,8 +75,8 @@
     
     - name: copy .netrc file to home directory
       copy:
-        src: "{{ inventory_dir }}/.netrc"
-        dst: "~/.netrc"
+        src: "{{ playbook_dir }}/files/.netrc"
+        dest: "~/.netrc"
       become: no
 
     - name: clone vslab-inventories
