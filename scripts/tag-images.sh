@@ -9,19 +9,34 @@ NEW_REGISTRY="tacorepo:5000"
 #    sudo docker push $NEW_REGISTRY/$IMAGE_NAME
 #}
 
-for IMAGE in $(docker images | grep ago | awk '{ print $1":"$2 }'); do
+if [ $# == 0 ]; then
+  for IMAGE in $(docker images | grep ago | awk '{ print $1":"$2 }'); do
     depth=$(echo $IMAGE | sed 's/[^/]//g' | awk '{print length}')
     if [ $depth -eq 2 ]; then
-         IMAGE_NAME=`echo $IMAGE | cut -d'/' -f2,3`
-         echo "*** command:"  docker tag $IMAGE "$NEW_REGISTRY/$IMAGE_NAME"
+       IMAGE_NAME=`echo $IMAGE | cut -d'/' -f2,3`
     elif [ $depth -eq 1 ]; then
-         IMAGE_NAME=`echo $IMAGE | cut -d'/' -f2`
-         echo "*** command:"  docker tag $IMAGE "$NEW_REGISTRY/$IMAGE_NAME"
+       IMAGE_NAME=`echo $IMAGE | cut -d'/' -f2`
     elif [ $depth -eq 0 ]; then
-         IMAGE_NAME=`echo $IMAGE`
-         echo "*** command:"  docker tag $IMAGE "$NEW_REGISTRY/$IMAGE"
+       IMAGE_NAME=`echo $IMAGE`
     fi
-    #tagandpush $IMAGE $IMAGE_NAME
-    echo "*** command:" docker tag "$NEW_REGISTRY/$IMAGE_NAME"
+    echo "*** command:" docker tag $IMAGE "$NEW_REGISTRY/$IMAGE_NAME"
     docker tag $IMAGE "$NEW_REGISTRY/$IMAGE_NAME"
-done
+  done
+fi
+
+if [ $# == 1 ]; then
+  OLD_REGISTRY="registry.cicd.stg.taco"
+  MANIFESTS=$1
+  for IMAGE in $(cat $MANIFESTS | yq '.data.values.images.tags | map(.) | join(" ")' | tr -d '"'); do
+    depth=$(echo $IMAGE | sed 's/[^/]//g' | awk '{print length}')
+    if [ $depth -eq 2 ]; then
+      IMAGE_NAME=`echo $IMAGE | cut -d'/' -f2,3`
+    elif [ $depth -eq 1 ]; then
+      IMAGE_NAME=`echo $IMAGE | cut -d'/' -f2`
+    elif [ $depth -eq 0 ]; then
+      IMAGE_NAME=`echo $IMAGE`
+    fi
+    echo "*** command:" docker tag $IMAGE "$NEW_REGISTRY/$IMAGE_NAME"
+    docker tag $IMAGE "$NEW_REGISTRY/$IMAGE_NAME"
+  done
+fi
