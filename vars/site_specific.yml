@@ -29,7 +29,6 @@ external_cluster_mon_ips: "{{ ceph_monitors }}"
 monitor_interface: TACOFIXME
 public_network: TACOFIXME
 cluster_network: TACOFIXME
-osd_objectstore: TACOFIXME
 
 # lvm_volumes must be overrided in either extra-vars or hosts_vars
 # note that we don't override it here with TACOFIXME since include_vars has higher priority than host_vars

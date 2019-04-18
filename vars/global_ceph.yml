@@ -1,7 +1,6 @@
 ceph_stable_release: luminous
 ceph_origin: repository
-ceph_repository: >-
-  {%- if localrepo_enabled -%}custom{%- else -%}community{%- endif -%}
+ceph_repository: community
 ceph_custom_repo: "http://{{ localrepo_yum }}/ceph/ceph.repo"
 ceph_mirror: http://hk.ceph.com
 
@@ -19,6 +18,7 @@ ceph_conf_overrides:
     osd_pg_stat_report_internal_max: 1
 
 osd_scenario: lvm
+osd_objectstore: bluestore
 
 openstack_keys:
   - { name: client.kube, caps: { mon: "profile rbd", osd: "profile rbd pool=kube"}, key: "AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==", mode: "0600" }
