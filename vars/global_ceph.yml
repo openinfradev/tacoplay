@@ -1,6 +1,5 @@
 ceph_stable_release: luminous
 ceph_origin: repository
-ceph_repository: community
 ceph_custom_repo: "http://{{ localrepo_yum }}/ceph/ceph.repo"
 ceph_mirror: http://hk.ceph.com
 
