@@ -21,6 +21,10 @@
       loop:
         - "{{ playbook_dir }}/vars/global_k8s-images.yml"
       when: groups['registry'] is defined and (groups['registry'] | length > 0)
+
+    - name: set ceph_repository variable
+      set_fact:
+        ceph_repository: "{{ 'custom' if localrepo_enabled else 'community' }}"
   tags: always
 
 # Populate hostname to hosts file
