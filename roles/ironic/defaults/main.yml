@@ -10,7 +10,7 @@ dhcp_netmask: 255.255.255.0
 
 ### Node Configuration
 ironic_server: 192.168.48.11
-ironic_driver: pxe_ipmitool
+ironic_driver: pxe_ipmitool, pxe_drac, pxe_ilo
 deploy_kernel: ubuntu-deploy.kernel
 deploy_ramdisk:  ubuntu-deploy.initramfs
 user_kernel: user-centos7.kernel
@@ -18,25 +18,30 @@ user_ramdisk: user-centos7.initramfs
 user_image: user-centos7.qcow2
 user_image_checksum: 1628706adac12fe4a1298f19489cce68
 
+# supported ironic driver: pxe_ipmitool, pxe_drac, pxe_ilo
 ironic_nodes:
   - name: tp12
     mac: '00:11:0a:67:4e:d8'
     ip: 192.168.48.12
-    ipmi_address: 192.168.148.12
-    ipmi_user: admin
-    ipmi_password: admin
+    driver: pxe_ipmitool
+    driver_address: 192.168.148.12
+    driver_user: admin
+    driver_password: admin
   - name: tp13
-    mac: '00:11:0a:67:4e:d9'
+    mac: '00:11:22:33:44:55'
     ip: 192.168.48.13
-    ipmi_address: 192.168.148.13
-    ipmi_user: admin
-    ipmi_password: admin
+    driver: pxe_drac
+    driver_address: 192.168.148.12
+    driver_user: admin
+    driver_password: admin
   - name: tp14
-    mac: '00:11:0a:67:4e:d0'
+    mac: '00:11:33:44:55:66'
     ip: 192.168.48.14
-    ipmi_address: 192.168.148.14
-    ipmi_user: admin
-    ipmi_password: admin
+    driver: pxe_ilo
+    driver_address: 192.168.148.12
+    driver_user: admin
+    driver_password: admin
+
 
 ### container file
 ironic_api_container_file: ironic-api-pike.tar
