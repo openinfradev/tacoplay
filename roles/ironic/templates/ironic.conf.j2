@@ -6,7 +6,7 @@ use_stderr = false
 transport_url = rabbit://openstack:password@{{ ironic_server }}:5672//
 auth_strategy = noauth
 my_ip = {{ ironic_server }}
-enabled_drivers = pxe_ipmitool
+enabled_drivers = {{ ironic_driver }}
 
 [conductor]
 api_url = http://{{ ironic_server }}:6385
