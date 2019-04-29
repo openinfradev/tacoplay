@@ -1,0 +1,104 @@
+---
+- name: Jenkins | check if {{ plugin_filename }} exists
+  stat:
+    path: "{{ playbook_dir }}/files/{{ plugin_filename }}"
+  register: stat_result
+
+- name: Jenkins | fail if {{ plugin_filename }} does not exist
+  fail:
+    msg: "failed to find {{ plugin_filename }}"
+  when: stat_result.stat.exists == False
+
+- name: copy .netrc file to home directory
+  copy:
+    src: "{{ playbook_dir }}/files/.netrc"
+    dest: "~/.netrc"
+  become: no
+
+- name: Jenkins | clone ci-infra-tools
+  git:
+    repo: "{{ ci_infra_url }}"
+    dest: /tmp/checkout/ci-infra-tools
+    version: master
+  become: no
+
+# In case node labeling hasn't done yet.
+- name: label k8s nodes with cicd-services key
+  command: kubectl label nodes {{ item }} cicd-services=enabled --overwrite
+  with_items: "{{ groups['cicd-services'] }}"
+
+- name: label k8s nodes with build-slave key
+  command: kubectl label nodes {{ item }} build-slave=enabled --overwrite
+  with_items: "{{ groups['cicd-services'] }}"
+  args:
+    creates: /tmp/.labeling_done
+
+- name: ensures /tmp/manifests/ dir exists
+  file:
+    path="{{ item }}" state=directory
+  with_items:
+    - /tmp/manifests/ci-infra
+    - /tmp/manifests/ci-infra/init
+    - /tmp/manifests/ci-infra/jenkins
+
+- name: override storageclass vars
+  set_fact:
+    rbd_provisioner_storage_class: rbd-retain
+    rbd_provisioner_reclaim_policy: Retain
+
+# Use default sc template, but override reclaimPolicy to 'retain'
+# Check if what has precedence between default value and vars global.
+- name: Jenkins | get storageclass manifest
+  template:
+    src: "{{ playbook_dir }}/roles/rbd_provisioner/templates/sc-rbd-provisioner.yml.j2"
+    dest: "/tmp/manifests/ci-infra/sc-rbd-retain-provisioner.yml"
+
+- name: Jenkins | Templates list
+  set_fact:
+    ci_infra_manifests:
+      - { name: ns-ci-infra, file: init/ci-infra-ns.yaml, type: ns }
+      - { name: clusterrolebinding-ci-infra, file: init/ci-infra-crb.yaml, type: clusterrolebinding }
+      - { name: statefulset-jenkins, file: jenkins/jenkins-statefulset.yaml, type: statefulset}
+      - { name: service-jenkins, file: jenkins/jenkins-svc.yaml, type: service }
+    storageclass_manifest:
+      - { name: sc-rbd-retain-provisioner, file: sc-rbd-retain-provisioner.yml, type: sc }
+
+- name: Jenkins | Merge manifest list
+  set_fact:
+    all_manifests: "{{ ci_infra_manifests + storageclass_manifest }}"
+
+# copy other manifests from ci-infra-tools to manifest dir
+- name: Jenkins | copy ci-infra manifests to manifest dir
+  copy:
+    src: "/tmp/checkout/ci-infra-tools/{{ item.file }}"
+    dest: "/tmp/manifests/ci-infra/{{ item.file }}"
+  with_items: "{{ ci_infra_manifests }}"
+
+- name: Jenkins | Apply ci-infra manifests
+  kube:
+    name: "{{ item.name }}"
+    namespace: "{{ ci_infra_namespace }}"
+    kubectl: "{{ bin_dir }}/kubectl"
+    resource: "{{ item.type }}"
+    filename: "/tmp/manifests/ci-infra/{{ item.file }}"
+    state: "latest"
+  with_items: "{{ all_manifests }}"
+  run_once: true
+  become: no
+
+- name: Wait until jenkins pod is running
+  shell: >-
+    {{ bin_dir }}/kubectl get po -n ci-infra |
+    grep "jenkins" |
+    awk '{print $3}'
+  retries: 12
+  delay: 10
+  register: jenkins_status
+  until: jenkins_status.stdout == "Running"
+  become: no
+  delegate_to: "{{ groups['admin-node']|first }}"
+
+- name: Jenkins | copy plugin data into jenkins pod
+  command: "kubectl cp {{ playbook_dir }}/files/{{ plugin_filename }} ci-infra/jenkins-test-0:/var/jenkins_home/"
+  args:
+    creates: /tmp/.plugin_copy_done

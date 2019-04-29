@@ -1,0 +1,17 @@
+---
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/vars/global_taco.yml"
+        - "{{ playbook_dir }}/vars/global_docker.yml"
+        - "{{ playbook_dir }}/vars/global_ceph.yml"
+        - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
+        - "{{ playbook_dir }}/vars/site_specific.yml"
+
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: jenkins }
