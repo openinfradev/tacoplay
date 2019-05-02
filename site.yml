@@ -132,11 +132,14 @@
       shell: rpm -qa | grep requests
       register: check_result
       ignore_errors: true
+      when: ansible_distribution in ["CentOS","RedHat"]
     - name: reinstall python-requests if requests installed with dist package
       pip:
         name: requests
         state: forcereinstall
-      when: check_result.rc == 0
+      when:
+        - check_result.rc == 0
+        - ansible_distribution in ["CentOS","RedHat"]
 
 # Install K8S
 - import_playbook: kubespray/cluster.yml
