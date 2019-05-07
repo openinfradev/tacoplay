@@ -134,13 +134,17 @@
     check_mode: yes
     register: docker_ce_gpg_result
     ignore_errors: true
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: assert gpg key of docker-ce repo is availalble
     assert:
       that: "{{ docker_ce_gpg_result.failed }} == false"
       fail_msg: "The docker-ce repo is unavailable. Please check."
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: dry run import gpg key of docker-engine
     rpm_key:
@@ -149,13 +153,17 @@
     check_mode: yes
     register: docker_engine_gpg_result
     ignore_errors: true
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: assert gpg key of docker-engine repo is availalble
     assert:
       that: "{{ docker_engine_gpg_result.failed }} == false"
       fail_msg: "The docker-engine repo is unavailable. Please check."
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: dry run install docker-ce-cli
     yum:
@@ -164,13 +172,17 @@
     check_mode: yes
     register: docker_ce_cli_result
     ignore_errors: true
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: assert packages docker-ce repo is availalble
     assert:
       that: "{{ docker_ce_cli_result.failed }} == false"
       fail_msg: "The docker-ce repo is unavailable. Please check."
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: dry run install docker-engine-debuginfo
     yum:
@@ -179,13 +191,17 @@
     check_mode: yes
     register: docker_engine_result
     ignore_errors: true
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: assert package of docker-engine repo is availalble
     assert:
       that: "{{ docker_engine_result.failed }} == false"
       fail_msg: "The docker-engine repo is unavailable. Please check."
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: dry run import gpg key of ceph-stable
     rpm_key:
@@ -194,13 +210,17 @@
     check_mode: yes
     register: ceph_stable_gpg_result
     ignore_errors: true
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: assert gpg key of ceph-stable repo is availalble
     assert:
       that: "{{ ceph_stable_gpg_result.failed }} == false"
       fail_msg: "The ceph-stable repo is unavailable. Please check."
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: dry run install rbd-nbd
     yum:
@@ -209,10 +229,14 @@
     check_mode: yes
     register: rbd_nbd_result
     ignore_errors: true
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
 
   - name: assert package of ceph-stable repo is availalble
     assert:
       that: "{{ rbd_nbd_result.failed }} == false"
       fail_msg: "The ceph-stable repo is unavailable. Please check."
-    when: localrepo_enabled
+    when:
+      - localrepo_enabled
+      - ansible_distribution in ["CentOS","RedHat"]
