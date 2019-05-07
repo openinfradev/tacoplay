@@ -125,6 +125,22 @@
 
 # TODO: add tests for checking status of the new ceph cluster
 
+# Install requests package via pip in order to avoid package version conflict
+- hosts: taco
+  tasks:
+    - name: rpm check requests
+      shell: rpm -qa | grep requests
+      register: check_result
+      ignore_errors: true
+      when: ansible_distribution in ["CentOS","RedHat"]
+    - name: reinstall python-requests if requests installed with dist package
+      pip:
+        name: requests
+        state: forcereinstall
+      when:
+        - check_result.rc == 0
+        - ansible_distribution in ["CentOS","RedHat"]
+
 # Install K8S
 - import_playbook: kubespray/cluster.yml
   tags: k8s
