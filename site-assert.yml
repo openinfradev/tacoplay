@@ -69,7 +69,6 @@
         - public_network
         - cluster_network
         - osd_objectstore
-        - lvm_volumes
         - openstack_config
       when:
         - taco_storage == 'ceph' and groups["osds"] is defined and (groups["osds"] | length > 0)
@@ -124,3 +123,17 @@
       when:
         - taco_storage == 'nfs'
       tags: openstack
+
+- hosts: osds
+  gather_facts: false
+  tasks:
+    - name: Assert ceph OSD specific variables when deploying new ceph
+      assert:
+        that:
+          - "{{ item }} is defined"
+          - "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - lvm_volumes
+      when:
+        - groups["osds"] is defined and (groups["osds"] | length > 0)
+      tags: ceph
