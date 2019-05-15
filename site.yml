@@ -126,7 +126,7 @@
 # TODO: add tests for checking status of the new ceph cluster
 
 # Install requests package via pip in order to avoid package version conflict
-- hosts: taco
+- hosts: admin-node
   tasks:
     - name: rpm check requests
       shell: rpm -qa | grep requests
