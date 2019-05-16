@@ -61,10 +61,6 @@
       docker_image:
         name: "{{ item }}"
       with_items:
-        - "gcr.io/google-containers/kube-apiserver:{{ kube_version }}"
-        - "gcr.io/google-containers/kube-proxy:{{ kube_version }}"
-        - "gcr.io/google-containers/kube-controller-manager:{{ kube_version }}"
-        - "gcr.io/google-containers/kube-scheduler:{{ kube_version }}"
         - "quay.io/external_storage/rbd-provisioner:v2.1.1-k8s1.11"
         - "registry.cicd.stg.taco/yaml-merge:latest"
 
@@ -91,13 +87,13 @@
         dest: "{{ inventory_dir }}/extra-vars.yml"
       become: no
 
-    - name: create {{ armada_manifest }} from template
-      template:
-        src: "{{ playbook_dir }}/manifests/output/site-{{ site_name }}.yaml.j2"
-        dest: "{{ armada_manifest }}"
-      when: stat_result.stat.exists == False
-      run_once: true
-      become: no
+    - name: include vars for prepare_manifest task
+      include_vars: roles/armada/apply/defaults/main.yml
+
+    - name: prepare armada_manifest for image pulling
+      include_tasks: roles/armada/apply/tasks/prepare_manifest.yml
+      vars:
+        openstack_release: "{{ openstack_release }}"
 
     # Should I run fetch-sub-projects.sh here instead of Jenkinsfile?
     - name: pull all images used in armada manifest
