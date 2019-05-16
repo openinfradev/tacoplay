@@ -149,7 +149,6 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: admin-node }
-    - { role: rbd_provisioner, when: rbd_provisioner_enabled }
   tags: k8s
 
 # TODO: add tests for checking status of the new k8s cluster
