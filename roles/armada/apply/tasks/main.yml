@@ -1,27 +1,5 @@
 ---
-
-- name: check if {{ armada_manifest }} exists
-  stat:
-    path: "{{ armada_manifest }}"
-  register: stat_result
-
-- name: create {{ armada_manifest }} from {{ armada_manifest_template }}
-  template:
-    src: "{{ armada_manifest_template }}"
-    dest: "{{ armada_manifest }}"
-  when: stat_result.stat.exists == False
-  run_once: true
-  become: no
-
-- name: check if {{ armada_manifest }} exists
-  stat:
-    path: "{{ armada_manifest }}"
-  register: stat_result
-
-- name: fail if {{ armada_manifest }} does not exist
-  fail:
-    msg: "failed to find {{ armada_manifest }}"
-  when: stat_result.stat.exists == False
+- include: prepare_manifest.yml
 
 - name: check host where tiller is running
   shell: >-

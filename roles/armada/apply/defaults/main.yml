@@ -2,10 +2,13 @@
 bin_dir: /usr/local/bin
 
 # the location of armada manifest template
-armada_manifest_template: "{{ playbook_dir }}/manifests/output/site-{{ inventory_dir.split('/')[-1] }}.yaml.j2"
+armada_manifest_path: "{{ playbook_dir }}/manifests/output/{{ openstack_release }}/site-{{ site_name | default(inventory_dir.split('/')[-1]) }}-{{ openstack_release }}.yaml"
 
 # the location of complete armada manifest
 armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
+
+# default openstack release
+openstack_release: pike
 
 tiller_port: 32134
 
