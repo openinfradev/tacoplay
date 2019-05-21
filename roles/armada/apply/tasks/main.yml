@@ -1,6 +1,11 @@
 ---
 - include: prepare_manifest.yml
 
+- name: delete test pods in openstack namespace
+  shell: >-
+    {{ bin_dir }}/kubectl get pods -n openstack | grep test |
+    awk '{print $1}' | xargs {{ bin_dir }}/kubectl delete pods -n openstack
+
 - name: check host where tiller is running
   shell: >-
     {{ bin_dir }}/kubectl get pods -n kube-system -o json |
