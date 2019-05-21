@@ -160,6 +160,12 @@
     - { role: openstack/setup-os }
   tags: openstack
 
+# Tune helm
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: helm/tiller, tags: helm }
+
 # Prepare armada-manifests and then run armada apply
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
