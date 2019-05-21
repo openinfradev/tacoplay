@@ -8,6 +8,7 @@
   shell: grep 'TACO_ADMIN_KEYRING' {{ armada_manifest }}
   register: grep_result
   when: stat_result.stat.exists == True
+  ignore_errors: yes
 
 - name: fetch admin_keyring from extra_vars
   shell: >-
@@ -20,11 +21,6 @@
     grep ceph_mon_host {{ inventory_dir }}/extra_vars.yml | awk '{print $2}'
   register: ceph_mon_host_str
   when: stat_result.stat.exists == False or grep_result.stdout != ""
-
-#- name: set facts for ~~
-#  set_fact:
-#    ceph_admin_keyring: "{{ ceph_admin_keyring_str.stdout }}"
-#    ceph_mon_host: "{{ ceph_mon_host_str.stdout }}"
 
 - name: replace TACO keywords to actual values
   shell: |
