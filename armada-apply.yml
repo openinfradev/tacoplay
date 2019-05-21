@@ -45,7 +45,25 @@
         msg: "ingress controller is not running"
       when: auto_release_enabled|default(true) and ingress_host.stdout == ""
 
-    - name: update hosts file for openstack services access via ingress
+    - name: get ingress configmap
+      shell: >-
+        {{ bin_dir }}/kubectl get cm ingress-conf -n openstack -o json
+      retries: 10
+      delay: 5
+      register: configmap_raw
+      become: no
+      delegate_to: "{{ groups['admin-node']|first }}"
+      until: configmap_raw.rc == 0
+
+    - name: extract configmap result
+      set_fact:
+        result: "{{ configmap_raw.stdout | from_json }}"
+
+    - name: set fact of bind-address
+      set_fact:
+        bind_address: "{{ result['data']['bind-address'] }}"
+
+    - name: update hosts file for openstack services with ingress node ip
       blockinfile:
         path: /etc/hosts
         block: |
@@ -56,5 +74,18 @@
           {{ ingress_host.stdout }} cinder.openstack.svc.cluster.local
         state: present
         marker: "# OPENSTACK SERVICES {mark}"
-      when: auto_release_enabled|default(true)
+      when: auto_release_enabled|default(true) and bind_address == ""
+
+    - name: update hosts file for openstack services with ingress vip
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          {{ bind_address }} keystone.openstack.svc.cluster.local
+          {{ bind_address }} glance.openstack.svc.cluster.local
+          {{ bind_address }} nova.openstack.svc.cluster.local
+          {{ bind_address }} neutron.openstack.svc.cluster.local
+          {{ bind_address }} cinder.openstack.svc.cluster.local
+        state: present
+        marker: "# OPENSTACK SERVICES {mark}"
+      when: auto_release_enabled|default(true) and bind_address != ""
   tags: openstack
