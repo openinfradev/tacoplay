@@ -7,6 +7,7 @@
   loop:
     - gcc
     - python-devel
+    - python-pip
   when:
     - ansible_distribution in ["CentOS","RedHat"]
 
