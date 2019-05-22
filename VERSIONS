@@ -6,3 +6,4 @@ manifests https://tde.sktelecom.com/stash/scm/oreotools/armada-manifests.git mas
 ceph-ansible https://tde.sktelecom.com/stash/scm/oreotools/ceph-ansible.git stable-3.2
 charts/helm https://tde.sktelecom.com/stash/scm/oreotools/helm-charts.git master
 ironic-image https://tde.sktelecom.com/stash/scm/oreotools/ironic-image.git master
+charts/sona-helm https://tde.sktelecom.com/stash/scm/openstack/sona-helm.git hamode
