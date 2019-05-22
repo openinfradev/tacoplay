@@ -6,10 +6,10 @@ if [ "x$MANIFESTS" == "x" ]; then
   exit -1
 fi
 
-REPO=registry.cicd.stg.taco
+MANIFEST_REPO=$(grep "nova_compute:" $MANIFESTS | awk '{print $2}' | awk -F "/" '/1/ {print $1}')
+CICD_REPO=registry.cicd.stg.taco
 for IMAGE in $(cat $MANIFESTS | yq '.data.values.images.tags | map(.) | join(" ")' | tr -d '"'); do
-  echo $IMAGE
-  if [[ $IMAGE = *$REPO* ]]; then
-    docker inspect $IMAGE > /dev/null || docker pull $IMAGE
-  fi
+	NEW_IMAGE=$(sed "s/$MANIFEST_REPO/$CICD_REPO/g" <<< $IMAGE)
+	echo $NEW_IMAGE
+  docker inspect $NEW_IMAGE > /dev/null || docker pull $NEW_IMAGE
 done
