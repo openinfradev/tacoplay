@@ -18,6 +18,7 @@
   shell: >-
     {{ bin_dir }}/kubectl delete lock --all -n kube-system
   become: no
+  ignore_errors: yes
 
 - name: get existing armada processes
   shell: >-
