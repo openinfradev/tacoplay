@@ -1,7 +1,7 @@
 [epel]
 name=Local Extra Packages for Enterprise Linux 7 - $basearch
-baseurl=http://{{ localrepo_yum }}/epel/7/$basearch
+baseurl=http://{{ localrepo_yum }}:{{ localrepo_port }}/epel/7/$basearch
 failovermethod=priority
 enabled=1
 gpgcheck=1
-gpgkey=http://{{ localrepo_yum }}/epel/RPM-GPG-KEY-EPEL-7
+gpgkey=http://{{ localrepo_yum }}:{{ localrepo_port }}/epel/RPM-GPG-KEY-EPEL-7
