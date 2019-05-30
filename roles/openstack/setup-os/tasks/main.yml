@@ -41,3 +41,16 @@
     dest: /etc/modules-load.d/tacoplay-vfio-pci.conf
     content: vfio-pci
   when: pci_passthrough_enabled
+
+# this task required if service logs written in a file.
+- name: Create log directories
+  file:
+    path: "/var/log/{{ item }}"
+    state: directory
+    mode: '0777'
+  with_items:
+    - keystone
+    - glance
+    - nova
+    - neutron
+    - cinder
