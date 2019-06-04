@@ -30,9 +30,11 @@
   tasks:
     - name: check host where ingress controller is running
       shell: >-
-        {{ bin_dir }}/kubectl get po -n openstack -o wide |
-        grep "^ingress-[^error]" |
-        awk '{print $6}'
+        {{ bin_dir }}/kubectl describe ep ingress -n openstack |
+        grep Addresses |
+        grep -v NotReady |
+        awk '{split($2,a,",");print a[1]"\n"a[2]"\n"a[3]}' |
+        awk NF
       retries: 10
       delay: 10
       register: ingress_host
@@ -45,24 +47,6 @@
         msg: "ingress controller is not running"
       when: auto_release_enabled|default(true) and ingress_host.stdout == ""
 
-    - name: get ingress configmap
-      shell: >-
-        {{ bin_dir }}/kubectl get cm ingress-conf -n openstack -o json
-      retries: 10
-      delay: 5
-      register: configmap_raw
-      become: no
-      delegate_to: "{{ groups['admin-node']|first }}"
-      until: configmap_raw.rc == 0
-
-    - name: extract configmap result
-      set_fact:
-        result: "{{ configmap_raw.stdout | from_json }}"
-
-    - name: set fact of bind-address
-      set_fact:
-        bind_address: "{{ result['data']['bind-address'] }}"
-
     - name: update hosts file for openstack services with ingress node ip
       blockinfile:
         path: /etc/hosts
@@ -74,18 +58,5 @@
           {{ ingress_host.stdout }} cinder.openstack.svc.cluster.local
         state: present
         marker: "# OPENSTACK SERVICES {mark}"
-      when: auto_release_enabled|default(true) and bind_address == ""
-
-    - name: update hosts file for openstack services with ingress vip
-      blockinfile:
-        path: /etc/hosts
-        block: |
-          {{ bind_address }} keystone.openstack.svc.cluster.local
-          {{ bind_address }} glance.openstack.svc.cluster.local
-          {{ bind_address }} nova.openstack.svc.cluster.local
-          {{ bind_address }} neutron.openstack.svc.cluster.local
-          {{ bind_address }} cinder.openstack.svc.cluster.local
-        state: present
-        marker: "# OPENSTACK SERVICES {mark}"
-      when: auto_release_enabled|default(true) and bind_address != ""
+      when: auto_release_enabled|default(true)
   tags: openstack
