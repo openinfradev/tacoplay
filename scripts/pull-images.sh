@@ -7,7 +7,7 @@ if [ "x$MANIFESTS" == "x" ]; then
 fi
 
 MANIFEST_REPO=$(grep "nova_compute:" $MANIFESTS | awk '{print $2}' | awk -F "/" '/1/ {print $1}')
-CICD_REPO=registry.cicd.stg.taco
+CICD_REPO=registry-rel.cicd.stg.taco
 for IMAGE in $(cat $MANIFESTS | yq '.data.values.images.tags | map(.) | join(" ")' | tr -d '"'); do
 	NEW_IMAGE=$(sed "s/$MANIFEST_REPO/$CICD_REPO/g" <<< $IMAGE)
 	echo $NEW_IMAGE
