@@ -3,6 +3,9 @@ bin_dir: /usr/local/bin
 nat_enabled: false
 tc_enabled: false
 
+# default localrepo port
+localrepo_port: 80
+
 # Docker registry
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
 
