@@ -1,0 +1,24 @@
+---
+- name: Copy Openvswitch rpms to compute node
+  copy:
+    src: "{{ playbook_dir }}/files/rpms/openvswitch-2.8.1-1.el7.x86_64.rpm"
+    dest: "/tmp/"
+- name: Install openvswitch
+  yum:
+    name: /tmp/openvswitch-2.8.1-1.el7.x86_64.rpm
+    state: present
+- name: check ovs-ctl script 
+  shell: >-
+    grep ptcp:6640 /usr/share/openvswitch/scripts/ovs-ctl
+  register: ptcp_port
+  ignore_errors: yes
+- name: Replace ovs-ctl script 
+  shell: >-
+    sed -i '/set ovsdb-server \"$DB_FILE\"/a \        set "$@" --remote=ptcp:6640' /usr/share/openvswitch/scripts/ovs-ctl
+  when: ptcp_port.stdout == ""
+- name: Start openvswitch service
+  service:
+    name: openvswitch.service
+    daemon_reload: yes
+    state: started
+    enabled: yes

@@ -33,3 +33,6 @@ localrepo_enabled: false
 replace_repo_file: false
 localrepo_yum: tacorepo
 localrepo_pypi: tacorepo
+
+# True to install ovs rpms to the compute nodes
+install_ovs_as_a_rpms: false
