@@ -49,3 +49,9 @@
   when: localrepo_enabled and replace_repo_file
 
 - import_tasks: setup-net-services.yml
+
+# Install ovs by rpms for sona
+- import_tasks: openvswitch.yml
+  when: 
+    - inventory_hostname in groups['compute-node']
+    - install_ovs_as_a_rpms

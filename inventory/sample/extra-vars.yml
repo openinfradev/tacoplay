@@ -116,3 +116,6 @@ ldap_taco_password: password
 # Retention (elasticsearch, prometheus)
 es_retention: 7
 es_disk_maxsize: 12
+
+# for Sona
+install_ovs_as_a_rpms: false
