@@ -2,32 +2,42 @@
 - name: check if {{ armada_manifest }} exists
   stat:
     path: "{{ armada_manifest }}"
-  register: stat_result
+  register: stat_am_result
 
 - name: check if {{ armada_manifest }} is ready
   shell: grep 'TACO_ADMIN_KEYRING' {{ armada_manifest }}
   register: grep_result
-  when: stat_result.stat.exists == True
+  when: stat_am_result.stat.exists == True
   ignore_errors: yes
 
-- name: fetch admin_keyring from extra_vars
-  shell: >-
-    grep ceph_admin_keyring {{ inventory_dir }}/extra_vars.yml | awk '{print $2}'
-  register: ceph_admin_keyring_str
-  when: stat_result.stat.exists == False or grep_result.stdout != ""
+- name: check if extra-vars exists
+  stat:
+    path: "{{ inventory_dir }}/extra-vars.yml"
+  register: stat_ev_result
 
-- name: fetch mon_host from extra_vars
+- name: fail if extra-vars doesn't exist
+  fail:
+    msg: "Error! Extra_vars doesn't exist."
+  when: (stat_am_result.stat.exists == False or grep_result.stdout != "") and stat_ev_result.stat.exists == False
+
+- name: fetch admin_keyring from extra-vars
   shell: >-
-    grep ceph_mon_host {{ inventory_dir }}/extra_vars.yml | awk '{print $2}'
+    grep ceph_admin_keyring {{ inventory_dir }}/extra-vars.yml | awk '{print $2}'
+  register: ceph_admin_keyring_str
+  when: stat_am_result.stat.exists == False or grep_result.stdout != ""
+
+- name: fetch mon_host from extra-vars
+  shell: >-
+    grep ceph_mon_host {{ inventory_dir }}/extra-vars.yml | awk '{print $2}'
   register: ceph_mon_host_str
-  when: stat_result.stat.exists == False or grep_result.stdout != ""
+  when: stat_am_result.stat.exists == False or grep_result.stdout != ""
 
 - name: replace TACO keywords to actual values
   shell: |
     cp {{ armada_manifest_path }} {{ armada_manifest }}
     sed -i "s/TACO_ADMIN_KEYRING/{{ ceph_admin_keyring_str.stdout }}/g" {{ armada_manifest }}
     sed -i "s/TACO_MON_HOST/{{ ceph_mon_host_str.stdout }}/g" {{ armada_manifest }}
-  when: stat_result.stat.exists == False or grep_result.stdout != ""
+  when: stat_am_result.stat.exists == False or grep_result.stdout != ""
 
 - name: check if {{ armada_manifest }} is ready
   shell: grep 'TACO_ADMIN_KEYRING' {{ armada_manifest }}
