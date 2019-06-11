@@ -3,6 +3,10 @@
   copy:
     src: "{{ playbook_dir }}/files/rpms/openvswitch-2.8.1-1.el7.x86_64.rpm"
     dest: "/tmp/"
+- name: Add the user 'ovs'
+  user:
+    name: ovs
+  ignore_errors: yes
 - name: Install openvswitch
   yum:
     name: /tmp/openvswitch-2.8.1-1.el7.x86_64.rpm
