@@ -3,6 +3,13 @@ while read proj; do
   URL=$(echo $proj | cut -d' ' -f2)
   TAG=$(echo $proj | cut -d' ' -f3)
   echo "Fetching project $NAME from $URL with tag $TAG..."
-  git clone $URL $NAME
-  cd $NAME; git checkout $TAG; cd -
+
+  if [ -d $NAME ]
+  then
+    cd $NAME; git remote update; cd -
+  else
+    git clone $URL $NAME
+  fi
+
+  cd $NAME; git pull origin $TAG; cd -
 done < ./VERSIONS
