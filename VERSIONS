@@ -1,5 +1,5 @@
 armada https://tde.sktelecom.com/stash/scm/oreotools/armada.git 0.2.0
-kubespray https://tde.sktelecom.com/stash/scm/oreotools/kubespray.git v2.10.0
+kubespray https://tde.sktelecom.com/stash/scm/oreotools/kubespray.git v2.10.3
 charts/openstack-helm https://tde.sktelecom.com/stash/scm/openstack/openstack-helm.git taco-v19.02
 charts/openstack-helm-infra https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra.git taco-v19.02
 manifests https://tde.sktelecom.com/stash/scm/oreotools/armada-manifests.git taco-v19.02
