@@ -6,10 +6,10 @@ while read proj; do
 
   if [ -d $NAME ]
   then
-    cd $NAME; git remote update; cd -
+    cd $NAME; git fetch --tags; cd -
   else
     git clone $URL $NAME
   fi
 
-  cd $NAME; git pull origin $TAG; cd -
+  cd $NAME; git checkout $TAG; cd -
 done < ./VERSIONS
