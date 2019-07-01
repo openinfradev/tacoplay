@@ -42,23 +42,29 @@
 - hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
-    - name: registry.cicd.stg.taco | populate custom entries into hosts file
+    - name: registries | populate custom entries into hosts file
       lineinfile:
         path: /etc/hosts
-        line: 192.168.54.30 registry.cicd.stg.taco
+        line: 192.168.54.30 registry.cicd.stg.taco registry-rel.cicd.stg.taco
         state: present
       when: cicd_registry_enabled|default(false)
 
-    - name: registry.cicd.stg.taco | create directory for cert
+    - name: registries | create directory for cert
       file:
-        path: /etc/docker/certs.d/registry.cicd.stg.taco
+        path: "/etc/docker/certs.d/{{ item }}.cicd.stg.taco"
         state: directory
+      with_items:
+        - registry 
+        - registry-rel
       when: cicd_registry_enabled|default(false)
 
-    - name: registry.cicd.stg.taco | create cert file
+    - name: registries | create cert file
       copy:
-        src: "registry-certs"
-        dest: "/etc/docker/certs.d/registry.cicd.stg.taco/ca.crt"
+        src: "{{ item }}-certs"
+        dest: "/etc/docker/certs.d/{{ item }}.cicd.stg.taco/ca.crt"
+      with_items:
+        - registry 
+        - registry-rel
       when: cicd_registry_enabled|default(false)
   tags: always
 
