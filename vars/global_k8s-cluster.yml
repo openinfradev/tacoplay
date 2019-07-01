@@ -41,17 +41,17 @@ calico_felix_prometheusprocessmetricsenabled: "true"
 # Refer to kubespray/roles/download/defaults/main.yml for the original URLs
 image_arch: "{{host_architecture | default('amd64')}}"
 kubeadm_download_url: >-
-  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}/k8s/kubeadm
+  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}:{{localrepo_port}}/k8s/kubeadm
   {%- else -%}https://storage.googleapis.com/kubernetes-release/release/{{kubeadm_version}}/bin/linux/{{image_arch}}/kubeadm{%- endif -%}
 hyperkube_download_url: >-
-  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}/k8s/hyperkube
+  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}:{{localrepo_port}}/k8s/hyperkube
   {%- else -%}https://storage.googleapis.com/kubernetes-release/release/{{kube_version}}/bin/linux/{{image_arch}}/hyperkube{%- endif -%}
 etcd_download_url: >-
-  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}/k8s/etcd-{{etcd_version}}-linux-amd64.tar.gz
+  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}:{{localrepo_port}}/k8s/etcd-{{etcd_version}}-linux-amd64.tar.gz
   {%- else -%}https://github.com/coreos/etcd/releases/download/{{etcd_version}}/etcd-{{etcd_version}}-linux-{{image_arch}}.tar.gz{%- endif -%}
 cni_download_url: >-
-  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}/k8s/cni-plugins-{{image_arch}}-{{cni_version}}.tgz
+  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}:{{localrepo_port}}/k8s/cni-plugins-{{image_arch}}-{{cni_version}}.tgz
   {%- else -%}https://github.com/containernetworking/plugins/releases/download/{{cni_version}}/cni-plugins-{{image_arch}}-{{cni_version}}.tgz{%- endif -%}
 calicoctl_download_url: >-
-  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}/k8s/calicoctl
+  {%- if localrepo_enabled -%}http://{{localrepo_k8s}}:{{localrepo_port}}/k8s/calicoctl
   {%- else -%}https://github.com/projectcalico/calicoctl/releases/download/{{calico_ctl_version}}/calicoctl-linux-{{image_arch}}{%- endif -%}
