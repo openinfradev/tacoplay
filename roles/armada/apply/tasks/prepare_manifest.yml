@@ -7,44 +7,38 @@
 - name: check if {{ armada_manifest }} is ready
   shell: grep 'TACO_ADMIN_KEYRING' {{ armada_manifest }}
   register: grep_result
-  when: stat_am_result.stat.exists == True
+  when: stat_am_result.stat.exists == True and taco_storage == 'ceph'
   ignore_errors: yes
 
 - name: check if extra-vars exists
   stat:
     path: "{{ inventory_dir }}/extra-vars.yml"
   register: stat_ev_result
+  when: taco_storage == 'ceph'
 
 - name: fail if extra-vars doesn't exist
   fail:
     msg: "Error! Extra_vars doesn't exist."
-  when: (stat_am_result.stat.exists == False or grep_result.stdout != "") and stat_ev_result.stat.exists == False
+  when: (stat_am_result.stat.exists == False or grep_result.stdout != "") and taco_storage == 'ceph' and stat_ev_result.stat.exists == False
 
-- name: fetch admin_keyring from extra-vars
-  shell: >-
-    grep ceph_admin_keyring {{ inventory_dir }}/extra-vars.yml | awk '{print $2}'
-  register: ceph_admin_keyring_str
-  when: stat_am_result.stat.exists == False or grep_result.stdout != ""
-
-- name: fetch mon_host from extra-vars
-  shell: >-
-    grep ceph_mon_host {{ inventory_dir }}/extra-vars.yml | awk '{print $2}'
-  register: ceph_mon_host_str
-  when: stat_am_result.stat.exists == False or grep_result.stdout != ""
+- name: fetch ceph related variables
+  include_tasks: populate_ceph_vars.yml
+  when: (stat_am_result.stat.exists == False or grep_result.stdout != "") and taco_storage == 'ceph'
 
 - name: replace TACO keywords to actual values
   shell: |
     cp {{ armada_manifest_path }} {{ armada_manifest }}
-    sed -i "s/TACO_ADMIN_KEYRING/{{ ceph_admin_keyring_str.stdout }}/g" {{ armada_manifest }}
-    sed -i "s/TACO_MON_HOST/{{ ceph_mon_host_str.stdout }}/g" {{ armada_manifest }}
-  when: stat_am_result.stat.exists == False or grep_result.stdout != ""
+    sed -i "s/TACO_ADMIN_KEYRING/{{ admin_keyring }}/g" {{ armada_manifest }}
+    sed -i "s/TACO_MON_HOST/{{ mon_host }}/g" {{ armada_manifest }}
+  when: (stat_am_result.stat.exists == False or grep_result.stdout != "") and taco_storage == 'ceph'
 
 - name: check if {{ armada_manifest }} is ready
   shell: grep 'TACO_ADMIN_KEYRING' {{ armada_manifest }}
   register: grep_result
   ignore_errors: yes
+  when: taco_storage == 'ceph'
 
 - name: fail if {{ armada_manifest }} is not ready
   fail:
     msg: "Error! {{ armada_manifest }} is not ready yet!"
-  when: grep_result.stdout != ""
+  when: grep_result.stdout != "" and taco_storage == 'ceph'

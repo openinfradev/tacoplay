@@ -178,12 +178,10 @@
   roles:
     - { role: armada/install, tags: armada }
     - { role: openstack/pre-install, tags: openstack }
-    - { role: openstack/openstack-defaults, tags: openstack }
     - { role: armada/apply, tags: armada }
 
 - hosts: admin-node:controller-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: openstack/openstack-defaults }
     - { role: openstack/client }
   tags: openstack
