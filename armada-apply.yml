@@ -22,7 +22,6 @@
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: openstack/openstack-defaults, tags: openstack }
     - { role: armada/apply, tags: armada }
 
 - hosts: admin-node:controller-node
