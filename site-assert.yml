@@ -207,6 +207,7 @@
     register: ceph_stable_gpg_result
     ignore_errors: true
     when:
+      - taco_storage == 'ceph'
       - localrepo_enabled
       - ansible_distribution in ["CentOS","RedHat"]
 
@@ -215,6 +216,7 @@
       that: "{{ ceph_stable_gpg_result.failed }} == false"
       fail_msg: "The ceph-stable repo is unavailable. Please check."
     when:
+      - taco_storage == 'ceph'
       - localrepo_enabled
       - ansible_distribution in ["CentOS","RedHat"]
 
@@ -226,6 +228,7 @@
     register: rbd_nbd_result
     ignore_errors: true
     when:
+      - taco_storage == 'ceph'
       - localrepo_enabled
       - ansible_distribution in ["CentOS","RedHat"]
 
@@ -234,5 +237,6 @@
       that: "{{ rbd_nbd_result.failed }} == false"
       fail_msg: "The ceph-stable repo is unavailable. Please check."
     when:
+      - taco_storage == 'ceph'
       - localrepo_enabled
       - ansible_distribution in ["CentOS","RedHat"]
