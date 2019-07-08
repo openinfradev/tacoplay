@@ -28,8 +28,8 @@
 - name: replace TACO keywords to actual values
   shell: |
     cp {{ armada_manifest_path }} {{ armada_manifest }}
-    sed -i "s/TACO_ADMIN_KEYRING/{{ admin_keyring }}/g" {{ armada_manifest }}
-    sed -i "s/TACO_MON_HOST/{{ mon_host }}/g" {{ armada_manifest }}
+    sed -i "s TACO_ADMIN_KEYRING {{ admin_keyring }} " {{ armada_manifest }}
+    sed -i "s TACO_MON_HOST {{ mon_host }} " {{ armada_manifest }}
   when: (stat_am_result.stat.exists == False or grep_result.stdout != "") and taco_storage == 'ceph'
 
 - name: check if {{ armada_manifest }} is ready
