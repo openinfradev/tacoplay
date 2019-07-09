@@ -8,7 +8,7 @@ armada_manifest_path: "{{ playbook_dir }}/manifests/output/{{ openstack_release 
 armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
 
 # default openstack release
-openstack_release: pike
+openstack_release: queens
 
 tiller_port: 32134
 
