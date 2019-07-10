@@ -6,8 +6,8 @@
 
 - name: copy manifest to inventory dir
   copy:
-    src: {{ armada_manifest_path }}
-    dest: {{ armada_manifest }}
+    src: "{{ armada_manifest_path }}"
+    dest: "{{ armada_manifest }}"
     mode: 0644
   when: stat_am_result.stat.exists == False
 
