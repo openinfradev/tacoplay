@@ -82,10 +82,8 @@ echo "Done"
 echo "Adding external ip to vm..."
 SERVER_INFO=$(openstack server list | grep test)
 FLOATING_IP=$(openstack floating ip create public-net | grep floating_ip_address | awk '{print $4}')
-SERVER_IP=$(echo $SERVER_INFO| awk '{print $8}' | awk -F "=" '{print $2}')
 SERVER=$(echo $SERVER_INFO| awk '{print $2}')
-PORT=$(openstack port list | grep $SERVER_IP | awk '{print $2}')
-openstack floating ip set --port $PORT $FLOATING_IP
+openstack server add floating ip $SERVER $FLOATING_IP
 echo "Done"
 
 openstack server list
