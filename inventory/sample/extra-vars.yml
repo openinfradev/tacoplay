@@ -1,22 +1,24 @@
 # tacoplay
 cicd_registry_enabled: false
-localrepo_enabled: true
-localrepo_yum: 192.168.95.11
-localrepo_k8s: 192.168.95.11
-localrepo_pypi: 192.168.95.11
-localrepo_port: 80
+localrepo_enabled: false
+docker_insecure_registries: ""
 
 # ceph
-monitor_interface: eth0
-public_network: 172.80.0.0/24
-cluster_network: 172.80.0.0/24
+monitor_interface: bond0
+public_network: 147.75.94.0/24
+cluster_network: 147.75.94.0/24
+ceph_monitors: 147.75.94.91
+
+ceph_conf_overrides:
+      global:
+        mon_allow_pool_delete: true
+        osd_pool_default_size: 1
+        osd_pool_default_min_size: 1
+        osd_pg_stat_report_internal_max: 1
 
 osd_objectstore: bluestore
 lvm_volumes:
-  - data: /dev/vdb
-
-# Override openstack release (Default value is defined in Tacoplay)
-#openstack_release: queens
+  - data: /dev/sdb
 
 openstack_config: true
 kube_pool:
@@ -69,14 +71,15 @@ openstack_pools:
   - "{{ openstack_nova_vms_pool }}"
 
 # k8s
-kube_pods_subnet: 10.233.0.0/18
-kube_service_addresses: 10.233.64.0/18
-ipip_mode: Always
+kubectl_localhost: true
+kubeconfig_localhost: true
+kube_service_addresses: 10.233.0.0/18
+kube_pods_subnet: 10.233.64.0/18
+ipip_mode: Never
 peer_with_router: false
+kube_apiserver_insecure_bind_address: 0.0.0.0
+kube_apiserver_insecure_port: 8090
 
-# Openstack ACCOUNT
+auto_release_enabled: true
 os_root_user: admin
 os_root_password: password
-
-# for Sona
-install_ovs_as_a_rpms: false
