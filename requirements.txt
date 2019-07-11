@@ -6,3 +6,4 @@ ansible-modules-hashivault>=3.9.4
 netaddr
 prettytable
 docker
+decorator==4.4.0
