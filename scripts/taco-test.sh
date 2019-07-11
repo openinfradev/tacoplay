@@ -41,7 +41,7 @@ echo "Creating image..."
 IMAGE_NAME_TEMP=$(openstack image list | grep Cirros-0.4.0 | awk '{print $4}')
 if [ "x${IMAGE_NAME_TEMP}" != "xCirros-0.4.0" ]; then
     openstack image create --disk-format qcow2 --container-format bare \
-        --file ~/tacoplay/tests/cirros-0.4.0-x86_64-disk.img \
+        --file ~/tacoplay/scripts/cirros-0.4.0-x86_64-disk.img \
         --public \
         Cirros-0.4.0
     openstack image show Cirros-0.4.0
@@ -82,8 +82,10 @@ echo "Done"
 echo "Adding external ip to vm..."
 SERVER_INFO=$(openstack server list | grep test)
 FLOATING_IP=$(openstack floating ip create public-net | grep floating_ip_address | awk '{print $4}')
+SERVER_IP=$(echo $SERVER_INFO| awk '{print $8}' | awk -F "=" '{print $2}')
 SERVER=$(echo $SERVER_INFO| awk '{print $2}')
-openstack server add floating ip $SERVER $FLOATING_IP
+PORT=$(openstack port list | grep $SERVER_IP | awk '{print $2}')
+openstack floating ip set --port $PORT $FLOATING_IP
 echo "Done"
 
 openstack server list
