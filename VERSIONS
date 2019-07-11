@@ -1,9 +1,6 @@
-armada https://tde.sktelecom.com/stash/scm/oreotools/armada.git 0.2.0
-kubespray https://tde.sktelecom.com/stash/scm/oreotools/kubespray.git v2.10.4
-charts/openstack-helm https://tde.sktelecom.com/stash/scm/openstack/openstack-helm.git taco-v19.02
-charts/openstack-helm-infra https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra.git taco-v19.02
-manifests https://tde.sktelecom.com/stash/scm/oreotools/armada-manifests.git taco-v19.02
-ceph-ansible https://tde.sktelecom.com/stash/scm/oreotools/ceph-ansible.git stable-3.2
-charts/helm https://tde.sktelecom.com/stash/scm/oreotools/helm-charts.git master
-ironic-image https://tde.sktelecom.com/stash/scm/oreotools/ironic-image.git master
-charts/sona-helm https://tde.sktelecom.com/stash/scm/openstack/sona-helm.git hamode
+armada https://github.com/openinfradev/armada.git taco-v19.02
+kubespray https://github.com/kubernetes-sigs/kubespray.git v2.10.3
+charts/openstack-helm https://github.com/openinfradev/openstack-helm.git taco-v19.02
+charts/openstack-helm-infra https://github.com/openinfradev/openstack-helm-infra.git taco-v19.02
+ceph-ansible https://github.com/openinfradev/ceph-ansible.git stable-3.2
+charts/helm https://github.com/helm/charts.git master
