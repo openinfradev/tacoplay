@@ -39,3 +39,13 @@
 - include: ceph-ansible/infrastructure-playbooks/purge-cluster.yml
   tags: ceph
   when: taco_storage == 'ceph'
+
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: Restore armada-manifest to previous state
+      shell: |
+        sed -i "s/admin_keyring:.*/admin_keyring: TACO_ADMIN_KEYRING/" {{ armada_manifest }}
+        sed -i "s/mon_host:.*/mon_host: TACO_MON_HOST/" {{ armada_manifest }}
+      when: taco_storage == 'ceph'
+      ignore_errors: yes
