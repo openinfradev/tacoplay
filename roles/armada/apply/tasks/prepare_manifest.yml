@@ -38,10 +38,6 @@
     msg: "Error! Extra_vars doesn't exist."
   when: grep_result.stdout != "" and taco_storage == 'ceph' and stat_ev_result.stat.exists == False
 
-- name: fetch ceph related variables
-  include_tasks: populate_ceph_vars.yml
-  when: grep_result.stdout != "" and taco_storage == 'ceph'
-
 - name: replace TACO keywords to actual values
   shell: |
     sed -i "s TACO_ADMIN_KEYRING {{ admin_keyring }} " {{ armada_manifest }}

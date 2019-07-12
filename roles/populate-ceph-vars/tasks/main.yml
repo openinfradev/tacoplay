@@ -1,10 +1,4 @@
 ---
-- name: configure OpenStack defaults
-  debug:
-    msg: "Check taco/roles/openstack/openstack-defaults/defaults/main.yml"
-  tags:
-    - always
-
 - name: fetch mon hosts from {{ cluster }}.conf
   shell: >-
     grep 'mon host' /etc/ceph/{{ cluster }}.conf | awk '{print $4}'
@@ -25,6 +19,10 @@
   fail:
     msg: "failed to get ceph mon hosts neither from vars nor {{ cluster }}.conf"
   when: not (mon_host|length > 0)
+
+- name: set fact for rbd storageclass
+  set_fact:
+    rbd_provisioner_monitors: "{{ mon_host }}"
 
 - name: fetch admin keyring from {{ cluster }}.client.admin.keyring
   shell: >-

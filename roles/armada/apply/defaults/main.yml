@@ -16,8 +16,3 @@ tiller_port: 32134
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
 source_type: local
 
-
-# ceph information for nova, libvirt, cinder and glance
-ceph_monitors: ''
-admin_keyring: ''
-

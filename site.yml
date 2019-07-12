@@ -147,6 +147,12 @@
         - check_result.rc == 0
         - ansible_distribution in ["CentOS","RedHat"]
 
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: populate-ceph-vars }
+  tags: ceph
+
 # Install K8S
 - import_playbook: kubespray/cluster.yml
   tags: k8s
