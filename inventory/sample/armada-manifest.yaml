@@ -1159,6 +1159,7 @@ data:
           user: cinder
           keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
       nova:
+        dhcp_domain: ""
         DEFAULT:
           scheduler_default_filters: RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter
           debug: true
