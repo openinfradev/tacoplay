@@ -11,9 +11,22 @@ kubectl delete configmap --all -n openstack --force --grace-period=0
 kubectl delete secret --all -n openstack --force --grace-period=0
 kubectl delete pods --all -n openstack --force --grace-period=0
 
-rbd -p images snap unprotect --image 201084fc-c276-4744-8504-cb974dbb3610 --snap snap
-rbd snap purge 201084fc-c276-4744-8504-cb974dbb3610 -p images
-rbd -p images rm 201084fc-c276-4744-8504-cb974dbb3610
+for qemu in $(ps aux | grep qemu-system | grep -v grep | awk '{print $2}'); do kill $qemu; done
+if [ -e /etc/ceph/ceph.conf ]
+then
+  for pool in $(sudo rados lspools)
+  do
+    for vol in $(sudo rbd ls -p $pool)
+    do
+      if [ "$pool" == "images" ]
+      then
+        sudo rbd snap unprotect -p images $vol@snap
+        sudo rbd snap purge -p images $vol
+      fi
+      sudo rbd rm -p $pool $vol
+    done
+  done
+fi
 
 cd /var/lib
 rm -rf nova neutron libvirt openstack-helm
