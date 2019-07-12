@@ -1023,7 +1023,7 @@ data:
     manifests:
       daemonset_lb_agent: false
       daemonset_dhcp_agent: true
-      daemonset_metadata_agent: false
+      daemonset_metadata_agent: true
       daemonset_ovs_agent: true
       daemonset_sriov_agent: false
       daemonset_l3_agent: true
