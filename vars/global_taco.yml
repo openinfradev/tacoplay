@@ -23,7 +23,6 @@ rbd_provisioner_enabled: >-
   {%- if taco_storage == 'ceph' -%}true{%- else -%}false{%- endif -%}
 rbd_provisioner_namespace: kube-system
 rbd_provisioner_replicas: 1
-rbd_provisioner_monitors: "{{ ceph_monitors }}"
 rbd_provisioner_pool: kube
 rbd_provisioner_secret_name: ceph-secret-admin
 rbd_provisioner_user_secret_name: ceph-secret-user

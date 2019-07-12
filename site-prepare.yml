@@ -41,6 +41,12 @@
         name: docker
   tags: download
 
+- hosts: localhost
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: populate-ceph-vars }
+  tags: ceph
+
 - include: kubespray/cluster.yml
 
 - hosts: localhost
