@@ -1159,10 +1159,10 @@ data:
           user: cinder
           keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
       nova:
-        dhcp_domain: ""
         DEFAULT:
           scheduler_default_filters: RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter
           debug: true
+          dhcp_domain: ""
           config_drive_cdrom: true
           config_drive_format: iso9660
           force_config_drive: true
