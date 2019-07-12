@@ -7,7 +7,6 @@ docker_insecure_registries: ""
 monitor_interface: bond0
 public_network: 147.75.94.0/24
 cluster_network: 147.75.94.0/24
-ceph_monitors: 147.75.94.91
 
 ceph_conf_overrides:
       global:
