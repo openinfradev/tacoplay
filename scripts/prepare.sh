@@ -14,6 +14,8 @@ yum install docker-ce-18.09.1 docker-ce-cli-18.09.1 containerd.io -y
 
 systemctl start docker
 
+pip install yq
+
 MANIFESTS=$1
 if [ "x$MANIFESTS" == "x" ]; then
   echo "Usage: ./pull-images.sh <ARMADA MANIFEST>"
@@ -23,3 +25,5 @@ fi
 for IMAGE in $(cat $MANIFESTS | yq '.data.values.images.tags | map(.) | join(" ")' | tr -d '"'); do
   docker inspect $IMAGE > /dev/null || docker pull $IMAGE
 done
+
+pip uninstall yq
