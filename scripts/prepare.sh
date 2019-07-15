@@ -1,7 +1,6 @@
 #!/bin/bash
 set -x
 
-
 yum install -y yum-utils \
   device-mapper-persistent-data \
   lvm2
@@ -24,7 +23,7 @@ if [ "x$MANIFESTS" == "x" ]; then
 fi
 
 for IMAGE in $(cat $MANIFESTS | yq '.data.values.images.tags | map(.) | join(" ")' | tr -d '"'); do
-  docker inspect $IMAGE > /dev/null || docker pull $IMAGE
+  docker inspect $IMAGE > /dev/null 2>&1 || docker pull $IMAGE
 done
 
 yum remove jq -y
