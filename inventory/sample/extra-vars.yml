@@ -17,13 +17,14 @@ ceph_conf_overrides:
 
 osd_objectstore: bluestore
 lvm_volumes:
+  - data: /dev/sda
   - data: /dev/sdb
 
 openstack_config: true
 kube_pool:
   name: "kube"
-  pg_num: 2
-  pgp_num: 2
+  pg_num: 64
+  pgp_num: 64
   rule_name: "replicated_rule"
   type: 1
   erasure_profile: ""
@@ -31,32 +32,32 @@ kube_pool:
   application: "rbd"
 openstack_glance_pool:
   name: "images"
-  pg_num: 8
-  pgp_num: 8
+  pg_num: 64
+  pgp_num: 64
   rule_name: "replicated_rule"
   type: 1
   erasure_profile: ""
   expected_num_objects: ""
 openstack_cinder_pool:
   name: "volumes"
-  pg_num: 16
-  pgp_num: 16
+  pg_num: 64
+  pgp_num: 64
   rule_name: "replicated_rule"
   type: 1
   erasure_profile: ""
   expected_num_objects: ""
 openstack_cinder_backup_pool:
   name: "backups"
-  pg_num: 8
-  pgp_num: 8
+  pg_num: 2
+  pgp_num: 2
   rule_name: "replicated_rule"
   type: 1
   erasure_profile: ""
   expected_num_objects: ""
 openstack_nova_vms_pool:
   name: "vms"
-  pg_num: 16
-  pgp_num: 16
+  pg_num: 64
+  pgp_num: 64
   rule_name: "replicated_rule"
   type: 1
   erasure_profile: ""
