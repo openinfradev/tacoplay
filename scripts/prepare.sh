@@ -14,7 +14,7 @@ yum install docker-ce-18.09.1 docker-ce-cli-18.09.1 containerd.io -y
 
 systemctl start docker
 
-yum install jq
+yum install -y jq
 pip install yq
 
 MANIFESTS=$1
