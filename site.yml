@@ -147,11 +147,13 @@
         - check_result.rc == 0
         - ansible_distribution in ["CentOS","RedHat"]
 
+# This should run without 'ceph' tag, since it's necessary
+# for rbd_provisioner role in kubespray
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: populate-ceph-vars }
-  tags: ceph
+    - { role: populate-ceph-vars, when: taco_storage == 'ceph' }
+  tags: always
 
 # Install K8S
 - import_playbook: kubespray/cluster.yml
