@@ -41,7 +41,7 @@ data:
     conf:
       ceph:
         global:
-          mon_host: TACO_MON_HOST
+          mon_host: 147.75.95.89
     manifests:
       configmap_bin: false
       configmap_bin_common: false
@@ -153,7 +153,7 @@ data:
         logger_cinder:
           level: DEBUG
       ceph:
-        admin_keyring: TACO_ADMIN_KEYRING
+        admin_keyring: AQBJ7iddcjoYDBAAnL47Jvb+x5A9dYruEC97ug==
         enabled: true
         pools:
           backup:
@@ -292,7 +292,7 @@ data:
     conf:
       ceph:
         enabled: true
-        admin_keyring: TACO_ADMIN_KEYRING
+        admin_keyring: AQBJ7iddcjoYDBAAnL47Jvb+x5A9dYruEC97ug==
       glance:
         glance_store:
           rbd_store_replication: 1
@@ -760,7 +760,7 @@ data:
     conf:
       ceph:
         enabled: true
-        admin_keyring: TACO_ADMIN_KEYRING
+        admin_keyring: AQBJ7iddcjoYDBAAnL47Jvb+x5A9dYruEC97ug==
         cinder:
           user: cinder
           keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
@@ -1154,7 +1154,7 @@ data:
         live_migration_interface: bond0
       ceph:
         enabled: true
-        admin_keyring: TACO_ADMIN_KEYRING
+        admin_keyring: AQBJ7iddcjoYDBAAnL47Jvb+x5A9dYruEC97ug==
         cinder:
           user: cinder
           keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
