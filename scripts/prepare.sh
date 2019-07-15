@@ -14,6 +14,7 @@ yum install docker-ce-18.09.1 docker-ce-cli-18.09.1 containerd.io -y
 
 systemctl start docker
 
+yum install jq
 pip install yq
 
 MANIFESTS=$1
@@ -26,4 +27,5 @@ for IMAGE in $(cat $MANIFESTS | yq '.data.values.images.tags | map(.) | join(" "
   docker inspect $IMAGE > /dev/null || docker pull $IMAGE
 done
 
-pip uninstall yq
+yum remove jq -y
+pip uninstall yq -y
