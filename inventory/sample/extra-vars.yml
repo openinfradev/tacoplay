@@ -22,8 +22,8 @@ ceph_conf_overrides:
 
 osd_objectstore: bluestore
 lvm_volumes:
-  - data: /dev/sda
-  - data: /dev/sdb
+#  - data: /dev/sda
+#  - data: /dev/sdb
 
 openstack_config: true
 kube_pool:
