@@ -35,7 +35,7 @@
         awk '{split($2,a,",");print a[1]"\n"a[2]"\n"a[3]}' |
         awk NF
       retries: 10
-      delay: 30
+      delay: 10
       register: ingress_host
       until: ingress_host.stdout != ""
       become: no

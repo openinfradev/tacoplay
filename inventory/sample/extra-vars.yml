@@ -5,8 +5,8 @@ docker_insecure_registries: ""
 
 # ceph
 monitor_interface: bond0
-public_network: 147.75.95.89/31
-cluster_network: 147.75.95.89/31
+public_network: 147.75.94.0/24
+cluster_network: 147.75.94.0/24
 
 ceph_conf_overrides:
       global:
@@ -67,7 +67,6 @@ openstack_nova_vms_pool:
   type: 1
   erasure_profile: ""
   expected_num_objects: ""
-  application: "rbd"
 
 openstack_pools:
   - "{{ kube_pool }}"
