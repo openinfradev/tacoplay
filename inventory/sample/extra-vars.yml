@@ -67,6 +67,7 @@ openstack_nova_vms_pool:
   type: 1
   erasure_profile: ""
   expected_num_objects: ""
+  application: "rbd"
 
 openstack_pools:
   - "{{ kube_pool }}"
