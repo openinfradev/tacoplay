@@ -14,6 +14,11 @@ ceph_conf_overrides:
         osd_pool_default_size: 1
         osd_pool_default_min_size: 1
         osd_pg_stat_report_internal_max: 1
+      osd:
+        osd_min_pg_log_entries: 10
+        osd_max_pg_log_entries: 10
+        osd_pg_log_dups_tracked: 10
+        osd_pg_log_trim_min: 10
 
 osd_objectstore: bluestore
 lvm_volumes:
