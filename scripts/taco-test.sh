@@ -62,7 +62,11 @@ done
 echo "Done"
 
 echo "Creating private key"
-    openstack keypair create --public-key ~/.ssh/id_rsa.pub taco-key
+if [ ! -f ~/.ssh/id_rsa.pub ]; then
+  ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+fi
+
+openstack keypair create --public-key ~/.ssh/id_rsa.pub taco-key
 echo "Done"
 
 if [[ $(openstack server list | grep test) ]]; then
