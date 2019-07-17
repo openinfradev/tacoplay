@@ -149,14 +149,14 @@
 
 # This should run without 'ceph' tag, since it's necessary
 # for rbd_provisioner role in kubespray
-- hosts: admin-node
+- hosts: admin-node:kube-master
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: populate-ceph-vars, when: taco_storage == 'ceph' }
   tags: always
 
 # Install K8S
-- import_playbook: kubespray/cluster.yml
+- include: kubespray/cluster.yml
   tags: k8s
 
 - hosts: admin-node
