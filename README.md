@@ -1,3 +1,10 @@
+# tacoplay 
+
+Please find the detail information on the following documentation site.
+TACO Document: https://taco-docs.readthedocs.io/ko/latest/#
+
+
+---
 To run preparation playbook, run the following cmd:
 
 ansible-playbook -u centos -b -i inventory/preparation/local.ini site-prepare.yml --tags download,preinstall --skip-tags upload,upgrade
