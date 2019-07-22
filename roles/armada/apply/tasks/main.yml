@@ -1,5 +1,8 @@
 ---
-- include: prepare_manifest.yml
+- include: prepare-manifest.yml
+
+- include: render-manifest.yml
+  when: taco_storage == 'ceph'
 
 - name: delete test pods in openstack namespace
   shell: >-

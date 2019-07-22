@@ -44,8 +44,8 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: populate-ceph-vars }
-  tags: ceph
+    - { role: populate-ceph-vars, when: taco_storage == 'ceph' }
+  tags: always
 
 - include: kubespray/cluster.yml
 
@@ -97,9 +97,15 @@
       include_vars: roles/armada/apply/defaults/main.yml
 
     - name: prepare armada_manifest for image pulling
-      include_tasks: roles/armada/apply/tasks/prepare_manifest.yml
+      include_tasks: roles/armada/apply/tasks/prepare-manifest.yml
       vars:
         openstack_release: "{{ openstack_release }}"
+
+    - name: render armada_manifest with ceph vars assigned
+      include_tasks: roles/armada/apply/tasks/render-manifest.yml
+      vars:
+        openstack_release: "{{ openstack_release }}"
+      when: taco_storage == 'ceph'
 
     # Should I run fetch-sub-projects.sh here instead of Jenkinsfile?
     - name: pull all images used in armada manifest
