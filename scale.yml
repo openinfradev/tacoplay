@@ -87,8 +87,8 @@
     - { role: setup-os }
   tags: setup-os
 
-# Install Ceph
-- import_playbook: ceph-ansible/site.yml
+# Add Ceph OSD
+- import_playbook: ceph-ansible/infrastructure-playbooks/add-osd.yml
   tags: ceph
   when: taco_storage == 'ceph'
 
