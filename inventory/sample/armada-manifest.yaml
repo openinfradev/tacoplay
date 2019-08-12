@@ -1306,6 +1306,9 @@ data:
     pod:
       replicas:
         server: 1
+    conf:
+      openvswitch_db_server:
+        ptcp_port: 6640
     volume:
       class_name: rbd
     monitoring:
