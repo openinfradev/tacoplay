@@ -1,5 +1,5 @@
 # Host
-bin_dir: /usr/local/bin
+bin_dir: /usr/bin
 nat_enabled: false
 tc_enabled: false
 
