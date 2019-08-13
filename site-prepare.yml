@@ -1,15 +1,4 @@
 ---
-
-# Copy site.yml from site.yml.sample
-- hosts: localhost
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: copy site.yml
-      copy:
-        src: "{{ playbook_dir }}/ceph-ansible/site.yml.sample"
-        dest: "{{ playbook_dir }}/ceph-ansible/site.yml"
-  tags: always
-
 - hosts: localhost:all
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
