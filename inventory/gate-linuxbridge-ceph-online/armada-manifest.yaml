@@ -756,7 +756,7 @@ data:
       pull_policy: IfNotPresent
     network:
       backend:
-      - openvswitch
+      - linuxbridge
     conf:
       ceph:
         enabled: true
@@ -944,12 +944,12 @@ data:
             runAsUser: 42435
     network:
       backend:
-      - openvswitch
+      - linuxbridge
       share_namespaces: false
       auto_bridge_add:
         br-ex: null
       interface:
-        tunnel: bond0
+        tunnel: null
     conf:
       paste:
         composite:neutronapi_v2_0:
@@ -958,7 +958,7 @@ data:
         # This sudoers file supports rootwrap-daemon for both Kolla and LOCI Images.
         Defaults !requiretty
         Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/var/lib/openstack/bin:/var/lib/kolla/venv/bin"
-        neutron ALL = (root) NOPASSWD: /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/home/centoswrap.conf *, /var/lib/openstack/bin/neutron-rootwrap /etc/neutron/rootwrap.conf *, /var/lib/kolla/venv/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf, /var/lib/openstack/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
+        neutron ALL = (root) NOPASSWD: /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/home/rootwrap.conf *, /var/lib/openstack/bin/neutron-rootwrap /etc/neutron/rootwrap.conf *, /var/lib/kolla/venv/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf, /var/lib/openstack/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
       neutron:
         DEFAULT:
           core_plugin: ml2
@@ -966,26 +966,26 @@ data:
           global_physnet_mtu: 1500
           service_plugins: router
         agent:
-          root_helper: sudo /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/home/centoswrap.conf
+          root_helper: sudo /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/home/rootwrap.conf
       plugins:
         ml2_conf:
           ml2:
-            mechanism_drivers: openvswitch,l2population
+            mechanism_drivers: linuxbridge
             type_drivers: flat, vxlan
             tenant_network_types: vxlan
           ml2_type_flat:
-            flat_networks: external
+            flat_networks: provider
           ml2_type_vlan:
             network_vlan_ranges:
         openvswitch_agent:
           ovs:
-            bridge_mappings: external:br-ex
+            bridge_mappings: ""
           securitygroup:
             firewall_driver: openvswitch
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings:
-            bridge_mappings:
+            physical_interface_mappings: provider:eth1
+            bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
     endpoints:
@@ -1021,10 +1021,10 @@ data:
             username: test
             password: password
     manifests:
-      daemonset_lb_agent: false
+      daemonset_lb_agent: true
       daemonset_dhcp_agent: true
       daemonset_metadata_agent: true
-      daemonset_ovs_agent: true
+      daemonset_ovs_agent: false
       daemonset_sriov_agent: false
       daemonset_l3_agent: true
   source:
@@ -1141,7 +1141,7 @@ data:
               id: 0c84e220-a258-439f-a6ff-f8e9fd980025
     network:
       backend:
-      - openvswitch
+      - linuxbridge
       novncproxy:
         name: nova-novncproxy
         node_port:
@@ -1149,9 +1149,9 @@ data:
           port: 30608
     conf:
       hypervisor:
-        host_interface: bond0
+        host_interface: eth0
       libvirt:
-        live_migration_interface: bond0
+        live_migration_interface: eth0
       ceph:
         enabled: true
         admin_keyring: TACO_ADMIN_KEYRING
