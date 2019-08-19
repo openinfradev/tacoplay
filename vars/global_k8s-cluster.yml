@@ -3,6 +3,7 @@ disable_swap: true
 epel_enabled: true
 preinstall_selinux_state: disabled
 populate_inventory_to_hosts_file: false
+override_system_hostname: true
 
 # etcd
 etcd_deployment_type: docker
