@@ -49,8 +49,6 @@
     --timeout 3600
     {{ armada_manifest }} >
     {{ lookup('env','HOME') }}/armada.log
-  async: 3600
-  poll: 0
   when: auto_release_enabled|default(true) and tiller_host.stdout != ""
   become: no
   run_once: yes
