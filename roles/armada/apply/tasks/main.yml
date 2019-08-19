@@ -40,7 +40,7 @@
     state: absent
   with_items: "{{ armada_processes.stdout_lines }}"
 
-- name: run armada apply in background
+- name: run armada apply
   shell: >-
     . ~/.bashrc && workon armada &&
     armada apply
