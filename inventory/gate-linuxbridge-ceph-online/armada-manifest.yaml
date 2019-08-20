@@ -938,10 +938,9 @@ data:
     pod:
       replicas:
         server: 1
-      security_context:
+      user:
         neutron:
-          pod:
-            runAsUser: 42435
+          uid: 42435
     network:
       backend:
       - linuxbridge
