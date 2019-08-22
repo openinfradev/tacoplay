@@ -40,7 +40,7 @@
     state: absent
   with_items: "{{ armada_processes.stdout_lines }}"
 
-- name: run armada apply in background
+- name: run armada apply
   shell: >-
     . ~/.bashrc && workon armada &&
     armada apply
@@ -49,8 +49,6 @@
     --timeout 3600
     {{ armada_manifest }} >
     {{ lookup('env','HOME') }}/armada.log
-  async: 3600
-  poll: 0
   when: auto_release_enabled|default(true) and tiller_host.stdout != ""
   become: no
   run_once: yes
