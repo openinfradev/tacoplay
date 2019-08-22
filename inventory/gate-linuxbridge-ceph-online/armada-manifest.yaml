@@ -1166,7 +1166,7 @@ data:
           config_drive_format: iso9660
           force_config_drive: true
         vnc:
-          novncproxy_base_url: http://ctrl-1:30608/vnc_auto.html
+          novncproxy_base_url: http://taco-aio:30608/vnc_auto.html
         libvirt:
           images_type: rbd
           rbd_user: cinder
@@ -1250,35 +1250,6 @@ data:
     timeout: 3600
   dependencies:
   - helm-toolkit
----
-schema: armada/Chart/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openvswitch
-data:
-  chart_name: openvswitch
-  release: openvswitch
-  namespace: openstack
-  install:
-    no_hooks: false
-  upgrade:
-    no_hooks: false
-  values:
-    release_group: null
-    images:
-      tags:
-        openvswitch_db_server: registry-rel.cicd.stg.taco/queens/ubuntu-source-openvswitch-db-server:taco-v19.02
-        openvswitch_vswitchd: registry-rel.cicd.stg.taco/queens/ubuntu-source-openvswitch-vswitchd:taco-v19.02
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-      pull_policy: IfNotPresent
-  source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm-infra
-    subpath: openvswitch
-    reference: taco-v19.02
-  dependencies:
-    - helm-toolkit
 ---
 schema: armada/Chart/v1
 metadata:
@@ -1418,7 +1389,6 @@ data:
   sequenced: False
   chart_group:
     - libvirt
-    - openvswitch
     - nova
     - neutron
 ---
