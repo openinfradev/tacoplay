@@ -114,7 +114,7 @@ data:
         db_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
         cinder_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-api:taco-v19.02
         db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        rabbit_init: rabbitmq:3.7-management
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
         ks_user: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
         ks_service: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
         ks_endpoints: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
@@ -123,11 +123,11 @@ data:
         cinder_scheduler: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-scheduler:taco-v19.02
         cinder_volume: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-volume:taco-v19.02
         cinder_volume_usage_audit: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-volume:taco-v19.02
-        cinder_storage_init: registry-rel.cicd.stg.taco/queens/ceph-config-helper:v1.14.3
+        cinder_storage_init: registry-rel.cicd.stg.taco/port/ceph-config-helper:v1.14.3
         cinder_backup: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-backup:taco-v19.02
-        cinder_backup_storage_init: registry-rel.cicd.stg.taco/queens/ceph-config-helper:v1.14.3
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: docker:17.07.0
+        cinder_backup_storage_init: registry-rel.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
       security_context:
@@ -261,19 +261,19 @@ data:
     images:
       tags:
         test: registry-rel.cicd.stg.taco/queens/ubuntu-source-rally:taco-v19.02
-        glance_storage_init: registry-rel.cicd.stg.taco/queens/ceph-config-helper:v1.14.3
+        glance_storage_init: registry-rel.cicd.stg.taco/port/ceph-config-helper:v1.14.3
         db_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
         glance_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-glance-api:taco-v19.02
         db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
         ks_user: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
         ks_service: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
         ks_endpoints: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        rabbit_init: rabbitmq:3.7-management
+        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
         glance_api: registry-rel.cicd.stg.taco/queens/ubuntu-source-glance-api:taco-v19.02
         glance_registry: registry-rel.cicd.stg.taco/queens/ubuntu-source-glance-registry:taco-v19.02
         bootstrap: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: docker:17.07.0
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
       security_context:
@@ -405,9 +405,9 @@ data:
         heat_cloudwatch: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-api:taco-v19.02
         heat_engine: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
         heat_engine_cleaner: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        rabbit_init: rabbitmq:3.7-management
-        image_repo_sync: docker:17.07.0
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
       pull_policy: IfNotPresent
     pod:
       security_context:
@@ -493,8 +493,8 @@ data:
         db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-horizon:taco-v19.02
         horizon_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-horizon:taco-v19.02
         horizon: registry-rel.cicd.stg.taco/queens/ubuntu-source-horizon:taco-v19.02
-        image_repo_sync: docker:17.07.0
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
       pull_policy: IfNotPresent
     pod:
       security_context:
@@ -595,14 +595,14 @@ data:
   values:
     images:
       tags:
-        entrypoint: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        entrypoint: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
         ingress: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.23.0
         ingress_module_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-v19.02
         ingress_routed_vip: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-v19.02
         error_pages: gcr.io/google_containers/defaultbackend:1.0
         keepalived: osixia/keepalived:1.4.5
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: docker:17.07.0
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
       pull_policy: IfNotPresent
     network:
       host_namespace: true
@@ -680,15 +680,15 @@ data:
         keystone_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
         db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
         ks_user: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        rabbit_init: rabbitmq:3.7-management
+        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
         keystone_fernet_setup: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
         keystone_fernet_rotate: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
         keystone_credential_setup: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
         keystone_credential_rotate: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
         keystone_api: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
         keystone_domain_manage: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: docker:17.07.0
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
       pull_policy: IfNotPresent
     conf:
       keystone:
@@ -750,8 +750,8 @@ data:
     release_group: null
     images:
       tags:
-        image_repo_sync: docker:17.07.0
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
         libvirt: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-libvirt:taco-v19.02
       pull_policy: IfNotPresent
     network:
@@ -802,14 +802,14 @@ data:
   values:
     images:
       tags:
-        mariadb: openstackhelm/mariadb:10.2.18
-        ingress: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
-        error_pages: gcr.io/google_containers/defaultbackend:1.0
-        prometheus_create_mysql_user: mariadb:10.2.13
-        prometheus_mysql_exporter: prom/mysqld-exporter:v0.10.0
+        mariadb: registry-rel.cicd.stg.taco/openstackhelm/mariadb:10.2.18
+        ingress: registry-rel.cicd.stg.taco/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
+        error_pages: registry-rel.cicd.stg.taco/google_containers/defaultbackend:1.0
+        prometheus_create_mysql_user: registry-rel.cicd.stg.taco/mariadb:10.2.13
+        prometheus_mysql_exporter: registry-rel.cicd.stg.taco/prom/mysqld-exporter:v0.10.0
         prometheus_mysql_exporter_helm_tests: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: docker:17.07.0
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -854,10 +854,10 @@ data:
   values:
     images:
       tags:
-        memcached: memcached:1.5.5
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        memcached: registry-rel.cicd.stg.taco/memcached:1.5.5
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
         prometheus_memcached_exporter: prom/memcached-exporter:v0.4.1
-        image_repo_sync: docker:17.07.0
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -931,9 +931,9 @@ data:
         neutron_l3: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-l3-agent:taco-v19.02
         neutron_openvswitch_agent: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-openvswitch-agent:taco-v19.02
         neutron_linuxbridge_agent: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-linuxbridge-agent:taco-v19.02
-        rabbit_init: rabbitmq:3.7-management
-        image_repo_sync: docker:17.07.0
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -1126,10 +1126,10 @@ data:
         nova_spiceproxy: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-spicehtml5proxy:taco-v19.02
         nova_spiceproxy_assets: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-spicehtml5proxy:taco-v19.02
         bootstrap: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: docker:17.07.0
-        rabbit_init: rabbitmq:3.7-management
-        nova_service_cleaner: registry-rel.cicd.stg.taco/queens/ceph-config-helper:v1.14.3
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
+        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
+        nova_service_cleaner: registry-rel.cicd.stg.taco/port/ceph-config-helper:v1.14.3
       pull_policy: IfNotPresent
     bootstrap:
       structured:
@@ -1269,8 +1269,8 @@ data:
       tags:
         openvswitch_db_server: registry-rel.cicd.stg.taco/queens/ubuntu-source-openvswitch-db-server:taco-v19.02
         openvswitch_vswitchd: registry-rel.cicd.stg.taco/queens/ubuntu-source-openvswitch-vswitchd:taco-v19.02
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: docker:17.07.0
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
       pull_policy: IfNotPresent
   source:
     type: local
@@ -1295,11 +1295,11 @@ data:
   values:
     images:
       tags:
-        rabbitmq: rabbitmq:3.7.13
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-        prometheus_rabbitmq_exporter: kbudde/rabbitmq-exporter:v0.21.0
-        image_repo_sync: docker:17.07.0
-        scripted_test: rabbitmq:3.7.13-management
+        rabbitmq: registry-rel.cicd.stg.taco/rabbitmq:3.7.13
+        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        prometheus_rabbitmq_exporter: registry-rel.cicd.stg.taco/kbudde/rabbitmq-exporter:v0.21.0
+        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
+        scripted_test: registry-rel.cicd.stg.taco/rabbitmq:3.7.13-management
         prometheus_rabbitmq_exporter_helm_tests: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
       pull_policy: IfNotPresent
     pod:
@@ -1458,5 +1458,5 @@ data:
     - openstack-glance
     - openstack-cinder
     - openstack-compute-kit
-    #- openstack-heat
+    - openstack-heat
     - openstack-dashboard
