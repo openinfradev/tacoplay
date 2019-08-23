@@ -40,3 +40,6 @@ armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
 # OpenStack
 openstack_namespace: openstack
 vfat_config_drive_enabled: false
+
+# Gating
+is_gating_test: false
