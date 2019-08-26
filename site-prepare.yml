@@ -77,7 +77,7 @@
         version: master
       when: not is_gating_test
 
-    - name: copy extra-vars from {{ site_name }} inventories
+    - name: copy extra-vars from site inventories
       copy:
         src: "{{ playbook_dir }}/vslab-inventories/{{ site_name }}/extra-vars.yml"
         dest: "{{ inventory_dir }}/extra-vars.yml"
