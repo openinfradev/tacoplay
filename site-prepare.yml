@@ -75,12 +75,14 @@
         repo: 'https://tde.sktelecom.com/stash/scm/oreotools/vslab-inventories.git'
         dest: "{{ playbook_dir }}/vslab-inventories"
         version: master
+      when: not is_gating_test
 
     - name: copy extra-vars from {{ site_name }} inventories
       copy:
         src: "{{ playbook_dir }}/vslab-inventories/{{ site_name }}/extra-vars.yml"
         dest: "{{ inventory_dir }}/extra-vars.yml"
       become: no
+      when: not is_gating_test
 
     - name: include vars for prepare_manifest task
       include_vars: roles/armada/apply/defaults/main.yml
@@ -89,12 +91,6 @@
       include_tasks: roles/armada/apply/tasks/prepare-manifest.yml
       vars:
         openstack_release: "{{ openstack_release }}"
-
-    - name: render armada_manifest with ceph vars assigned
-      include_tasks: roles/armada/apply/tasks/render-manifest.yml
-      vars:
-        openstack_release: "{{ openstack_release }}"
-      when: taco_storage == 'ceph'
 
     # Should I run fetch-sub-projects.sh here instead of Jenkinsfile?
     - name: pull all images used in armada manifest
