@@ -1,0 +1,1494 @@
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: helm-toolkit
+data:
+  chart_name: helm-toolkit
+  release: helm-toolkit
+  namespace: helm-tookit
+  values: {}
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: helm-toolkit
+    reference: master
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: ceph-provisioners
+data:
+  chart_name: ceph-provisioners
+  release: ceph-provisioners
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    deployment:
+      ceph: false
+      client_secrets: true
+      rbd_provisioner: false
+      cephfs_provisioner: false
+    storageclass:
+      rbd:
+        provision_storage_class: false
+      cephfs:
+        provision_storage_class: false
+    conf:
+      ceph:
+        global:
+          mon_host: TACO_MON_HOST
+    manifests:
+      configmap_bin: false
+      configmap_bin_common: false
+      configmap_etc: true
+      deployment_rbd_provisioner: false
+      deployment_cephfs_provisioner: false
+      job_bootstrap: false
+      job_cephfs_client_key: false
+      job_image_repo_sync: false
+      job_namespace_client_key_cleaner: false
+      job_namespace_client_key: false
+      storageclass_cephfs: false
+      storageclass_rbd: false
+      helm_tests: false
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: ceph-provisioners
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: cinder
+data:
+  chart_name: cinder
+  release: cinder
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+      - name: cinder-bootstrap
+        type: job
+        labels:
+          application: cinder
+          component: bootstrap
+      - name: cinder-db-init
+        type: job
+        labels:
+          application: cinder
+          component: db-init
+      - name: cinder-db-sync
+        type: job
+        labels:
+          application: cinder
+          component: db-sync
+      - name: cinder-ks-endpoints
+        type: job
+        labels:
+          application: cinder
+          component: ks-endpoints
+      - name: cinder-ks-service
+        type: job
+        labels:
+          application: cinder
+          component: ks-service
+      - name: cinder-ks-user
+        type: job
+        labels:
+          application: cinder
+          component: ks-user
+  values:
+    images:
+      tags:
+        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
+        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        cinder_db_sync: VM-NAME-1:5000/queens/ubuntu-source-cinder-api:taco-0.1.0
+        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
+        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        cinder_api: VM-NAME-1:5000/queens/ubuntu-source-cinder-api:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        cinder_scheduler: VM-NAME-1:5000/queens/ubuntu-source-cinder-scheduler:taco-0.1.0
+        cinder_volume: VM-NAME-1:5000/queens/ubuntu-source-cinder-volume:taco-0.1.0
+        cinder_volume_usage_audit: VM-NAME-1:5000/queens/ubuntu-source-cinder-volume:taco-0.1.0
+        cinder_storage_init: VM-NAME-1:5000/port/ceph-config-helper:v1.14.3
+        cinder_backup: VM-NAME-1:5000/queens/ubuntu-source-cinder-backup:taco-0.1.0
+        cinder_backup_storage_init: VM-NAME-1:5000/port/ceph-config-helper:v1.14.3
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+      pull_policy: IfNotPresent
+    pod:
+      security_context:
+        cinder:
+          pod:
+            runAsUser: 42407
+      replicas:
+        api: 1
+        backup: 1
+        scheduler: 1
+        volume: 1
+    conf:
+      logging:
+        loggers:
+          keys:
+          - root
+          - cinder
+          - oslo_service
+        logger_oslo_service:
+          level: DEBUG
+          handlers: stderr
+          qualname: oslo_service
+        logger_cinder:
+          level: DEBUG
+      ceph:
+        admin_keyring: TACO_ADMIN_KEYRING
+        enabled: true
+        pools:
+          backups:
+            replication: 3
+            crush_rule: replicated_rule
+            chunk_size: 8
+            app_name: cinder-backup
+          volumes:
+            replication: 3
+            crush_rule: replicated_rule
+            chunk_size: 8
+            app_name: cinder-volume
+      cinder:
+        DEFAULT:
+          backup_driver: cinder.backup.drivers.ceph
+          backup_ceph_user: cinder-backup
+          backup_ceph_pool: backups
+      backends:
+        rbd1:
+          rbd_pool: volumes
+          rbd_secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: password
+          cinder:
+            username: cinder
+            password: password
+      oslo_messaging:
+        auth:
+          admin:
+            username: rabbitmq
+            password: password
+          cinder:
+            username: cinder
+            password: password
+        statefulset: null
+      identity:
+        auth:
+          admin:
+            username: admin
+            password: password
+          cinder:
+            username: cinder
+            password: password
+      volume:
+        path:
+          default: /v2/%(tenant_id)s
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm
+    subpath: cinder
+    reference: master
+  test:
+    enabled: false
+    timeout: 3600
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: glance
+data:
+  chart_name: glance
+  release: glance
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+      - name: glance-bootstrap
+        type: job
+        labels:
+          application: glance
+          component: bootstrap
+      - name: glance-storage-init
+        type: job
+        labels:
+          application: glance
+          component: storage-init
+      - name: glance-db-init
+        type: job
+        labels:
+          application: glance
+          component: db-init
+      - name: glance-db-sync
+        type: job
+        labels:
+          application: glance
+          component: db-sync
+      - name: glance-ks-endpoints
+        type: job
+        labels:
+          application: glance
+          component: ks-endpoints
+      - name: glance-ks-service
+        type: job
+        labels:
+          application: glance
+          component: ks-service
+      - name: glance-ks-user
+        type: job
+        labels:
+          application: glance
+          component: ks-user
+  values:
+    images:
+      tags:
+        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
+        glance_storage_init: VM-NAME-1:5000/port/ceph-config-helper:v1.14.3
+        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        glance_db_sync: VM-NAME-1:5000/queens/ubuntu-source-glance-api:taco-0.1.0
+        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
+        glance_api: VM-NAME-1:5000/queens/ubuntu-source-glance-api:taco-0.1.0
+        glance_registry: VM-NAME-1:5000/queens/ubuntu-source-glance-registry:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+      pull_policy: IfNotPresent
+    pod:
+      security_context:
+        glance:
+          pod:
+            runAsUser: 42415
+      replicas:
+        api: 1
+        registry: 1
+    network:
+      api:
+        ingress:
+          annotations:
+            nginx.ingress.kubernetes.io/proxy-body-size: 102400M
+    storage: rbd
+    conf:
+      ceph:
+        enabled: true
+        admin_keyring: TACO_ADMIN_KEYRING
+      glance:
+        glance_store:
+          rbd_store_replication: 1
+          rbd_store_user: glance
+          rbd_store_pool: images
+        DEFAULT:
+          show_image_direct_url: true
+          show_multiple_locations: true
+      rally_tests:
+        tests:
+          GlanceImages.create_and_delete_image:
+            - args:
+                container_format: bare
+                disk_format: qcow2
+                image_location: http://192.168.197.39:8888/cirros/cirros-0.4.0-x86_64-disk.img
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+          GlanceImages.create_and_list_image:
+            - args:
+                container_format: bare
+                disk_format: qcow2
+                image_location: http://192.168.197.39:8888/cirros/cirros-0.4.0-x86_64-disk.img
+              runner:
+                concurrency: 1
+                times: 1
+                type: constant
+              sla:
+                failure_rate:
+                  max: 0
+    bootstrap:
+      enabled: true
+      structured:
+        images:
+          cirros:
+            name: Cirros 0.4.0 64-bit
+            id: 201084fc-c276-4744-8504-cb974dbb3610
+            source_url: http://192.168.197.39:8888/cirros/
+            image_file: cirros-0.4.0-x86_64-disk.img
+            private: false
+    endpoints:
+      identity:
+        auth:
+          admin:
+            username: admin
+            password: password
+          glance:
+            username: glance
+            password: password
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: password
+          glance:
+            username: glance
+            password: password
+      oslo_messaging:
+        auth:
+          admin:
+            username: rabbitmq
+            password: password
+          glance:
+            username: glance
+            password: password
+        statefulset: null
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm
+    subpath: glance
+    reference: master
+  test:
+    enabled: false
+    timeout: 3600
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: heat
+data:
+  chart_name: heat
+  release: heat
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - type: job
+          labels:
+            application: heat
+            component: bootstrap
+        - type: job
+          labels:
+            application: heat
+            component: db-init
+        - type: job
+          labels:
+            application: heat
+            component: db-sync
+        - type: job
+          labels:
+            application: heat
+            component: ks-user
+        - type: job
+          labels:
+            application: heat
+            component: ks-service
+        - type: job
+          labels:
+            application: heat
+            component: ks-endpoints
+        - type: job
+          labels:
+            application: heat
+            component: trusts
+  values:
+    images:
+      tags:
+        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        heat_db_sync: VM-NAME-1:5000/queens/ubuntu-source-heat-api:taco-0.1.0
+        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        heat_api: VM-NAME-1:5000/queens/ubuntu-source-heat-api:taco-0.1.0
+        heat_cfn: VM-NAME-1:5000/queens/ubuntu-source-heat-api:taco-0.1.0
+        heat_cloudwatch: VM-NAME-1:5000/queens/ubuntu-source-heat-api:taco-0.1.0
+        heat_engine: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        heat_engine_cleaner: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+      pull_policy: IfNotPresent
+    pod:
+      security_context:
+        heat:
+          pod:
+            runAsUser: 42418
+      replicas:
+        api: 1
+        cfn: 1
+        cloudwatch: 1
+        engine: 1
+    endpoints:
+      identity:
+        auth:
+          admin:
+            username: admin
+            password: password
+          heat:
+            username: heat
+            password: password
+          heat_trustee:
+            username: heat-trust
+            password: password
+          heat_stack_user:
+            username: heat-domain
+            password: password
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: password
+          heat:
+            username: heat
+            password: password
+      oslo_messaging:
+        auth:
+          admin:
+            username: rabbitmq
+            password: password
+          heat:
+            username: heat
+            password: password
+        statefulset: null
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm
+    subpath: heat
+    reference: master
+  test:
+      enabled: false
+      timeout: 3600
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: horizon
+data:
+  chart_name: horizon
+  release: horizon
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+      - type: job
+        labels:
+          application: horizon
+          component: db-init
+      - type: job
+        labels:
+          application: horizon
+          component: db-sync
+  values:
+    images:
+      tags:
+        db_init: VM-NAME-1:5000/queens/ubuntu-source-horizon:taco-0.1.0
+        db_drop: VM-NAME-1:5000/queens/ubuntu-source-horizon:taco-0.1.0
+        horizon_db_sync: VM-NAME-1:5000/queens/ubuntu-source-horizon:taco-0.1.0
+        horizon: VM-NAME-1:5000/queens/ubuntu-source-horizon:taco-0.1.0
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        test: VM-NAME-1:5000/openstackhelm/osh-selenium:latest-ubuntu_xenial
+      pull_policy: IfNotPresent
+    pod:
+      security_context:
+        horizon:
+          pod:
+            runAsUser: 42420
+      replicas:
+        server: 1
+    network:
+      node_port:
+        enabled: true
+        port: 31000
+    conf:
+      software:
+        apache2:
+          site_dir: /etc/apache2/sites-enabled
+      horizon:
+        apache: |
+          Listen 0.0.0.0:{{ tuple "dashboard" "internal" "web" . | include "helm-toolkit.endpoints.endpoint_port_lookup" }}
+
+          LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+          LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" proxy
+
+          SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+          CustomLog /dev/stdout combined env=!forwarded
+          CustomLog /dev/stdout proxy env=forwarded
+
+          <VirtualHost *:{{ tuple "dashboard" "internal" "web" . | include "helm-toolkit.endpoints.endpoint_port_lookup" }}>
+              WSGIScriptReloading On
+              WSGIDaemonProcess horizon-http processes=5 threads=1 user=horizon group=horizon display-name=%{GROUP} python-path=/var/lib/kolla/venv/lib/python2.7/site-packages
+              WSGIProcessGroup horizon-http
+              WSGIScriptAlias / /var/www/cgi-bin/horizon/django.wsgi
+              WSGIPassAuthorization On
+              RewriteEngine on
+              RewriteCond %{REQUEST_METHOD} !^(POST|PUT|GET|DELETE)
+              RewriteRule .* - [F]
+
+              <Location "/">
+                  Require all granted
+              </Location>
+
+              Alias /static /var/www/html/horizon
+              <Location "/static">
+                  SetHandler None
+              </Location>
+
+              <IfVersion >= 2.4>
+                ErrorLogFormat "%{cu}t %M"
+              </IfVersion>
+              ErrorLog /dev/stdout
+              TransferLog /dev/stdout
+
+              SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+              CustomLog /dev/stdout combined env=!forwarded
+              CustomLog /dev/stdout proxy env=forwarded
+          </Virtualhost>
+        local_settings:
+          config:
+            openstack_neutron_network:
+              enable_router: "True"
+              enable_quotas: "True"
+              enable_ipv6: "False"
+              enable_distributed_router: "False"
+              enable_ha_router: "True"
+              enable_lb: "True"
+              enable_firewall: "False"
+              enable_vpn: "False"
+              enable_fip_topology_check: "True"
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: password
+          horizon:
+            username: horizon
+            password: password
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm
+    subpath: horizon
+    reference: master
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: ingress
+data:
+  chart_name: ingress
+  release: ingress
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        entrypoint: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        ingress: VM-NAME-1:5000/kubernetes-ingress-controller/nginx-ingress-controller:0.23.0
+        ingress_module_init: VM-NAME-1:5000/queens/ubuntu-source-neutron-server:taco-0.1.0
+        ingress_routed_vip: VM-NAME-1:5000/queens/ubuntu-source-neutron-server:taco-0.1.0
+        error_pages: VM-NAME-1:5000/google_containers/defaultbackend:1.0
+        keepalived: VM-NAME-1:5000/keepalived:1.4.5
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+      pull_policy: IfNotPresent
+    network:
+      host_namespace: true
+    monitoring:
+      prometheus:
+        enabled: false
+        ingress_exporter:
+          scrape: false
+        config:
+          worker-processes: 8
+    config:
+      worker-processes: 8
+    pod:
+      replicas:
+        ingress: 1
+        error_page: 1
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: ingress
+    reference: master
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: keystone
+data:
+  chart_name: keystone
+  release: keystone
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - name: keystone-bootstrap
+          type: job
+          labels:
+            application: keystone
+            component: bootstrap
+        - name: keystone-credential-setup
+          type: job
+          labels:
+            application: keystone
+            component: credential-setup
+        - name: keystone-db-init
+          type: job
+          labels:
+            application: keystone
+            component: db-init
+        - name: keystone-db-sync
+          type: job
+          labels:
+            application: keystone
+            component: db-sync
+        - name: keystone-fernet-setup
+          type: job
+          labels:
+            application: keystone
+            component: fernet-setup
+        - name: keystone-domain-manage
+          type: job
+          labels:
+            application: keystone
+            component: domain-manage
+  values:
+    images:
+      tags:
+        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
+        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        keystone_db_sync: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
+        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
+        keystone_fernet_setup: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_fernet_rotate: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_credential_setup: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_credential_rotate: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_api: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_domain_manage: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+      pull_policy: IfNotPresent
+    conf:
+      keystone:
+        DEFAULT:
+          debug: true
+    pod:
+      security_context:
+        keystone:
+          pod:
+            runAsUser: 42425
+      replicas:
+        api: 1
+    endpoints:
+      identity:
+        auth:
+          admin:
+            username: admin
+            password: password
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: password
+          keystone:
+            username: keystone
+            password: password
+      oslo_messaging:
+        auth:
+          admin:
+            username: rabbitmq
+            password: password
+          keystone:
+            username: keystone
+            password: password
+        statefulset: null
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm
+    subpath: keystone
+    reference: master
+  test:
+      enabled: false
+      timeout: 3600
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: libvirt
+data:
+  chart_name: libvirt
+  release: libvirt
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    release_group: null
+    images:
+      tags:
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        libvirt: VM-NAME-1:5000/queens/ubuntu-source-nova-libvirt:taco-0.1.0
+      pull_policy: IfNotPresent
+    network:
+      backend:
+      - linuxbridge
+    conf:
+      ceph:
+        enabled: true
+        admin_keyring: TACO_ADMIN_KEYRING
+        cinder:
+          keyring: TACO_ADMIN_KEYRING
+      libvirt:
+        listen_addr: 0.0.0.0
+        log_level: 3
+    manifests:
+      configmap_bin: true
+      configmap_etc: true
+      daemonset_libvirt: true
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: libvirt
+    reference: master
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: mariadb
+data:
+  chart_name: mariadb
+  release: mariadb
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+      - name: exporter-create-sql-user
+        type: job
+        labels:
+          application: prometheus_mysql_exporter
+          component: create-sql-user
+  values:
+    images:
+      tags:
+        mariadb: VM-NAME-1:5000/openstackhelm/mariadb:10.2.18
+        ingress: VM-NAME-1:5000/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
+        error_pages: VM-NAME-1:5000/google_containers/defaultbackend:1.0
+        prometheus_create_mysql_user: VM-NAME-1:5000/mariadb:10.2.13
+        prometheus_mysql_exporter: VM-NAME-1:5000/prom/mysqld-exporter:v0.10.0
+        prometheus_mysql_exporter_helm_tests: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+      pull_policy: IfNotPresent
+    pod:
+      replicas:
+        server: 3
+    volume:
+      enabled: true
+      class_name: rbd
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: password
+    monitoring:
+      prometheus:
+        enabled: false
+        mysqld_exporter:
+          scrape: false
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: mariadb
+    reference: master
+  test:
+    enabled: false
+    timeout: 3600
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: memcached
+data:
+  chart_name: memcached
+  release: memcached
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        memcached: VM-NAME-1:5000/memcached:1.5.5
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        prometheus_memcached_exporter: VM-NAME-1:5000/memcached-exporter:v0.4.1
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+      pull_policy: IfNotPresent
+    pod:
+      replicas:
+        server: 1
+    monitoring:
+      prometheus:
+        enabled: false
+        memcached_exporter:
+          scrape: false
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: memcached
+    reference: master
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: neutron
+data:
+  chart_name: neutron
+  release: neutron
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+      - name: neutron-db-init
+        type: job
+        labels:
+          application: neutron
+          component: db-init
+      - name: neutron-db-sync
+        type: job
+        labels:
+          application: neutron
+          component: db-sync
+      - name: neutron-ks-endpoints
+        type: job
+        labels:
+          application: neutron
+          component: ks-endpoints
+      - name: neutron-ks-service
+        type: job
+        labels:
+          application: neutron
+          component: ks-service
+      - name: neutron-ks-user
+        type: job
+        labels:
+          application: neutron
+          component: ks-user
+  values:
+    images:
+      tags:
+        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
+        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        neutron_db_sync: VM-NAME-1:5000/queens/ubuntu-source-neutron-server:taco-0.1.0
+        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        neutron_server: VM-NAME-1:5000/queens/ubuntu-source-neutron-server:taco-0.1.0
+        neutron_dhcp: VM-NAME-1:5000/queens/ubuntu-source-neutron-dhcp-agent:taco-0.1.0
+        neutron_metadata: VM-NAME-1:5000/queens/ubuntu-source-neutron-metadata-agent:taco-0.1.0
+        neutron_l3: VM-NAME-1:5000/queens/ubuntu-source-neutron-l3-agent:taco-0.1.0
+        neutron_openvswitch_agent: VM-NAME-1:5000/queens/ubuntu-source-neutron-openvswitch-agent:taco-0.1.0
+        neutron_linuxbridge_agent: VM-NAME-1:5000/queens/ubuntu-source-neutron-linuxbridge-agent:taco-0.1.0
+        rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+      pull_policy: IfNotPresent
+    pod:
+      replicas:
+        server: 1
+      user:
+        neutron:
+          uid: 42435
+      security_context:
+        neutron:
+          pod:
+            runAsUser: 42435
+        neutron_dhcp_agent:
+          pod:
+            runAsUser: 42435
+        neutron_l2gw_agent:
+          pod:
+            runAsUser: 42435
+        neutron_bagpipe_bgp:
+          pod:
+            runAsUser: 42435
+        neutron_l3_agent:
+          pod:
+            runAsUser: 42435
+        neutron_lb_agent:
+          pod:
+            runAsUser: 42435
+        neutron_metadata_agent:
+          pod:
+            runAsUser: 42435
+        neutron_ovs_agent:
+          pod:
+            runAsUser: 42435
+        neutron_server:
+          pod:
+            runAsUser: 42435
+        neutron_sriov_agent:
+          pod:
+            runAsUser: 42435
+    network:
+      backend:
+      - linuxbridge
+      share_namespaces: false
+      auto_bridge_add:
+        br-ex: null
+      interface:
+        tunnel: null
+    conf:
+      paste:
+        composite:neutronapi_v2_0:
+          keystone: cors http_proxy_to_wsgi request_id catch_errors authtoken keystonecontext extensions neutronapiapp_v2_0
+      neutron_sudoers: |
+        # This sudoers file supports rootwrap-daemon for both Kolla and LOCI Images.
+        Defaults !requiretty
+        Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/var/lib/openstack/bin:/var/lib/kolla/venv/bin"
+        neutron ALL = (root) NOPASSWD: /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/rootwrap.conf *, /var/lib/openstack/bin/neutron-rootwrap /etc/neutron/rootwrap.conf *, /var/lib/kolla/venv/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf, /var/lib/openstack/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
+      neutron:
+        DEFAULT:
+          core_plugin: ml2
+          l3_ha: true
+          global_physnet_mtu: 1500
+          service_plugins: router
+        agent:
+          root_helper: sudo /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/rootwrap.conf
+      plugins:
+        ml2_conf:
+          ml2:
+            mechanism_drivers: linuxbridge,l2population
+            type_drivers: flat, vxlan
+            tenant_network_types: vxlan
+          ml2_type_flat:
+            flat_networks: provider
+          ml2_type_vlan:
+            network_vlan_ranges: provider1
+        openvswitch_agent:
+          ovs:
+            bridge_mappings: ""
+          securitygroup:
+            firewall_driver: openvswitch
+        linuxbridge_agent:
+          linux_bridge:
+            physical_interface_mappings: provider:eth0
+            bridge_mappings: ""
+          securitygroup:
+            firewall_driver: iptables
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: password
+          neutron:
+            username: neutron
+            password: password
+      oslo_messaging:
+        auth:
+          admin:
+            username: rabbitmq
+            password: password
+          neutron:
+            username: neutron
+            password: password
+        statefulset: null
+      identity:
+        name: keystone
+        auth:
+          admin:
+            username: admin
+            password: password
+          neutron:
+            username: neutron
+            password: password
+          nova:
+            username: nova
+            password: password
+    manifests:
+      daemonset_lb_agent: true
+      daemonset_dhcp_agent: true
+      daemonset_metadata_agent: true
+      daemonset_ovs_agent: false
+      daemonset_sriov_agent: false
+      daemonset_l3_agent: true
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm
+    subpath: neutron
+    reference: master
+  test:
+    enabled: true
+    timeout: 3600
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: nova
+data:
+  chart_name: nova
+  release: nova
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+      - name: nova-bootstrap
+        type: job
+        labels:
+          application: nova
+          component: bootstrap
+      - name: nova-cell-setup
+        type: job
+        labels:
+          application: nova
+          component: cell-setup
+      - name: nova-db-init
+        type: job
+        labels:
+          application: nova
+          component: db-init
+      - name: nova-db-sync
+        type: job
+        labels:
+          application: nova
+          component: db-sync
+      - name: nova-ks-endpoints
+        type: job
+        labels:
+          application: nova
+          component: ks-endpoints
+      - name: nova-ks-service
+        type: job
+        labels:
+          application: nova
+          component: ks-service
+      - name: nova-ks-user
+        type: job
+        labels:
+          application: nova
+          component: ks-user
+      - name: placement-ks-endpoints
+        type: job
+        labels:
+          application: placement
+          component: ks-endpoints
+      - name: placement-ks-service
+        type: job
+        labels:
+          application: placement
+          component: ks-service
+      - name: placement-ks-user
+        type: job
+        labels:
+          application: placement
+          component: ks-user
+  values:
+    images:
+      tags:
+        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
+        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        nova_api: VM-NAME-1:5000/queens/ubuntu-source-nova-api:taco-0.1.0
+        nova_cell_setup: VM-NAME-1:5000/queens/ubuntu-source-nova-api:taco-0.1.0
+        nova_cell_setup_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        nova_compute: VM-NAME-1:5000/queens/ubuntu-source-nova-compute:taco-0.1.0
+        nova_compute_ironic: VM-NAME-1:5000/queens/ubuntu-source-nova-compute-queens-ironic:taco-0.1.0
+        nova_compute_ssh: VM-NAME-1:5000/queens/ubuntu-source-nova-ssh:taco-0.1.0
+        nova_conductor: VM-NAME-1:5000/queens/ubuntu-source-nova-conductor:taco-0.1.0
+        nova_consoleauth: VM-NAME-1:5000/queens/ubuntu-source-nova-consoleauth:taco-0.1.0
+        nova_db_sync: VM-NAME-1:5000/queens/ubuntu-source-nova-api:taco-0.1.0
+        nova_novncproxy: VM-NAME-1:5000/queens/ubuntu-source-nova-novncproxy:taco-0.1.0
+        nova_novncproxy_assets: VM-NAME-1:5000/queens/ubuntu-source-nova-novncproxy:taco-0.1.0
+        nova_placement: VM-NAME-1:5000/queens/ubuntu-source-nova-placement-api:taco-0.1.0
+        nova_scheduler: VM-NAME-1:5000/queens/ubuntu-source-nova-scheduler:taco-0.1.0
+        nova_spiceproxy: VM-NAME-1:5000/queens/ubuntu-source-nova-spicehtml5proxy:taco-0.1.0
+        nova_spiceproxy_assets: VM-NAME-1:5000/queens/ubuntu-source-nova-spicehtml5proxy:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+        rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
+        nova_service_cleaner: VM-NAME-1:5000/port/ceph-config-helper:v1.14.3
+      pull_policy: IfNotPresent
+    bootstrap:
+      structured:
+        flavors:
+          enabled: true
+          options:
+            m1_tiny:
+              id: 0c84e220-a258-439f-a6ff-f8e9fd980025
+    network:
+      backend:
+      - linuxbridge
+      novncproxy:
+        name: nova-novncproxy
+        node_port:
+          enabled: true
+          port: 30608
+    conf:
+      hypervisor:
+        host_interface: eth0
+      libvirt:
+        live_migration_interface: eth0
+      ceph:
+        enabled: true
+        admin_keyring: TACO_ADMIN_KEYRING
+      nova:
+        DEFAULT:
+          scheduler_default_filters: RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter
+          debug: true
+          dhcp_domain: ""
+          config_drive_cdrom: true
+          config_drive_format: iso9660
+          force_config_drive: true
+        vnc:
+          novncproxy_base_url: http://taco-aio:30608/vnc_auto.html
+        libvirt:
+          images_type: rbd
+          rbd_user: cinder
+          rbd_secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
+        scheduler:
+          discover_hosts_in_cells_interval: 60
+      rootwrap_filters: null
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: password
+          nova:
+            username: nova
+            password: password
+      oslo_db_api:
+        auth:
+          admin:
+            username: root
+            password: password
+          nova:
+            username: nova
+            password: password
+      oslo_db_cell0:
+        auth:
+          admin:
+            username: root
+            password: password
+          nova:
+            username: nova
+            password: password
+      oslo_messaging:
+        auth:
+          admin:
+            username: rabbitmq
+            password: password
+          nova:
+            username: nova
+            password: password
+        statefulset: null
+      identity:
+        auth:
+          admin:
+            username: admin
+            password: password
+          nova:
+            username: nova
+            password: password
+          neutron:
+            username: neutron
+            password: password
+          ironic:
+            username: ironic
+            password: password
+          placement:
+            username: placement
+            password: password
+    pod:
+      mandatory_access_control:
+        type: null
+      user:
+        nova:
+          uid: 42436
+      security_context:
+        nova:
+          pod:
+            runAsUser: 42436
+      replicas:
+        api_metadata: 1
+        osapi: 1
+        conductor: 1
+        consoleauth: 1
+        scheduler: 1
+        novncproxy: 1
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm
+    subpath: nova
+    reference: master
+  test:
+    enabled: true
+    timeout: 3600
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: rabbitmq
+data:
+  chart_name: rabbitmq
+  release: rabbitmq
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        rabbitmq: VM-NAME-1:5000/rabbitmq:3.7.13
+        rabbitmq_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        prometheus_rabbitmq_exporter: VM-NAME-1:5000/kbudde/rabbitmq-exporter:v0.21.0
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+        scripted_test: VM-NAME-1:5000/rabbitmq:3.7.13-management
+        prometheus_rabbitmq_exporter_helm_tests: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+      pull_policy: IfNotPresent
+    pod:
+      replicas:
+        server: 3
+    volume:
+      class_name: rbd
+    monitoring:
+      prometheus:
+        enabled: false
+        rabbitmq_exporter:
+          scrape: false
+    endpoints:
+      oslo_messaging:
+        auth:
+          user:
+            username: rabbitmq
+            password: password
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: rabbitmq
+    reference: master
+  test:
+    enabled: false
+    timeout: 3600
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-ingress-controller
+data:
+  description: "OpenStack Ingress Controller"
+  sequenced: False
+  chart_group:
+    - ingress
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-ceph-config
+data:
+  description: "OpenStack Ceph Config"
+  sequenced: True
+  chart_group:
+    - ceph-provisioners
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: deploy-mariadb
+data:
+  description: "Mariadb"
+  sequenced: True
+  chart_group:
+    - mariadb
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: deploy-memcached
+data:
+  description: "Memcached"
+  sequenced: True
+  chart_group:
+    - memcached
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: deploy-rabbitmq
+data:
+  description: "RabbitMQ"
+  sequenced: True
+  chart_group:
+    - rabbitmq
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-keystone
+data:
+  description: "Deploy keystone"
+  sequenced: True
+  chart_group:
+    - keystone
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-glance
+data:
+  description: "Deploy glance"
+  sequenced: True
+  chart_group:
+    - glance
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-cinder
+data:
+  description: "Deploy cinder"
+  sequenced: True
+  chart_group:
+    - cinder
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-compute-kit
+data:
+  description: "Deploy nova and neutron, as well as supporting services"
+  sequenced: False
+  chart_group:
+    - libvirt
+    - nova
+    - neutron
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-heat
+data:
+  description: "Deploy heat"
+  sequenced: True
+  chart_group:
+    - heat
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-dashboard
+data:
+  description: "Deploy horizon"
+  sequenced: True
+  chart_group:
+    - horizon
+---
+schema: armada/Manifest/v1
+metadata:
+  schema: metadata/Document/v1
+  name: taco-manifest
+data:
+  release_prefix: taco
+  chart_groups:
+    - openstack-ingress-controller
+    - openstack-ceph-config
+    - deploy-mariadb
+    - deploy-memcached
+    - deploy-rabbitmq
+    - openstack-keystone
+    - openstack-glance
+    - openstack-cinder
+    - openstack-compute-kit
+    - openstack-heat
+    - openstack-dashboard
