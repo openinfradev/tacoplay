@@ -20,6 +20,7 @@ kubeadm_version: "{{ kube_version }}"
 kubelet_deployment_type: host
 kubectl_localhost: true
 kubeconfig_localhost: true
+kubelet_custom_flags: ["--registry-qps=30"]
 
 local_volume_provisioner_enabled: false
 cephfs_provisioner_enabled: false
