@@ -142,7 +142,7 @@
     - name: reinstall python-requests if requests installed with dist package
       pip:
         name: requests
-        state: forcereinstall
+        extra_args: --ignore-installed
       when:
         - check_result.rc == 0
         - ansible_distribution in ["CentOS","RedHat"]
