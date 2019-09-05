@@ -87,6 +87,12 @@
     virtualenv_python: python3.4
   become: no
 
+- name: install pbr when offline env
+  command: >-
+   "{{ workon_home }}/armada/bin/pip"
+   install pbr
+  become: no
+
 - name: install armada in the virtual env
   args:
     chdir: "{{ playbook_dir }}/armada"
