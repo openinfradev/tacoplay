@@ -1,6 +1,6 @@
 ceph_stable_release: luminous
 ceph_origin: repository
-ceph_custom_repo: "http://{{ localrepo_yum }}/ceph/ceph.repo"
+ceph_custom_repo: "http://{{ localrepo_yum }}:{{ localrepo_port }}/ceph/ceph.repo"
 ceph_mirror: http://hk.ceph.com
 
 ntp_service_enabled: false
