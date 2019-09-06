@@ -22,6 +22,24 @@
       when: localrepo_enabled
   tags: always
 
+- hosts: compute-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+  - name: stop openvswitch service
+    service:
+      name: openvswitch
+      state: stopped
+    when: install_ovs_as_a_rpms
+
+  - name: uninstall openvswitch
+    yum:
+      name: openvswitch
+      state: absent
+    when:
+      - ansible_distribution in ["CentOS","RedHat"]
+      - install_ovs_as_a_rpms
+  tags: always
+
 # Reset K8S cluster
 - include: kubespray/reset.yml
   tags: k8s
