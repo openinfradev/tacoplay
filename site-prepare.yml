@@ -92,13 +92,23 @@
       vars:
         openstack_release: "{{ openstack_release }}"
 
-    # Should I run fetch-sub-projects.sh here instead of Jenkinsfile?
     - name: pull all images used in armada manifest
       script: >-
         {{ playbook_dir }}/scripts/pull-images.sh
         {{ armada_manifest }}
+        registry.cicd.stg.taco
       args:
         creates: /tmp/.image-pull-done
+      when: is_gating_test
+
+    - name: pull all images used in armada manifest
+      script: >-
+        {{ playbook_dir }}/scripts/pull-images.sh
+        {{ armada_manifest }}
+        registry-rel.cicd.stg.taco
+      args:
+        creates: /tmp/.image-pull-done
+      when: not is_gating_test
 
     - name: run registry container
       docker_container:
