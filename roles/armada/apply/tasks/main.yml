@@ -46,7 +46,7 @@
     armada apply
     --tiller-host {{ tiller_host.stdout }}
     --tiller-port {{ tiller_port }}
-    --timeout 3600
+    --timeout 9000
     {{ armada_manifest }} >
     {{ lookup('env','HOME') }}/armada.log
   when: auto_release_enabled|default(true) and tiller_host.stdout != ""

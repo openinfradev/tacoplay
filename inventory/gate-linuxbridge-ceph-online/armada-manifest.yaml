@@ -2,22 +2,6 @@
 schema: armada/Chart/v1
 metadata:
   schema: metadata/Document/v1
-  name: helm-toolkit
-data:
-  chart_name: helm-toolkit
-  release: helm-toolkit
-  namespace: helm-tookit
-  values: {}
-  source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm-infra
-    subpath: helm-toolkit
-    reference: taco-v19.02
-  dependencies: []
----
-schema: armada/Chart/v1
-metadata:
-  schema: metadata/Document/v1
   name: ceph-provisioners
 data:
   chart_name: ceph-provisioners
@@ -28,6 +12,15 @@ data:
   upgrade:
     no_hooks: false
   values:
+    images:
+      tags:
+        ceph_bootstrap: registry.cicd.stg.taco/openstackhelm/ceph-daemon:latest-ubuntu_xenial
+        ceph_cephfs_provisioner: registry.cicd.stg.taco/openstackhelm/ceph-cephfs-provisioner:latest-ubuntu_xenial
+        ceph_config_helper: registry.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+        ceph_rbd_provisioner: registry.cicd.stg.taco/openstackhelm/ceph-rbd-provisioner:latest-ubuntu_xenial
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: IfNotPresent
     deployment:
       ceph: false
       client_secrets: true
@@ -55,11 +48,12 @@ data:
       job_namespace_client_key: false
       storageclass_cephfs: false
       storageclass_rbd: false
+      helm_tests: false
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: ceph-provisioners
-    reference: taco-v19.02
+    reference: master
   dependencies:
     - helm-toolkit
 ---
@@ -110,28 +104,40 @@ data:
   values:
     images:
       tags:
-        test: registry-rel.cicd.stg.taco/queens/ubuntu-source-rally:taco-v19.02
-        db_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        cinder_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-api:taco-v19.02
-        db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
+        test: registry.cicd.stg.taco/queens/ubuntu-source-rally:taco-0.1.0
+        db_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        cinder_db_sync: registry.cicd.stg.taco/queens/ubuntu-source-cinder-api:taco-0.1.0
+        db_drop: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
         rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
-        ks_user: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_service: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_endpoints: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        cinder_api: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-api:taco-v19.02
-        bootstrap: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        cinder_scheduler: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-scheduler:taco-v19.02
-        cinder_volume: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-volume:taco-v19.02
-        cinder_volume_usage_audit: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-volume:taco-v19.02
-        cinder_storage_init: registry-rel.cicd.stg.taco/port/ceph-config-helper:v1.14.3
-        cinder_backup: registry-rel.cicd.stg.taco/queens/ubuntu-source-cinder-backup:taco-v19.02
-        cinder_backup_storage_init: registry-rel.cicd.stg.taco/port/ceph-config-helper:v1.14.3
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-      pull_policy: IfNotPresent
+        ks_user: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        cinder_api: registry.cicd.stg.taco/queens/ubuntu-source-cinder-api:taco-0.1.0
+        bootstrap: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        cinder_scheduler: registry.cicd.stg.taco/queens/ubuntu-source-cinder-scheduler:taco-0.1.0
+        cinder_volume: registry.cicd.stg.taco/queens/ubuntu-source-cinder-volume:taco-0.1.0
+        cinder_volume_usage_audit: registry.cicd.stg.taco/queens/ubuntu-source-cinder-volume:taco-0.1.0
+        cinder_storage_init: registry.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+        cinder_backup: registry.cicd.stg.taco/queens/ubuntu-source-cinder-backup:taco-0.1.0
+        cinder_backup_storage_init: registry.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
     pod:
       security_context:
         cinder:
+          pod:
+            runAsUser: 42407
+        cinder_api:
+          pod:
+            runAsUser: 42407
+        cinder_backup:
+          pod:
+            runAsUser: 42407
+        cinder_scheduler:
+          pod:
+            runAsUser: 42407
+        cinder_volume:
           pod:
             runAsUser: 42407
       replicas:
@@ -156,18 +162,19 @@ data:
         admin_keyring: TACO_ADMIN_KEYRING
         enabled: true
         pools:
-          backup:
-            replication: 1
-          volume:
-            replication: 1
+          volumes-test:
+            replication: 2
+            crush_rule: replicated_rule
+            chunk_size: 128
+            app_name: cinder-volume
       cinder:
         DEFAULT:
           backup_driver: cinder.backup.drivers.ceph
           backup_ceph_user: cinder-backup
-          backup_ceph_pool: backups
+          backup_ceph_pool: backups-test
       backends:
         rbd1:
-          rbd_pool: volumes
+          rbd_pool: volumes-test
           rbd_secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
     endpoints:
       oslo_db:
@@ -186,6 +193,7 @@ data:
           cinder:
             username: cinder
             password: password
+        statefulset: null
       identity:
         auth:
           admin:
@@ -198,15 +206,554 @@ data:
         path:
           default: /v2/%(tenant_id)s
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: cinder
-    reference: taco-v19.02
+    reference: master
   test:
-    enabled: false
+    enabled: true
     timeout: 3600
   dependencies:
   - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: elasticsearch
+data:
+  chart_name: elasticsearch
+  release: elasticsearch
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    pod:
+      mandatory_access_control:
+        type: null
+    images:
+      tags:
+        apache_proxy: registry.cicd.stg.taco/httpd:2.4
+        memory_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        curator: registry.cicd.stg.taco/bobrik/curator:5.6.0
+        es_cluster_wait: registry.cicd.stg.taco/openstackhelm/ceph-config-helper:latest-ubuntu_xenial
+        elasticsearch: registry.cicd.stg.taco/openstackhelm/elasticsearch-s3:latest-5_6_4
+        ceph_key_placement: registry.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+        s3_bucket: registry.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+        s3_user: registry.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+        helm_tests: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        prometheus_elasticsearch_exporter: registry.cicd.stg.taco/justwatch/elasticsearch_exporter:1.0.1
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        snapshot_repository: registry.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+        elasticsearch_templates: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: IfNotPresent
+    dependencies:
+      static:
+        curator:
+          jobs: null
+        tests:
+          job: null
+    conf:
+      curator:
+        schedule: 0 */6 * * *
+        action_file:
+          actions:
+            1:
+              action: delete_indices
+              description: '"Delete indices older than 7 days"'
+              options:
+                timeout_override: null
+                continue_if_exception: false
+                ignore_empty_list: true
+                disable_action: false
+              filters:
+              - filtertype: pattern
+                kind: timestring
+                value: '%Y.%m.%d'
+              - filtertype: age
+                source: name
+                direction: older
+                timestring: '%Y.%m.%d'
+                unit: days
+                unit_count: 7
+            2:
+              action: delete_indices
+              description: |-
+                "Delete indices by age if available disk space is
+                 less than 80% total disk"
+              options:
+                timeout_override: 600
+                continue_if_exception: false
+                ignore_empty_list: true
+                disable_action: false
+              filters:
+              - filtertype: pattern
+                kind: prefix
+                value: logstash-
+              - filtertype: space
+                source: creation_date
+                use_age: true
+                disk_space: 12
+            3:
+              action: snapshot
+              description: '"Snapshot indices older than one day"'
+              options:
+                repository: default_repo
+                name: null
+                wait_for_completion: true
+                max_wait: 3600
+                wait_interval: 10
+                timeout_override: 600
+                ignore_empty_list: true
+                continue_if_exception: false
+                disable_action: true
+              filters:
+              - filtertype: age
+                source: name
+                direction: older
+                timestring: '%Y.%m.%d'
+                unit: days
+                unit_count: 1
+            4:
+              action: delete_snapshots
+              description: '"Delete snapshots older than 30 days"'
+              options:
+                repository: default_repo
+                disable_action: true
+                timeout_override: 600
+                ignore_empty_list: true
+              filters:
+              - filtertype: pattern
+                kind: prefix
+                value: curator-
+                exclude: null
+              - filtertype: age
+                source: creation_date
+                direction: older
+                unit: days
+                unit_count: 30
+      templates:
+        fluent:
+          template: logstash-*
+          index_patterns: logstash-*
+          settings:
+            number_of_shards: 5
+            number_of_replicas: 1
+          mappings:
+            fluent:
+              properties:
+                kubernetes:
+                  properties:
+                    container_name:
+                      type: keyword
+                      index: true
+                    docker_id:
+                      type: keyword
+                      index: true
+                    host:
+                      type: keyword
+                      index: true
+                    labels:
+                      properties:
+                        app:
+                          type: keyword
+                          index: true
+                        application:
+                          type: keyword
+                          index: true
+                        component:
+                          type: keyword
+                          index: true
+                        release_group:
+                          type: keyword
+                          index: true
+                    namespace_name:
+                      type: keyword
+                      index: true
+                    pod_id:
+                      type: keyword
+                      index: true
+                    pod_name:
+                      type: keyword
+                      index: true
+                log:
+                  type: text
+        syslog:
+          template: syslog-*
+          index_patterns: syslog-*
+          settings:
+            number_of_shards: 3
+            number_of_replicas: 1
+          mappings:
+            syslog:
+              properties:
+                cluster:
+                  type: keyword
+                app:
+                  type: keyword
+                host:
+                  type: keyword
+                pid:
+                  type: integer
+                log:
+                  type: text
+        libvirt:
+          template: libvirt-*
+          index_patterns: libvirt-*
+          settings:
+            number_of_shards: 3
+            number_of_replicas: 1
+        journal:
+          template: journal-*
+          index_patterns: journal-*
+          settings:
+            number_of_shards: 3
+            number_of_replicas: 1
+        kernel:
+          template: kernel-*
+          index_patterns: kernel-*
+          settings:
+            number_of_shards: 3
+            number_of_replicas: 1
+      elasticsearch:
+        env:
+          java_opts:
+            client: -Xms256m -Xmx256m
+            data: -Xms512m -Xmx512m
+            master: -Xms256m -Xmx256m
+        snapshots:
+          enabled: false
+    endpoints:
+      elasticsearch:
+        auth:
+          admin:
+            username: taco
+            password: password
+    monitoring:
+      prometheus:
+        enabled: true
+    storage:
+      enabled: true
+      pvc:
+        name: pvc-elastic
+        access_mode:
+        - ReadWriteOnce
+      requests:
+        storage: 200Gi
+      storage_class: rbd
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: elasticsearch
+    reference: master
+  test:
+    enabled: false
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: etcd
+data:
+  chart_name: etcd
+  release: etcd
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        etcd: registry.cicd.stg.taco/google_containers/etcd-amd64:3.2.24
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+      pull_policy: IfNotPresent
+    pod:
+      replicas:
+        etcd: 1
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: etcd
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: fluentbit
+data:
+  chart_name: fluentbit
+  release: fluentbit
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        fluentbit: registry.cicd.stg.taco/fluent/fluent-bit:0.14.2
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: IfNotPresent
+    dependencies:
+      static:
+        fluentbit:
+          jobs:
+            - create-elasticsearch-templates
+          services:
+            - endpoint: internal
+              service: elasticsearch
+        tests:
+          services:
+            - endpoint: internal
+              service: elasticsearch
+    labels:
+      fluentbit:
+        node_selector_key: fluent-logging
+        node_selector_value: enabled
+    conf:
+      fluentbit: 
+        template: |
+          [SERVICE]
+              Daemon false
+              Flush 5
+              Log_Level info
+              Parsers_File parsers.conf
+
+          [INPUT]
+              Buffer_Chunk_Size 1M
+              Buffer_Max_Size 1M
+              Mem_Buf_Limit 5MB
+              Name tail
+              Path /var/log/kern.log
+              Tag kernel
+
+          [INPUT]
+              Buffer_Chunk_Size 1M
+              Buffer_Max_Size 1M
+              Mem_Buf_Limit 5MB
+              Name tail
+              Parser docker
+              Path /var/log/containers/*.log
+              Tag kube.*
+
+          [INPUT]
+              Buffer_Chunk_Size 1M
+              Buffer_Max_Size 1M
+              Mem_Buf_Limit 5MB
+              Name tail
+              Path /var/log/libvirt/libvirtd.log
+              Tag libvirt
+
+          [INPUT]
+              Buffer_Chunk_Size 1M
+              Buffer_Max_Size 1M
+              Mem_Buf_Limit 5MB
+              Name tail
+              Path /var/log/libvirt/qemu/*.log
+              Tag qemu
+
+          [INPUT]
+              Buffer_Chunk_Size 1M
+              Buffer_Max_Size 1M
+              Mem_Buf_Limit 5MB
+              Name systemd
+              Path ${JOURNAL_PATH}
+              Systemd_Filter _SYSTEMD_UNIT=kubelet.service
+              Tag journal.*
+
+          [INPUT]
+              Buffer_Chunk_Size 1M
+              Buffer_Max_Size 1M
+              Mem_Buf_Limit 5MB
+              Name systemd
+              Path ${JOURNAL_PATH}
+              Systemd_Filter _SYSTEMD_UNIT=docker.service
+              Tag journal.*
+
+          [FILTER]
+              Interval 1s
+              Match **
+              Name throttle
+              Rate 1000
+              Window 300
+
+          [FILTER]
+              Match libvirt
+              Name record_modifier
+              Record hostname ${HOSTNAME}
+
+          [FILTER]
+              Match qemu
+              Name record_modifier
+              Record hostname ${HOSTNAME}
+
+          [FILTER]
+              Match kernel
+              Name record_modifier
+              Record hostname ${HOSTNAME}
+
+          [FILTER]
+              Match journal.**
+              Name modify
+              Rename _BOOT_ID BOOT_ID
+              Rename _CAP_EFFECTIVE CAP_EFFECTIVE
+              Rename _CMDLINE CMDLINE
+              Rename _COMM COMM
+              Rename _EXE EXE
+              Rename _GID GID
+              Rename _HOSTNAME HOSTNAME
+              Rename _MACHINE_ID MACHINE_ID
+              Rename _PID PID
+              Rename _SYSTEMD_CGROUP SYSTEMD_CGROUP
+              Rename _SYSTEMD_SLICE SYSTEMD_SLICE
+              Rename _SYSTEMD_UNIT SYSTEMD_UNIT
+              Rename _TRANSPORT TRANSPORT
+              Rename _UID UID
+
+          [OUTPUT]
+              Match **.fluentd**
+              Name null
+
+          [FILTER]
+              Match kube.*
+              Merge_JSON_Log true
+              Name kubernetes
+
+          [INPUT]
+              Buffer_Chunk_Size 1M
+              Buffer_Max_Size 1M
+              Mem_Buf_Limit 5MB
+              Name tail
+              Parser syslog-kubelet
+              Path /var/log/messages
+              Tag syslog.*
+
+          [INPUT]
+              Buffer_Chunk_Size 1M
+              Buffer_Max_Size 1M
+              Mem_Buf_Limit 5MB
+              Name tail
+              Parser syslog-kubelet
+              Path /var/log/syslog
+              Tag syslog.*
+
+          [FILTER]
+              Match *
+              Name record_modifier
+              record cluster singlenode-general
+
+          [OUTPUT]
+              HTTP_Passwd password
+              HTTP_User taco
+              Host elasticsearch-logging
+              Logstash_Format true
+              Match kube.*
+              Name es
+              Port 80
+              Type fluent
+
+          [OUTPUT]
+              HTTP_Passwd password
+              HTTP_User taco
+              Host elasticsearch-logging
+              Logstash_Format true
+              Logstash_Prefix syslog
+              Match syslog.*
+              Name es
+              Port 80
+              Type syslog
+
+          [OUTPUT]
+              HTTP_Passwd password
+              HTTP_User taco
+              Host elasticsearch-logging
+              Logstash_Format true
+              Logstash_Prefix libvirt
+              Match libvirt
+              Name es
+              Port 80
+              Type libvirt
+
+          [OUTPUT]
+              HTTP_Passwd password
+              HTTP_User taco
+              Host elasticsearch-logging
+              Logstash_Format true
+              Logstash_Prefix qemu
+              Match qemu.*
+              Name es
+              Port 80
+              Type qemu
+
+          [OUTPUT]
+              HTTP_Passwd password
+              HTTP_User taco
+              Host elasticsearch-logging
+              Logstash_Format true
+              Logstash_Prefix journal
+              Match journal.*
+              Name es
+              Port 80
+              Type journal
+
+          [OUTPUT]
+              HTTP_Passwd password
+              HTTP_User taco
+              Host elasticsearch-logging
+              Logstash_Format true
+              Logstash_Prefix kernel
+              Match kernel.*
+              Name es
+              Port 80
+              Type kernel
+    pod:
+      tolerations:
+        fluentbit:
+          enabled: true
+          tolerations:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
+          - key: node-role.kubernetes.io/node
+            operator: Exists
+    endpoints:
+      elasticsearch:
+        namespace: null
+        name: elasticsearch
+        auth:
+          admin:
+            username: taco
+            password: password
+        hosts:
+          data: elasticsearch-data
+          default: elasticsearch-logging
+          discovery: elasticsearch-discovery
+          public: elasticsearch
+        host_fqdn_override:
+          default: null
+        path:
+          default: null
+        scheme:
+          default: http
+        port:
+          http:
+            default: 80
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: fluentbit
+    reference: master
+  test:
+    enabled: false
+  dependencies:
+    - helm-toolkit
 ---
 schema: armada/Chart/v1
 metadata:
@@ -260,21 +807,21 @@ data:
   values:
     images:
       tags:
-        test: registry-rel.cicd.stg.taco/queens/ubuntu-source-rally:taco-v19.02
-        glance_storage_init: registry-rel.cicd.stg.taco/port/ceph-config-helper:v1.14.3
-        db_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        glance_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-glance-api:taco-v19.02
-        db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_user: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_service: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_endpoints: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
-        glance_api: registry-rel.cicd.stg.taco/queens/ubuntu-source-glance-api:taco-v19.02
-        glance_registry: registry-rel.cicd.stg.taco/queens/ubuntu-source-glance-registry:taco-v19.02
-        bootstrap: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-      pull_policy: IfNotPresent
+        test: registry.cicd.stg.taco/queens/ubuntu-source-rally:taco-0.1.0
+        glance_storage_init: registry.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+        db_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        glance_db_sync: registry.cicd.stg.taco/queens/ubuntu-source-glance-api:taco-0.1.0
+        db_drop: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        glance_api: registry.cicd.stg.taco/queens/ubuntu-source-glance-api:taco-0.1.0
+        glance_registry: registry.cicd.stg.taco/queens/ubuntu-source-glance-registry:taco-0.1.0
+        bootstrap: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
     pod:
       security_context:
         glance:
@@ -295,9 +842,8 @@ data:
         admin_keyring: TACO_ADMIN_KEYRING
       glance:
         glance_store:
-          rbd_store_replication: 1
           rbd_store_user: glance
-          rbd_store_pool: images
+          rbd_store_pool: images-test
         DEFAULT:
           show_image_direct_url: true
           show_multiple_locations: true
@@ -336,16 +882,88 @@ data:
           glance:
             username: glance
             password: password
+        statefulset: null
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: glance
-    reference: taco-v19.02
+    reference: master
   test:
-    enabled: false
+    enabled: true
     timeout: 3600
   dependencies:
   - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: grafana 
+data:
+  chart_name: grafana
+  release: grafana
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        grafana: registry.cicd.stg.taco/grafana/grafana:5.0.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        db_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        grafana_db_session_sync: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        helm_tests: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        selenium_tests: registry.cicd.stg.taco/openstackhelm/osh-selenium:latest-ubuntu_xenial
+      pull_policy: Always
+    endpoints:
+      oslo_db:
+        auth:
+          admin:
+            username: root
+            password: password
+          user:
+            username: grafana
+            password: password
+      oslo_db_session:
+        namespace: null
+        auth:
+          admin:
+            username: root
+            password: password
+          user:
+            username: grafana_session
+            password: password
+      grafana:
+        auth:
+          admin:
+            username: taco
+            password: password
+      monitoring:
+        auth:
+          user:
+            username: taco
+            password: password
+      ldap:
+        hosts:
+          default: ldap
+        auth:
+          admin:
+            bind: cn=taco,dc=cluster,dc=local
+            password: password
+    network:
+      grafana:
+        node_port:
+          enabled: true
+          port: 30009
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: grafana
+    reference: master
+  dependencies:
+    - helm-toolkit
 ---
 schema: armada/Chart/v1
 metadata:
@@ -361,54 +979,55 @@ data:
     no_hooks: false
     pre:
       delete:
-        - type: job
-          labels:
-            application: heat
-            component: bootstrap
-        - type: job
-          labels:
-            application: heat
-            component: db-init
-        - type: job
-          labels:
-            application: heat
-            component: db-sync
-        - type: job
-          labels:
-            application: heat
-            component: ks-user
-        - type: job
-          labels:
-            application: heat
-            component: ks-service
-        - type: job
-          labels:
-            application: heat
-            component: ks-endpoints
-        - type: job
-          labels:
-            application: heat
-            component: trusts
+      - type: job
+        labels:
+          application: heat
+          component: bootstrap
+      - type: job
+        labels:
+          application: heat
+          component: db-init
+      - type: job
+        labels:
+          application: heat
+          component: db-sync
+      - type: job
+        labels:
+          application: heat
+          component: ks-user
+      - type: job
+        labels:
+          application: heat
+          component: ks-service
+      - type: job
+        labels:
+          application: heat
+          component: ks-endpoints
+      - type: job
+        labels:
+          application: heat
+          component: trusts
   values:
     images:
       tags:
-        test: registry-rel.cicd.stg.taco/queens/ubuntu-source-rally:taco-v19.02
-        bootstrap: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        db_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        heat_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-api:taco-v19.02
-        db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_user: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_service: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_endpoints: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        heat_api: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-api:taco-v19.02
-        heat_cfn: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-api:taco-v19.02
-        heat_cloudwatch: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-api:taco-v19.02
-        heat_engine: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        heat_engine_cleaner: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-      pull_policy: IfNotPresent
+        test: registry.cicd.stg.taco/queens/ubuntu-source-rally:taco-0.1.0
+        bootstrap: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        db_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        heat_db_sync: registry.cicd.stg.taco/queens/ubuntu-source-heat-api:taco-0.1.0
+        db_drop: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        heat_api: registry.cicd.stg.taco/queens/ubuntu-source-heat-api:taco-0.1.0
+        heat_cfn: registry.cicd.stg.taco/queens/ubuntu-source-heat-api:taco-0.1.0
+        heat_cloudwatch: registry.cicd.stg.taco/queens/ubuntu-source-heat-api:taco-0.1.0
+        heat_engine: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        heat_engine_cleaner: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        heat_purge_deleted: registry.cicd.stg.taco/openstackhelm/heat:ocata-ubuntu_xenial
+      pull_policy: Always
     pod:
       security_context:
         heat:
@@ -434,9 +1053,6 @@ data:
           heat_stack_user:
             username: heat-domain
             password: password
-          test:
-            username: test
-            password: password
       oslo_db:
         auth:
           admin:
@@ -453,16 +1069,35 @@ data:
           heat:
             username: heat
             password: password
-  source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm
-    subpath: heat
-    reference: taco-v19.02
-  test:
+        statefulset: null
+    bootstrap:
       enabled: false
-      timeout: 3600
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
+    subpath: heat
+    reference: master
+  test:
+    enabled: true
+    timeout: 3600
   dependencies:
-    - helm-toolkit
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: helm-toolkit
+data:
+  chart_name: helm-toolkit
+  release: helm-toolkit
+  namespace: helm-tookit
+  values: {}
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: helm-toolkit
+    reference: master
+  dependencies: []
 ---
 schema: armada/Chart/v1
 metadata:
@@ -489,13 +1124,14 @@ data:
   values:
     images:
       tags:
-        db_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-horizon:taco-v19.02
-        db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-horizon:taco-v19.02
-        horizon_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-horizon:taco-v19.02
-        horizon: registry-rel.cicd.stg.taco/queens/ubuntu-source-horizon:taco-v19.02
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-      pull_policy: IfNotPresent
+        db_init: registry.cicd.stg.taco/queens/ubuntu-source-horizon:taco-0.1.0
+        db_drop: registry.cicd.stg.taco/queens/ubuntu-source-horizon:taco-0.1.0
+        horizon_db_sync: registry.cicd.stg.taco/queens/ubuntu-source-horizon:taco-0.1.0
+        horizon: registry.cicd.stg.taco/queens/ubuntu-source-horizon:taco-0.1.0
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        test: registry.cicd.stg.taco/openstackhelm/osh-selenium:latest-ubuntu_xenial
+      pull_policy: Always
     pod:
       security_context:
         horizon:
@@ -573,10 +1209,12 @@ data:
             username: horizon
             password: password
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: horizon
-    reference: taco-v19.02
+    reference: master
+  test:
+    enabled: false
   dependencies:
   - helm-toolkit
 ---
@@ -595,22 +1233,22 @@ data:
   values:
     images:
       tags:
-        entrypoint: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        ingress: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.23.0
-        ingress_module_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-v19.02
-        ingress_routed_vip: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-v19.02
-        error_pages: gcr.io/google_containers/defaultbackend:1.0
-        keepalived: osixia/keepalived:1.4.5
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-      pull_policy: IfNotPresent
+        entrypoint: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        ingress: registry.cicd.stg.taco/kubernetes-ingress-controller/nginx-ingress-controller:0.23.0
+        ingress_module_init: registry.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-0.1.0
+        ingress_routed_vip: registry.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-0.1.0
+        error_pages: registry.cicd.stg.taco/google_containers/defaultbackend:1.0
+        keepalived: registry.cicd.stg.taco/osixia/keepalived:1.4.5
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
     network:
       host_namespace: true
     monitoring:
       prometheus:
-        enabled: false
+        enabled: true
         ingress_exporter:
-          scrape: false
+          scrape: true
         config:
           worker-processes: 8
     config:
@@ -620,10 +1258,10 @@ data:
         ingress: 1
         error_page: 1
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: ingress
-    reference: taco-v19.02
+    reference: master
   dependencies:
   - helm-toolkit
 ---
@@ -641,55 +1279,56 @@ data:
     no_hooks: false
     pre:
       delete:
-        - name: keystone-bootstrap
-          type: job
-          labels:
-            application: keystone
-            component: bootstrap
-        - name: keystone-credential-setup
-          type: job
-          labels:
-            application: keystone
-            component: credential-setup
-        - name: keystone-db-init
-          type: job
-          labels:
-            application: keystone
-            component: db-init
-        - name: keystone-db-sync
-          type: job
-          labels:
-            application: keystone
-            component: db-sync
-        - name: keystone-fernet-setup
-          type: job
-          labels:
-            application: keystone
-            component: fernet-setup
-        - name: keystone-domain-manage
-          type: job
-          labels:
-            application: keystone
-            component: domain-manage
+      - name: keystone-bootstrap
+        type: job
+        labels:
+          application: keystone
+          component: bootstrap
+      - name: keystone-credential-setup
+        type: job
+        labels:
+          application: keystone
+          component: credential-setup
+      - name: keystone-db-init
+        type: job
+        labels:
+          application: keystone
+          component: db-init
+      - name: keystone-db-sync
+        type: job
+        labels:
+          application: keystone
+          component: db-sync
+      - name: keystone-fernet-setup
+        type: job
+        labels:
+          application: keystone
+          component: fernet-setup
+      - name: keystone-domain-manage
+        type: job
+        labels:
+          application: keystone
+          component: domain-manage
   values:
     images:
       tags:
-        bootstrap: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        test: registry-rel.cicd.stg.taco/queens/ubuntu-source-rally:taco-v19.02
-        db_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        keystone_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
-        db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_user: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
-        keystone_fernet_setup: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
-        keystone_fernet_rotate: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
-        keystone_credential_setup: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
-        keystone_credential_rotate: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
-        keystone_api: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
-        keystone_domain_manage: registry-rel.cicd.stg.taco/queens/ubuntu-source-keystone:taco-v19.02
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-      pull_policy: IfNotPresent
+        bootstrap: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        test: registry.cicd.stg.taco/queens/ubuntu-source-rally:taco-0.1.0
+        db_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        keystone_db_sync: registry.cicd.stg.taco/queens/ubuntu-source-keystone:taco-0.1.0
+        db_drop: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        keystone_fernet_setup: registry.cicd.stg.taco/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_fernet_rotate: registry.cicd.stg.taco/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_credential_setup: registry.cicd.stg.taco/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_credential_rotate: registry.cicd.stg.taco/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_api: registry.cicd.stg.taco/queens/ubuntu-source-keystone:taco-0.1.0
+        keystone_domain_manage: registry.cicd.stg.taco/queens/ubuntu-source-keystone:taco-0.1.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        keystone_credential_cleanup: registry.cicd.stg.taco/openstackhelm/heat:ocata-ubuntu_xenial
+      pull_policy: Always
     conf:
       keystone:
         DEFAULT:
@@ -723,16 +1362,124 @@ data:
           keystone:
             username: keystone
             password: password
+        statefulset: null
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: keystone
-    reference: taco-v19.02
+    reference: master
   test:
-      enabled: false
-      timeout: 3600
+    enabled: true
+    timeout: 3600
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: kibana 
+data:
+  chart_name: kibana
+  release: kibana
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        apache_proxy: registry.cicd.stg.taco/httpd:2.4
+        kibana: registry.cicd.stg.taco/kibana:5.6.4
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        register_kibana_indexes: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+      pull_policy: IfNotPresent
+    endpoints:
+      elasticsearch:
+        auth:
+          admin:
+            username: taco
+            password: password
+    network:
+      kibana:
+        ingress:
+          public: true
+          proxy_body_size: 1024M
+        node_port:
+          enabled: true
+          port: 30001
+        port: 5601
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: kibana
+    reference: master
   dependencies:
     - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: ldap
+data:
+  chart_name: ldap
+  release: ldap
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        ldap: registry.cicd.stg.taco/osixia/openldap:1.2.0
+        bootstrap: registry.cicd.stg.taco/osixia/openldap:1.2.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    storage:
+      pvc:
+        enabled: false
+        size: 1Gi
+        class_name: rbd
+      host:
+        data_path: /data/openstack-helm/ldap
+        config_path: /data/openstack-helm/config
+    bootstrap:
+      enabled: enabled
+    data:
+      sample: |
+        dn: ou=People,dc=cluster,dc=local
+        objectclass: organizationalunit
+        ou: People
+        description: We the People
+
+        # NOTE: Password is "password" without quotes
+        dn: uid=taco,ou=People,dc=cluster,dc=local
+        objectClass: inetOrgPerson
+        objectClass: top
+        objectClass: posixAccount
+        objectClass: shadowAccount
+        objectClass: person
+        sn: taco
+        cn: taco
+        uid: taco
+        userPassword: {SSHA}l6OsaU3ABgWFdUAKvnhxohExurSDKIO2
+        description: SSHA
+        gidNumber: 1000
+        uidNumber: 1493
+        homeDirectory: /home/taco
+        mail: taco@yopmail.com
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: ldap
+    reference: master
+  test:
+    enabled: true
+  dependencies:
+  - helm-toolkit
 ---
 schema: armada/Chart/v1
 metadata:
@@ -750,10 +1497,10 @@ data:
     release_group: null
     images:
       tags:
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        libvirt: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-libvirt:taco-v19.02
-      pull_policy: IfNotPresent
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        libvirt: registry.cicd.stg.taco/queens/ubuntu-source-nova-libvirt:taco-0.1.0
+      pull_policy: Always
     network:
       backend:
       - linuxbridge
@@ -763,7 +1510,7 @@ data:
         admin_keyring: TACO_ADMIN_KEYRING
         cinder:
           user: cinder
-          keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
+          keyring: AQASCkZY1nD5KBAAPIP81ViLXzAYC+Xm3pqY/Q==
           secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
       libvirt:
         listen_addr: 0.0.0.0
@@ -773,12 +1520,36 @@ data:
       configmap_etc: true
       daemonset_libvirt: true
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: libvirt
-    reference: taco-v19.02
+    reference: master
   dependencies:
   - helm-toolkit
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: logging-infra
+data:
+  description: "Logging Infrastructure"
+  sequenced: False
+  chart_group:
+    - elasticsearch
+    - fluentbit
+    - kibana
+---
+schema: armada/Manifest/v1
+metadata:
+  schema: metadata/Document/v1
+  name: single-manifest
+data:
+  release_prefix: single
+  chart_groups:
+  - openstack-infra
+  - openstack-services
+  - logging-infra
+  - monitoring-infra
 ---
 schema: armada/Chart/v1
 metadata:
@@ -802,15 +1573,17 @@ data:
   values:
     images:
       tags:
-        mariadb: registry-rel.cicd.stg.taco/openstackhelm/mariadb:10.2.18
-        ingress: registry-rel.cicd.stg.taco/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
-        error_pages: registry-rel.cicd.stg.taco/google_containers/defaultbackend:1.0
-        prometheus_create_mysql_user: registry-rel.cicd.stg.taco/mariadb:10.2.13
-        prometheus_mysql_exporter: registry-rel.cicd.stg.taco/prom/mysqld-exporter:v0.10.0
-        prometheus_mysql_exporter_helm_tests: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-      pull_policy: IfNotPresent
+        mariadb: registry.cicd.stg.taco/openstackhelm/mariadb:10.2.18
+        mariadb_backup: registry.cicd.stg.taco/openstackhelm/mariadb:latest-ubuntu_xenial
+        scripted_test: registry.cicd.stg.taco/openstackhelm/mariadb:latest-ubuntu_xenial
+        ingress: registry.cicd.stg.taco/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
+        error_pages: registry.cicd.stg.taco/google_containers/defaultbackend:1.0
+        prometheus_create_mysql_user: registry.cicd.stg.taco/mariadb:10.2.13
+        prometheus_mysql_exporter: registry.cicd.stg.taco/prom/mysqld-exporter:v0.10.0
+        prometheus_mysql_exporter_helm_tests: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
     pod:
       replicas:
         server: 1
@@ -825,16 +1598,16 @@ data:
             password: password
     monitoring:
       prometheus:
-        enabled: false
+        enabled: true
         mysqld_exporter:
-          scrape: false
+          scrape: true
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: mariadb
-    reference: taco-v19.02
+    reference: master
   test:
-    enabled: false
+    enabled: true
     timeout: 3600
   dependencies:
   - helm-toolkit
@@ -854,26 +1627,41 @@ data:
   values:
     images:
       tags:
-        memcached: registry-rel.cicd.stg.taco/memcached:1.5.5
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        prometheus_memcached_exporter: prom/memcached-exporter:v0.4.1
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
+        memcached: registry.cicd.stg.taco/memcached:1.5.5
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        prometheus_memcached_exporter: registry.cicd.stg.taco/prom/memcached-exporter:v0.4.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
       replicas:
         server: 1
     monitoring:
       prometheus:
-        enabled: false
+        enabled: true
         memcached_exporter:
-          scrape: false
+          scrape: true
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: memcached
-    reference: taco-v19.02
+    reference: master
   dependencies:
   - helm-toolkit
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: monitoring-infra
+data:
+  description: "Monitoring Infrastructure"
+  sequenced: False
+  chart_group:
+    - grafana
+    - prometheus
+    - prometheus-alertmanager
+    - prometheus-kube-state-metrics
+    - prometheus-node-exporter
+    - prometheus-openstack-exporter
 ---
 schema: armada/Chart/v1
 metadata:
@@ -917,30 +1705,65 @@ data:
   values:
     images:
       tags:
-        bootstrap: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        test: registry-rel.cicd.stg.taco/queens/ubuntu-source-rally:taco-v19.02
-        db_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        neutron_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-v19.02
-        db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_user: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_service: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_endpoints: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        neutron_server: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-v19.02
-        neutron_dhcp: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-dhcp-agent:taco-v19.02
-        neutron_metadata: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-metadata-agent:taco-v19.02
-        neutron_l3: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-l3-agent:taco-v19.02
-        neutron_openvswitch_agent: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-openvswitch-agent:taco-v19.02
-        neutron_linuxbridge_agent: registry-rel.cicd.stg.taco/queens/ubuntu-source-neutron-linuxbridge-agent:taco-v19.02
-        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-      pull_policy: IfNotPresent
+        bootstrap: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        test: registry.cicd.stg.taco/queens/ubuntu-source-rally:taco-0.1.0
+        db_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        neutron_db_sync: registry.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-0.1.0
+        db_drop: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        neutron_server: registry.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-0.1.0
+        neutron_dhcp: registry.cicd.stg.taco/queens/ubuntu-source-neutron-dhcp-agent:taco-0.1.0
+        neutron_metadata: registry.cicd.stg.taco/queens/ubuntu-source-neutron-metadata-agent:taco-0.1.0
+        neutron_l3: registry.cicd.stg.taco/queens/ubuntu-source-neutron-l3-agent:taco-0.1.0
+        neutron_openvswitch_agent: registry.cicd.stg.taco/queens/ubuntu-source-neutron-openvswitch-agent:taco-0.1.0
+        neutron_linuxbridge_agent: registry.cicd.stg.taco/queens/ubuntu-source-neutron-linuxbridge-agent:taco-0.1.0
+        neutron_sriov_agent: registry.cicd.stg.taco/queens/ubuntu-source-neutron-sriov-agent:taco-0.1.0
+        neutron_sriov_agent_init: registry.cicd.stg.taco/queens/ubuntu-source-neutron-sriov-agent:taco-0.1.0
+        neutron_bagpipe_bgp: registry.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-0.1.0
+        neutron_l2gw: registry.cicd.stg.taco/queens/ubuntu-source-neutron-server:taco-0.1.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+      pull_policy: Always
     pod:
       replicas:
         server: 1
       user:
         neutron:
           uid: 42435
+      security_context:
+        neutron:
+          pod:
+            runAsUser: 42435
+        neutron_dhcp_agent:
+          pod:
+            runAsUser: 42435
+        neutron_l2gw_agent:
+          pod:
+            runAsUser: 42435
+        neutron_bagpipe_bgp:
+          pod:
+            runAsUser: 42435
+        neutron_l3_agent:
+          pod:
+            runAsUser: 42435
+        neutron_lb_agent:
+          pod:
+            runAsUser: 42435
+        neutron_metadata_agent:
+          pod:
+            runAsUser: 42435
+        neutron_ovs_agent:
+          pod:
+            runAsUser: 42435
+        neutron_server:
+          pod:
+            runAsUser: 42435
+        neutron_sriov_agent:
+          pod:
+            runAsUser: 42435
     network:
       backend:
       - linuxbridge
@@ -961,7 +1784,7 @@ data:
       neutron:
         DEFAULT:
           core_plugin: ml2
-          l3_ha: true
+          l3_ha: false
           global_physnet_mtu: 1500
           service_plugins: router
         agent:
@@ -1004,6 +1827,7 @@ data:
           neutron:
             username: neutron
             password: password
+        statefulset: null
       identity:
         name: keystone
         auth:
@@ -1016,9 +1840,6 @@ data:
           nova:
             username: nova
             password: password
-          test:
-            username: test
-            password: password
     manifests:
       daemonset_lb_agent: true
       daemonset_dhcp_agent: true
@@ -1027,10 +1848,10 @@ data:
       daemonset_sriov_agent: false
       daemonset_l3_agent: true
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: neutron
-    reference: taco-v19.02
+    reference: master
   test:
     enabled: true
     timeout: 3600
@@ -1104,33 +1925,33 @@ data:
   values:
     images:
       tags:
-        test: registry-rel.cicd.stg.taco/queens/ubuntu-source-rally:taco-v19.02
-        db_drop: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02:taco-v19.02
-        db_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_user: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_service: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        ks_endpoints: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        nova_api: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-api:taco-v19.02
-        nova_cell_setup: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-api:taco-v19.02
-        nova_cell_setup_init: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        nova_compute: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-compute:taco-v19.02
-        nova_compute_ironic: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-compute-queens-ironic:taco-v19.02
-        nova_compute_ssh: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-ssh:taco-v19.02
-        nova_conductor: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-conductor:taco-v19.02
-        nova_consoleauth: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-consoleauth:taco-v19.02
-        nova_db_sync: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-api:taco-v19.02
-        nova_novncproxy: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-novncproxy:taco-v19.02
-        nova_novncproxy_assets: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-novncproxy:taco-v19.02
-        nova_placement: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-placement-api:taco-v19.02
-        nova_scheduler: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-scheduler:taco-v19.02
-        nova_spiceproxy: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-spicehtml5proxy:taco-v19.02
-        nova_spiceproxy_assets: registry-rel.cicd.stg.taco/queens/ubuntu-source-nova-spicehtml5proxy:taco-v19.02
-        bootstrap: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-        rabbit_init: registry-rel.cicd.stg.taco/rabbitmq:3.7-management
-        nova_service_cleaner: registry-rel.cicd.stg.taco/port/ceph-config-helper:v1.14.3
-      pull_policy: IfNotPresent
+        test: registry.cicd.stg.taco/queens/ubuntu-source-rally:taco-0.1.0
+        db_drop: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        db_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        nova_api: registry.cicd.stg.taco/queens/ubuntu-source-nova-api:taco-0.1.0
+        nova_cell_setup: registry.cicd.stg.taco/queens/ubuntu-source-nova-api:taco-0.1.0
+        nova_cell_setup_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        nova_compute: registry.cicd.stg.taco/queens/ubuntu-source-nova-compute:taco-0.1.0
+        nova_compute_ironic: registry.cicd.stg.taco/queens/ubuntu-source-nova-compute-ironic:taco-0.1.0
+        nova_compute_ssh: registry.cicd.stg.taco/queens/ubuntu-source-nova-ssh:taco-0.1.0
+        nova_conductor: registry.cicd.stg.taco/queens/ubuntu-source-nova-conductor:taco-0.1.0
+        nova_consoleauth: registry.cicd.stg.taco/queens/ubuntu-source-nova-consoleauth:taco-0.1.0
+        nova_db_sync: registry.cicd.stg.taco/queens/ubuntu-source-nova-api:taco-0.1.0
+        nova_novncproxy: registry.cicd.stg.taco/queens/ubuntu-source-nova-novncproxy:taco-0.1.0
+        nova_novncproxy_assets: registry.cicd.stg.taco/queens/ubuntu-source-nova-novncproxy:taco-0.1.0
+        nova_placement: registry.cicd.stg.taco/queens/ubuntu-source-nova-placement-api:taco-0.1.0
+        nova_scheduler: registry.cicd.stg.taco/queens/ubuntu-source-nova-scheduler:taco-0.1.0
+        nova_spiceproxy: registry.cicd.stg.taco/queens/ubuntu-source-nova-spicehtml5proxy:taco-0.1.0
+        nova_spiceproxy_assets: registry.cicd.stg.taco/queens/ubuntu-source-nova-spicehtml5proxy:taco-0.1.0
+        bootstrap: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        rabbit_init: registry.cicd.stg.taco/rabbitmq:3.7-management
+        nova_service_cleaner: registry.cicd.stg.taco/port/ceph-config-helper:v1.14.3
+      pull_policy: Always
     bootstrap:
       structured:
         flavors:
@@ -1148,20 +1969,19 @@ data:
           port: 30608
     conf:
       hypervisor:
-        host_interface: eth0
+        host_interface: eth1
       libvirt:
-        live_migration_interface: eth0
+        live_migration_interface: eth1
       ceph:
         enabled: true
         admin_keyring: TACO_ADMIN_KEYRING
         cinder:
           user: cinder
-          keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
+          keyring: AQASCkZY1nD5KBAAPIP81ViLXzAYC+Xm3pqY/Q==
       nova:
         DEFAULT:
           scheduler_default_filters: RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter
           debug: true
-          dhcp_domain: ""
           config_drive_cdrom: true
           config_drive_format: iso9660
           force_config_drive: true
@@ -1207,6 +2027,7 @@ data:
           nova:
             username: nova
             password: password
+        statefulset: null
       identity:
         auth:
           admin:
@@ -1224,30 +2045,639 @@ data:
           placement:
             username: placement
             password: password
-          test:
-            username: test
-            password: password
     pod:
       mandatory_access_control:
         type: null
       user:
         nova:
           uid: 42436
+      security_context:
+        nova:
+          pod:
+            runAsUser: 42436
       replicas:
         api_metadata: 1
+        placement: 1
         osapi: 1
         conductor: 1
         consoleauth: 1
         scheduler: 1
         novncproxy: 1
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
     subpath: nova
-    reference: taco-v19.02
+    reference: master
   test:
     enabled: true
     timeout: 3600
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-infra
+data:
+  description: "Openstack Infrastructure"
+  sequenced: False
+  chart_group:
+    - ceph-provisioners
+    - ingress
+    - etcd
+    - rabbitmq
+    - memcached
+    - mariadb
+    - ldap
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-services
+data:
+  description: "Openstack Services"
+  sequenced: False
+  chart_group:
+    - libvirt
+    - keystone
+    - glance
+    - cinder
+    - heat
+    - nova
+    - neutron
+    - horizon
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-alertmanager
+data:
+  chart_name: prometheus-alertmanager
+  release: prometheus-alertmanager
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        alertmanager: registry.cicd.stg.taco/prom/alertmanager:v0.11.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    storage:
+      enabled: true
+      requests:
+        storage: 5Gi
+      storage_class: rbd
+    pod:
+      mandatory_access_control:
+        type: null
+      replicas:
+        alertmanager: 1
+    conf:
+      alertmanager:
+        global:
+          smtp_smarthost: null
+          smtp_from: null
+          smtp_auth_username: null
+          smtp_auth_password: null
+          hipchat_auth_token: null
+          hipchat_api_url: null
+          slack_api_url: https://hooks.slack.com/services/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
+        templates:
+        - /etc/alertmanager/template/alert-templates.tmpl
+        route:
+          group_by:
+          - alertname
+          group_wait: 10s
+          repeat_interval: 1h
+          receiver: default-alert
+          routes:
+          - receiver: slack-alert
+            group_by:
+            - alertname
+            match:
+              severity: page
+        receivers:
+        - name: default-alert
+          webhook_configs:
+          - url: http://127.0.0.1
+        - name: slack-alert
+          slack_configs:
+          - channel: '#pangyo-alert'
+            username: Prometheus
+            send_resolved: true
+            title: '{{ template "custom_title" . }}'
+            text: '{{ template "custom_slack_message" . }}'
+        - name: telegram-alert
+          webhook_configs:
+          - send_resolved: true
+            url: http://prometheus-bot:9087/alert/-GROUP_ID
+      alert_templates: |-
+        {{ define "__single_message_title" }}{{ range .Alerts.Firing }}{{ .Labels.alertname }} @ {{ .Annotations.identifier }}{{ end }}{{ range .Alerts.Resolved }}{{ .Labels.alertname }} @ {{ .Annotations.identifier }}{{ end }}{{ end }}
+
+        {{ define "custom_title" }}[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }}{{ template "__single_message_title" . }}{{ end }}{{ end }}
+
+        {{ define "custom_slack_message" }}
+        {{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }}
+        {{ range .Alerts.Firing }}{{ .Annotations.description }}{{ end }}{{ range .Alerts.Resolved }}{{ .Annotations.description }}{{ end }}
+        {{ else }}
+        {{ if gt (len .Alerts.Firing) 0 }}
+        *Alerts Firing:*
+        {{ range .Alerts.Firing }}- {{ .Annotations.identifier }}: {{ .Annotations.description }}
+        {{ end }}{{ end }}
+        {{ if gt (len .Alerts.Resolved) 0 }}
+        *Alerts Resolved:*
+        {{ range .Alerts.Resolved }}- {{ .Annotations.identifier }}: {{ .Annotations.description }}
+        {{ end }}{{ end }}
+        {{ end }}
+        {{ end }}
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: prometheus-alertmanager
+    reference: master
+  dependencies:
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-kube-state-metrics 
+data:
+  chart_name: prometheus-kube-state-metrics
+  release: prometheus-kube-state-metrics
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        kube_state_metrics: registry.cicd.stg.taco/bitnami/kube-state-metrics:1.3.1
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: IfNotPresent
+    dummy: Always
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: prometheus-kube-state-metrics
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-node-exporter 
+data:
+  chart_name: prometheus-node-exporter
+  release: prometheus-node-exporter
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        node_exporter: registry.cicd.stg.taco/prom/node-exporter:v0.15.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    labels:
+      node_exporter:
+        node_selector_key: node-exporter
+        node_selector_value: enabled
+    pod:
+      mandatory_access_control:
+        type: null
+      tolerations:
+        node_exporter:
+          enabled: true
+          tolerations:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
+          - key: node-role.kubernetes.io/node
+            operator: Exists
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: prometheus-node-exporter
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-openstack-exporter 
+data:
+  chart_name: prometheus-openstack-exporter
+  release: prometheus-openstack-exporter
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        prometheus_openstack_exporter: registry.cicd.stg.taco/attcomdev/prometheus-openstack-exporter:3231f14419f0c47547ce2551b7d884cd222104e6
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        ks_user: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+      pull_policy: Always
+    endpoints:
+      identity:
+        name: keystone
+        auth:
+          admin:
+            region_name: RegionOne
+            username: admin
+            password: password
+            project_name: admin
+            user_domain_name: default
+            project_domain_name: default
+          user:
+            role: admin
+            region_name: RegionOne
+            username: prometheus-openstack-exporter
+            password: password
+            project_name: service
+            user_domain_name: default
+            project_domain_name: default
+    dummy: dummy
+    pod:
+      mandatory_access_control:
+        type: null
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: prometheus-openstack-exporter
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-process-exporter 
+data:
+  chart_name: prometheus-process-exporter
+  release: prometheus-process-exporter
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        process_exporter: registry.cicd.stg.taco/ncabatoff/process-exporter:0.2.11
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: Always
+    labels:
+      process_exporter:
+        process_selector_key: process-exporter
+        process_selector_value: enabled
+    pod:
+      mandatory_access_control:
+        type: null
+      tolerations:
+        process_exporter:
+          enabled: true
+          tolerations:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
+          - key: node-role.kubernetes.io/node
+            operator: Exists
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: prometheus-process-exporter
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus
+data:
+  chart_name: prometheus
+  release: prometheus
+  namespace: openstack
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        apache_proxy: registry.cicd.stg.taco/httpd:2.4
+        prometheus: registry.cicd.stg.taco/prom/prometheus:v2.3.2
+        helm_tests: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+      pull_policy: IfNotPresent
+    pod:
+      replicas:
+        prometheus: 1
+    endpoints:
+      monitoring:
+        auth:
+          admin:
+            username: taco
+            password: password
+      ldap:
+        hosts:
+          default: ldap
+        auth:
+          admin:
+            bind: cn=taco,dc=cluster,dc=local
+            password: password
+    storage:
+      enabled: true
+      pvc:
+        name: prometheus-pvc
+        access_mode:
+        - ReadWriteOnce
+      requests:
+        storage: 50Gi
+      storage_class: rbd
+    conf:
+      prometheus:
+        command_line_flags:
+          log.level: info
+          query.max_concurrency: 20
+          query.timeout: 2m
+          storage.tsdb.path: /var/lib/prometheus/data
+          storage.tsdb.retention: 30d
+          web.enable_admin_api: true
+          web.enable_lifecycle: false
+        scrape_configs:
+          global:
+            scrape_interval: 60s
+            evaluation_interval: 60s
+            external_labels:
+              taco_cluster: singlenode-general
+          scrape_configs:
+          - job_name: prometheus-metrics
+            kubernetes_sd_configs:
+            - role: endpoints
+            scrape_interval: 60s
+            relabel_configs:
+            - source_labels:
+              - __meta_kubernetes_service_name
+              action: keep
+              regex: prom-metrics
+            - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_scrape
+              action: keep
+              regex: true
+            - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_scheme
+              action: replace
+              target_label: __scheme__
+              regex: (https?)
+            - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_path
+              action: replace
+              target_label: __metrics_path__
+              regex: (.+)
+            - source_labels:
+              - __address__
+              - __meta_kubernetes_service_annotation_prometheus_io_port
+              action: replace
+              target_label: __address__
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $1:$2
+            - action: labelmap
+              regex: __meta_kubernetes_service_label_(.+)
+            - source_labels:
+              - __meta_kubernetes_namespace
+              action: replace
+              target_label: kubernetes_namespace
+            - source_labels:
+              - __meta_kubernetes_service_name
+              action: replace
+              target_label: instance
+            - source_labels:
+              - __meta_kubernetes_service_name
+              action: replace
+              target_label: kubernetes_name
+            - source_labels:
+              - __meta_kubernetes_service_name
+              target_label: job
+              replacement: ${1}
+          - job_name: kubelet
+            scheme: https
+            tls_config:
+              ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+            kubernetes_sd_configs:
+            - role: node
+            scrape_interval: 45s
+            relabel_configs:
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(.+)
+            - target_label: __address__
+              replacement: kubernetes.default.svc:443
+            - source_labels:
+              - __meta_kubernetes_node_name
+              regex: (.+)
+              target_label: __metrics_path__
+              replacement: /api/v1/nodes/${1}/proxy/metrics
+            - source_labels:
+              - __meta_kubernetes_node_name
+              action: replace
+              target_label: kubernetes_io_hostname
+          - job_name: kubernetes-cadvisor
+            scheme: https
+            tls_config:
+              ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+            kubernetes_sd_configs:
+            - role: node
+            relabel_configs:
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(.+)
+            - target_label: __address__
+              replacement: kubernetes.default.svc:443
+            - source_labels:
+              - __meta_kubernetes_node_name
+              regex: (.+)
+              target_label: __metrics_path__
+              replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+          - job_name: apiserver
+            kubernetes_sd_configs:
+            - role: endpoints
+            scrape_interval: 45s
+            scheme: https
+            tls_config:
+              ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+            relabel_configs:
+            - source_labels:
+              - __meta_kubernetes_namespace
+              - __meta_kubernetes_service_name
+              - __meta_kubernetes_endpoint_port_name
+              action: keep
+              regex: default;kubernetes;https
+          - job_name: openstack-exporter
+            kubernetes_sd_configs:
+            - role: endpoints
+            scrape_interval: 60s
+            relabel_configs:
+            - source_labels:
+              - __meta_kubernetes_service_name
+              action: keep
+              regex: openstack-metrics
+            - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_scrape
+              action: keep
+              regex: true
+            - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_scheme
+              action: replace
+              target_label: __scheme__
+              regex: (https?)
+            - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_path
+              action: replace
+              target_label: __metrics_path__
+              regex: (.+)
+            - source_labels:
+              - __address__
+              - __meta_kubernetes_service_annotation_prometheus_io_port
+              action: replace
+              target_label: __address__
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $1:$2
+            - action: labelmap
+              regex: __meta_kubernetes_service_label_(.+)
+            - source_labels:
+              - __meta_kubernetes_namespace
+              action: replace
+              target_label: kubernetes_namespace
+            - source_labels:
+              - __meta_kubernetes_service_name
+              action: replace
+              target_label: instance
+            - source_labels:
+              - __meta_kubernetes_service_name
+              action: replace
+              target_label: kubernetes_name
+            - source_labels:
+              - __meta_kubernetes_service_name
+              target_label: job
+              replacement: ${1}
+          - job_name: kubernetes-service-endpoints
+            kubernetes_sd_configs:
+            - role: endpoints
+            scrape_interval: 60s
+            relabel_configs:
+            - source_labels:
+              - __meta_kubernetes_service_name
+              action: drop
+              regex: (openstack-metrics|prom-metrics)
+            - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_scrape
+              action: keep
+              regex: true
+            - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_scheme
+              action: replace
+              target_label: __scheme__
+              regex: (https?)
+            - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_path
+              action: replace
+              target_label: __metrics_path__
+              regex: (.+)
+            - source_labels:
+              - __address__
+              - __meta_kubernetes_service_annotation_prometheus_io_port
+              action: replace
+              target_label: __address__
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $1:$2
+            - action: labelmap
+              regex: __meta_kubernetes_service_label_(.+)
+            - source_labels:
+              - __meta_kubernetes_namespace
+              action: replace
+              target_label: kubernetes_namespace
+            - source_labels:
+              - __meta_kubernetes_service_name
+              action: replace
+              target_label: kubernetes_name
+            - source_labels:
+              - __meta_kubernetes_service_name
+              target_label: job
+              replacement: ${1}
+          - job_name: kubernetes-pods
+            kubernetes_sd_configs:
+            - role: pod
+            relabel_configs:
+            - source_labels:
+              - __meta_kubernetes_pod_annotation_prometheus_io_scrape
+              action: keep
+              regex: true
+            - source_labels:
+              - __meta_kubernetes_pod_annotation_prometheus_io_path
+              action: replace
+              target_label: __metrics_path__
+              regex: (.+)
+            - source_labels:
+              - __address__
+              - __meta_kubernetes_pod_annotation_prometheus_io_port
+              action: replace
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $1:$2
+              target_label: __address__
+            - action: labelmap
+              regex: __meta_kubernetes_pod_label_(.+)
+            - source_labels:
+              - __meta_kubernetes_namespace
+              action: replace
+              target_label: kubernetes_namespace
+            - source_labels:
+              - __meta_kubernetes_pod_name
+              action: replace
+              target_label: kubernetes_pod_name
+          - job_name: calico-node
+            kubernetes_sd_configs:
+            - role: node
+            scrape_interval: 45s
+            relabel_configs:
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(.+)
+            - source_labels:
+              - __meta_kubernetes_node_address_InternalIP
+              regex: (.*)
+              target_label: __address__
+              replacement: ${1}:9091
+            - source_labels:
+              - __meta_kubernetes_node_name
+              regex: (.+)
+              target_label: __metrics_path__
+              replacement: /metrics
+            - source_labels:
+              - __meta_kubernetes_node_name
+              action: replace
+              target_label: kubernetes_io_hostname
+  source:
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
+    subpath: prometheus
+    reference: master
   dependencies:
   - helm-toolkit
 ---
@@ -1266,12 +2696,13 @@ data:
   values:
     images:
       tags:
-        rabbitmq: registry-rel.cicd.stg.taco/rabbitmq:3.7.13
-        dep_check: registry-rel.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
-        prometheus_rabbitmq_exporter: registry-rel.cicd.stg.taco/kbudde/rabbitmq-exporter:v0.21.0
-        image_repo_sync: registry-rel.cicd.stg.taco/docker:17.07.0
-        scripted_test: registry-rel.cicd.stg.taco/rabbitmq:3.7.13-management
-        prometheus_rabbitmq_exporter_helm_tests: registry-rel.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-v19.02
+        prometheus_rabbitmq_exporter: registry.cicd.stg.taco/kbudde/rabbitmq-exporter:v0.21.0
+        prometheus_rabbitmq_exporter_helm_tests: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        rabbitmq_init: registry.cicd.stg.taco/queens/ubuntu-source-heat-engine:taco-0.1.0
+        rabbitmq: registry.cicd.stg.taco/rabbitmq:3.7.13
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        scripted_test: registry.cicd.stg.taco/rabbitmq:3.7.13-management
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -1280,9 +2711,9 @@ data:
       class_name: rbd
     monitoring:
       prometheus:
-        enabled: false
+        enabled: true
         rabbitmq_exporter:
-          scrape: false
+          scrape: true
     endpoints:
       oslo_messaging:
         auth:
@@ -1290,143 +2721,12 @@ data:
             username: rabbitmq
             password: password
   source:
-    type: local
-    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    type: git
+    location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra
     subpath: rabbitmq
-    reference: taco-v19.02
+    reference: master
   test:
-    enabled: false
+    enabled: true
     timeout: 3600
   dependencies:
   - helm-toolkit
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-ingress-controller
-data:
-  description: "OpenStack Ingress Controller"
-  sequenced: False
-  chart_group:
-    - ingress
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-ceph-config
-data:
-  description: "OpenStack Ceph Config"
-  sequenced: True
-  chart_group:
-    - ceph-provisioners
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: deploy-mariadb
-data:
-  description: "Mariadb"
-  sequenced: True
-  chart_group:
-    - mariadb
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: deploy-memcached
-data:
-  description: "Memcached"
-  sequenced: True
-  chart_group:
-    - memcached
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: deploy-rabbitmq
-data:
-  description: "RabbitMQ"
-  sequenced: True
-  chart_group:
-    - rabbitmq
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-keystone
-data:
-  description: "Deploy keystone"
-  sequenced: True
-  chart_group:
-    - keystone
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-glance
-data:
-  description: "Deploy glance"
-  sequenced: True
-  chart_group:
-    - glance
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-cinder
-data:
-  description: "Deploy cinder"
-  sequenced: True
-  chart_group:
-    - cinder
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-compute-kit
-data:
-  description: "Deploy nova and neutron, as well as supporting services"
-  sequenced: False
-  chart_group:
-    - libvirt
-    - nova
-    - neutron
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-heat
-data:
-  description: "Deploy heat"
-  sequenced: True
-  chart_group:
-    - heat
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-dashboard
-data:
-  description: "Deploy horizon"
-  sequenced: True
-  chart_group:
-    - horizon
----
-schema: armada/Manifest/v1
-metadata:
-  schema: metadata/Document/v1
-  name: taco-manifest
-data:
-  release_prefix: taco
-  chart_groups:
-    - openstack-ingress-controller
-    - openstack-ceph-config
-    - deploy-mariadb
-    - deploy-memcached
-    - deploy-rabbitmq
-    - openstack-keystone
-    - openstack-glance
-    - openstack-cinder
-    - openstack-compute-kit
-    - openstack-heat
-    - openstack-dashboard
