@@ -80,10 +80,10 @@
   become: no
   when: workon_armada.stdout == ""
 
-- name: install pbr when offline env
+- name: install pbr,requests for armada when offline env
   command: >-
    "{{ workon_home }}/armada/bin/pip"
-   install pbr
+   install pbr requests==2.21.0
   become: no
 
 - name: install required packages for armada in virtual env
