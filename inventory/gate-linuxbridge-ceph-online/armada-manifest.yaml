@@ -1740,6 +1740,9 @@ data:
         neutron_dhcp_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_dhcp_agent:
+              readOnlyRootFilesystem: false
         neutron_l2gw_agent:
           pod:
             runAsUser: 42435
@@ -1752,6 +1755,9 @@ data:
         neutron_lb_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_lb_agent:
+              readOnlyRootFilesystem: false
         neutron_metadata_agent:
           pod:
             runAsUser: 42435
@@ -1991,6 +1997,7 @@ data:
           images_type: rbd
           rbd_user: cinder
           rbd_secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
+          virt_type: qemu
         scheduler:
           discover_hosts_in_cells_interval: 60
       rootwrap_filters: null
