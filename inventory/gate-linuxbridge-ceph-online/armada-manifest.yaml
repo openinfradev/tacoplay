@@ -1775,7 +1775,7 @@ data:
       - linuxbridge
       share_namespaces: false
       auto_bridge_add:
-        br-ex: null
+        br-ex: eth0
       interface:
         tunnel: null
     conf:
