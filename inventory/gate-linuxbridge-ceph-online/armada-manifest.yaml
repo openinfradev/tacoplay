@@ -1071,7 +1071,7 @@ data:
             password: password
         statefulset: null
     bootstrap:
-      enabled: false
+      enabled: true
   source:
     type: git
     location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
@@ -1656,7 +1656,7 @@ data:
   description: "Monitoring Infrastructure"
   sequenced: False
   chart_group:
-    - grafana
+#    - grafana
     - prometheus
     - prometheus-alertmanager
     - prometheus-kube-state-metrics
