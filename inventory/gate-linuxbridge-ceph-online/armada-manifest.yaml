@@ -1752,6 +1752,9 @@ data:
         neutron_l3_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_l3_agent:
+              readOnlyRootFilesystem: false
         neutron_lb_agent:
           pod:
             runAsUser: 42435
@@ -1767,6 +1770,9 @@ data:
         neutron_server:
           pod:
             runAsUser: 42435
+          container:
+            neutron_server:
+              readOnlyRootFilesystem: false
         neutron_sriov_agent:
           pod:
             runAsUser: 42435
@@ -1777,7 +1783,7 @@ data:
       auto_bridge_add:
         br-ex: null
       interface:
-        tunnel: null
+        tunnel: eth1
     conf:
       paste:
         composite:neutronapi_v2_0:
@@ -1812,7 +1818,7 @@ data:
             firewall_driver: openvswitch
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings: provider:eth1
+            physical_interface_mappings: provider:veth0
             bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
