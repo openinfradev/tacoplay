@@ -2,6 +2,7 @@
 cicd_registry_enabled: false
 docker_insecure_registries: 
  - VM-NAME-1:5000
+is_gating_test: true
 
 localrepo_enabled: true
 localrepo_yum: 192.168.197.39
@@ -11,8 +12,8 @@ localrepo_port: 8888
 
 # ceph
 monitor_interface: eth1
-public_network: 192.168.197.0/24,192.168.198.0/24
-cluster_network: 192.168.197.0/24,192.168.198.0/24
+public_network: 192.168.199.0/24,192.168.200.0/24
+cluster_network: 192.168.199.0/24,192.168.200.0/24
 
 ceph_conf_overrides:
       global:

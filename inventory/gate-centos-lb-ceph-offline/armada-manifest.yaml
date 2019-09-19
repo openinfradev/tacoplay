@@ -136,9 +136,9 @@ data:
           pod:
             runAsUser: 42407
       replicas:
-        api: 1
+        api: 3
         backup: 1
-        scheduler: 1
+        scheduler: 3
         volume: 1
     conf:
       logging:
@@ -158,14 +158,14 @@ data:
         enabled: true
         pools:
           backups:
-            replication: 3
+            replication: 1
             crush_rule: replicated_rule
-            chunk_size: 8
+            chunk_size: 128
             app_name: cinder-backup
           volumes:
-            replication: 3
+            replication: 1
             crush_rule: replicated_rule
-            chunk_size: 8
+            chunk_size: 128
             app_name: cinder-volume
       cinder:
         DEFAULT:
@@ -289,7 +289,7 @@ data:
           pod:
             runAsUser: 42415
       replicas:
-        api: 1
+        api: 3
         registry: 1
     network:
       api:
@@ -450,10 +450,10 @@ data:
           pod:
             runAsUser: 42418
       replicas:
-        api: 1
-        cfn: 1
-        cloudwatch: 1
-        engine: 1
+        api: 3
+        cfn: 3
+        cloudwatch: 3
+        engine: 3
     endpoints:
       identity:
         auth:
@@ -536,7 +536,7 @@ data:
           pod:
             runAsUser: 42420
       replicas:
-        server: 1
+        server: 3
     network:
       node_port:
         enabled: true
@@ -651,7 +651,7 @@ data:
       worker-processes: 8
     pod:
       replicas:
-        ingress: 1
+        ingress: 3
         error_page: 1
   source:
     type: local
@@ -734,7 +734,7 @@ data:
           pod:
             runAsUser: 42425
       replicas:
-        api: 1
+        api: 3
     endpoints:
       identity:
         auth:
@@ -797,7 +797,7 @@ data:
         enabled: true
         admin_keyring: TACO_ADMIN_KEYRING
         cinder:
-          keyring: TACO_ADMIN_KEYRING
+          keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
       libvirt:
         listen_addr: 0.0.0.0
         log_level: 3
@@ -894,7 +894,7 @@ data:
       pull_policy: IfNotPresent
     pod:
       replicas:
-        server: 1
+        server: 3
     monitoring:
       prometheus:
         enabled: false
@@ -970,7 +970,7 @@ data:
       pull_policy: IfNotPresent
     pod:
       replicas:
-        server: 1
+        server: 3
       user:
         neutron:
           uid: 42435
@@ -981,6 +981,9 @@ data:
         neutron_dhcp_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_dhcp_agent:
+              readOnlyRootFilesystem: false
         neutron_l2gw_agent:
           pod:
             runAsUser: 42435
@@ -990,9 +993,15 @@ data:
         neutron_l3_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_l3_agent:
+              readOnlyRootFilesystem: false
         neutron_lb_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_lb_agent:
+              readOnlyRootFilesystem: false
         neutron_metadata_agent:
           pod:
             runAsUser: 42435
@@ -1002,6 +1011,9 @@ data:
         neutron_server:
           pod:
             runAsUser: 42435
+          container:
+            neutron_server:
+              readOnlyRootFilesystem: false
         neutron_sriov_agent:
           pod:
             runAsUser: 42435
@@ -1012,7 +1024,7 @@ data:
       auto_bridge_add:
         br-ex: null
       interface:
-        tunnel: null
+        tunnel: eth1
     conf:
       paste:
         composite:neutronapi_v2_0:
@@ -1038,16 +1050,9 @@ data:
             tenant_network_types: vxlan
           ml2_type_flat:
             flat_networks: provider
-          ml2_type_vlan:
-            network_vlan_ranges: provider1
-        openvswitch_agent:
-          ovs:
-            bridge_mappings: ""
-          securitygroup:
-            firewall_driver: openvswitch
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings: provider:eth0
+            physical_interface_mappings: provider:veth0
             bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
@@ -1210,9 +1215,9 @@ data:
           port: 30608
     conf:
       hypervisor:
-        host_interface: eth0
+        host_interface: eth1
       libvirt:
-        live_migration_interface: eth0
+        live_migration_interface: eth1
       ceph:
         enabled: true
         admin_keyring: TACO_ADMIN_KEYRING
@@ -1225,11 +1230,12 @@ data:
           config_drive_format: iso9660
           force_config_drive: true
         vnc:
-          novncproxy_base_url: http://taco-aio:30608/vnc_auto.html
+          novncproxy_base_url: http://VM-NAME-1:30608/vnc_auto.html
         libvirt:
           images_type: rbd
           rbd_user: cinder
           rbd_secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
+          virt_type: qemu
         scheduler:
           discover_hosts_in_cells_interval: 60
       rootwrap_filters: null
@@ -1295,12 +1301,12 @@ data:
           pod:
             runAsUser: 42436
       replicas:
-        api_metadata: 1
-        osapi: 1
-        conductor: 1
-        consoleauth: 1
-        scheduler: 1
-        novncproxy: 1
+        api_metadata: 3
+        osapi: 3
+        conductor: 3
+        consoleauth: 3
+        scheduler: 3
+        novncproxy: 3
   source:
     type: local
     location: /home/taco/tacoplay/charts/openstack-helm
