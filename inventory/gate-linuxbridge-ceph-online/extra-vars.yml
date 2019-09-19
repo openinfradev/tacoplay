@@ -6,7 +6,7 @@ docker_insecure_registries: ""
 is_gating_test: true
 
 # ceph
-monitor_interface: eth0
+monitor_interface: br-data
 public_network: 192.168.97.0/24,192.168.98.0/24
 cluster_network: 192.168.97.0/24,192.168.98.0/24
 

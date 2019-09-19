@@ -1071,7 +1071,7 @@ data:
             password: password
         statefulset: null
     bootstrap:
-      enabled: false
+      enabled: true
   source:
     type: git
     location: https://tde.sktelecom.com/stash/scm/openstack/openstack-helm
@@ -1656,7 +1656,7 @@ data:
   description: "Monitoring Infrastructure"
   sequenced: False
   chart_group:
-    - grafana
+#    - grafana
     - prometheus
     - prometheus-alertmanager
     - prometheus-kube-state-metrics
@@ -1740,6 +1740,9 @@ data:
         neutron_dhcp_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_dhcp_agent:
+              readOnlyRootFilesystem: false
         neutron_l2gw_agent:
           pod:
             runAsUser: 42435
@@ -1749,9 +1752,15 @@ data:
         neutron_l3_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_l3_agent:
+              readOnlyRootFilesystem: false
         neutron_lb_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_lb_agent:
+              readOnlyRootFilesystem: false
         neutron_metadata_agent:
           pod:
             runAsUser: 42435
@@ -1761,6 +1770,9 @@ data:
         neutron_server:
           pod:
             runAsUser: 42435
+          container:
+            neutron_server:
+              readOnlyRootFilesystem: false
         neutron_sriov_agent:
           pod:
             runAsUser: 42435
@@ -1771,7 +1783,7 @@ data:
       auto_bridge_add:
         br-ex: null
       interface:
-        tunnel: null
+        tunnel: eth1
     conf:
       paste:
         composite:neutronapi_v2_0:
@@ -1806,7 +1818,7 @@ data:
             firewall_driver: openvswitch
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings: provider:eth1
+            physical_interface_mappings: provider:veth0
             bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
@@ -1991,6 +2003,7 @@ data:
           images_type: rbd
           rbd_user: cinder
           rbd_secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
+          virt_type: qemu
         scheduler:
           discover_hosts_in_cells_interval: 60
       rootwrap_filters: null
