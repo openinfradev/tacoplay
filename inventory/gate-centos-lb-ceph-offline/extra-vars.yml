@@ -11,9 +11,9 @@ localrepo_pypi: 192.168.197.39
 localrepo_port: 8888
 
 # ceph
-monitor_interface: eth1
-public_network: 192.168.199.0/24,192.168.200.0/24
-cluster_network: 192.168.199.0/24,192.168.200.0/24
+monitor_interface: eth2
+public_network: 192.168.201.0/24,192.168.202.0/24
+cluster_network: 192.168.201.0/24,192.168.202.0/24
 
 ceph_conf_overrides:
       global:

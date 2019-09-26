@@ -1025,7 +1025,7 @@ data:
       auto_bridge_add:
         br-ex: null
       interface:
-        tunnel: eth1
+        tunnel: eth2
     conf:
       paste:
         composite:neutronapi_v2_0:
@@ -1053,7 +1053,7 @@ data:
             flat_networks: provider
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings: provider:veth0
+            physical_interface_mappings: provider:eth1
             bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
@@ -1216,9 +1216,9 @@ data:
           port: 30608
     conf:
       hypervisor:
-        host_interface: eth1
+        host_interface: eth2
       libvirt:
-        live_migration_interface: eth1
+        live_migration_interface: eth2
       ceph:
         enabled: true
         admin_keyring: TACO_ADMIN_KEYRING
