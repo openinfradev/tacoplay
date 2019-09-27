@@ -1100,7 +1100,7 @@ data:
     subpath: neutron
     reference: master
   test:
-    enabled: true
+    enabled: false
     timeout: 3600
   dependencies:
   - helm-toolkit
@@ -1317,7 +1317,7 @@ data:
     subpath: nova
     reference: master
   test:
-    enabled: true
+    enabled: false
     timeout: 3600
   dependencies:
   - helm-toolkit
