@@ -43,3 +43,6 @@ vfat_config_drive_enabled: false
 
 # Gating
 is_gating_test: false
+
+# Install external openvswitch service 
+install_ovs_as_a_rpms: false
