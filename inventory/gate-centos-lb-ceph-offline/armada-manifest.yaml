@@ -132,7 +132,16 @@ data:
       pull_policy: IfNotPresent
     pod:
       security_context:
-        cinder:
+        cinder_api:
+          pod:
+            runAsUser: 42407
+        cinder_backup:
+          pod:
+            runAsUser: 42407
+        cinder_scheduler:
+          pod:
+            runAsUser: 42407
+        cinder_volume:
           pod:
             runAsUser: 42407
       replicas:
