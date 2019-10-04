@@ -84,7 +84,7 @@
         marker: "# TACO registry hosts {mark}"
   tags: always
 
-# Prepare bash option for ubuntu OS
+# Prepare sh option for ubuntu OS
 - hosts: taco
   tasks:
     - name: change sh directory from dash to bash
