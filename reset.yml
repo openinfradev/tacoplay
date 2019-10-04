@@ -40,6 +40,36 @@
       - install_ovs_as_a_rpms
   tags: always
 
+# Remove target nodes from SONA configuration
+- hosts: localhost:all
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+  - name: get active ip of sona chart
+    shell: >-
+      {{ bin_dir }}/kubectl get pod -n openstack -o wide |
+      grep sona-onos-0 |
+      awk '{print $6}'
+    register: active_ip
+    become: no
+    delegate_to: "{{ groups['admin-node']|first }}"
+    when: sona_integration|default(false)
+  - name: get slave ip of sona chart
+    shell: >-
+      {{ bin_dir }}/kubectl get pod -n openstack -o wide |
+      grep sona-onos-1 |
+      awk '{print $6}'
+    register: slave_ip
+    become: no
+    delegate_to: "{{ groups['admin-node']|first }}"
+    when: sona_integration|default(false)
+  - name: api call for deleting limit hosts
+    shell: |
+      curl --user onos:rocks -X DELETE http://{{ active_ip.stdout }}:8181/onos/openstacknode/configure/{{ item }}
+      curl --user onos:rocks -X DELETE http://{{ slave_ip.stdout }}:8181/onos/openstacknode/configure/{{ item }}
+    with_items: "{{ ansible_play_hosts }}"
+    delegate_to: "{{ groups['admin-node']|first }}"
+    when: sona_integration|default(false)
+
 # Reset K8S cluster
 - include: kubespray/reset.yml
   tags: k8s
