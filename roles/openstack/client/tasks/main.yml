@@ -19,7 +19,7 @@
     state: present
   loop:
     - { name: 'pbr', version: '5.1.1' }
-    - { name: 'python-openstackclient', version: '3.12.1' }
+    - { name: 'python-openstackclient', version: '4.0.0' }
     - { name: 'python-cinderclient', version: '3.1.0' }
     - { name: 'python-glanceclient', version: '2.8.1' }
     - { name: 'python-keystoneclient', version: '3.12.0' }
