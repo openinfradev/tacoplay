@@ -110,6 +110,7 @@
   apt:
     name: python3.4-dev
   ignore_errors: yes  
+  when: ansible_distribution in ["Ubuntu", "Debian"]
 
 - name: install required packages for armada in virtual env
   pip:
