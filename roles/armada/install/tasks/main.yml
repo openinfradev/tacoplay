@@ -106,6 +106,11 @@
    install pbr requests==2.21.0
   become: no
 
+- name: install python developer package for install some requirements
+  apt:
+    name: python3.4-dev
+  ignore_errors: yes  
+
 - name: install required packages for armada in virtual env
   pip:
     requirements: "{{ playbook_dir }}/armada/requirements.txt"
