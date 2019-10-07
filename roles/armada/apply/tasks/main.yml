@@ -40,10 +40,9 @@
     state: absent
   with_items: "{{ armada_processes.stdout_lines }}"
 
-- name: run armada apply
+- name: run armada apply in CentOS
   shell: >-
     . ~/.bashrc &&
-    . 'which virtualenvwrapper.sh' && 
     workon armada &&
     {{ lookup('env','HOME') }}/venv/armada/bin/armada apply
     --tiller-host {{ tiller_host.stdout }}
@@ -51,7 +50,22 @@
     --timeout 9000
     {{ armada_manifest }} >
     {{ lookup('env','HOME') }}/armada.log
-  when: auto_release_enabled|default(true) and tiller_host.stdout != ""
+  when: auto_release_enabled|default(true) and tiller_host.stdout != "" and ansible_distribution in ["CentOS", "RedHat"]
+  become: no
+  run_once: yes
+
+- name: run armada apply in Ubuntu
+  shell: >-
+    . ~/.bashrc &&
+    . /usr/local/bin/virtualenvwrapper.sh && 
+    workon armada &&
+    {{ lookup('env','HOME') }}/venv/armada/bin/armada apply
+    --tiller-host {{ tiller_host.stdout }}
+    --tiller-port {{ tiller_port }}
+    --timeout 9000
+    {{ armada_manifest }} >
+    {{ lookup('env','HOME') }}/armada.log
+  when: auto_release_enabled|default(true) and tiller_host.stdout != "" and ansible_distribution in ["Ubuntu", "Debian"]
   become: no
   run_once: yes
 
