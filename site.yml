@@ -91,9 +91,10 @@
       shell: >-
         rm /bin/sh &&
         ln -s /bin/bash /bin/sh
-  when: 
-    - ansible_distribution in ["Ubuntu","Debian"]
+      when:
+        - ansible_distribution in ["Ubuntu","Debian"]
   tags: always
+
 # Prepare OS for TACO
 - hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
@@ -165,9 +166,8 @@
         name: requests
         extra_args: --ignore-installed
       when:
-        - check_result.rc == 0
         - ansible_distribution in ["CentOS","RedHat"]
-
+        - check_result.rc == 0
 # This should run without 'ceph' tag, since it's necessary
 # for rbd_provisioner role in kubespray
 - hosts: admin-node:kube-master
