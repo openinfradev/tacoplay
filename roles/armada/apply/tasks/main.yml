@@ -43,7 +43,7 @@
 - name: run armada apply
   shell: >-
     . ~/.bashrc && workon armada &&
-    armada apply
+    {{ lookup('env','HOME') }}/venv/armada/bin/armada apply
     --tiller-host {{ tiller_host.stdout }}
     --tiller-port {{ tiller_port }}
     --timeout 9000
