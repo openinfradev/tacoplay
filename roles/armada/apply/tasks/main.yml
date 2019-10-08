@@ -40,9 +40,13 @@
     state: absent
   with_items: "{{ armada_processes.stdout_lines }}"
 
+- name: register virtualenvwrapper.sh locate
+  shell: which virtualenvwrapper.sh
+  register: tirlocate
+
 - name: run armada apply
   shell: >-
-    . ~/.bashrc && . {{virlocate.stdout}}  && workon armada &&
+    . ~/.bashrc && . {{tirlocate.stdout}}  && workon armada &&
     ~/venv/armada/bin/armada apply
     --tiller-host {{ tiller_host.stdout }}
     --tiller-port {{ tiller_port }}
