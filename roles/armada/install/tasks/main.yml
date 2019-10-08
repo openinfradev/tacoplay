@@ -63,42 +63,29 @@
   become: no
   when: ansible_distribution in ["Ubuntu","Debian"]
 
-- name: get existing workon armada in CentOS
+- name: register virtualenvwrapper.sh locate
+  shell: which virtualenvwrapper.sh
+  register: virlocate
+
+- name: get existing workon armada
   shell: >-
     . {{ lookup('env','HOME') }}/.bashrc &&
+    . {{virlocate.stdout}} &&
     lsvirtualenv | grep armada | cat
+  args:
+    executable: /bin/bash
   register: workon_armada
   become: no
-  when: ansible_distribution in ["CentOS", "RedHat"]
 
-
-- name: get existing workon armada in Ubuntu
+- name: create workon armada if not exist
   shell: >-
     . {{ lookup('env','HOME') }}/.bashrc &&
-    . /usr/local/bin/virtualenvwrapper.sh &&
-    lsvirtualenv | grep armada | cat
-  register: workon_armada
-  become: no
-  when: ansible_distribution in ["Ubuntu", "Debian"]
-
-- name: create workon armada if not exist in CentOS
-  shell: >-
-    . {{ lookup('env','HOME') }}/.bashrc &&
+    . {{virlocate.stdout}} &&
     mkvirtualenv armada --python=/usr/bin/python3.4
+  args:
+    executable: /bin/bash
   become: no
-  when:
-    - workon_armada.stdout == ""
-    - ansible_distribution in ["CentOS", "RedHat"]
-
-- name: create workon armada if not exist in Ubuntu
-  shell: >-
-    . {{ lookup('env','HOME') }}/.bashrc &&
-    . /usr/local/bin/virtualenvwrapper.sh  &&
-    mkvirtualenv armada --python=/usr/bin/python3.4
-  become: no
-  when: 
-    - workon_armada.stdout == ""
-    - ansible_distribution in ["Ubuntu","Debian"]
+  when: workon_armada.stdout == ""
 
 - name: install pbr,requests for armada when offline env
   command: >-
