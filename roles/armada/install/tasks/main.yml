@@ -39,7 +39,7 @@
     - virtualenvwrapper
     - pbr
 
-- name: update bashrc for running virtual env and armada
+- name: update bashrc for running virtual env and armada in CentOS
   blockinfile:
     path: "{{ lookup('env','HOME') }}/.bashrc"
     block: |
@@ -51,9 +51,9 @@
   become: no  
   when: ansible_distribution in ["CentOS","RedHat"]
 
-- name: update bashrc for running virtual env and armada
+- name: update bashrc for running virtual env and armada in Ubuntu
   blockinfile:
-    path: "{{ lookup('env','HOME') }}/.bashrc"
+    path: "{{ lookup('env','HOME') }}/.profile"
     block: |
       export LC_ALL="en_US.UTF-8"
       export WORKON_HOME={{ workon_home }}
@@ -63,29 +63,47 @@
   become: no
   when: ansible_distribution in ["Ubuntu","Debian"]
 
-- name: register virtualenvwrapper.sh locate
-  shell: which virtualenvwrapper.sh
-  register: virlocate
-
-- name: get existing workon armada
+- name: get existing workon armada in CentOS
   shell: >-
     . {{ lookup('env','HOME') }}/.bashrc &&
-    . {{virlocate.stdout}} &&
     lsvirtualenv | grep armada | cat
   args:
     executable: /bin/bash
   register: workon_armada
   become: no
+  when: ansible_distribution in ["CentOS", "RedHat"]
 
-- name: create workon armada if not exist
+- name: get existing workon armada in Ubuntu
   shell: >-
-    . {{ lookup('env','HOME') }}/.bashrc &&
-    . {{virlocate.stdout}} &&
+    . {{ lookup('env','HOME') }}/.profile &&
+    lsvirtualenv | grep armada | cat
+  args:
+    executable: /bin/bash
+  register: workon_armada
+  become: no
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: create workon armada if not exist in CentOS
+  shell: >-
+    . {{ lookup('env','HOME') }}/.bashrc && 
     mkvirtualenv armada --python=/usr/bin/python3.4
   args:
     executable: /bin/bash
   become: no
-  when: workon_armada.stdout == ""
+  when:
+    - ansible_distribution in ["CentOS", "RedHat"]
+    - workon_armada.stdout == ""
+
+- name: create workon armada if not exist in Ubuntu
+  shell: >-
+    . {{ lookup('env','HOME') }}/.profile &&
+    mkvirtualenv armada --python=/usr/bin/python3.4
+  args:
+    executable: /bin/bash
+  become: no
+  when: 
+    - ansible_distribution in ["Ubuntu", "Debian"]
+    - workon_armada.stdout == ""
 
 - name: install pbr,requests for armada when offline env
   command: >-
