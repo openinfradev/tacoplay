@@ -40,10 +40,6 @@
     state: absent
   with_items: "{{ armada_processes.stdout_lines }}"
 
-- name: register virtualenvwrapper.sh locate
-  shell: which virtualenvwrapper.sh
-  register: tirlocate
-
 - name: run armada apply in centos
   shell: >-
     . {{ lookup('env','HOME') }}/.bashrc && workon armada &&
