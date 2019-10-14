@@ -2,22 +2,6 @@
 schema: armada/Chart/v1
 metadata:
   schema: metadata/Document/v1
-  name: helm-toolkit
-data:
-  chart_name: helm-toolkit
-  release: helm-toolkit
-  namespace: helm-tookit
-  values: {}
-  source:
-    type: local
-    location: /home/centos/tacoplay/charts/openstack-helm-infra
-    subpath: helm-toolkit
-    reference: taco-v19.02
-  dependencies: []
----
-schema: armada/Chart/v1
-metadata:
-  schema: metadata/Document/v1
   name: ceph-provisioners
 data:
   chart_name: ceph-provisioners
@@ -55,11 +39,12 @@ data:
       job_namespace_client_key: false
       storageclass_cephfs: false
       storageclass_rbd: false
+      helm_tests: false
   source:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm-infra
     subpath: ceph-provisioners
-    reference: taco-v19.02
+    reference: taco-v19.03
   dependencies:
     - helm-toolkit
 ---
@@ -110,28 +95,40 @@ data:
   values:
     images:
       tags:
-        test: sktdev/ubuntu-source-rally-queens:taco-v19.02
-        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        cinder_db_sync: sktdev/ubuntu-source-cinder-api-queens:taco-v19.02
-        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
+        test: sktdev/ubuntu-source-rally-queens:taco-v19.03
+        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        cinder_db_sync: sktdev/ubuntu-source-cinder-api-queens:taco-v19.03
+        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
         rabbit_init: rabbitmq:3.7-management
-        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        cinder_api: sktdev/ubuntu-source-cinder-api-queens:taco-v19.02
-        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        cinder_scheduler: sktdev/ubuntu-source-cinder-scheduler-queens:taco-v19.02
-        cinder_volume: sktdev/ubuntu-source-cinder-volume-queens:taco-v19.02
-        cinder_volume_usage_audit: sktdev/ubuntu-source-cinder-volume-queens:taco-v19.02
+        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        cinder_api: sktdev/ubuntu-source-cinder-api-queens:taco-v19.03
+        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        cinder_scheduler: sktdev/ubuntu-source-cinder-scheduler-queens:taco-v19.03
+        cinder_volume: sktdev/ubuntu-source-cinder-volume-queens:taco-v19.03
+        cinder_volume_usage_audit: sktdev/ubuntu-source-cinder-volume-queens:taco-v19.03
         cinder_storage_init: sktdev/ceph-config-helper:v1.14.3
-        cinder_backup: sktdev/ubuntu-source-cinder-backup-queens:taco-v19.02
+        cinder_backup: sktdev/ubuntu-source-cinder-backup-queens:taco-v19.03
         cinder_backup_storage_init: sktdev/ceph-config-helper:v1.14.3
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
         image_repo_sync: docker:17.07.0
-      pull_policy: IfNotPresent
+      pull_policy: Always
     pod:
       security_context:
         cinder:
+          pod:
+            runAsUser: 42407
+        cinder_api:
+          pod:
+            runAsUser: 42407
+        cinder_backup:
+          pod:
+            runAsUser: 42407
+        cinder_scheduler:
+          pod:
+            runAsUser: 42407
+        cinder_volume:
           pod:
             runAsUser: 42407
       replicas:
@@ -156,18 +153,19 @@ data:
         admin_keyring: TACO_ADMIN_KEYRING
         enabled: true
         pools:
-          backup:
-            replication: 1
-          volume:
-            replication: 1
+          volumes-test:
+            replication: 2
+            crush_rule: replicated_rule
+            chunk_size: 128
+            app_name: cinder-volume
       cinder:
         DEFAULT:
           backup_driver: cinder.backup.drivers.ceph
           backup_ceph_user: cinder-backup
-          backup_ceph_pool: backups
+          backup_ceph_pool: backups-test
       backends:
         rbd1:
-          rbd_pool: volumes
+          rbd_pool: volumes-test
           rbd_secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
     endpoints:
       oslo_db:
@@ -186,6 +184,7 @@ data:
           cinder:
             username: cinder
             password: password
+        statefulset: null
       identity:
         auth:
           admin:
@@ -201,9 +200,9 @@ data:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm
     subpath: cinder
-    reference: taco-v19.02
+    reference: taco-v19.03
   test:
-    enabled: false
+    enabled: true
     timeout: 3600
   dependencies:
   - helm-toolkit
@@ -260,21 +259,21 @@ data:
   values:
     images:
       tags:
-        test: sktdev/ubuntu-source-rally-queens:taco-v19.02
+        test: sktdev/ubuntu-source-rally-queens:taco-v19.03
         glance_storage_init: sktdev/ceph-config-helper:v1.14.3
-        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        glance_db_sync: sktdev/ubuntu-source-glance-api-queens:taco-v19.02
-        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
+        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        glance_db_sync: sktdev/ubuntu-source-glance-api-queens:taco-v19.03
+        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
         rabbit_init: rabbitmq:3.7-management
-        glance_api: sktdev/ubuntu-source-glance-api-queens:taco-v19.02
-        glance_registry: sktdev/ubuntu-source-glance-registry-queens:taco-v19.02
-        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
+        glance_api: sktdev/ubuntu-source-glance-api-queens:taco-v19.03
+        glance_registry: sktdev/ubuntu-source-glance-registry-queens:taco-v19.03
+        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
         image_repo_sync: docker:17.07.0
-      pull_policy: IfNotPresent
+      pull_policy: Always
     pod:
       security_context:
         glance:
@@ -295,9 +294,8 @@ data:
         admin_keyring: TACO_ADMIN_KEYRING
       glance:
         glance_store:
-          rbd_store_replication: 1
           rbd_store_user: glance
-          rbd_store_pool: images
+          rbd_store_pool: images-test
         DEFAULT:
           show_image_direct_url: true
           show_multiple_locations: true
@@ -336,13 +334,14 @@ data:
           glance:
             username: glance
             password: password
+        statefulset: null
   source:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm
     subpath: glance
-    reference: taco-v19.02
+    reference: taco-v19.03
   test:
-    enabled: false
+    enabled: true
     timeout: 3600
   dependencies:
   - helm-toolkit
@@ -361,54 +360,55 @@ data:
     no_hooks: false
     pre:
       delete:
-        - type: job
-          labels:
-            application: heat
-            component: bootstrap
-        - type: job
-          labels:
-            application: heat
-            component: db-init
-        - type: job
-          labels:
-            application: heat
-            component: db-sync
-        - type: job
-          labels:
-            application: heat
-            component: ks-user
-        - type: job
-          labels:
-            application: heat
-            component: ks-service
-        - type: job
-          labels:
-            application: heat
-            component: ks-endpoints
-        - type: job
-          labels:
-            application: heat
-            component: trusts
+      - type: job
+        labels:
+          application: heat
+          component: bootstrap
+      - type: job
+        labels:
+          application: heat
+          component: db-init
+      - type: job
+        labels:
+          application: heat
+          component: db-sync
+      - type: job
+        labels:
+          application: heat
+          component: ks-user
+      - type: job
+        labels:
+          application: heat
+          component: ks-service
+      - type: job
+        labels:
+          application: heat
+          component: ks-endpoints
+      - type: job
+        labels:
+          application: heat
+          component: trusts
   values:
     images:
       tags:
-        test: sktdev/ubuntu-source-rally-queens:taco-v19.02
-        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        heat_db_sync: sktdev/ubuntu-source-heat-api-queens:taco-v19.02
-        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        heat_api: sktdev/ubuntu-source-heat-api-queens:taco-v19.02
-        heat_cfn: sktdev/ubuntu-source-heat-api-queens:taco-v19.02
-        heat_cloudwatch: sktdev/ubuntu-source-heat-api-queens:taco-v19.02
-        heat_engine: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        heat_engine_cleaner: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
+        test: sktdev/ubuntu-source-rally-queens:taco-v19.03
+        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        heat_db_sync: sktdev/ubuntu-source-heat-api-queens:taco-v19.03
+        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        heat_api: sktdev/ubuntu-source-heat-api-queens:taco-v19.03
+        heat_cfn: sktdev/ubuntu-source-heat-api-queens:taco-v19.03
+        heat_cloudwatch: sktdev/ubuntu-source-heat-api-queens:taco-v19.03
+        heat_engine: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        heat_engine_cleaner: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
         rabbit_init: rabbitmq:3.7-management
         image_repo_sync: docker:17.07.0
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-      pull_policy: IfNotPresent
+        heat_purge_deleted: openstackhelm/heat:ocata-ubuntu_xenial
+      pull_policy: Always
     pod:
       security_context:
         heat:
@@ -434,9 +434,6 @@ data:
           heat_stack_user:
             username: heat-domain
             password: password
-          test:
-            username: test
-            password: password
       oslo_db:
         auth:
           admin:
@@ -453,16 +450,33 @@ data:
           heat:
             username: heat
             password: password
+        statefulset: null
   source:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm
     subpath: heat
-    reference: taco-v19.02
+    reference: taco-v19.03
   test:
-      enabled: false
-      timeout: 3600
+    enabled: true
+    timeout: 3600
   dependencies:
-    - helm-toolkit
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: helm-toolkit
+data:
+  chart_name: helm-toolkit
+  release: helm-toolkit
+  namespace: helm-tookit
+  values: {}
+  source:
+    type: local
+    location: /home/centos/tacoplay/charts/openstack-helm-infra
+    subpath: helm-toolkit
+    reference: taco-v19.03
+  dependencies: []
 ---
 schema: armada/Chart/v1
 metadata:
@@ -489,13 +503,13 @@ data:
   values:
     images:
       tags:
-        db_init: sktdev/ubuntu-source-horizon-queens:taco-v19.02
-        db_drop: sktdev/ubuntu-source-horizon-queens:taco-v19.02
-        horizon_db_sync: sktdev/ubuntu-source-horizon-queens:taco-v19.02
-        horizon: sktdev/ubuntu-source-horizon-queens:taco-v19.02
+        db_init: sktdev/ubuntu-source-horizon-queens:taco-v19.03
+        db_drop: sktdev/ubuntu-source-horizon-queens:taco-v19.03
+        horizon_db_sync: sktdev/ubuntu-source-horizon-queens:taco-v19.03
+        horizon: sktdev/ubuntu-source-horizon-queens:taco-v19.03
         image_repo_sync: docker:17.07.0
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-      pull_policy: IfNotPresent
+      pull_policy: Always
     pod:
       security_context:
         horizon:
@@ -576,7 +590,7 @@ data:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm
     subpath: horizon
-    reference: taco-v19.02
+    reference: taco-v19.03
   dependencies:
   - helm-toolkit
 ---
@@ -597,13 +611,13 @@ data:
       tags:
         entrypoint: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
         ingress: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.23.0
-        ingress_module_init: sktdev/ubuntu-source-neutron-server-queens:taco-v19.02
-        ingress_routed_vip: sktdev/ubuntu-source-neutron-server-queens:taco-v19.02
+        ingress_module_init: sktdev/ubuntu-source-neutron-server-queens:taco-v19.03
+        ingress_routed_vip: sktdev/ubuntu-source-neutron-server-queens:taco-v19.03
         error_pages: gcr.io/google_containers/defaultbackend:1.0
         keepalived: osixia/keepalived:1.4.5
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
         image_repo_sync: docker:17.07.0
-      pull_policy: IfNotPresent
+      pull_policy: Always
     network:
       host_namespace: true
     monitoring:
@@ -623,7 +637,7 @@ data:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm-infra
     subpath: ingress
-    reference: taco-v19.02
+    reference: taco-v19.03
   dependencies:
   - helm-toolkit
 ---
@@ -641,55 +655,56 @@ data:
     no_hooks: false
     pre:
       delete:
-        - name: keystone-bootstrap
-          type: job
-          labels:
-            application: keystone
-            component: bootstrap
-        - name: keystone-credential-setup
-          type: job
-          labels:
-            application: keystone
-            component: credential-setup
-        - name: keystone-db-init
-          type: job
-          labels:
-            application: keystone
-            component: db-init
-        - name: keystone-db-sync
-          type: job
-          labels:
-            application: keystone
-            component: db-sync
-        - name: keystone-fernet-setup
-          type: job
-          labels:
-            application: keystone
-            component: fernet-setup
-        - name: keystone-domain-manage
-          type: job
-          labels:
-            application: keystone
-            component: domain-manage
+      - name: keystone-bootstrap
+        type: job
+        labels:
+          application: keystone
+          component: bootstrap
+      - name: keystone-credential-setup
+        type: job
+        labels:
+          application: keystone
+          component: credential-setup
+      - name: keystone-db-init
+        type: job
+        labels:
+          application: keystone
+          component: db-init
+      - name: keystone-db-sync
+        type: job
+        labels:
+          application: keystone
+          component: db-sync
+      - name: keystone-fernet-setup
+        type: job
+        labels:
+          application: keystone
+          component: fernet-setup
+      - name: keystone-domain-manage
+        type: job
+        labels:
+          application: keystone
+          component: domain-manage
   values:
     images:
       tags:
-        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        test: sktdev/ubuntu-source-rally-queens:taco-v19.02
-        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        keystone_db_sync: sktdev/ubuntu-source-keystone-queens:taco-v19.02
-        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
+        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        test: sktdev/ubuntu-source-rally-queens:taco-v19.03
+        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        keystone_db_sync: sktdev/ubuntu-source-keystone-queens:taco-v19.03
+        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
         rabbit_init: rabbitmq:3.7-management
-        keystone_fernet_setup: sktdev/ubuntu-source-keystone-queens:taco-v19.02
-        keystone_fernet_rotate: sktdev/ubuntu-source-keystone-queens:taco-v19.02
-        keystone_credential_setup: sktdev/ubuntu-source-keystone-queens:taco-v19.02
-        keystone_credential_rotate: sktdev/ubuntu-source-keystone-queens:taco-v19.02
-        keystone_api: sktdev/ubuntu-source-keystone-queens:taco-v19.02
-        keystone_domain_manage: sktdev/ubuntu-source-keystone-queens:taco-v19.02
+        keystone_fernet_setup: sktdev/ubuntu-source-keystone-queens:taco-v19.03
+        keystone_fernet_rotate: sktdev/ubuntu-source-keystone-queens:taco-v19.03
+        keystone_credential_setup: sktdev/ubuntu-source-keystone-queens:taco-v19.03
+        keystone_credential_rotate: sktdev/ubuntu-source-keystone-queens:taco-v19.03
+        keystone_api: sktdev/ubuntu-source-keystone-queens:taco-v19.03
+        keystone_domain_manage: sktdev/ubuntu-source-keystone-queens:taco-v19.03
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
         image_repo_sync: docker:17.07.0
-      pull_policy: IfNotPresent
+        keystone_credential_cleanup: openstackhelm/heat:ocata-ubuntu_xenial
+      pull_policy: Always
     conf:
       keystone:
         DEFAULT:
@@ -723,16 +738,17 @@ data:
           keystone:
             username: keystone
             password: password
+        statefulset: null
   source:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm
     subpath: keystone
-    reference: taco-v19.02
+    reference: taco-v19.03
   test:
-      enabled: false
-      timeout: 3600
+    enabled: true
+    timeout: 3600
   dependencies:
-    - helm-toolkit
+  - helm-toolkit
 ---
 schema: armada/Chart/v1
 metadata:
@@ -752,8 +768,8 @@ data:
       tags:
         image_repo_sync: docker:17.07.0
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-        libvirt: sktdev/ubuntu-source-nova-libvirt-queens:taco-v19.02
-      pull_policy: IfNotPresent
+        libvirt: sktdev/ubuntu-source-nova-libvirt-queens:taco-v19.03
+      pull_policy: Always
     network:
       backend:
       - openvswitch
@@ -763,7 +779,7 @@ data:
         admin_keyring: TACO_ADMIN_KEYRING
         cinder:
           user: cinder
-          keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
+          keyring: AQASCkZY1nD5KBAAPIP81ViLXzAYC+Xm3pqY/Q==
           secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
       libvirt:
         listen_addr: 0.0.0.0
@@ -776,7 +792,7 @@ data:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm-infra
     subpath: libvirt
-    reference: taco-v19.02
+    reference: taco-v19.03
   dependencies:
   - helm-toolkit
 ---
@@ -803,14 +819,16 @@ data:
     images:
       tags:
         mariadb: openstackhelm/mariadb:10.2.18
+        mariadb_backup: openstackhelm/mariadb:latest-ubuntu_xenial
+        scripted_test: openstackhelm/mariadb:latest-ubuntu_xenial
         ingress: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
         error_pages: gcr.io/google_containers/defaultbackend:1.0
         prometheus_create_mysql_user: mariadb:10.2.13
         prometheus_mysql_exporter: prom/mysqld-exporter:v0.10.0
-        prometheus_mysql_exporter_helm_tests: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
+        prometheus_mysql_exporter_helm_tests: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
         image_repo_sync: docker:17.07.0
-      pull_policy: IfNotPresent
+      pull_policy: Always
     pod:
       replicas:
         server: 1
@@ -832,9 +850,9 @@ data:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm-infra
     subpath: mariadb
-    reference: taco-v19.02
+    reference: taco-v19.03
   test:
-    enabled: false
+    enabled: true
     timeout: 3600
   dependencies:
   - helm-toolkit
@@ -871,7 +889,7 @@ data:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm-infra
     subpath: memcached
-    reference: taco-v19.02
+    reference: taco-v19.03
   dependencies:
   - helm-toolkit
 ---
@@ -917,29 +935,63 @@ data:
   values:
     images:
       tags:
-        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        test: sktdev/ubuntu-source-rally-queens:taco-v19.02
-        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        neutron_db_sync: sktdev/ubuntu-source-neutron-server-queens:taco-v19.02
-        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        neutron_server: sktdev/ubuntu-source-neutron-server-queens:taco-v19.02
-        neutron_dhcp: sktdev/ubuntu-source-neutron-dhcp-agent-queens:taco-v19.02
-        neutron_metadata: sktdev/ubuntu-source-neutron-metadata-agent-queens:taco-v19.02
-        neutron_l3: sktdev/ubuntu-source-neutron-l3-agent-queens:taco-v19.02
-        neutron_openvswitch_agent: sktdev/ubuntu-source-neutron-openvswitch-agent-queens:taco-v19.02
-        neutron_linuxbridge_agent: sktdev/ubuntu-source-neutron-linuxbridge-agent-queens:taco-v19.02
+        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        test: sktdev/ubuntu-source-rally-queens:taco-v19.03
+        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        neutron_db_sync: sktdev/ubuntu-source-neutron-server-queens:taco-v19.03
+        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        neutron_server: sktdev/ubuntu-source-neutron-server-queens:taco-v19.03
+        neutron_dhcp: sktdev/ubuntu-source-neutron-dhcp-agent-queens:taco-v19.03
+        neutron_metadata: sktdev/ubuntu-source-neutron-metadata-agent-queens:taco-v19.03
+        neutron_l3: sktdev/ubuntu-source-neutron-l3-agent-queens:taco-v19.03
+        neutron_openvswitch_agent: sktdev/ubuntu-source-neutron-openvswitch-agent-queens:taco-v19.03
+        neutron_linuxbridge_agent: sktdev/ubuntu-source-neutron-linuxbridge-agent-queens:taco-v19.03
+        neutron_sriov_agent: sktdev/ubuntu-source-neutron-sriov-agent-queens:taco-v19.03
+        neutron_sriov_agent_init: sktdev/ubuntu-source-neutron-sriov-agent-queens:taco-v19.03
+        neutron_bagpipe_bgp: sktdev/ubuntu-source-neutron-server-queens:taco-v19.03
+        neutron_l2gw: sktdev/ubuntu-source-neutron-server-queens:taco-v19.03
         rabbit_init: rabbitmq:3.7-management
         image_repo_sync: docker:17.07.0
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
-      pull_policy: IfNotPresent
+      pull_policy: Always
     pod:
       replicas:
         server: 1
+      user:
+        neutron:
+          uid: 42435
       security_context:
         neutron:
+          pod:
+            runAsUser: 42435
+        neutron_dhcp_agent:
+          pod:
+            runAsUser: 42435
+        neutron_l2gw_agent:
+          pod:
+            runAsUser: 42435
+        neutron_bagpipe_bgp:
+          pod:
+            runAsUser: 42435
+        neutron_l3_agent:
+          pod:
+            runAsUser: 42435
+        neutron_lb_agent:
+          pod:
+            runAsUser: 42435
+        neutron_metadata_agent:
+          pod:
+            runAsUser: 42435
+        neutron_ovs_agent:
+          pod:
+            runAsUser: 42435
+        neutron_server:
+          pod:
+            runAsUser: 42435
+        neutron_sriov_agent:
           pod:
             runAsUser: 42435
     network:
@@ -958,15 +1010,15 @@ data:
         # This sudoers file supports rootwrap-daemon for both Kolla and LOCI Images.
         Defaults !requiretty
         Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/var/lib/openstack/bin:/var/lib/kolla/venv/bin"
-        neutron ALL = (root) NOPASSWD: /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/home/centoswrap.conf *, /var/lib/openstack/bin/neutron-rootwrap /etc/neutron/rootwrap.conf *, /var/lib/kolla/venv/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf, /var/lib/openstack/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
+        neutron ALL = (root) NOPASSWD: /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/rootwrap.conf *, /var/lib/openstack/bin/neutron-rootwrap /etc/neutron/rootwrap.conf *, /var/lib/kolla/venv/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf, /var/lib/openstack/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
       neutron:
         DEFAULT:
           core_plugin: ml2
-          l3_ha: true
+          l3_ha: false
           global_physnet_mtu: 1500
           service_plugins: router
         agent:
-          root_helper: sudo /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/home/centoswrap.conf
+          root_helper: sudo /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/rootwrap.conf
       plugins:
         ml2_conf:
           ml2:
@@ -1005,6 +1057,7 @@ data:
           neutron:
             username: neutron
             password: password
+        statefulset: null
       identity:
         name: keystone
         auth:
@@ -1017,13 +1070,10 @@ data:
           nova:
             username: nova
             password: password
-          test:
-            username: test
-            password: password
     manifests:
       daemonset_lb_agent: false
       daemonset_dhcp_agent: true
-      daemonset_metadata_agent: true
+      daemonset_metadata_agent: false
       daemonset_ovs_agent: true
       daemonset_sriov_agent: false
       daemonset_l3_agent: true
@@ -1031,7 +1081,7 @@ data:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm
     subpath: neutron
-    reference: taco-v19.02
+    reference: taco-v19.03
   test:
     enabled: true
     timeout: 3600
@@ -1105,33 +1155,33 @@ data:
   values:
     images:
       tags:
-        test: sktdev/ubuntu-source-rally-queens:taco-v19.02
-        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02:taco-v19.02
-        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        nova_api: sktdev/ubuntu-source-nova-api-queens:taco-v19.02
-        nova_cell_setup: sktdev/ubuntu-source-nova-api-queens:taco-v19.02
-        nova_cell_setup_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
-        nova_compute: sktdev/ubuntu-source-nova-compute-queens:taco-v19.02
-        nova_compute_ironic: sktdev/ubuntu-source-nova-compute-queens-ironic:taco-v19.02
-        nova_compute_ssh: sktdev/ubuntu-source-nova-ssh-queens:taco-v19.02
-        nova_conductor: sktdev/ubuntu-source-nova-conductor-queens:taco-v19.02
-        nova_consoleauth: sktdev/ubuntu-source-nova-consoleauth-queens:taco-v19.02
-        nova_db_sync: sktdev/ubuntu-source-nova-api-queens:taco-v19.02
-        nova_novncproxy: sktdev/ubuntu-source-nova-novncproxy-queens:taco-v19.02
-        nova_novncproxy_assets: sktdev/ubuntu-source-nova-novncproxy-queens:taco-v19.02
-        nova_placement: sktdev/ubuntu-source-nova-placement-api-queens:taco-v19.02
-        nova_scheduler: sktdev/ubuntu-source-nova-scheduler-queens:taco-v19.02
-        nova_spiceproxy: sktdev/ubuntu-source-nova-spicehtml5proxy-queens:taco-v19.02
-        nova_spiceproxy_assets: sktdev/ubuntu-source-nova-spicehtml5proxy-queens:taco-v19.02
-        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
+        test: sktdev/ubuntu-source-rally-queens:taco-v19.03
+        db_drop: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03:taco-v19.03
+        db_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_user: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_service: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        ks_endpoints: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        nova_api: sktdev/ubuntu-source-nova-api-queens:taco-v19.03
+        nova_cell_setup: sktdev/ubuntu-source-nova-api-queens:taco-v19.03
+        nova_cell_setup_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        nova_compute: sktdev/ubuntu-source-nova-compute-queens:taco-v19.03
+        nova_compute_ironic: sktdev/ubuntu-source-nova-compute-queens-ironic:taco-v19.03
+        nova_compute_ssh: sktdev/ubuntu-source-nova-ssh-queens:taco-v19.03
+        nova_conductor: sktdev/ubuntu-source-nova-conductor-queens:taco-v19.03
+        nova_consoleauth: sktdev/ubuntu-source-nova-consoleauth-queens:taco-v19.03
+        nova_db_sync: sktdev/ubuntu-source-nova-api-queens:taco-v19.03
+        nova_novncproxy: sktdev/ubuntu-source-nova-novncproxy-queens:taco-v19.03
+        nova_novncproxy_assets: sktdev/ubuntu-source-nova-novncproxy-queens:taco-v19.03
+        nova_placement: sktdev/ubuntu-source-nova-placement-api-queens:taco-v19.03
+        nova_scheduler: sktdev/ubuntu-source-nova-scheduler-queens:taco-v19.03
+        nova_spiceproxy: sktdev/ubuntu-source-nova-spicehtml5proxy-queens:taco-v19.03
+        nova_spiceproxy_assets: sktdev/ubuntu-source-nova-spicehtml5proxy-queens:taco-v19.03
+        bootstrap: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
         image_repo_sync: docker:17.07.0
         rabbit_init: rabbitmq:3.7-management
         nova_service_cleaner: sktdev/ceph-config-helper:v1.14.3
-      pull_policy: IfNotPresent
+      pull_policy: Always
     bootstrap:
       structured:
         flavors:
@@ -1157,17 +1207,16 @@ data:
         admin_keyring: TACO_ADMIN_KEYRING
         cinder:
           user: cinder
-          keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
+          keyring: AQASCkZY1nD5KBAAPIP81ViLXzAYC+Xm3pqY/Q==
       nova:
         DEFAULT:
           scheduler_default_filters: RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter
           debug: true
-          dhcp_domain: ""
           config_drive_cdrom: true
           config_drive_format: iso9660
           force_config_drive: true
         vnc:
-          novncproxy_base_url: http://ctrl-1:30608/vnc_auto.html
+          novncproxy_base_url: http://taco-aio:30608/vnc_auto.html
         libvirt:
           images_type: rbd
           rbd_user: cinder
@@ -1208,6 +1257,7 @@ data:
           nova:
             username: nova
             password: password
+        statefulset: null
       identity:
         auth:
           admin:
@@ -1225,17 +1275,19 @@ data:
           placement:
             username: placement
             password: password
-          test:
-            username: test
-            password: password
     pod:
       mandatory_access_control:
         type: null
       user:
         nova:
           uid: 42436
+      security_context:
+        nova:
+          pod:
+            runAsUser: 42436
       replicas:
         api_metadata: 1
+        placement: 1
         osapi: 1
         conductor: 1
         consoleauth: 1
@@ -1245,7 +1297,7 @@ data:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm
     subpath: nova
-    reference: taco-v19.02
+    reference: taco-v19.03
   test:
     enabled: true
     timeout: 3600
@@ -1268,16 +1320,27 @@ data:
     release_group: null
     images:
       tags:
-        openvswitch_db_server: sktdev/ubuntu-source-openvswitch-db-server-queens:taco-v19.02
-        openvswitch_vswitchd: sktdev/ubuntu-source-openvswitch-vswitchd-queens:taco-v19.02
+        openvswitch_db_server: sktdev/ubuntu-source-openvswitch-db-server-queens:taco-v19.03
+        openvswitch_vswitchd: sktdev/ubuntu-source-openvswitch-vswitchd-queens:taco-v19.03
         dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
         image_repo_sync: docker:17.07.0
-      pull_policy: IfNotPresent
+      pull_policy: Always
+    pod:
+      security_context:
+        openvswitch_db_server:
+          pod:
+            runAsUser: 0
+          container:
+            server:
+              runAsUser: 0
+      user:
+        nova:
+          uid: 42436
   source:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm-infra
     subpath: openvswitch
-    reference: taco-v19.02
+    reference: taco-v19.03
   dependencies:
     - helm-toolkit
 ---
@@ -1297,18 +1360,16 @@ data:
     images:
       tags:
         rabbitmq: rabbitmq:3.7.13
-        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        rabbitmq_init: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
         prometheus_rabbitmq_exporter: kbudde/rabbitmq-exporter:v0.21.0
+        prometheus_rabbitmq_exporter_helm_tests: sktdev/ubuntu-source-heat-engine-queens:taco-v19.03
+        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
         image_repo_sync: docker:17.07.0
         scripted_test: rabbitmq:3.7.13-management
-        prometheus_rabbitmq_exporter_helm_tests: sktdev/ubuntu-source-heat-engine-queens:taco-v19.02
       pull_policy: IfNotPresent
     pod:
       replicas:
         server: 1
-    conf:
-      openvswitch_db_server:
-        ptcp_port: 6640
     volume:
       class_name: rbd
     monitoring:
@@ -1326,9 +1387,9 @@ data:
     type: local
     location: /home/centos/tacoplay/charts/openstack-helm-infra
     subpath: rabbitmq
-    reference: taco-v19.02
+    reference: taco-v19.03
   test:
-    enabled: false
+    enabled: true
     timeout: 3600
   dependencies:
   - helm-toolkit
@@ -1336,131 +1397,41 @@ data:
 schema: armada/ChartGroup/v1
 metadata:
   schema: metadata/Document/v1
-  name: openstack-ingress-controller
+  name: openstack-infra
 data:
-  description: "OpenStack Ingress Controller"
+  description: "Openstack Infrastructure"
   sequenced: False
   chart_group:
-    - ingress
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-ceph-config
-data:
-  description: "OpenStack Ceph Config"
-  sequenced: True
-  chart_group:
     - ceph-provisioners
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: deploy-mariadb
-data:
-  description: "Mariadb"
-  sequenced: True
-  chart_group:
+    - ingress
+    - rabbitmq
+    - memcached
     - mariadb
 ---
 schema: armada/ChartGroup/v1
 metadata:
   schema: metadata/Document/v1
-  name: deploy-memcached
+  name: openstack-services
 data:
-  description: "Memcached"
-  sequenced: True
-  chart_group:
-    - memcached
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: deploy-rabbitmq
-data:
-  description: "RabbitMQ"
-  sequenced: True
-  chart_group:
-    - rabbitmq
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-keystone
-data:
-  description: "Deploy keystone"
-  sequenced: True
-  chart_group:
-    - keystone
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-glance
-data:
-  description: "Deploy glance"
-  sequenced: True
-  chart_group:
-    - glance
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-cinder
-data:
-  description: "Deploy cinder"
-  sequenced: True
-  chart_group:
-    - cinder
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-compute-kit
-data:
-  description: "Deploy nova and neutron, as well as supporting services"
+  description: "Openstack Services"
   sequenced: False
   chart_group:
     - libvirt
     - openvswitch
+    - keystone
+    - glance
+    - cinder
+#    - heat
     - nova
     - neutron
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-heat
-data:
-  description: "Deploy heat"
-  sequenced: True
-  chart_group:
-    - heat
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
-  name: openstack-dashboard
-data:
-  description: "Deploy horizon"
-  sequenced: True
-  chart_group:
     - horizon
 ---
 schema: armada/Manifest/v1
 metadata:
   schema: metadata/Document/v1
-  name: taco-manifest
+  name: single-manifest
 data:
-  release_prefix: taco
+  release_prefix: single
   chart_groups:
-    - openstack-ingress-controller
-    - openstack-ceph-config
-    - deploy-mariadb
-    - deploy-memcached
-    - deploy-rabbitmq
-    - openstack-keystone
-    - openstack-glance
-    - openstack-cinder
-    - openstack-compute-kit
-    #- openstack-heat
-    - openstack-dashboard
+  - openstack-infra
+  - openstack-services
