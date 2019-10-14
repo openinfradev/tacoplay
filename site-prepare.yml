@@ -1,15 +1,4 @@
 ---
-
-# Copy site.yml from site.yml.sample
-- hosts: localhost
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: copy site.yml
-      copy:
-        src: "{{ playbook_dir }}/ceph-ansible/site.yml.sample"
-        dest: "{{ playbook_dir }}/ceph-ansible/site.yml"
-  tags: always
-
 - hosts: localhost:all
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
@@ -44,8 +33,8 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: populate-ceph-vars }
-  tags: ceph
+    - { role: populate-ceph-vars, when: taco_storage == 'ceph' }
+  tags: always
 
 - include: kubespray/cluster.yml
 
@@ -86,28 +75,40 @@
         repo: 'https://tde.sktelecom.com/stash/scm/oreotools/vslab-inventories.git'
         dest: "{{ playbook_dir }}/vslab-inventories"
         version: master
+      when: not is_gating_test
 
-    - name: copy extra-vars from {{ site_name }} inventories
+    - name: copy extra-vars from site inventories
       copy:
         src: "{{ playbook_dir }}/vslab-inventories/{{ site_name }}/extra-vars.yml"
         dest: "{{ inventory_dir }}/extra-vars.yml"
       become: no
+      when: not is_gating_test
 
     - name: include vars for prepare_manifest task
       include_vars: roles/armada/apply/defaults/main.yml
 
     - name: prepare armada_manifest for image pulling
-      include_tasks: roles/armada/apply/tasks/prepare_manifest.yml
+      include_tasks: roles/armada/apply/tasks/prepare-manifest.yml
       vars:
         openstack_release: "{{ openstack_release }}"
 
-    # Should I run fetch-sub-projects.sh here instead of Jenkinsfile?
     - name: pull all images used in armada manifest
       script: >-
         {{ playbook_dir }}/scripts/pull-images.sh
         {{ armada_manifest }}
+        registry.cicd.stg.taco
       args:
         creates: /tmp/.image-pull-done
+      when: is_gating_test
+
+    - name: pull all images used in armada manifest
+      script: >-
+        {{ playbook_dir }}/scripts/pull-images.sh
+        {{ armada_manifest }}
+        registry-rel.cicd.stg.taco
+      args:
+        creates: /tmp/.image-pull-done
+      when: not is_gating_test
 
     - name: run registry container
       docker_container:

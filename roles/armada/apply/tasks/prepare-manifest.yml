@@ -1,0 +1,22 @@
+---
+- name: check if {{ armada_manifest }} exists
+  stat:
+    path: "{{ armada_manifest }}"
+  register: stat_am_result
+
+- name: copy manifest to inventory dir
+  copy:
+    src: "{{ armada_manifest_path }}"
+    dest: "{{ armada_manifest }}"
+    mode: 0644
+  when: stat_am_result.stat.exists == False
+
+- name: check if {{ armada_manifest }} exists
+  stat:
+    path: "{{ armada_manifest }}"
+  register: stat_am_result
+
+- name: fail if armada-manifest doesn't exist
+  fail:
+    msg: "Error! Armada-manifest doesn't exist."
+  when: stat_am_result.stat.exists == False

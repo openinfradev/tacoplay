@@ -34,7 +34,7 @@
         grep -v NotReady |
         awk '{split($2,a,",");print a[1]"\n"a[2]"\n"a[3]}' |
         awk NF
-      retries: 10
+      retries: 20
       delay: 10
       register: ingress_host
       until: ingress_host.stdout != ""

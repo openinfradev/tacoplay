@@ -40,3 +40,12 @@ armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
 # OpenStack
 openstack_namespace: openstack
 vfat_config_drive_enabled: false
+
+# Gating
+is_gating_test: false
+
+# Install external openvswitch service 
+install_ovs_as_a_rpms: false
+
+# This affects tasks related to the TACO/SONA integrated environment.
+sona_integration: false

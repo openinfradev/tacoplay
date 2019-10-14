@@ -1,5 +1,8 @@
 ---
-- include: prepare_manifest.yml
+- include: prepare-manifest.yml
+
+- include: render-manifest.yml
+  when: taco_storage == 'ceph'
 
 - name: delete test pods in openstack namespace
   shell: >-
@@ -37,17 +40,15 @@
     state: absent
   with_items: "{{ armada_processes.stdout_lines }}"
 
-- name: run armada apply in background
+- name: run armada apply
   shell: >-
     . ~/.bashrc && workon armada &&
     armada apply
     --tiller-host {{ tiller_host.stdout }}
     --tiller-port {{ tiller_port }}
-    --timeout 3600
+    --timeout 9000
     {{ armada_manifest }} >
     {{ lookup('env','HOME') }}/armada.log
-  async: 3600
-  poll: 0
   when: auto_release_enabled|default(true) and tiller_host.stdout != ""
   become: no
   run_once: yes

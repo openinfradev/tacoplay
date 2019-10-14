@@ -201,7 +201,7 @@
 
   - name: dry run import gpg key of ceph-stable
     rpm_key:
-      key: http://{{ localrepo_yum }}/ceph/keys/release.asc
+      key: http://{{ localrepo_yum }}:{{ localrepo_port }}/ceph/keys/release.asc
       state: present
     check_mode: yes
     register: ceph_stable_gpg_result
