@@ -85,7 +85,7 @@
 
 - name: create workon armada if not exist in CentOS
   shell: >-
-    . {{ lookup('env','HOME') }}/.bashrc && 
+    . {{ lookup('env','HOME') }}/.bashrc &&
     mkvirtualenv armada --python=/usr/bin/python3.4
   args:
     executable: /bin/bash
