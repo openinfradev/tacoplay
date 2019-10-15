@@ -49,7 +49,7 @@
     starting_option_folder: ".profile"
   when: ansible_distribution in ["Ubuntu","Debian"]
 
-- name: update startinf option folder for running virtual env and armada in centos
+- name: update startinf option folder for running virtual env and armada in Centos
   blockinfile:
     path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
     block: |
@@ -61,7 +61,7 @@
   become: no 
   when : ansible_distribution in ["Centos","RedHat"]
 
-- name: update startinf option folder for running virtual env and armada
+- name: update startinf option folder for running virtual env and armada in Ubuntu
   blockinfile:
     path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
     block: |
