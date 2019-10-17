@@ -144,8 +144,8 @@
         name: requests
         extra_args: --ignore-installed
       when:
-        - check_result.rc == 0
         - ansible_distribution in ["CentOS","RedHat"]
+        - check_result.rc == 0
 
 # This should run without 'ceph' tag, since it's necessary
 # for rbd_provisioner role in kubespray

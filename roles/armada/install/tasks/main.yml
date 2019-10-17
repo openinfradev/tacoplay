@@ -39,52 +39,70 @@
     - virtualenvwrapper
     - pbr
 
-- name: update bashrc for running virtual env and armada
+- name: set starting option in bashrc for centos
+  set_fact:
+    starting_option_folder: ".bashrc"
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: set starting option in profile for ubuntu
+  set_fact:
+    starting_option_folder: ".profile"
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: update startinf option folder for running virtual env and armada in Centos
   blockinfile:
-    path: "{{ lookup('env','HOME') }}/.bashrc"
+    path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
     block: |
       export LC_ALL="en_US.UTF-8"
       export WORKON_HOME={{ workon_home }}
       source /usr/bin/virtualenvwrapper.sh
       export OSH_PATH="{{ playbook_dir }}/charts"
     marker: "# ARMADA ENVS {mark}"
-  become: no  
-  when: ansible_distribution in ["CentOS","RedHat"]
+  become: no 
+  when : ansible_distribution in ["Centos","RedHat"]
 
-- name: update bashrc for running virtual env and armada
+- name: update startinf option folder for running virtual env and armada in Ubuntu
   blockinfile:
-    path: "{{ lookup('env','HOME') }}/.bashrc"
+    path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
     block: |
       export LC_ALL="en_US.UTF-8"
       export WORKON_HOME={{ workon_home }}
       source /usr/local/bin/virtualenvwrapper.sh
       export OSH_PATH="{{ playbook_dir }}/charts"
     marker: "# ARMADA ENVS {mark}"
-  become: no
-  when: ansible_distribution in ["Ubuntu","Debian"]
+  become: no 
+  when : ansible_distribution in ["Ubuntu","Debian"]
 
-# FIXME: this does not work in Ubuntu machine
 - name: get existing workon armada
   shell: >-
-    . {{ lookup('env','HOME') }}/.bashrc &&
+    . {{ lookup('env','HOME') }}/{{ starting_option_folder }} &&
     lsvirtualenv | grep armada | cat
+  args:
+    executable: /bin/bash
   register: workon_armada
   become: no
 
-# FIXME: this does not work in Ubuntu machine
-# please create virtualenv with name armada manually to proceed
-- name: create workon armada if not exist
+- name: create workon armada if not exist in Ubuntu
   shell: >-
-    . {{ lookup('env','HOME') }}/.bashrc &&
+    . {{ lookup('env','HOME') }}/{{ starting_opdtion_folder }} &&
     mkvirtualenv armada --python=/usr/bin/python3.4
+  args:
+    executable: /bin/bash
   become: no
-  when: workon_armada.stdout == ""
+  when: 
+    - workon_armada.stdout == ""
 
 - name: install pbr,requests for armada when offline env
   command: >-
    "{{ workon_home }}/armada/bin/pip"
    install pbr requests==2.21.0
   become: no
+
+- name: install python developer package for install some requirements
+  apt:
+    name: python3.4-dev
+  ignore_errors: yes  
+  when: ansible_distribution in ["Ubuntu", "Debian"]
 
 - name: install required packages for armada in virtual env
   pip:
