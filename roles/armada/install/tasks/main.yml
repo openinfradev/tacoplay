@@ -39,14 +39,16 @@
     - virtualenvwrapper
     - pbr
 
-- name: set starting option in bashrc for centos
+- name: set starting option and virtualenv folder in bashrc for centos
   set_fact:
     starting_option_folder: ".bashrc"
+    virtualenv_folder: "/usr/bin/virtualenvwrapper.sh"
   when: ansible_distribution in ["CentOS","RedHat"]
 
-- name: set starting option in profile for ubuntu
+- name: set starting option and virtualenv folder in profile for ubuntu
   set_fact:
     starting_option_folder: ".profile"
+    virtualenv_folder: "/usr/local/bin/virtualenvwrapper.sh"
   when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: update startinf option folder for running virtual env and armada in Centos
@@ -55,7 +57,7 @@
     block: |
       export LC_ALL="en_US.UTF-8"
       export WORKON_HOME={{ workon_home }}
-      source /usr/bin/virtualenvwrapper.sh
+      source {{ virtualenv_folder }}
       export OSH_PATH="{{ playbook_dir }}/charts"
     marker: "# ARMADA ENVS {mark}"
   become: no 
@@ -67,7 +69,7 @@
     block: |
       export LC_ALL="en_US.UTF-8"
       export WORKON_HOME={{ workon_home }}
-      source /usr/local/bin/virtualenvwrapper.sh
+      source {{ virtualenv_folder }}
       export OSH_PATH="{{ playbook_dir }}/charts"
     marker: "# ARMADA ENVS {mark}"
   become: no 
