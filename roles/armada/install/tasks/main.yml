@@ -84,7 +84,7 @@
 
 - name: create workon armada if not exist in Ubuntu
   shell: >-
-    . {{ lookup('env','HOME') }}/{{ starting_opdtion_folder }} &&
+    . {{ lookup('env','HOME') }}/{{ starting_option_folder }} &&
     mkvirtualenv armada --python=/usr/bin/python3.4
   args:
     executable: /bin/bash
