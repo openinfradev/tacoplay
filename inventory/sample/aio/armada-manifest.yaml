@@ -970,6 +970,9 @@ data:
         neutron_dhcp_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_dhcp_agent:
+              readOnlyRootFilesystem: false
         neutron_l2gw_agent:
           pod:
             runAsUser: 42435
@@ -979,6 +982,9 @@ data:
         neutron_l3_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_l3_agent:
+              readOnlyRootFilesystem: false
         neutron_lb_agent:
           pod:
             runAsUser: 42435
@@ -988,9 +994,15 @@ data:
         neutron_ovs_agent:
           pod:
             runAsUser: 42435
+          container:
+            neutron_ovs_agent:
+              readOnlyRootFilesystem: false
         neutron_server:
           pod:
             runAsUser: 42435
+          container:
+            neutron_server:
+              readOnlyRootFilesystem: false
         neutron_sriov_agent:
           pod:
             runAsUser: 42435
@@ -1218,6 +1230,7 @@ data:
         vnc:
           novncproxy_base_url: http://taco-aio:30608/vnc_auto.html
         libvirt:
+          virt_type: qemu
           images_type: rbd
           rbd_user: cinder
           rbd_secret_uuid: 582393ff-9a5c-4a2e-ae0d-86ec18c36afc
