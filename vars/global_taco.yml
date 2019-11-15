@@ -53,3 +53,6 @@ sona_integration: false
 
 # Workaround for missing 'Python Interpreter Discovery' feature in ansible 2.7
 ansible_python_interpreter: /usr/bin/python
+
+# Set this to false to archive k8s images only in site-prepare task.
+include_openstack_images: true
