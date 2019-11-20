@@ -61,7 +61,7 @@
       export OSH_PATH="{{ playbook_dir }}/charts"
     marker: "# ARMADA ENVS {mark}"
   become: no 
-  when : ansible_distribution in ["Centos","RedHat"]
+  when: ansible_distribution in ["CentOS","RedHat"]
 
 - name: update startinf option folder for running virtual env and armada in Ubuntu
   blockinfile:
@@ -84,7 +84,7 @@
   register: workon_armada
   become: no
 
-- name: create workon armada if not exist in Ubuntu
+- name: create workon armada if not exist
   shell: >-
     . {{ lookup('env','HOME') }}/{{ starting_option_folder }} &&
     mkvirtualenv armada --python=/usr/bin/python3.4
