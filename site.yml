@@ -206,7 +206,7 @@
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: armada/install }
+    - { role: armada/install, tags: armada }
 
 # Prepare armada-manifests and then run armada apply
 - hosts: admin-node
