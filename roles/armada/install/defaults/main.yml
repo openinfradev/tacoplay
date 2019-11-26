@@ -1,2 +1,3 @@
 ---
 workon_home: "{{ lookup('env','HOME') }}/venv"
+armada_enabled: true

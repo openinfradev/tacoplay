@@ -43,3 +43,17 @@ dockerproject_repo_key_info:
 
 dockerproject_repo_info:
   repos:
+
+registry_docker_options: >-
+  {%- if docker_insecure_registries is defined -%}
+  {{ docker_insecure_registries | map('regex_replace', '^(.*)$', '--insecure-registry=\1' ) | list | join(' ') }}
+  {%- endif %}
+  {% if docker_registry_mirrors is defined -%}
+  {{ docker_registry_mirrors | map('regex_replace', '^(.*)$', '--registry-mirror=\1' ) | list | join(' ') }}
+  {%- endif %}
+  --graph={{ docker_daemon_graph }} {{ docker_log_opts }}
+  {%- if ansible_architecture == "aarch64" and ansible_os_family == "RedHat" %}
+  --add-runtime docker-runc=/usr/libexec/docker/docker-runc-current
+  --default-runtime=docker-runc --exec-opt native.cgroupdriver=systemd
+  --userland-proxy-path=/usr/libexec/docker/docker-proxy-current --signature-verification=false
+  {%- endif -%}
