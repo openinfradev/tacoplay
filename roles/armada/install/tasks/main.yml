@@ -76,21 +76,22 @@
   become: no
   when : ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
 
-# FIXME: this does not work in Ubuntu machine
 - name: get existing workon armada
   shell: >-
-    . {{ lookup('env','HOME') }}/.bashrc &&
+    . {{ lookup('env','HOME') }}/{{ starting_option_folder }} &&
     lsvirtualenv | grep armada | cat
+  args:
+    executable: /bin/bash
   register: workon_armada
   become: no
   when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
 
-# FIXME: this does not work in Ubuntu machine
-# please create virtualenv with name armada manually to proceed
 - name: create workon armada if not exist
   shell: >-
-    . {{ lookup('env','HOME') }}/.bashrc &&
+    . {{ lookup('env','HOME') }}/{{ starting_option_folder }} &&
     mkvirtualenv armada --python=/usr/bin/python3.4
+  args:
+    executable: /bin/bash
   become: no
   when:
     - workon_armada.stdout == ""
@@ -109,6 +110,12 @@
     name: python3.4-dev
   ignore_errors: yes
   when: ansible_distribution in ["Ubuntu", "Debian"] and armada_enabled|default(true)
+
+- name: install python developer package for install some requirements
+  apt:
+    name: python3.4-dev
+  ignore_errors: yes  
+  when: ansible_distribution in ["Ubuntu", "Debian"]
 
 - name: install required packages for armada in virtual env
   pip:

@@ -20,7 +20,8 @@
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/vars/global_k8s-images.yml"
-      when: groups['registry'] is defined and (groups['registry'] | length > 0)
+      when: (groups['registry'] is defined and (groups['registry'] | length > 0)) or
+            (cicd_registry_enabled|default(false))
 
     - name: set ceph_repository variable
       set_fact:
@@ -84,12 +85,34 @@
         marker: "# TACO registry hosts {mark}"
   tags: always
 
+# Prepare sh option for ubuntu OS
+- hosts: taco
+  tasks:
+    - name: change sh directory from dash to bash
+      shell: >-
+        rm /bin/sh &&
+        ln -s /bin/bash /bin/sh
+      when:
+        - ansible_distribution in ["Ubuntu","Debian"]
+  tags: always
+
 # Prepare OS for TACO
 - hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: setup-os }
   tags: setup-os
+
+# Prepare bash option for ubuntu OS
+- hosts: taco
+  tasks:
+    - name: change sh directory from dash to bash
+      shell: >-
+        rm /bin/sh &&
+        ln -s /bin/bash /bin/sh
+      when:
+        - ansible_distribution in ["Ubuntu","Debian"]
+  tags: always
 
 # Run docker registry
 - hosts: localhost, registry
@@ -144,9 +167,8 @@
         name: requests
         extra_args: --ignore-installed
       when:
-        - check_result.rc == 0
         - ansible_distribution in ["CentOS","RedHat"]
-
+        - check_result.rc == 0
 # This should run without 'ceph' tag, since it's necessary
 # for rbd_provisioner role in kubespray
 - hosts: admin-node:kube-master

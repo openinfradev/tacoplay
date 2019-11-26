@@ -1,4 +1,4 @@
-ceph_stable_release: luminous
+ceph_stable_release: nautilus
 ceph_origin: repository
 ceph_custom_repo: "http://{{ localrepo_yum }}:{{ localrepo_port }}/ceph/ceph.repo"
 ceph_mirror: http://hk.ceph.com
@@ -22,3 +22,5 @@ osd_objectstore: bluestore
 openstack_keys:
   - { name: client.kube, caps: { mon: "profile rbd", osd: "profile rbd pool=kube"}, key: "AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ==", mode: "0600" }
   - { name: client.cinder, caps: { mon: "profile rbd", osd: "profile rbd pool=volumes, profile rbd pool=backups, profile rbd pool=images"}, key: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==",  mode: "0600" }
+
+dashboard_enabled: false

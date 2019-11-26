@@ -108,3 +108,17 @@
   tags: k8s
 
 # TODO: add tests for checking the status of the updated k8s cluster
+
+# Delete sona-config POD for synchronizing node status to SONA
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: delete sona-config pod
+      shell: >-
+        {{ bin_dir }}/kubectl get pod -n openstack |
+        grep sona-config |
+        awk '{print $1}' |
+        xargs -i kubectl delete pod {} -n openstack
+      become: no
+      when: sona_integration|default(false)
+  tags: always

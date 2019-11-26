@@ -32,6 +32,7 @@ rbd_provisioner_image_format: "2"
 rbd_provisioner_image_features: layering
 rbd_provisioner_storage_class: rbd
 rbd_provisioner_reclaim_policy: Delete
+rbd_provisioner_image_tag: v2.1.1-nautilus-14.2.4
 
 # Armada
 armada_venv: "{{ lookup('env','HOME') }}/venv"
@@ -43,3 +44,12 @@ vfat_config_drive_enabled: false
 
 # Gating
 is_gating_test: false
+
+# Install external openvswitch service 
+install_ovs_as_a_rpms: false
+
+# This affects tasks related to the TACO/SONA integrated environment.
+sona_integration: false
+
+# Workaround for missing 'Python Interpreter Discovery' feature in ansible 2.7
+ansible_python_interpreter: /usr/bin/python
