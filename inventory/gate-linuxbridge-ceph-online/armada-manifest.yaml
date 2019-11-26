@@ -1770,9 +1770,9 @@ data:
       - openvswitch
       share_namespaces: false
       auto_bridge_add:
-        br-ex: veth0
+        br-ex: eth1
       interface:
-        tunnel: br-data
+        tunnel: eth2
     conf:
       paste:
         composite:neutronapi_v2_0:
@@ -2000,9 +2000,9 @@ data:
           port: 30608
     conf:
       hypervisor:
-        host_interface: br-data
+        host_interface: eth0
       libvirt:
-        live_migration_interface: br-data
+        live_migration_interface: eth1
       ceph:
         enabled: true
         admin_keyring: AQCqEUVY3RvrBRAABmhtxK2MvD/whiiVZ5Jkww==
