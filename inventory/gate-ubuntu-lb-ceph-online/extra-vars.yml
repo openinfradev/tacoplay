@@ -5,6 +5,9 @@ docker_insecure_registries: ""
 # This value is also overriden by site-prepare job
 is_gating_test: true
 
+localrepo_k8s: 192.168.97.117
+localrepo_port: 8888
+
 # ceph
 monitor_interface: ens3
 public_network: 192.168.97.0/24,192.168.98.0/24
