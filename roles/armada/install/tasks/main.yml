@@ -94,9 +94,9 @@
     executable: /bin/bash
   become: no
   when:
-    - workon_armada.stdout == ""
-    - ansible_distribution in ["CentOS","RedHat"]
     - armada_enabled|default(true)
+    - ansible_distribution in ["CentOS","RedHat"]
+    - workon_armada.stdout == ""
 
 - name: install pbr,requests for armada when offline env
   command: >-
