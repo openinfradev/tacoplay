@@ -10,13 +10,13 @@
     - gcc
     - jq
     - git
-  when: ansible_distribution in ["CentOS","RedHat"]
+  when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
 
 - name: apt install packages required for armada
   apt_repository:
     repo: ppa:deadsnakes/ppa
     state: present
-  when: ansible_distribution in ["Ubuntu","Debian"]
+  when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
 
 - name: apt install packages required for armada
   apt:
@@ -28,7 +28,7 @@
     - python3-dev
     - gcc
     - jq
-  when: ansible_distribution in ["Ubuntu","Debian"]
+  when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
 
 - name: install virtual env packages
   pip:
@@ -38,30 +38,43 @@
     - virtualenv
     - virtualenvwrapper
     - pbr
+  when: armada_enabled|default(true)
 
-- name: update bashrc for running virtual env and armada
+- name: set starting option and virtualenv folder in bashrc for centos
+  set_fact:
+    starting_option_folder: ".bashrc"
+    virtualenv_folder: "/usr/bin/virtualenvwrapper.sh"
+  when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
+
+- name: set starting option and virtualenv folder in profile for ubuntu
+  set_fact:
+    starting_option_folder: ".profile"
+    virtualenv_folder: "/usr/local/bin/virtualenvwrapper.sh"
+  when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
+
+- name: update startinf option folder for running virtual env and armada in Centos
   blockinfile:
-    path: "{{ lookup('env','HOME') }}/.bashrc"
+    path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
     block: |
       export LC_ALL="en_US.UTF-8"
       export WORKON_HOME={{ workon_home }}
-      source /usr/bin/virtualenvwrapper.sh
-      export OSH_PATH="{{ playbook_dir }}/charts"
-    marker: "# ARMADA ENVS {mark}"
-  become: no  
-  when: ansible_distribution in ["CentOS","RedHat"]
-
-- name: update bashrc for running virtual env and armada
-  blockinfile:
-    path: "{{ lookup('env','HOME') }}/.bashrc"
-    block: |
-      export LC_ALL="en_US.UTF-8"
-      export WORKON_HOME={{ workon_home }}
-      source /usr/local/bin/virtualenvwrapper.sh
+      source {{ virtualenv_folder }}
       export OSH_PATH="{{ playbook_dir }}/charts"
     marker: "# ARMADA ENVS {mark}"
   become: no
-  when: ansible_distribution in ["Ubuntu","Debian"]
+  when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
+
+- name: update startinf option folder for running virtual env and armada in Ubuntu
+  blockinfile:
+    path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
+    block: |
+      export LC_ALL="en_US.UTF-8"
+      export WORKON_HOME={{ workon_home }}
+      source {{ virtualenv_folder }}
+      export OSH_PATH="{{ playbook_dir }}/charts"
+    marker: "# ARMADA ENVS {mark}"
+  become: no
+  when : ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
 
 # FIXME: this does not work in Ubuntu machine
 - name: get existing workon armada
@@ -70,6 +83,7 @@
     lsvirtualenv | grep armada | cat
   register: workon_armada
   become: no
+  when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
 
 # FIXME: this does not work in Ubuntu machine
 # please create virtualenv with name armada manually to proceed
@@ -78,13 +92,23 @@
     . {{ lookup('env','HOME') }}/.bashrc &&
     mkvirtualenv armada --python=/usr/bin/python3.4
   become: no
-  when: workon_armada.stdout == ""
+  when:
+    - workon_armada.stdout == ""
+    - ansible_distribution in ["CentOS","RedHat"]
+    - armada_enabled|default(true)
 
 - name: install pbr,requests for armada when offline env
   command: >-
    "{{ workon_home }}/armada/bin/pip"
    install pbr requests==2.21.0
   become: no
+  when: armada_enabled|default(true)
+
+- name: install python developer package for install some requirements
+  apt:
+    name: python3.4-dev
+  ignore_errors: yes
+  when: ansible_distribution in ["Ubuntu", "Debian"] and armada_enabled|default(true)
 
 - name: install required packages for armada in virtual env
   pip:
@@ -92,6 +116,7 @@
     virtualenv: "{{ workon_home }}/armada"
     virtualenv_python: python3.4
   become: no
+  when: armada_enabled|default(true)
 
 - name: install armada in the virtual env
   args:
@@ -100,3 +125,4 @@
     "{{ workon_home }}/armada/bin/python3.4"
     setup.py install
   become: no
+  when: armada_enabled|default(true)

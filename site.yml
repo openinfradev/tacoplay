@@ -180,11 +180,16 @@
   roles:
     - { role: helm/tiller, tags: helm }
 
+# Install armada
+- hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: armada/install }
+
 # Prepare armada-manifests and then run armada apply
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: armada/install, tags: armada }
     - { role: openstack/pre-install, tags: openstack }
     - { role: armada/apply, tags: armada }
 

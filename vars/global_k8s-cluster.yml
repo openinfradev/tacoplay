@@ -53,7 +53,7 @@ etcd_download_url: >-
   {%- else -%}https://github.com/coreos/etcd/releases/download/{{etcd_version}}/etcd-{{etcd_version}}-linux-{{image_arch}}.tar.gz{%- endif -%}
 cni_download_url: >-
   {%- if localrepo_enabled -%}http://{{localrepo_k8s}}:{{localrepo_port}}/k8s/cni-plugins-{{image_arch}}-{{cni_version}}.tgz
-  {%- else -%}https://github.com/containernetworking/plugins/releases/download/{{cni_version}}/cni-plugins-{{image_arch}}-{{cni_version}}.tgz{%- endif -%}
+  {%- else -%}https://github.com/containernetworking/plugins/releases/download/{{cni_version}}/cni-plugins-linux-{{image_arch}}-{{cni_version}}.tgz{%- endif -%}
 calicoctl_download_url: >-
   {%- if localrepo_enabled -%}http://{{localrepo_k8s}}:{{localrepo_port}}/k8s/calicoctl
   {%- else -%}https://github.com/projectcalico/calicoctl/releases/download/{{calico_ctl_version}}/calicoctl-linux-{{image_arch}}{%- endif -%}
