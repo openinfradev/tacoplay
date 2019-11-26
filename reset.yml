@@ -19,7 +19,9 @@
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/vars/global_k8s-images.yml"
-      when: localrepo_enabled
+      when: (groups['registry'] is defined and (groups['registry'] | length > 0)) or
+            (cicd_registry_enabled|default(false))
+
   tags: always
 
 - hosts: compute-node
