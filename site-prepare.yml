@@ -14,6 +14,7 @@
         - "{{ playbook_dir }}/vars/global_docker.yml"
         - "{{ playbook_dir }}/vars/global_ceph.yml"
         - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
+        - "{{ playbook_dir }}/vars/global_k8s-images.yml"
   tags: always
 
 - hosts: localhost
