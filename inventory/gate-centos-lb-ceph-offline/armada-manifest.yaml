@@ -111,23 +111,23 @@ data:
   values:
     images:
       tags:
-        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
-        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        cinder_db_sync: VM-NAME-1:5000/queens/ubuntu-source-cinder-api:taco-0.1.0
-        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        test: VM-NAME-1:5000/stein/ubuntu-source-rally:taco-0.1.0
+        db_init: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        cinder_db_sync: VM-NAME-1:5000/stein/ubuntu-source-cinder-api:taco-0.1.0
+        db_drop: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
         rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
-        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        cinder_api: VM-NAME-1:5000/queens/ubuntu-source-cinder-api:taco-0.1.0
-        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        cinder_scheduler: VM-NAME-1:5000/queens/ubuntu-source-cinder-scheduler:taco-0.1.0
-        cinder_volume: VM-NAME-1:5000/queens/ubuntu-source-cinder-volume:taco-0.1.0
-        cinder_volume_usage_audit: VM-NAME-1:5000/queens/ubuntu-source-cinder-volume:taco-0.1.0
+        ks_user: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        cinder_api: VM-NAME-1:5000/stein/ubuntu-source-cinder-api:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        cinder_scheduler: VM-NAME-1:5000/stein/ubuntu-source-cinder-scheduler:taco-0.1.0
+        cinder_volume: VM-NAME-1:5000/stein/ubuntu-source-cinder-volume:taco-0.1.0
+        cinder_volume_usage_audit: VM-NAME-1:5000/stein/ubuntu-source-cinder-volume:taco-0.1.0
         cinder_storage_init: VM-NAME-1:5000/port/ceph-config-helper:v1.14.3
-        cinder_backup: VM-NAME-1:5000/queens/ubuntu-source-cinder-backup:taco-0.1.0
+        cinder_backup: VM-NAME-1:5000/stein/ubuntu-source-cinder-backup:taco-0.1.0
         cinder_backup_storage_init: VM-NAME-1:5000/port/ceph-config-helper:v1.14.3
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
@@ -178,7 +178,7 @@ data:
             app_name: cinder-volume
       cinder:
         DEFAULT:
-          backup_driver: cinder.backup.drivers.ceph
+          backup_driver: cinder.backup.drivers.ceph.CephBackupDriver
           backup_ceph_user: cinder-backup
           backup_ceph_pool: backups
       backends:
@@ -277,19 +277,19 @@ data:
   values:
     images:
       tags:
-        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
+        test: VM-NAME-1:5000/stein/ubuntu-source-rally:taco-0.1.0
         glance_storage_init: VM-NAME-1:5000/port/ceph-config-helper:v1.14.3
-        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        glance_db_sync: VM-NAME-1:5000/queens/ubuntu-source-glance-api:taco-0.1.0
-        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        db_init: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        glance_db_sync: VM-NAME-1:5000/stein/ubuntu-source-glance-api:taco-0.1.0
+        db_drop: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
         rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
-        glance_api: VM-NAME-1:5000/queens/ubuntu-source-glance-api:taco-0.1.0
-        glance_registry: VM-NAME-1:5000/queens/ubuntu-source-glance-registry:taco-0.1.0
-        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        glance_api: VM-NAME-1:5000/stein/ubuntu-source-glance-api:taco-0.1.0
+        glance_registry: VM-NAME-1:5000/stein/ubuntu-source-glance-registry:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
@@ -436,22 +436,23 @@ data:
   values:
     images:
       tags:
-        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
-        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        heat_db_sync: VM-NAME-1:5000/queens/ubuntu-source-heat-api:taco-0.1.0
-        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        heat_api: VM-NAME-1:5000/queens/ubuntu-source-heat-api:taco-0.1.0
-        heat_cfn: VM-NAME-1:5000/queens/ubuntu-source-heat-api:taco-0.1.0
-        heat_cloudwatch: VM-NAME-1:5000/queens/ubuntu-source-heat-api:taco-0.1.0
-        heat_engine: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        heat_engine_cleaner: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        test: VM-NAME-1:5000/stein/ubuntu-source-rally:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        db_init: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        heat_db_sync: VM-NAME-1:5000/stein/ubuntu-source-heat-api:taco-0.1.0
+        db_drop: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        heat_api: VM-NAME-1:5000/stein/ubuntu-source-heat-api:taco-0.1.0
+        heat_cfn: VM-NAME-1:5000/stein/ubuntu-source-heat-api:taco-0.1.0
+        heat_cloudwatch: VM-NAME-1:5000/stein/ubuntu-source-heat-api:taco-0.1.0
+        heat_engine: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        heat_engine_cleaner: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
         rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
+        heat_purge_deleted: VM-NAME-1:5000/openstackhelm/heat:ocata-ubuntu_xenial
       pull_policy: IfNotPresent
     pod:
       security_context:
@@ -531,13 +532,13 @@ data:
   values:
     images:
       tags:
-        db_init: VM-NAME-1:5000/queens/ubuntu-source-horizon:taco-0.1.0
-        db_drop: VM-NAME-1:5000/queens/ubuntu-source-horizon:taco-0.1.0
-        horizon_db_sync: VM-NAME-1:5000/queens/ubuntu-source-horizon:taco-0.1.0
-        horizon: VM-NAME-1:5000/queens/ubuntu-source-horizon:taco-0.1.0
+        db_init: VM-NAME-1:5000/stein/ubuntu-source-horizon:taco-0.1.0
+        db_drop: VM-NAME-1:5000/stein/ubuntu-source-horizon:taco-0.1.0
+        horizon_db_sync: VM-NAME-1:5000/stein/ubuntu-source-horizon:taco-0.1.0
+        horizon: VM-NAME-1:5000/stein/ubuntu-source-horizon:taco-0.1.0
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
-        test: VM-NAME-1:5000/openstackhelm/osh-selenium:latest-ubuntu_xenial
+        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v1.0.0
+        test: VM-NAME-1:5000/openstackhelm/osh-selenium:latest-ubuntu_bionic
       pull_policy: IfNotPresent
     pod:
       security_context:
@@ -638,13 +639,13 @@ data:
   values:
     images:
       tags:
-        entrypoint: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        entrypoint: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
         ingress: VM-NAME-1:5000/kubernetes-ingress-controller/nginx-ingress-controller:0.23.0
-        ingress_module_init: VM-NAME-1:5000/queens/ubuntu-source-neutron-server:taco-0.1.0
-        ingress_routed_vip: VM-NAME-1:5000/queens/ubuntu-source-neutron-server:taco-0.1.0
+        ingress_module_init: VM-NAME-1:5000/stein/ubuntu-source-neutron-server:taco-0.1.0
+        ingress_routed_vip: VM-NAME-1:5000/stein/ubuntu-source-neutron-server:taco-0.1.0
         error_pages: VM-NAME-1:5000/google_containers/defaultbackend:1.0
         keepalived: VM-NAME-1:5000/keepalived:1.4.5
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
       pull_policy: IfNotPresent
     network:
@@ -717,20 +718,21 @@ data:
   values:
     images:
       tags:
-        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
-        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        keystone_db_sync: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
-        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        test: VM-NAME-1:5000/stein/ubuntu-source-rally:taco-0.1.0
+        db_init: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        keystone_db_sync: VM-NAME-1:5000/stein/ubuntu-source-keystone:taco-0.1.0
+        db_drop: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
         rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
-        keystone_fernet_setup: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
-        keystone_fernet_rotate: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
-        keystone_credential_setup: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
-        keystone_credential_rotate: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
-        keystone_api: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
-        keystone_domain_manage: VM-NAME-1:5000/queens/ubuntu-source-keystone:taco-0.1.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        keystone_fernet_setup: VM-NAME-1:5000/stein/ubuntu-source-keystone:taco-0.1.0
+        keystone_fernet_rotate: VM-NAME-1:5000/stein/ubuntu-source-keystone:taco-0.1.0
+        keystone_credential_setup: VM-NAME-1:5000/stein/ubuntu-source-keystone:taco-0.1.0
+        keystone_credential_rotate: VM-NAME-1:5000/stein/ubuntu-source-keystone:taco-0.1.0
+        keystone_credential_cleanup: VM-NAME-1:5000/openstackhelm/heat:ocata-ubuntu_xenial
+        keystone_api: VM-NAME-1:5000/stein/ubuntu-source-keystone:taco-0.1.0
+        keystone_domain_manage: VM-NAME-1:5000/stein/ubuntu-source-keystone:taco-0.1.0
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
       pull_policy: IfNotPresent
     conf:
@@ -795,8 +797,8 @@ data:
     images:
       tags:
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
-        libvirt: VM-NAME-1:5000/queens/ubuntu-source-nova-libvirt:taco-0.1.0
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
+        libvirt: VM-NAME-1:5000/stein/ubuntu-source-nova-libvirt:taco-0.1.0
       pull_policy: IfNotPresent
     network:
       backend:
@@ -846,12 +848,14 @@ data:
     images:
       tags:
         mariadb: VM-NAME-1:5000/openstackhelm/mariadb:10.2.18
+        mariadb_backup: VM-NAME-1:5000/openstackhelm/mariadb:latest-ubuntu_xenial
+        scripted_test: VM-NAME-1:5000/penstackhelm/mariadb:latest-ubuntu_xenial
         ingress: VM-NAME-1:5000/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
         error_pages: VM-NAME-1:5000/google_containers/defaultbackend:1.0
         prometheus_create_mysql_user: VM-NAME-1:5000/mariadb:10.2.13
         prometheus_mysql_exporter: VM-NAME-1:5000/prom/mysqld-exporter:v0.10.0
-        prometheus_mysql_exporter_helm_tests: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        prometheus_mysql_exporter_helm_tests: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
@@ -898,7 +902,7 @@ data:
     images:
       tags:
         memcached: VM-NAME-1:5000/memcached:1.5.5
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
         prometheus_memcached_exporter: VM-NAME-1:5000/memcached-exporter:v0.4.1
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
       pull_policy: IfNotPresent
@@ -960,23 +964,28 @@ data:
   values:
     images:
       tags:
-        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
-        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        neutron_db_sync: VM-NAME-1:5000/queens/ubuntu-source-neutron-server:taco-0.1.0
-        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        neutron_server: VM-NAME-1:5000/queens/ubuntu-source-neutron-server:taco-0.1.0
-        neutron_dhcp: VM-NAME-1:5000/queens/ubuntu-source-neutron-dhcp-agent:taco-0.1.0
-        neutron_metadata: VM-NAME-1:5000/queens/ubuntu-source-neutron-metadata-agent:taco-0.1.0
-        neutron_l3: VM-NAME-1:5000/queens/ubuntu-source-neutron-l3-agent:taco-0.1.0
-        neutron_openvswitch_agent: VM-NAME-1:5000/queens/ubuntu-source-neutron-openvswitch-agent:taco-0.1.0
-        neutron_linuxbridge_agent: VM-NAME-1:5000/queens/ubuntu-source-neutron-linuxbridge-agent:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        test: VM-NAME-1:5000/stein/ubuntu-source-rally:taco-0.1.0
+        purge_test: VM-NAME-1:5000/openstackhelm/ospurge:latest
+        db_init: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        neutron_db_sync: VM-NAME-1:5000/stein/ubuntu-source-neutron-server:taco-0.1.0
+        db_drop: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        neutron_server: VM-NAME-1:5000/stein/ubuntu-source-neutron-server:taco-0.1.0
+        neutron_dhcp: VM-NAME-1:5000/stein/ubuntu-source-neutron-dhcp-agent:taco-0.1.0
+        neutron_metadata: VM-NAME-1:5000/stein/ubuntu-source-neutron-metadata-agent:taco-0.1.0
+        neutron_l3: VM-NAME-1:5000/stein/ubuntu-source-neutron-l3-agent:taco-0.1.0
+        neutron_openvswitch_agent: VM-NAME-1:5000/stein/ubuntu-source-neutron-openvswitch-agent:taco-0.1.0
+        neutron_linuxbridge_agent: VM-NAME-1:5000/stein/ubuntu-source-neutron-linuxbridge-agent:taco-0.1.0
+        neutron_sriov_agent: VM-NAME-1:5000/stein/ubuntu-source-neutron-sriov-agent:taco-0.1.0
+        neutron_bagpipe_bgp: VM-NAME-1:5000/stein/ubuntu-source-neutron-server:taco-0.1.0
+        neutron_ironic_agent: VM-NAME-1:5000/stein/ubuntu-source-neutron-server:taco-0.1.0
+        neutron_l2gw: VM-NAME-1:5000/stein/ubuntu-source-neutron-server:taco-0.1.0
         rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
       pull_policy: IfNotPresent
     pod:
       replicas:
@@ -1052,6 +1061,18 @@ data:
           service_plugins: router
         agent:
           root_helper: sudo /var/lib/kolla/venv/bin/neutron-rootwrap /etc/neutron/rootwrap.conf
+        placement:
+          auth_version: v3
+          auth_type: password
+          auth_uri: http://keystone-api.openstack.svc.cluster.local:5000/v3
+          auth_url: http://keystone-api.openstack.svc.cluster.local:5000/v3
+          endpoint_type: internal
+          project_domain_name: service
+          project_name: service
+          user_domain_name: service
+          region_name: RegionOne
+          password: password
+          username: nova
       plugins:
         ml2_conf:
           ml2:
@@ -1181,29 +1202,29 @@ data:
   values:
     images:
       tags:
-        test: VM-NAME-1:5000/queens/ubuntu-source-rally:taco-0.1.0
-        db_drop: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        db_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_user: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_service: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        ks_endpoints: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        nova_api: VM-NAME-1:5000/queens/ubuntu-source-nova-api:taco-0.1.0
-        nova_cell_setup: VM-NAME-1:5000/queens/ubuntu-source-nova-api:taco-0.1.0
-        nova_cell_setup_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        nova_compute: VM-NAME-1:5000/queens/ubuntu-source-nova-compute:taco-0.1.0
-        nova_compute_ironic: VM-NAME-1:5000/queens/ubuntu-source-nova-compute-queens-ironic:taco-0.1.0
-        nova_compute_ssh: VM-NAME-1:5000/queens/ubuntu-source-nova-ssh:taco-0.1.0
-        nova_conductor: VM-NAME-1:5000/queens/ubuntu-source-nova-conductor:taco-0.1.0
-        nova_consoleauth: VM-NAME-1:5000/queens/ubuntu-source-nova-consoleauth:taco-0.1.0
-        nova_db_sync: VM-NAME-1:5000/queens/ubuntu-source-nova-api:taco-0.1.0
-        nova_novncproxy: VM-NAME-1:5000/queens/ubuntu-source-nova-novncproxy:taco-0.1.0
-        nova_novncproxy_assets: VM-NAME-1:5000/queens/ubuntu-source-nova-novncproxy:taco-0.1.0
-        nova_placement: VM-NAME-1:5000/queens/ubuntu-source-nova-placement-api:taco-0.1.0
-        nova_scheduler: VM-NAME-1:5000/queens/ubuntu-source-nova-scheduler:taco-0.1.0
-        nova_spiceproxy: VM-NAME-1:5000/queens/ubuntu-source-nova-spicehtml5proxy:taco-0.1.0
-        nova_spiceproxy_assets: VM-NAME-1:5000/queens/ubuntu-source-nova-spicehtml5proxy:taco-0.1.0
-        bootstrap: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
+        test: VM-NAME-1:5000/stein/ubuntu-source-rally:taco-0.1.0
+        db_drop: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        db_init: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_user: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_service: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        ks_endpoints: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        nova_api: VM-NAME-1:5000/stein/ubuntu-source-nova-api:taco-0.1.0
+        nova_cell_setup: VM-NAME-1:5000/stein/ubuntu-source-nova-api:taco-0.1.0
+        nova_cell_setup_init: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        nova_compute: VM-NAME-1:5000/stein/ubuntu-source-nova-compute:taco-0.1.0
+        nova_compute_ironic: VM-NAME-1:5000/stein/ubuntu-source-nova-compute-stein-ironic:taco-0.1.0
+        nova_compute_ssh: VM-NAME-1:5000/stein/ubuntu-source-nova-ssh:taco-0.1.0
+        nova_conductor: VM-NAME-1:5000/stein/ubuntu-source-nova-conductor:taco-0.1.0
+        nova_consoleauth: VM-NAME-1:5000/stein/ubuntu-source-nova-consoleauth:taco-0.1.0
+        nova_db_sync: VM-NAME-1:5000/stein/ubuntu-source-nova-api:taco-0.1.0
+        nova_novncproxy: VM-NAME-1:5000/stein/ubuntu-source-nova-novncproxy:taco-0.1.0
+        nova_novncproxy_assets: VM-NAME-1:5000/stein/ubuntu-source-nova-novncproxy:taco-0.1.0
+        nova_placement: VM-NAME-1:5000/stein/ubuntu-source-nova-placement-api:taco-0.1.0
+        nova_scheduler: VM-NAME-1:5000/stein/ubuntu-source-nova-scheduler:taco-0.1.0
+        nova_spiceproxy: VM-NAME-1:5000/stein/ubuntu-source-nova-spicehtml5proxy:taco-0.1.0
+        nova_spiceproxy_assets: VM-NAME-1:5000/stein/ubuntu-source-nova-spicehtml5proxy:taco-0.1.0
+        bootstrap: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
         rabbit_init: VM-NAME-1:5000/rabbitmq:3.7-management
         nova_service_cleaner: VM-NAME-1:5000/port/ceph-config-helper:v1.14.3
@@ -1251,6 +1272,11 @@ data:
           virt_type: qemu
         scheduler:
           discover_hosts_in_cells_interval: 60
+        placement_database:
+          max_retries: -1
+          sync_on_startup: true
+        placement:
+          region_name: RegionOne
       rootwrap_filters: null
     endpoints:
       oslo_db:
@@ -1347,12 +1373,12 @@ data:
     images:
       tags:
         rabbitmq: VM-NAME-1:5000/rabbitmq:3.7.13
-        rabbitmq_init: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v0.3.1
-        prometheus_rabbitmq_exporter: VM-NAME-1:5000/kbudde/rabbitmq-exporter:v0.21.0
-        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
+        rabbitmq_init: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
         scripted_test: VM-NAME-1:5000/rabbitmq:3.7.13-management
-        prometheus_rabbitmq_exporter_helm_tests: VM-NAME-1:5000/queens/ubuntu-source-heat-engine:taco-0.1.0
+        prometheus_rabbitmq_expoddrter: VM-NAME-1:5000/kbudde/rabbitmq-exporter:v0.21.0
+        prometheus_rabbitmq_exporter_helm_tests: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
+        image_repo_sync: VM-NAME-1:5000/docker:17.07.0
       pull_policy: IfNotPresent
     pod:
       replicas:
