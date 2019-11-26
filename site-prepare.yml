@@ -56,7 +56,7 @@
       docker_image:
         name: "{{ item }}"
       with_items:
-        - "quay.io/external_storage/rbd-provisioner:v2.1.1-k8s1.11"
+        - "registry.cicd.stg.taco/external_storage/rbd-provisioner:v2.1.1-nautilus-14.2.4"
         - "registry.cicd.stg.taco/yaml-merge:latest"
     
     - name: copy .netrc file to home directory
