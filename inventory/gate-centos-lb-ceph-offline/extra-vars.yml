@@ -1,5 +1,5 @@
 # tacoplay
-cicd_registry_enabled: false
+cicd_registry_enabled: true
 docker_insecure_registries: 
  - VM-NAME-1:5000
 is_gating_test: true
