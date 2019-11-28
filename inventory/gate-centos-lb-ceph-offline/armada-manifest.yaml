@@ -1681,7 +1681,7 @@ data:
           port: 30009
   source:
     type: local
-    location: /home/taco/tacoplay/chart/openstack-helm-infra
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
     subpath: grafana
     reference: master
   dependencies:
@@ -1997,7 +1997,7 @@ data:
               target_label: kubernetes_io_hostname
   source:
     type: local
-    location: /home/taco/tacoplay/chart/openstack-helm-infra
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
     subpath: prometheus
     reference: master
   dependencies:
@@ -2091,7 +2091,7 @@ data:
 
   source:
     type: local
-    location: /home/taco/tacoplay/chart/openstack-helm-infra
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
     subpath: prometheus-alertmanager
     reference: master
   dependencies:
@@ -2119,7 +2119,7 @@ data:
     dummy: Always
   source:
     type: local
-    location: /home/taco/tacoplay/chart/openstack-helm-infra
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
     subpath: prometheus-kube-state-metrics
     reference: master
   dependencies:
@@ -2161,7 +2161,7 @@ data:
             operator: Exists
   source:
     type: local
-    location: /home/taco/tacoplay/chart/openstack-helm-infra
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
     subpath: prometheus-node-exporter
     reference: master
   dependencies:
@@ -2212,7 +2212,7 @@ data:
         type: null
   source:
     type: local
-    location: /home/taco/tacoplay/chart/openstack-helm-infra
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
     subpath: prometheus-openstack-exporter
     reference: master
   dependencies:
@@ -2463,7 +2463,7 @@ data:
       storage_class: rbd
   source:
     type: local
-    location: /home/taco/tacoplay/chart/openstack-helm-infra
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
     subpath: elasticsearch
     reference: master
   test:
@@ -2755,7 +2755,7 @@ data:
             default: 80
   source:
     type: local
-    location: /home/taco/tacoplay/chart/openstack-helm-infra
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
     subpath: fluentbit
     reference: master
   test:
@@ -2801,7 +2801,7 @@ data:
         port: 5601
   source:
     type: local
-    location: /home/taco/tacoplay/chart/openstack-helm-infra
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
     subpath: kibana
     reference: master
   dependencies:
