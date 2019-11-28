@@ -541,7 +541,7 @@ data:
         horizon_db_sync: VM-NAME-1:5000/stein/ubuntu-source-horizon:taco-0.1.0
         horizon: VM-NAME-1:5000/stein/ubuntu-source-horizon:taco-0.1.0
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
-        dep_check: VM-NAME-1:5000/stackanetes/kubernetes-entrypoint:v1.0.0
+        dep_check: VM-NAME-1:5000/airshipit/kubernetes-entrypoint:v1.0.0
         test: VM-NAME-1:5000/openstackhelm/osh-selenium:latest-ubuntu_bionic
       pull_policy: IfNotPresent
     pod:
