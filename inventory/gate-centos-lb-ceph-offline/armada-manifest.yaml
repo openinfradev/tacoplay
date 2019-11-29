@@ -1637,7 +1637,7 @@ data:
         grafana_db_session_sync: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
         helm_tests: VM-NAME-1:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
         image_repo_sync: VM-NAME-1:5000/docker:17.07.0
-        selenium_tests: VM-NAME-1:5000/openstackhelm/osh-selenium:latest-ubuntu_xenial
+        selenium_tests: VM-NAME-1:5000/openstackhelm/osh-selenium:latest-ubuntu_bionic
       pull_policy: Always
     endpoints:
       oslo_db:
