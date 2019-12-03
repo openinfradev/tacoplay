@@ -1074,7 +1074,7 @@ data:
       auto_bridge_add:
         br-ex: null
       interface:
-        tunnel: eth2
+        tunnel: ens5
     conf:
       paste:
         composite:neutronapi_v2_0:
@@ -1116,7 +1116,7 @@ data:
             flat_networks: provider
         linuxbridge_agent:
           linux_bridge:
-            physical_interface_mappings: provider:eth1
+            physical_interface_mappings: provider:ens4
             bridge_mappings: ""
           securitygroup:
             firewall_driver: iptables
