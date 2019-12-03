@@ -64,7 +64,7 @@
     virtualenv_folder: "/usr/local/bin/virtualenvwrapper.sh"
   when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
 
-- name: update startinf option folder for running virtual env and armada in Centos
+- name: update startinf option folder for running virtual env and armada
   blockinfile:
     path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
     block: |
@@ -74,32 +74,7 @@
       export OSH_PATH="{{ playbook_dir }}/charts"
     marker: "# ARMADA ENVS {mark}"
   become: no
-  when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
-
-- name: update startinf option folder for running virtual env and armada in Ubuntu
-  blockinfile:
-    path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
-    block: |
-      export LC_ALL="en_US.UTF-8"
-      export WORKON_HOME={{ workon_home }}
-      export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-      source {{ virtualenv_folder }}
-      export OSH_PATH="{{ playbook_dir }}/charts"
-    marker: "# ARMADA ENVS {mark}"
-  become: no
-  when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
-
-- name: update startinf option folder for running virtual env and armada in Ubuntu
-  blockinfile:
-    path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
-    block: |
-      export LC_ALL="en_US.UTF-8"
-      export WORKON_HOME={{ workon_home }}
-      source {{ virtualenv_folder }}
-      export OSH_PATH="{{ playbook_dir }}/charts"
-    marker: "# ARMADA ENVS {mark}"
-  become: no
-  when : ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
+  when: armada_enabled|default(true)
 
 - name: get existing workon armada
   shell: >-
@@ -125,7 +100,7 @@
 - name: install pbr,requests for armada when offline env
   command: >-
    "{{ workon_home }}/armada/bin/pip"
-   install pbr requests==2.21.0
+   install pbr requests==2.21.0 pathlib2
   become: no
   when: armada_enabled|default(true)
 
