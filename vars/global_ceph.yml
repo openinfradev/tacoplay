@@ -1,6 +1,7 @@
 ceph_stable_release: nautilus
 ceph_origin: repository
-ceph_custom_repo: "http://{{ localrepo_yum }}:{{ localrepo_port }}/ceph/ceph.repo"
+# FIXME - hard coded for Ubuntu 18.04
+ceph_custom_repo: "http://tacorepo:8888/ubuntu/ceph/debian-nautilus"
 ceph_mirror: http://hk.ceph.com
 
 ntp_service_enabled: false
