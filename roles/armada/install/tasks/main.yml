@@ -12,9 +12,21 @@
     - git
   when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
 
+#- name: apt install packages required for armada
+#  apt_repository:
+#    repo: ppa:deadsnakes/ppa
+#    state: present
+#  when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
+
+- name: add ppa apt-key
+  apt_key:
+    url: http://tacorepo:8888/ubuntu/deadsnakes/gpg
+    state: present
+  when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
+
 - name: apt install packages required for armada
   apt_repository:
-    repo: ppa:deadsnakes/ppa
+    repo: deb http://tacorepo:8888/ubuntu/deadsnakes/ppa/ubuntu bionic main
     state: present
   when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
 
@@ -63,6 +75,19 @@
     marker: "# ARMADA ENVS {mark}"
   become: no
   when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
+
+- name: update startinf option folder for running virtual env and armada in Ubuntu
+  blockinfile:
+    path: "{{ lookup('env','HOME') }}/{{ starting_option_folder }}"
+    block: |
+      export LC_ALL="en_US.UTF-8"
+      export WORKON_HOME={{ workon_home }}
+      export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+      source {{ virtualenv_folder }}
+      export OSH_PATH="{{ playbook_dir }}/charts"
+    marker: "# ARMADA ENVS {mark}"
+  become: no
+  when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
 
 - name: update startinf option folder for running virtual env and armada in Ubuntu
   blockinfile:
