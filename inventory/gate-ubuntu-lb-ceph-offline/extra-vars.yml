@@ -1,5 +1,5 @@
 # tacoplay
-cicd_registry_enabled: true
+cicd_registry_enabled: false
 docker_insecure_registries: 
  - VM-NAME-1:5000
 is_gating_test: true
@@ -11,7 +11,7 @@ localrepo_pypi: 192.168.197.39
 localrepo_port: 8888
 
 # ceph
-monitor_interface: eth2
+monitor_interface: ens5
 public_network: 192.168.201.0/24,192.168.202.0/24
 cluster_network: 192.168.201.0/24,192.168.202.0/24
 
