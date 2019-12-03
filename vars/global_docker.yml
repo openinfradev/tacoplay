@@ -11,6 +11,12 @@ dockerproject_rh_repo_base_url: >-
 dockerproject_rh_repo_gpgkey: >-
   {%- if localrepo_enabled -%}http://{{ localrepo_yum }}:{{ localrepo_port }}/dockerproject/gpg
   {%- else -%}https://yum.dockerproject.org/gpg{%- endif -%}
+docker_ubuntu_repo_base_url: >-
+  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}:{{ localrepo_port }}/docker/linux/ubuntu
+  {%- else -%}https://download.docker.com/linux/ubuntu{%- endif -%}
+docker_ubuntu_repo_gpgkey: >-
+  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}:{{ localrepo_port }}/docker/linux/ubuntu/gpg
+  {%- else -%}https://download.docker.com/linux/ubuntu/gpg{%- endif -%}
 
 docker_container_storage_setup: false
 docker_storage_options: -s overlay2
