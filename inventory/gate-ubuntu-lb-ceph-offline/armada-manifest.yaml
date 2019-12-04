@@ -2837,5 +2837,5 @@ data:
     - openstack-compute-kit
     - openstack-heat
     - openstack-dashboard
-    - monitoring-infra
-    - logging-infra
+#    - monitoring-infra
+#    - logging-infra
