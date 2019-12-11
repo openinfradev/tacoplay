@@ -64,6 +64,7 @@
 
     - name: prepare armada_manifest for image pulling
       include_tasks: roles/armada/apply/tasks/prepare-manifest.yml
+      when: include_openstack_images
 
     - name: pull all images used in armada manifest
       script: >-
@@ -72,7 +73,9 @@
         registry.cicd.stg.taco
       args:
         creates: /tmp/.image-pull-done
-      when: is_gating_test
+      when:
+        - is_gating_test
+        - include_openstack_images
 
     - name: pull all images used in armada manifest
       script: >-
@@ -81,7 +84,9 @@
         registry-rel.cicd.stg.taco
       args:
         creates: /tmp/.image-pull-done
-      when: not is_gating_test
+      when:
+        - not is_gating_test
+        - include_openstack_images
 
     - name: run registry container
       docker_container:

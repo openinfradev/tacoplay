@@ -42,7 +42,6 @@ if [ $# == 0 ]; then
 fi
 
 if [ $# == 1 ]; then
-  OLD_REGISTRY="registry.cicd.stg.taco"
   MANIFESTS=$1
   for IMAGE in $(cat $MANIFESTS | yq '.data.values.images.tags | map(.) | join(" ")' | tr -d '"'); do
     depth=$(echo $IMAGE | sed 's/[^/]//g' | awk '{print length}')
