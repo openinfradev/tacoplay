@@ -71,7 +71,7 @@ if [[ $(openstack server list | grep test) ]]; then
   echo "Done"
 fi
 
-IMAGE=$(openstack image show 'Cirros-0.4.0' | grep id | awk '{print $4}')
+IMAGE=$(openstack image show 'Cirros-0.4.0' -f value -c id)
 FLAVOR=$(openstack flavor list | grep m1.tiny | awk '{print $2}')
 NETWORK=$(openstack network list | grep private-net | awk '{print $2}')
 
