@@ -84,6 +84,8 @@ openstack_pools:
   - "{{ openstack_cinder_backup_pool }}"
   - "{{ openstack_nova_vms_pool }}"
 
+rbd_provisioner_image_repo: "registry.cicd.stg.taco/external_storage/rbd-provisioner"
+
 # k8s
 kubectl_localhost: true
 kubeconfig_localhost: true
