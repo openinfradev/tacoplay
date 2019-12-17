@@ -36,8 +36,8 @@
     state: present
   loop:
     - virtualenv
-    - virtualenvwrapper
     - pbr
+    - virtualenvwrapper
   when: armada_enabled|default(true)
 
 - name: set starting option and virtualenv folder in bashrc for centos
