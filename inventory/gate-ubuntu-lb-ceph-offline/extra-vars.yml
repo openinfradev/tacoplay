@@ -10,6 +10,8 @@ localrepo_k8s: VM-NAME-1
 localrepo_pypi: 192.168.197.39
 localrepo_port: 8888
 
+ceph_custom_repo: "http://tacorepo:8888/ubuntu/ceph/debian-nautilus"
+
 # ceph
 monitor_interface: ens5
 public_network: 192.168.201.0/24,192.168.202.0/24
