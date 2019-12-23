@@ -12,6 +12,15 @@
   when:
     - ansible_distribution in ["CentOS","RedHat"]
 
+- name: install packages required for openstack client packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - python3-pip
+  when:
+    - ansible_distribution in ["Debian","Ubuntu"]
+
 - name: install python-openstackclient
   pip:
     name: "{{ item.name }}"
