@@ -35,7 +35,7 @@
     name: "{{ item }}"
     state: present
   loop:
-    - python3.4
+    - python3.6
     - python3-pip
     - python3-dev
     - gcc
@@ -94,7 +94,18 @@
     executable: /bin/bash
   become: no
   when:
-    - armada_enabled|default(true)
+    - ansible_distribution in ["CentOS","RedHat"] and  armada_enabled|default(true)
+    - workon_armada.stdout == ""
+
+- name: create workon armada if not exist
+  shell: >-
+    . {{ lookup('env','HOME') }}/{{ starting_option_folder }} &&
+    mkvirtualenv armada --python=/usr/bin/python3.6
+  args:
+    executable: /bin/bash
+  become: no
+  when:
+    - ansible_distribution in ["Debian","Ubuntu"] and  armada_enabled|default(true)
     - workon_armada.stdout == ""
 
 - name: install pbr,requests for armada when offline env
@@ -106,7 +117,7 @@
 
 - name: install python developer package for install some requirements
   apt:
-    name: python3.4-dev
+    name: python3.6-dev
   ignore_errors: yes
   when: ansible_distribution in ["Ubuntu", "Debian"] and armada_enabled|default(true)
 
@@ -114,7 +125,7 @@
   pip:
     requirements: "{{ playbook_dir }}/armada/requirements.txt"
     virtualenv: "{{ workon_home }}/armada"
-    virtualenv_python: python3.4
+    virtualenv_python: python3.6
   become: no
   when: armada_enabled|default(true)
 
@@ -122,7 +133,7 @@
   args:
     chdir: "{{ playbook_dir }}/armada"
   command: >-
-    "{{ workon_home }}/armada/bin/python3.4"
+    "{{ workon_home }}/armada/bin/python3.6"
     setup.py install
   become: no
   when: armada_enabled|default(true)
