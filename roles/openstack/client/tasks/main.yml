@@ -13,7 +13,7 @@
     - ansible_distribution in ["CentOS","RedHat"]
 
 - name: install packages required for openstack client packages
-  yum:
+  apt:
     name: "{{ item }}"
     state: present
   loop:
