@@ -1,0 +1,101 @@
+# tacoplay
+cicd_registry_enabled: false
+docker_insecure_registries: 
+ - VM-NAME-1:5000
+is_gating_test: true
+
+localrepo_enabled: true
+localrepo_yum: 192.168.197.39
+localrepo_k8s: VM-NAME-1
+localrepo_pypi: 192.168.197.39
+localrepo_port: 8888
+
+ceph_custom_repo: "http://tacorepo:8888/ubuntu/ceph/debian-nautilus"
+
+# ceph
+monitor_interface: ens5
+public_network: 192.168.201.0/24,192.168.202.0/24
+cluster_network: 192.168.201.0/24,192.168.202.0/24
+
+ceph_conf_overrides:
+      global:
+        mon_allow_pool_delete: true
+        osd_pool_default_size: 1
+        osd_pool_default_min_size: 1
+        osd_pg_stat_report_internal_max: 1
+      osd:
+        osd_min_pg_log_entries: 10
+        osd_max_pg_log_entries: 10
+        osd_pg_log_dups_tracked: 10
+        osd_pg_log_trim_min: 10
+
+osd_objectstore: bluestore
+lvm_volumes:
+  - data: /dev/vdb
+  - data: /dev/vdc
+  - data: /dev/vdd
+
+openstack_config: true
+kube_pool:
+  name: "kube"
+  pg_num: 64
+  pgp_num: 64
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+  application: "rbd"
+openstack_glance_pool:
+  name: "images"
+  pg_num: 64
+  pgp_num: 64
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+openstack_cinder_pool:
+  name: "volumes"
+  pg_num: 64
+  pgp_num: 64
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+openstack_cinder_backup_pool:
+  name: "backups"
+  pg_num: 2
+  pgp_num: 2
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+openstack_nova_vms_pool:
+  name: "vms"
+  pg_num: 64
+  pgp_num: 64
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+  application: "rbd"
+
+openstack_pools:
+  - "{{ kube_pool }}"
+  - "{{ openstack_glance_pool }}"
+  - "{{ openstack_cinder_pool }}"
+  - "{{ openstack_cinder_backup_pool }}"
+  - "{{ openstack_nova_vms_pool }}"
+
+# k8s
+kubectl_localhost: true
+kubeconfig_localhost: true
+kube_service_addresses: 10.233.0.0/18
+kube_pods_subnet: 10.233.64.0/18
+ipip_mode: Always
+peer_with_router: false
+kube_apiserver_insecure_bind_address: 0.0.0.0
+kube_apiserver_insecure_port: 8090
+
+auto_release_enabled: true
+os_root_user: admin
+os_root_password: password
