@@ -4,6 +4,18 @@
 - include: render-manifest.yml
   when: taco_storage == 'ceph'
 
+- name: set starting option and virtualenv folder in bashrc for centos
+  set_fact:
+    starting_option_folder: ".bashrc"
+    virtualenv_folder: "/usr/bin/virtualenvwrapper.sh"
+  when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
+
+- name: set starting option and virtualenv folder in profile for ubuntu
+  set_fact:
+    starting_option_folder: ".profile"
+    virtualenv_folder: "/usr/local/bin/virtualenvwrapper.sh"
+  when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
+
 - name: delete test pods in openstack namespace
   shell: >-
     {{ bin_dir }}/kubectl get pods -n openstack | grep test |
