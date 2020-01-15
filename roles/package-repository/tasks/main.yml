@@ -1,0 +1,110 @@
+---
+- name: registries | populate custom entries into hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: 192.168.54.30 registry.cicd.stg.taco registry-rel.cicd.stg.taco
+    state: present
+  when: cicd_registry_enabled|default(false)
+
+- name: registries | create directory for cert
+  file:
+    path: "/etc/docker/certs.d/{{ item }}.cicd.stg.taco"
+    state: directory
+  with_items:
+    - registry
+    - registry-rel
+  when: cicd_registry_enabled|default(false)
+
+- name: registries | create cert file
+  copy:
+    src: "{{ item }}-certs"
+    dest: "/etc/docker/certs.d/{{ item }}.cicd.stg.taco/ca.crt"
+  with_items:
+    - registry
+    - registry-rel
+  when: cicd_registry_enabled|default(false)
+
+- name: populate taco registry into hosts file
+  blockinfile:
+    dest: /etc/hosts
+    block: |-
+      {% for item in (groups['registry']|default([]))|unique -%}{{ hostvars[item]['ip'] }} {{ item }}
+      {% endfor %}
+    state: present
+    create: yes
+    backup: yes
+    marker: "# TACO registry hosts {mark}"
+
+- name: install rsync on ansible-host and registry nodes
+  yum:
+    name: rsync
+    state: present
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: install python-pip on registry nodes
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - epel-release
+    - python-pip
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: install python docker package 
+  pip:
+    name: "{{ item.name }}"
+    version: "{{ item.version }}"
+    state: present
+  loop:
+    - { name: 'pip', version: '9.0.3' }
+    - { name: 'docker', version: '3.5.1' }
+
+- name: get registry image
+  synchronize:
+    src: "{{ docker_registry_volume_dir }}/registry-2.6.2.tar"
+    dest: "/tmp/registry-2.6.2.tar"
+
+- name: load registry image from archive
+  docker_image:
+    name: registry
+    tag: 2.6.2
+    load_path: "/tmp/registry-2.6.2.tar"
+    state: present
+
+- name: ensure docker volume mapping host directories exist
+  file:
+    state: directory
+    path: "{{ item | regex_replace('^(?P<host>.+):(?P<container>.+):(?P<mode>.+)', '\\g<host>') }}"
+  with_items:
+    - "{{ docker_registry_volume }}"
+
+- name: unarchive registry volume
+  unarchive:
+    src: "{{ docker_registry_volume_archive }}"
+    dest: "{{ docker_registry_volume }}"
+  when: registry_volume_archived
+
+- name: copy registry volume to local registry volume path
+  synchronize:
+    src: "{{ docker_registry_volume_dir }}/"
+    dest: "{{ docker_registry_volume }}"
+  when: not registry_volume_archived
+
+- name: remove existing {{ docker_registry_name }} container
+  docker_container:
+    image: "{{ docker_registry_image }}"
+    name: "{{ docker_registry_name }}"
+    state: absent
+
+- name: run docker registry container
+  docker_container:
+    name: "{{ docker_registry_name }}"
+    image: "{{ docker_registry_image }}"
+    env: "{{ docker_registry_env }}"
+    exposed_ports: "{{ docker_registry_expose }}"
+    ports: "{{ docker_registry_ports }}"
+    volumes: "{{ docker_registry_volume }}:/var/lib/registry"
+    restart_policy: always
+    state: started

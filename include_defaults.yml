@@ -1,0 +1,23 @@
+- hosts: localhost:all
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/defaults/global_taco.yml"
+        - "{{ playbook_dir }}/defaults/global_docker.yml"
+        - "{{ playbook_dir }}/defaults/global_ceph.yml"
+        - "{{ playbook_dir }}/defaults/global_k8s-cluster.yml"
+        - "{{ playbook_dir }}/defaults/site_specific.yml"
+
+    - name: include global override files
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/defaults/global_k8s-images.yml"
+      when: (groups['registry'] is defined and (groups['registry'] | length > 0)) or
+            (cicd_registry_enabled|default(false))
+
+    - name: set ceph_repository variable
+      set_fact:
+        ceph_repository: "{{ 'custom' if localrepo_enabled else 'community' }}"
+  tags: always
