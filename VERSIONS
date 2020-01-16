@@ -3,4 +3,4 @@ kubespray https://github.com/kubernetes-sigs/kubespray.git v2.10.4
 charts/openstack-helm https://github.com/openinfradev/openstack-helm.git taco-v19.03
 charts/openstack-helm-infra https://github.com/openinfradev/openstack-helm-infra.git taco-v19.03
 ceph-ansible https://github.com/openinfradev/ceph-ansible.git stable-3.2
-charts/helm https://github.com/helm/charts.git taco-v19.03
+charts/helm https://github.com/openinfradev/helm-charts taco-v19.03
