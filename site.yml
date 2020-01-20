@@ -1,222 +1,83 @@
 ---
 
-# Assert inventory
-- import_playbook: site-assert.yml
-  tags: assert
+- name: include global default variables
+  import_playbook: include_defaults.yml
 
-- hosts: localhost:all
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: include global override files
-      include_vars: "{{ item }}"
-      loop:
-        - "{{ playbook_dir }}/vars/global_taco.yml"
-        - "{{ playbook_dir }}/vars/global_docker.yml"
-        - "{{ playbook_dir }}/vars/global_ceph.yml"
-        - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
-        - "{{ playbook_dir }}/vars/site_specific.yml"
-
-    - name: include global override files
-      include_vars: "{{ item }}"
-      loop:
-        - "{{ playbook_dir }}/vars/global_k8s-images.yml"
-      when: (groups['registry'] is defined and (groups['registry'] | length > 0)) or
-            (cicd_registry_enabled|default(false))
-
-    - name: set ceph_repository variable
-      set_fact:
-        ceph_repository: "{{ 'custom' if localrepo_enabled else 'community' }}"
-  tags: always
-
-# Populate hostname to hosts file
-- hosts: taco
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: make sure hostname is in hosts file
-      replace:
-        dest: /etc/hosts
-        regexp: '^(127\.0\.0\.1(?!.*\b{{ inventory_hostname }}\b).*)$'
-        replace: '\1 {{ inventory_hostname }}'
-  tags: always
-
-# Enable registry.cicd.stg.taco
-- hosts: taco
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: registries | populate custom entries into hosts file
-      lineinfile:
-        path: /etc/hosts
-        line: 192.168.54.30 registry.cicd.stg.taco registry-rel.cicd.stg.taco
-        state: present
-      when: cicd_registry_enabled|default(false)
-
-    - name: registries | create directory for cert
-      file:
-        path: "/etc/docker/certs.d/{{ item }}.cicd.stg.taco"
-        state: directory
-      with_items:
-        - registry 
-        - registry-rel
-      when: cicd_registry_enabled|default(false)
-
-    - name: registries | create cert file
-      copy:
-        src: "{{ item }}-certs"
-        dest: "/etc/docker/certs.d/{{ item }}.cicd.stg.taco/ca.crt"
-      with_items:
-        - registry 
-        - registry-rel
-      when: cicd_registry_enabled|default(false)
-  tags: always
-
-# Populate registry hosts into hosts file
-- hosts: taco
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: populate taco registry into hosts file
-      blockinfile:
-        dest: /etc/hosts
-        block: |-
-          {% for item in (groups['registry']|default([]))|unique -%}{{ hostvars[item]['ip'] }} {{ item }}
-          {% endfor %}
-        state: present
-        create: yes
-        backup: yes
-        marker: "# TACO registry hosts {mark}"
-  tags: always
-
-# Prepare sh option for ubuntu OS
-- hosts: taco
-  tasks:
-    - name: change sh directory from dash to bash
-      shell: >-
-        rm /bin/sh &&
-        ln -s /bin/bash /bin/sh
-      when:
-        - ansible_distribution in ["Ubuntu","Debian"]
-  tags: always
-
-# Prepare OS for TACO
-- hosts: taco
+- name: setup host operating systems in taco host group
+  hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: setup-os }
-  tags: setup-os
+    - { role: setup-os, tags: setup-os }
 
-# Prepare bash option for ubuntu OS
-- hosts: taco
-  tasks:
-    - name: change sh directory from dash to bash
-      shell: >-
-        rm /bin/sh &&
-        ln -s /bin/bash /bin/sh
-      when:
-        - ansible_distribution in ["Ubuntu","Debian"]
-  tags: always
-
-# Run docker registry
-- hosts: localhost, registry
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: install rsync on ansible-host and registry nodes
-      yum:
-        name: rsync
-        state: present
-      when:
-        - ansible_distribution in ["CentOS","RedHat"]
-  tags: registry
-
-- hosts: registry
+- name: setup a local container registry for the offline environment
+  hosts: container-registry
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: docker }
-    - { role: docker-registry }
-  tags: registry
+    - { role: container-registry, tags: container-registry }
 
-# Copy ceph.repo to repository when custom repo is used
-# It assumes registry and repository hosts are the same
-- hosts: registry
+- name: setup a local package repository for the offline environment
+  hosts: package-repository
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: copy ceph.repo to local repository
-      copy:
-        src: "{{ inventory_dir }}/ceph.repo"
-        dest: "{{ ceph_repository_dir }}/ceph.repo"
-      when:
-        - taco_storage == 'ceph'
-        - ceph_repository_enabled|default(false)
-  tags: ceph
+  roles:
+    - { role: package-repository, tags: package-repository }
 
-# Install Ceph
-- import_playbook: ceph-ansible/site.yml
+- name: copy ceph.repo to the package repository
+  hosts: package-repository
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - role: ceph
+      tags: ceph
+      vars:
+        copy_ceph_repo_file: true
+
+- name: install ceph
+  include: ceph-ansible/site.yml
   tags: ceph
-  when: taco_storage == 'ceph'
+  when: taco_storage_backend == 'ceph'
 
 # TODO: add tests for checking status of the new ceph cluster
 
-# Install requests package via pip in order to avoid package version conflict
-- hosts: admin-node
-  tasks:
-    - name: rpm check requests
-      shell: rpm -qa | grep requests
-      register: check_result
-      ignore_errors: true
-      when: ansible_distribution in ["CentOS","RedHat"]
-    - name: reinstall python-requests if requests installed with dist package
-      pip:
-        name: requests
-        extra_args: --ignore-installed
-      when:
-        - ansible_distribution in ["CentOS","RedHat"]
-        - check_result.rc == 0
-# This should run without 'ceph' tag, since it's necessary
-# for rbd_provisioner role in kubespray
-- hosts: admin-node:kube-master
+- name: reinstall requests package to avoid package version conflict
+  hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: populate-ceph-vars, when: taco_storage == 'ceph' }
-  tags: always
+    - role: ceph
+      tags: ceph
+      vars:
+        check_requests_package: true
+  when: taco_storage_backend == 'ceph'
 
-# Install K8S
-- include: kubespray/cluster.yml
-  tags: k8s
-
-- hosts: admin-node
+- name: update vars for ceph
+  hosts: admin-node:kube-master
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: admin-node }
+    - { role: ceph/populate-ceph-vars, tags: always }
+  when: taco_storage_backend == 'ceph'
+
+- name: install kubernetes
+  include: kubespray/cluster.yml
   tags: k8s
+
+- name: install kubernetes ralated clients
+  hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: k8s/client, tags: kubectl }
+    - { role: k8s/helm, tags: helm }
+    - { role: k8s/armada, tags: armada }
 
 # TODO: add tests for checking status of the new k8s cluster
 
-# Tune system for OpenStack
-- hosts: controller-node:compute-node
+- name: install openstack
+  hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: openstack/setup-os }
-  tags: openstack
+    - { role: taco_apps/openstack/setup-os, tags: os-setup }
+    - { role: taco_apps/openstack/pre-install, tags: os-pre-install }
+    - { role: taco_apps/openstack/install, tags: os-install }
 
-# Tune helm
-- hosts: admin-node
+- name: install openstack client
+  hosts: admin-node:controller-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: helm/tiller, tags: helm }
-
-# Install armada
-- hosts: admin-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: armada/install, tags: armada }
-
-# Prepare armada-manifests and then run armada apply
-- hosts: admin-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: openstack/pre-install, tags: openstack }
-    - { role: armada/apply, tags: armada }
-
-- hosts: admin-node:controller-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: openstack/client }
-  tags: openstack
+    - { role: taco_apps/openstack/client, tags: os-client }

@@ -1,5 +1,18 @@
 ---
 
+- name: make sure hostname is in hosts file
+  replace:
+    dest: /etc/hosts
+    regexp: '^(127\.0\.0\.1(?!.*\b{{ inventory_hostname }}\b).*)$'
+    replace: '\1 {{ inventory_hostname }}'
+
+- name: change sh directory from dash to bash
+  shell: >-
+    rm /bin/sh &&
+    ln -s /bin/bash /bin/sh
+  when:
+    - ansible_distribution in ["Ubuntu","Debian"]
+
 - import_tasks: setup-interfaces.yml
 
 - name: disable default centos base and epel repo
