@@ -1,0 +1,34 @@
+---
+- name: check if {{ openstack_manifest }} is ready
+  shell: grep 'TACO_ADMIN_KEYRING' {{ openstack_manifest }}
+  register: grep_result
+  when: taco_storage_backend == 'ceph'
+  ignore_errors: yes
+
+- name: check if extra-vars exists
+  stat:
+    path: "{{ inventory_dir }}/extra-vars.yml"
+  register: stat_ev_result
+  when: taco_storage_backend == 'ceph'
+
+- name: fail if extra-vars doesn't exist
+  fail:
+    msg: "Error! Extra_vars doesn't exist."
+  when: grep_result.stdout != "" and taco_storage_backend == 'ceph' and stat_ev_result.stat.exists == False
+
+- name: replace TACO keywords to actual values
+  shell: |
+    sed -i "s TACO_ADMIN_KEYRING {{ admin_keyring }} " {{ openstack_manifest }}
+    sed -i "s TACO_MON_HOST {{ mon_host }} " {{ openstack_manifest }}
+  when: grep_result.stdout != "" and taco_storage_backend == 'ceph'
+
+- name: check if {{ openstack_manifest }} is ready
+  shell: grep 'TACO_ADMIN_KEYRING' {{ openstack_manifest }}
+  register: grep_result
+  ignore_errors: yes
+  when: taco_storage_backend == 'ceph'
+
+- name: fail if {{ openstack_manifest }} is not ready
+  fail:
+    msg: "Error! {{ openstack_manifest }} is not ready yet!"
+  when: grep_result.stdout != "" and taco_storage_backend == 'ceph'

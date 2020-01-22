@@ -1,0 +1,46 @@
+---
+- name: registries | populate taco registry into hosts file
+  blockinfile:
+    dest: /etc/hosts
+    block: |-
+      {% for item in (groups['registry']|default([]))|unique -%}{{ hostvars[item]['ip'] }} {{ item }} {% endfor %}
+    state: present
+    create: yes
+    backup: yes
+    marker: "# TACO registry hosts {mark}"
+  when:
+    - container_registry_enabled
+
+- name: registries | populate taco registry into hosts file
+  blockinfile:
+    dest: /etc/hosts
+    block: |-
+      {% for item in container_registries -%}
+        {% if item.endpoint and item.ip -%}
+          {{ item.ip }} {{ item.endpoint }}
+        {% endif -%}
+      {% endfor %}
+    state: present
+    create: yes
+    backup: yes
+    marker: "# TACO registry hosts {mark}"
+  when:
+    - not container_registry_enabled
+
+- name: registries | create directory for cert
+  file:
+    path: "/etc/docker/certs.d/{{ item.endpoint }}"
+    state: directory
+  when:
+    - item.cert
+  with_items:
+    - "{{ container_registries }}"
+
+- name: registries | create cert file
+  copy:
+    content: "{{ item.cert }}"
+    dest: "/etc/docker/certs.d/{{ item.endpoint }}/ca.crt"
+  when:
+    - item.cert
+  with_items:
+    - "{{ container_registries }}"

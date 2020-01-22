@@ -10,7 +10,7 @@
   with_items:
     - {name: "{{ openstack_namespace }}", file: namespace.yml, type: namespace}
     - {name: "{{ openstack_namespace }}", file: clusterrolebinding.yml, type: clusterrolebinding}
-  register: openstack_manifests
+  register: openstack_resources
 
 - name: start k8s resources for openstack
   kube:
@@ -20,6 +20,6 @@
     filename: "/tmp/manifests/{{item.item.file}}"
     state: "{{item.changed | ternary('latest','present') }}"
   with_items:
-    - "{{ openstack_manifests.results }}"
+    - "{{ openstack_resources.results }}"
   run_once: true
   become: no
