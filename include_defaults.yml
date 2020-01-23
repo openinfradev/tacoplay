@@ -14,10 +14,9 @@
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/defaults/global_k8s-images.yml"
-      when: (groups['registry'] is defined and (groups['registry'] | length > 0)) or
-            (cicd_registry_enabled|default(false))
+      when: container_registry_enabled|default(false)
 
     - name: set ceph_repository variable
       set_fact:
-        ceph_repository: "{{ 'custom' if localrepo_enabled else 'community' }}"
+        ceph_repository: "{{ 'custom' if (local_yum_repo_enabled|default(false) or local_apt_repo_enabled|default(false)) else 'community' }}"
   tags: always

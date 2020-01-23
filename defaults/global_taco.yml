@@ -10,7 +10,7 @@ localrepo_port: 80
 docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
 
 # storage configurations: ceph or nfs
-taco_storage: "ceph"
+taco_storage_backend: "ceph"
 storage_class_name: >-
   {%- if taco_storage == 'ceph' -%}rbd{%- elif taco_storage == 'nfs' -%}nfs-client{%- endif -%}
 
