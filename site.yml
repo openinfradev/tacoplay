@@ -20,39 +20,22 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: package-repository, tags: package-repository }
-
-- name: copy ceph.repo to the package repository
-  hosts: package-repository
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - role: ceph
-      tags: ceph
-      vars:
-        copy_ceph_repo_file: true
+    - { role: ceph/copy-ceph-repo, tags: copy-ceph-repo, when: "ceph_repository_enabled|default(false)" }
 
 - name: install ceph
-  include: ceph-ansible/site.yml
+  include: ceph-ansible/site.yml.sample
   tags: ceph
   when: taco_storage_backend == 'ceph'
 
 # TODO: add tests for checking status of the new ceph cluster
 
-- name: reinstall requests package to avoid package version conflict
-  hosts: admin-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - role: ceph
-      tags: ceph
-      vars:
-        check_requests_package: true
-  when: taco_storage_backend == 'ceph'
-
-- name: update vars for ceph
+- name: post install for ceph
   hosts: admin-node:kube-master
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: ceph/populate-ceph-vars, tags: always }
-  when: taco_storage_backend == 'ceph'
+    - role: ceph/post-install
+      tags: ceph-post-install
+      when: taco_storage_backend == 'ceph'
 
 - name: install kubernetes
   include: kubespray/cluster.yml
@@ -72,12 +55,12 @@
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco_apps/openstack/setup-os, tags: os-setup }
-    - { role: taco_apps/openstack/pre-install, tags: os-pre-install }
-    - { role: taco_apps/openstack/install, tags: os-install }
+    - { role: taco-apps/openstack/setup-os, tags: os-setup }
+    - { role: taco-apps/openstack/pre-install, tags: os-pre-install }
+    - { role: taco-apps/openstack/install, tags: os-install }
 
 - name: install openstack client
   hosts: admin-node:controller-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco_apps/openstack/client, tags: os-client }
+    - { role: taco-apps/openstack/client, tags: os-client }

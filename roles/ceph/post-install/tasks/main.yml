@@ -44,3 +44,18 @@
   fail:
     msg: "failed to get admin keyring neither from vars nor /etc/ceph"
   when: not (admin_keyring|length > 0)
+
+- name: rpm check requests
+  shell: rpm -qa | grep requests
+  register: check_result
+  ignore_errors: true
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: reinstall python-requests if requests installed with dist package
+  pip:
+    name: requests
+    extra_args: --ignore-installed
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+    - check_result.rc == 0

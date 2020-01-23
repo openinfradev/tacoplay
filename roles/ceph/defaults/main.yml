@@ -1,1 +1,3 @@
 ceph_repository_enabled: false
+ceph_monitors: ''
+ceph_admin_keyring: ''
