@@ -2,8 +2,6 @@
 # Note that most of the values listed here should be agreed with site administrator
 
 # TACO
-# there should be at least one registry node when cicd_registry_enabled is false
-cicd_registry_enabled: TACOFIXME
 
 # set localrepo_yum, k8s, pypi as well when localrepo is enabled
 localrepo_enabled: TACOFIXME

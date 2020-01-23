@@ -9,10 +9,13 @@
   roles:
     - { role: setup-os, tags: setup-os }
 
+# Use current docker role for now. Kubespray's container-engine role
+# can be considered later.
 - name: setup a local container registry for the offline environment
   hosts: container-registry
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
+    - { role: docker, tags: container-registry }
     - { role: container-registry, tags: container-registry }
 
 - name: setup a local package repository for the offline environment
@@ -51,16 +54,23 @@
 
 # TODO: add tests for checking status of the new k8s cluster
 
+- name: setup openstack-related config on operating system
+  hosts: controller-node:compute-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: taco-apps/openstack/setup-os, tags: openstack }
+
+# Once we support various apps other than openstack, we should be able to
+# deploy those apps selectively. (Maybe with 'deploy' tag?)
 - name: install openstack
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/openstack/setup-os, tags: os-setup }
-    - { role: taco-apps/openstack/pre-install, tags: os-pre-install }
-    - { role: taco-apps/openstack/install, tags: os-install }
+    - { role: taco-apps/openstack/pre-install, tags: openstack }
+    - { role: taco-apps/deploy, tags: deploy }
 
 - name: install openstack client
   hosts: admin-node:controller-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/openstack/client, tags: os-client }
+    - { role: taco-apps/openstack/client, tags: openstack }

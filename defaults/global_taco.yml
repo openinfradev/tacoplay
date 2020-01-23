@@ -6,8 +6,28 @@ tc_enabled: false
 # default localrepo port
 localrepo_port: 80
 
-# Docker registry
-docker_registry: "{{ 'registry.cicd.stg.taco' if cicd_registry_enabled else groups['registry'][0] + ':5000' }}"
+# Container registry
+container_registry_enabled: true
+
+# When container_registry_enabled is 'true', then registry endpoint is
+# automatically set to "{{ groups['registry'][0] + ':5000' }}"
+# Otherwise (if you want to use existing registries), set 'container_registries' var.
+# You can provide domain name (as endpoint) and ip, or just use ip itself as endpoint.
+# If cert is null, then the registry is regarded as insecure registry.
+#
+# Eg.)
+# container_registries:
+#  - { endpoint: registry.cicd.stg.taco, ip: 192.168.000.000, cert: |
+#      -----BEGIN CERTIFICATE-----
+#      MIIB+DCCAZ6gAwIBAgIUA1dN6Z3t/hNh795tcQD94mvgWGIwCgYIKoZIzj0EAwIw
+#      WjELMAkGA1UEBhMCS1IxDjAMBgNVBAgTBVNlb3VsMRAwDgYDVQQHEwdKdW5nLWd1
+#      ...
+#      AwIDSAAwRQIgc8/FlbbRyw22kt1ILAtqhYKdfibC/FjTqT4bQQ+cFb4CIQCpSBxE
+#      bAIZhGrI5HT/a4dq3GPZWo1ybJs5RliBnPUtRg==
+#      -----END CERTIFICATE-----
+#    }
+#  - { endpoint: 192.168.000.000, ip: null, cert: null } 
+container_registries: null
 
 # storage configurations: ceph or nfs
 taco_storage_backend: "ceph"
@@ -36,14 +56,14 @@ rbd_provisioner_image_tag: v2.1.1-nautilus-14.2.4
 
 # Armada
 armada_venv: "{{ lookup('env','HOME') }}/venv"
-armada_manifest: "{{ inventory_dir }}/armada-manifest.yaml"
+
+# Taco Apps to deploy using Armada
+taco_apps: ['openstack']
 
 # OpenStack
+openstack_manifest: "{{ inventory_dir }}/openstack-manifest.yaml"
 openstack_namespace: openstack
 vfat_config_drive_enabled: false
-
-# Gating
-is_gating_test: false
 
 # Install external openvswitch service 
 install_ovs_as_a_rpms: false
@@ -56,3 +76,6 @@ ansible_python_interpreter: /usr/bin/python
 
 # Set this to false to archive k8s images only in site-prepare task.
 include_openstack_images: true
+
+# For gating job
+is_gating_test: false

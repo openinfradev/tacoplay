@@ -1,8 +1,11 @@
 ---
-- include: prepare-manifest.yml
+- include: prepare-openstack-manifest.yml
+  when: 'openstack' in taco_apps
 
-- include: render-manifest.yml
-  when: taco_storage == 'ceph'
+- include: render-openstack-manifest.yml
+  when:
+    - 'openstack' in taco_apps
+    - taco_storage_backend == 'ceph'
 
 - name: set starting option and virtualenv folder in bashrc for centos
   set_fact:
@@ -21,6 +24,7 @@
     {{ bin_dir }}/kubectl get pods -n openstack | grep test |
     awk '{print $1}' | xargs {{ bin_dir }}/kubectl delete pods -n openstack
   ignore_errors: yes
+  when: 'openstack' in taco_apps
 
 - name: check host where tiller is running
   shell: >-
@@ -58,14 +62,15 @@
     ~/venv/armada/bin/armada apply
     --tiller-host {{ tiller_host.stdout }}
     --tiller-port {{ tiller_port }}
-    --timeout 9000
-    {{ armada_manifest }} >
-    {{ lookup('env','HOME') }}/armada.log
+    --timeout 7200
+    {{ inventory_dir }}/{{ item }}-manifest.yml >
+    {{ lookup('env','HOME') }}/{{ item }}-deployment.log
   when: auto_release_enabled|default(true) and tiller_host.stdout != ""
   become: no
   args:
     executable: /bin/bash
   run_once: yes
+  with_items: taco_apps
 
 - name: show armada apply usage for next try
   debug:
@@ -75,6 +80,6 @@
       armada apply
       --tiller-host {{ tiller_host.stdout }}
       --tiller-port {{ tiller_port }}
-      --timeout 3600
-      {{ inventory_dir }}/armada-manifest.yaml"
+      --timeout 7200
+      {{ inventory_dir }}/[YOUR_APP]-manifest.yaml"
   when: tiller_host.stdout != ""

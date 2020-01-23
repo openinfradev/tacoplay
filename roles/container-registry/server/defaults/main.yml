@@ -1,0 +1,16 @@
+---
+container_registry_name: "taco-registry"
+container_registry_image:
+  name: registry
+  tag: 2.6.2
+container_registry_env:
+container_registry_command: ""
+container_registry_expose:
+  - 5000
+container_registry_ports:
+  - 5000:5000
+
+registry_volume_archived: false
+container_registry_volume: "/DATA/container_registry"
+container_registry_volume_archive: "{{ inventory_dir }}/container_registry.tar.gz"
+container_registry_volume_dir: "{{ playbook_dir }}/container_registry"

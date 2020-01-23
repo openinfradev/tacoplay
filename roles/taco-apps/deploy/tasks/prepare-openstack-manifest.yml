@@ -1,0 +1,22 @@
+---
+- name: check if {{ openstack_manifest }} exists
+  stat:
+    path: "{{ openstack_manifest }}"
+  register: stat_am_result
+
+- name: copy manifest to inventory dir
+  copy:
+    src: "{{ openstack_manifest_path }}"
+    dest: "{{ openstack_manifest }}"
+    mode: 0644
+  when: stat_am_result.stat.exists == False
+
+- name: check if {{ openstack_manifest }} exists
+  stat:
+    path: "{{ openstack_manifest }}"
+  register: stat_am_result
+
+- name: fail if openstack-manifest doesn't exist
+  fail:
+    msg: "Error! openstack-manifest doesn't exist."
+  when: stat_am_result.stat.exists == False
