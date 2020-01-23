@@ -8,6 +8,7 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: setup-os, tags: setup-os }
+    - { role: container-registry/client, tags: always }
 
 # Use current docker role for now. Kubespray's container-engine role
 # can be considered later.
@@ -15,8 +16,8 @@
   hosts: container-registry
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: docker, tags: container-registry }
-    - { role: container-registry, tags: container-registry }
+    - { role: docker, tags: container-registry, when: container_registry_enabled }
+    - { role: container-registry/server, tags: container-registry, when: container_registry_enabled }
 
 - name: setup a local package repository for the offline environment
   hosts: package-repository
