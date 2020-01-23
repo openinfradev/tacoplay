@@ -32,8 +32,8 @@
 
 - name: load registry image from archive
   docker_image:
-    name: {{ container_registry_image.name }}
-    tag: {{ container_registry_image.tag }}
+    name: "{{ container_registry_image.name }}"
+    tag: "{{ container_registry_image.tag }}"
     load_path: "/tmp/registry-2.6.2.tar"
     state: present
 
