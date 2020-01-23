@@ -11,3 +11,5 @@ openstack_manifest: "{{ inventory_dir }}/openstack-manifest.yaml"
 openstack_release: stein
 
 tiller_port: 32134
+
+taco_apps: ["openstack"]

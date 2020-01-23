@@ -58,7 +58,7 @@ rbd_provisioner_image_tag: v2.1.1-nautilus-14.2.4
 armada_venv: "{{ lookup('env','HOME') }}/venv"
 
 # Taco Apps to deploy using Armada
-taco_apps: ['openstack']
+taco_apps: ["openstack"]
 
 # OpenStack
 openstack_manifest: "{{ inventory_dir }}/openstack-manifest.yaml"

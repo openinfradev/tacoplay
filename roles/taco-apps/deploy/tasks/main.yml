@@ -1,10 +1,10 @@
 ---
 - include: prepare-openstack-manifest.yml
-  when: 'openstack' in taco_apps
+  when: '"openstack" in taco_apps'
 
 - include: render-openstack-manifest.yml
   when:
-    - 'openstack' in taco_apps
+    - '"openstack" in taco_apps'
     - taco_storage_backend == 'ceph'
 
 - name: set starting option and virtualenv folder in bashrc for centos
@@ -24,7 +24,7 @@
     {{ bin_dir }}/kubectl get pods -n openstack | grep test |
     awk '{print $1}' | xargs {{ bin_dir }}/kubectl delete pods -n openstack
   ignore_errors: yes
-  when: 'openstack' in taco_apps
+  when: '"openstack" in taco_apps'
 
 - name: check host where tiller is running
   shell: >-
