@@ -59,19 +59,19 @@
   hosts: controller-node:compute-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/openstack/setup-os, tags: openstack }
+    - { role: taco-apps/openstack/setup-os, tags: openstack, when: '"openstack" in taco_apps' }
 
 # Once we support various apps other than openstack, we should be able to
-# deploy those apps selectively. (Maybe with 'deploy' tag?)
-- name: install openstack
+# deploy those apps selectively.
+- name: deploy taco apps
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/openstack/pre-install, tags: openstack }
+    - { role: taco-apps/openstack/pre-install, tags: openstack, when: '"openstack" in taco_apps' }
     - { role: taco-apps/deploy, tags: deploy }
 
 - name: install openstack client
   hosts: admin-node:controller-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/openstack/client, tags: openstack }
+    - { role: taco-apps/openstack/client, tags: openstack, when: '"openstack" in taco_apps' }
