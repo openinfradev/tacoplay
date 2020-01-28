@@ -1,0 +1,35 @@
+---
+
+- name: Check if etcd cert directory exists
+  stat:
+    path: "{{ etcd_cert_dir }}"
+  register: stat_etcd_dir
+  when:
+  - create_etcd_secret
+
+- name: Fail if etcd directory does not exist
+  fail:
+    msg: "Error! etcd cert directory does not exist"
+  when:
+  - create_etcd_secret
+  - stat_etcd_dir.stat.exists == False
+
+- name: Check if secret exists
+  shell: | 
+    {{ bin_dir }}/kubectl --kubeconfig /etc/kubernetes/admin.conf get secret --namespace {{ lma_namespace }} | grep etcd-client-cert | wc -l
+  register: is_secret_existing
+  ignore_errors: yes
+  when:
+  - create_etcd_secret
+
+- name: Create Secret for etcd monitoring
+  command: >-
+    {{ bin_dir }}/kubectl --kubeconfig /etc/kubernetes/admin.conf create secret generic etcd-client-cert
+    --from-file=etcd-ca={{ etcd_cert_dir }}/ca.pem
+    --from-file=etcd-client={{ etcd_cert_dir }}/member-{{ ansible_hostname }}.pem 
+    --from-file=etcd-client-key={{ etcd_cert_dir }}/member-{{ ansible_hostname }}-key.pem 
+    --namespace {{ lma_namespace }}
+  register: secret_result
+  when:
+  - create_etcd_secret
+  - is_secret_existing.stdout == "0"

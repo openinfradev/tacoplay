@@ -1,0 +1,10 @@
+---
+# create etcd certs' secret used for kube-state-metrics
+create_etcd_secret: true
+
+# dirpath where etcd certs are located
+etcd_cert_dir: /etc/ssl/etcd/ssl
+
+# k8s namespace lma will be deployed
+lma_namespace: lma
+
