@@ -1,5 +1,4 @@
 ---
-
 - name: ensures /tmp/manifests dir exists
   file: path=/tmp/manifests state=directory
 
@@ -23,3 +22,15 @@
     - "{{ openstack_resources.results }}"
   run_once: true
   become: no
+
+- name: delete test pods in openstack namespace
+  shell: >-
+    {{ bin_dir }}/kubectl get pods -n openstack | grep test |
+    awk '{print $1}' | xargs {{ bin_dir }}/kubectl delete pods -n openstack
+  ignore_errors: yes
+
+- include: prepare-openstack-manifest.yml
+
+- include: render-openstack-manifest.yml
+  when:
+    - taco_storage_backend == 'ceph'

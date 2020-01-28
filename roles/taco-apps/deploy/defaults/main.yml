@@ -1,15 +1,6 @@
 ---
 bin_dir: /usr/local/bin
 
-# the location of armada manifest template
-openstack_manifest_path: "{{ playbook_dir }}/manifests/output/{{ openstack_release }}/site-{{ site_name | default(inventory_dir.split('/')[-1]) }}-{{ openstack_release }}.yaml"
-
-# the location of complete openstack manifest
-openstack_manifest: "{{ inventory_dir }}/openstack-manifest.yaml"
-
-# default openstack release
-openstack_release: stein
-
 tiller_port: 32134
 
 taco_apps: ["openstack"]
