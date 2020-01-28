@@ -67,6 +67,7 @@
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
+    - { role: taco-apps/lma/pre-install, tags: lma, when: '"lma" in taco_apps' }
     - { role: taco-apps/openstack/pre-install, tags: openstack, when: '"openstack" in taco_apps' }
     - { role: taco-apps/deploy, tags: deploy }
 
