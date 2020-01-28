@@ -34,7 +34,7 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: populate-ceph-vars, when: taco_storage == 'ceph' }
+    - { role: ceph/post-install, when: taco_storage_backend == 'ceph' }
   tags: always
 
 - include: kubespray/cluster.yml
@@ -60,33 +60,35 @@
       become: no
 
     - name: include vars for prepare_manifest task
-      include_vars: roles/armada/apply/defaults/main.yml
+      include_vars: roles/taco-apps/openstack/pre-install/defaults/main.yml
 
     - name: prepare armada_manifest for image pulling
-      include_tasks: roles/armada/apply/tasks/prepare-manifest.yml
+      include_tasks: roles/taco-apps/openstack/pre-install/tasks/prepare-openstack-manifest.yml
       when: include_openstack_images
 
     - name: pull all images used in armada manifest
       script: >-
         {{ playbook_dir }}/scripts/pull-images.sh
-        {{ armada_manifest }}
+        {{ inventory_dir }}/{{ item }}-manifest.yml
         registry.cicd.stg.taco
       args:
         creates: /tmp/.image-pull-done
       when:
         - is_gating_test
         - include_openstack_images
+      with_items: taco_apps
 
     - name: pull all images used in armada manifest
       script: >-
         {{ playbook_dir }}/scripts/pull-images.sh
-        {{ armada_manifest }}
+        {{ inventory_dir }}/{{ item }}-manifest.yml
         registry-rel.cicd.stg.taco
       args:
         creates: /tmp/.image-pull-done
       when:
         - not is_gating_test
         - include_openstack_images
+      with_items: taco_apps
 
     - name: run registry container
       docker_container:
