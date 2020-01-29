@@ -64,7 +64,7 @@
 
     - name: prepare armada_manifest for image pulling
       include_tasks: roles/taco-apps/openstack/pre-install/tasks/prepare-openstack-manifest.yml
-      when: include_openstack_images
+      when: '"openstack" in taco_apps'
 
     - name: pull all images used in armada manifest
       script: >-
@@ -75,7 +75,6 @@
         creates: /tmp/.image-pull-done
       when:
         - is_gating_test
-        - include_openstack_images
       with_items: taco_apps
 
     - name: pull all images used in armada manifest
@@ -87,7 +86,6 @@
         creates: /tmp/.image-pull-done
       when:
         - not is_gating_test
-        - include_openstack_images
       with_items: taco_apps
 
     - name: run registry container
