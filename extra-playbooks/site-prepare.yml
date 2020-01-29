@@ -10,11 +10,11 @@
     - name: include global override files
       include_vars: "{{ item }}"
       loop:
-        - "{{ playbook_dir }}/vars/global_taco.yml"
-        - "{{ playbook_dir }}/vars/global_docker.yml"
-        - "{{ playbook_dir }}/vars/global_ceph.yml"
-        - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
-        - "{{ playbook_dir }}/vars/global_k8s-images.yml"
+        - "{{ playbook_dir }}/defaults/global_taco.yml"
+        - "{{ playbook_dir }}/defaults/global_docker.yml"
+        - "{{ playbook_dir }}/defaults/global_ceph.yml"
+        - "{{ playbook_dir }}/defaults/global_k8s-cluster.yml"
+        - "{{ playbook_dir }}/defaults/global_k8s-images.yml"
   tags: always
 
 - hosts: localhost
