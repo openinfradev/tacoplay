@@ -59,10 +59,11 @@
         dest: "~/.netrc"
       become: no
 
-    - name: include vars for prepare_manifest task
+    - name: include vars for prepare-openstack-manifest task
       include_vars: roles/taco-apps/openstack/pre-install/defaults/main.yml
+      when: '"openstack" in taco_apps'
 
-    - name: prepare armada_manifest for image pulling
+    - name: prepare openstack manifest for image pulling
       include_tasks: roles/taco-apps/openstack/pre-install/tasks/prepare-openstack-manifest.yml
       when: '"openstack" in taco_apps'
 
@@ -72,7 +73,7 @@
         {{ inventory_dir }}/{{ item }}-manifest.yml
         registry.cicd.stg.taco
       args:
-        creates: /tmp/.image-pull-done
+        creates: "/tmp/.{{ item }}-image-pull-done"
       when:
         - is_gating_test
       with_items: taco_apps
@@ -83,7 +84,7 @@
         {{ inventory_dir }}/{{ item }}-manifest.yml
         registry-rel.cicd.stg.taco
       args:
-        creates: /tmp/.image-pull-done
+        creates: "/tmp/.{{ item }}-image-pull-done"
       when:
         - not is_gating_test
       with_items: taco_apps
