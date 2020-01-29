@@ -23,5 +23,3 @@ docker_storage_options: -s overlay2
 
 docker_daemon_graph: "/var/lib/docker"
 docker_log_opts: "--log-opt max-size=50m --log-opt max-file=5"
-docker_insecure_registries:
-  - "{{ groups['registry'][0] + ':5000' }}"
