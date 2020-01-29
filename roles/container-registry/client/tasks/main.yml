@@ -23,7 +23,6 @@
     state: present
     create: yes
     backup: yes
-    marker: "# TACO registry hosts {mark}"
   when:
     - not container_registry_enabled
 
