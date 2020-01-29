@@ -1,21 +1,21 @@
 # Docker options for kubespray and registry
 docker_rh_repo_base_url: >-
-  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}:{{ localrepo_port }}/docker/linux/centos/7/$basearch/stable
+  {%- if local_yum_repo_enabled -%}http://{{ yum_repo_url }}/docker/linux/centos/7/$basearch/stable
   {%- else -%}https://download.docker.com/linux/centos/7/$basearch/stable{%- endif -%}
 docker_rh_repo_gpgkey: >-
-  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}:{{ localrepo_port }}/docker/linux/centos/gpg
+  {%- if local_yum_repo_enabled -%}http://{{ yum_repo_url }}/docker/linux/centos/gpg
   {%- else -%}https://download.docker.com/linux/centos/gpg{%- endif -%}
 dockerproject_rh_repo_base_url: >-
-  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}:{{ localrepo_port }}/dockerproject/repo/main/centos/7
+  {%- if local_yum_repo_enabled -%}http://{{ yum_repo_url }}/dockerproject/repo/main/centos/7
   {%- else -%}https://yum.dockerproject.org/repo/main/centos/7{%- endif -%}
 dockerproject_rh_repo_gpgkey: >-
-  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}:{{ localrepo_port }}/dockerproject/gpg
+  {%- if local_yum_repo_enabled -%}http://{{ yum_repo_url }}/dockerproject/gpg
   {%- else -%}https://yum.dockerproject.org/gpg{%- endif -%}
 docker_ubuntu_repo_base_url: >-
-  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}:{{ localrepo_port }}/docker/linux/ubuntu
+  {%- if local_yum_repo_enabled -%}http://{{ yum_repo_url }}/docker/linux/ubuntu
   {%- else -%}https://download.docker.com/linux/ubuntu{%- endif -%}
 docker_ubuntu_repo_gpgkey: >-
-  {%- if localrepo_enabled -%}http://{{ localrepo_yum }}:{{ localrepo_port }}/docker/linux/ubuntu/gpg
+  {%- if local_yum_repo_enabled -%}http://{{ yum_repo_url }}/docker/linux/ubuntu/gpg
   {%- else -%}https://download.docker.com/linux/ubuntu/gpg{%- endif -%}
 
 docker_container_storage_setup: false

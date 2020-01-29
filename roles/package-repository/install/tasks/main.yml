@@ -1,0 +1,70 @@
+---
+- name: populate the taco repo into hosts file
+  blockinfile:
+    dest: /etc/hosts
+    block: |-
+      {% for item in (groups['package-repository']|default([]))|unique -%}{{ hostvars[item]['ip'] }} {{ item }}
+      {% endfor %}
+    state: present
+    create: yes
+    backup: yes
+    marker: "# TACO local repo host {mark}"
+
+- name: enable EPEL Repository on CentOS
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - epel-release
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: install python-pip on the repo node
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - python-pip
+
+- name: install python docker package 
+  pip:
+    name: "{{ item.name }}"
+    version: "{{ item.version }}"
+    state: present
+  loop:
+    - { name: 'docker', version: '3.5.1' }
+
+- name: load nginx container image from archive
+  docker_image:
+    name:  "{{ pkg_repo_container_image_name }}"
+    tag:  "{{ pkg_repo_container_image_tag }}"
+    load_path: "{{ role_path }}/files/nginx_1.17.7-alpine.tar.gz"
+    state: present
+
+- name: ensure docker volume mapping host directories exist
+  file:
+    state: directory
+    path: "{{ item | regex_replace('^(?P<host>.+):(?P<container>.+):(?P<mode>.+)', '\\g<host>') }}"
+  with_items:
+    - "{{ pkg_repo_volume_path }}"
+
+- name: extract package repository archive to {{ pkg_repo_volume_path }}
+  unarchive:
+    src: "{{ pkg_repo_volume_archive_file }}"
+    dest: "{{ pkg_repo_volume_path }}"
+  when: pkg_repo_volume_archived
+
+- name: remove existing {{ pkg_repo_container_name }} container
+  docker_container:
+    image: "{{ pkg_repo_container_image_name }}:{{ pkg_repo_container_image_tag }}"
+    name: "{{ pkg_repo_container_name }}"
+    state: absent
+
+- name: run {{ pkg_repo_container_name }} container
+  docker_container:
+    name: "{{ pkg_repo_container_name }}"
+    image: "{{ pkg_repo_container_image_name }}:{{ pkg_repo_container_image_tag }}"
+    published_ports: "{{ local_repo_port }}:80"
+    volumes: "{{ pkg_repo_volume_path }}:/usr/share/nginx/html"
+    restart_policy: always
+    state: started

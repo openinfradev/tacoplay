@@ -5,7 +5,7 @@
     - name: use cicd registry and disable localrepo
       set_fact:
         cicd_registry_enabled: true
-        localrepo_enabled: false
+        local_repo_enabled: false
 
     - name: include global override files
       include_vars: "{{ item }}"

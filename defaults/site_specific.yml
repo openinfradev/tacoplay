@@ -3,11 +3,12 @@
 
 # TACO
 
-# set localrepo_yum, k8s, pypi as well when localrepo is enabled
-localrepo_enabled: TACOFIXME
-localrepo_yum: TACOFIXME
-localrepo_k8s: TACOFIXME
-localrepo_pypi: TACOFIXME
+# set local_repo_yum, k8s, pypi as well when local package repo is enabled
+local_pip_repo_enabled: TACOFIXME
+local_yum_repo_enabled: TACOFIXME
+local_apt_repo_enabled: TACOFIXME
+local_k8s_binary_repo_enabled: TACOFIXME
+local_ceph_repo_enabled: TACOFIXME
 
 # Ceph
 # ceph_monitors and ceph_admin_keyring would be set automatically
