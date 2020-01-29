@@ -3,26 +3,8 @@
 # TODO: remove openstack resources
 # TODD: remove k8s resources created for TACO
 
-- hosts: localhost:all
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: include global override files
-      include_vars: "{{ item }}"
-      loop:
-        - "{{ playbook_dir }}/vars/global_taco.yml"
-        - "{{ playbook_dir }}/vars/global_docker.yml"
-        - "{{ playbook_dir }}/vars/global_ceph.yml"
-        - "{{ playbook_dir }}/vars/global_k8s-cluster.yml"
-        - "{{ playbook_dir }}/vars/site_specific.yml"
-
-    - name: include global override files
-      include_vars: "{{ item }}"
-      loop:
-        - "{{ playbook_dir }}/vars/global_k8s-images.yml"
-      when: (groups['registry'] is defined and (groups['registry'] | length > 0)) or
-            (cicd_registry_enabled|default(false))
-
-  tags: always
+- name: include global default variables
+  import_playbook: include_defaults.yml
 
 - hosts: compute-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"

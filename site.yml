@@ -45,13 +45,14 @@
   include: kubespray/cluster.yml
   tags: k8s
 
-- name: install kubernetes ralated clients
+- name: setup kubernetes ralated clients to admin-node
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: k8s/client, tags: kubectl }
-    - { role: k8s/helm, tags: helm }
-    - { role: k8s/armada, tags: armada }
+    - { role: k8s/kubectl, tags: taco-clients }
+    - { role: k8s/helm, tags: taco-clients }
+    - { role: k8s/tiller, tags: taco-clients }
+    - { role: k8s/armada, tags: taco-clients }
 
 # TODO: add tests for checking status of the new k8s cluster
 
