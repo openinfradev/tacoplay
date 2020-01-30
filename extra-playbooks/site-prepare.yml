@@ -10,11 +10,11 @@
     - name: include global override files
       include_vars: "{{ item }}"
       loop:
-        - "{{ playbook_dir }}/defaults/global_taco.yml"
-        - "{{ playbook_dir }}/defaults/global_docker.yml"
-        - "{{ playbook_dir }}/defaults/global_ceph.yml"
-        - "{{ playbook_dir }}/defaults/global_k8s-cluster.yml"
-        - "{{ playbook_dir }}/defaults/global_k8s-images.yml"
+        - "../defaults/global_taco.yml"
+        - "../defaults/global_docker.yml"
+        - "../defaults/global_ceph.yml"
+        - "../defaults/global_k8s-cluster.yml"
+        - "../defaults/global_k8s-images.yml"
   tags: always
 
 - hosts: localhost
@@ -37,7 +37,7 @@
     - { role: ceph/post-install, when: taco_storage_backend == 'ceph' }
   tags: always
 
-- include: kubespray/cluster.yml
+- include: ../kubespray/cluster.yml
 
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
