@@ -54,3 +54,7 @@
     - nova
     - neutron
     - cinder
+
+- import_tasks: openvswitch.yml
+  when:
+    - ovs_package_installed

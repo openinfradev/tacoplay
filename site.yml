@@ -41,9 +41,7 @@
   hosts: admin-node:kube-master
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - role: ceph/post-install
-      tags: ceph-post-install
-      when: taco_storage_backend == 'ceph'
+    - { role: ceph/post-install, tags: ceph-post-install, when: taco_storage_backend == 'ceph' }
 
 - name: install kubernetes
   include: kubespray/cluster.yml

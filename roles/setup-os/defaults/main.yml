@@ -28,6 +28,3 @@ interface_config_enabled: false
 #     subnet: 10.0.0.0/24
 #   - device: bond0.91
 #     subnet: 10.0.1.0/24
-
-# True to install ovs rpms to the compute nodes
-install_ovs_as_a_rpms: false
