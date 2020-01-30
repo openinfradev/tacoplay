@@ -2,11 +2,6 @@
 - hosts: localhost:all
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
-    - name: use cicd registry and disable localrepo
-      set_fact:
-        cicd_registry_enabled: true
-        local_repo_enabled: false
-
     - name: include global override files
       include_vars: "{{ item }}"
       loop:
