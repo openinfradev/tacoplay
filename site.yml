@@ -23,15 +23,19 @@
   hosts: package-repository
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: package-repository, tags: package-repository }
-    - { role: ceph/copy-ceph-repo, tags: copy-ceph-repo, when: "ceph_repository_enabled|default(false)" }
+    - { role: package-repository/install, tags: package-repository, when: local_repo_enabled }
+    - { role: ceph/setup-repo, tags: package-repository, when: taco_storage_backend == 'ceph' and local_ceph_repo_enabled }
+
+- name: configure package repositories
+  hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: package-repository/conf-repos, tags: package-repository }
 
 - name: install ceph
   include: ceph-ansible/site.yml.sample
   tags: ceph
   when: taco_storage_backend == 'ceph'
-
-# TODO: add tests for checking status of the new ceph cluster
 
 - name: post install for ceph
   hosts: admin-node:kube-master
@@ -72,8 +76,7 @@
     - { role: taco-apps/openstack/pre-install, tags: openstack, when: '"openstack" in taco_apps' }
     - { role: taco-apps/deploy, tags: deploy }
 
-- name: install openstack client
-  hosts: admin-node:controller-node
+- hosts: admin-node:controller-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-apps/openstack/client, tags: openstack, when: '"openstack" in taco_apps' }

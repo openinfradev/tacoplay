@@ -1,0 +1,33 @@
+---
+- name: backup current repository files
+  import_tasks: backup_repo_files.yml
+  when:
+    - local_repo_enabled
+    - ansible_distribution in ["CentOS","RedHat"]
+  ignore_errors: yes
+
+- name: set local repo urls
+  import_tasks: set_repo_urls.yml
+  when: local_repo_enabled
+
+- name: add local centos base repo
+  template:
+    src: local-centosbase.repo.j2
+    dest: /etc/yum.repos.d/local-centosbase.repo
+  when:
+    - local_yum_repo_enabled
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: add epel repo
+  template:
+    src: local-epel.repo.j2
+    dest: /etc/yum.repos.d/local-epel.repo
+  when:
+    - local_yum_repo_enabled
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: add local pypi repo
+  template:
+    src: pip.conf.j2
+    dest: /etc/pip.conf
+  when: local_pip_repo_enabled

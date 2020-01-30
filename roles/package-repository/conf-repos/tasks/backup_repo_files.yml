@@ -1,0 +1,24 @@
+- name: Create repository backup directory
+  file: 
+    path: /etc/yum.repos.d/taco_bak
+    owner: root 
+    group: root 
+    mode: 0755 
+    state: directory
+
+- name: Copy repo files into the backup dir
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/yum.repos.d/taco_bak/"
+    owner: "root"
+    mode: 0644
+  with_fileglob:
+    - "/etc/yum.repos.d/*.repo"
+
+- name: Remove repo files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "/etc/yum.repos.d/*.repo"
+

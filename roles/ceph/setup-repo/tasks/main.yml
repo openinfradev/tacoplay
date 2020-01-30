@@ -1,0 +1,36 @@
+---
+- name: set ceph_repo_url and ceph_repository
+  set_fact:
+    ceph_repo_url : "{{ groups['package-repository'][0] }}:{{ local_repo_port }}"
+    ceph_repository: "custom"
+  when: local_ceph_repo_enabled
+
+- name: set ceph_custeom_repo for ceph-ansible
+  set_fact:
+    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/local-ceph.repo"
+  when:
+    - ansible_distribution in ["CentOS", "RedHat"]
+    - local_ceph_repo_enabled
+
+- name: set ceph_custeom_repo for ceph-ansible
+  set_fact:
+    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph"
+  when:
+    - ansible_distribution in ["Ubuntu", "Debian"]
+    - local_ceph_repo_enabled
+
+- name: create ceph.repo in {{ pkg_repo_volume_path }}
+  template:
+    src: local-ceph.repo.j2
+    dest: "{{ pkg_repo_volume_path }}/local-ceph.repo"
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+    - local_ceph_repo_enabled
+
+- name: add ceph apt-key
+  apt_key:
+    url: "http://{{ ceph_repo_url }}/ceph/keys/release.asc"
+    state: present
+  when:
+    - local_ceph_repo_enabled
+    - ansible_distribution in ["Ubuntu", "Debian"]

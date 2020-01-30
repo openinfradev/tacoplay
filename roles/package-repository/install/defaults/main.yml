@@ -1,0 +1,8 @@
+---
+pkg_repo_container_image_name: nginx
+pkg_repo_container_image_tag: 1.17.7-alpine
+pkg_repo_container_name: taco_pkg_repo
+
+pkg_repo_volume_archived: false
+pkg_repo_volume_archive_file: "{{ inventory_dir }}/pkg_repo.tar.gz"
+pkg_repo_volume_path: "/DATA/taco_pkg_repo"

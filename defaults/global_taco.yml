@@ -3,9 +3,6 @@ bin_dir: /usr/bin
 nat_enabled: false
 tc_enabled: false
 
-# default localrepo port
-localrepo_port: 80
-
 # Container registry
 container_registry_enabled: true
 
@@ -29,10 +26,20 @@ container_registry_enabled: true
 #  - { endpoint: 192.168.000.000, ip: null, cert: null } 
 container_registries: null
 
+# Package repository
+# if you want use existing repository, configure '*_repo_url' below.
+local_repo_port: 80
+pip_repo_url: ""
+pip_repo_ip: ""
+yum_repo_url: ""
+apt_repo_url: ""
+k8s_binary_repo_url: ""
+ceph_repo_url: ""
+
 # storage configurations: ceph or nfs
 taco_storage_backend: "ceph"
 storage_class_name: >-
-  {%- if taco_storage == 'ceph' -%}rbd{%- elif taco_storage == 'nfs' -%}nfs-client{%- endif -%}
+  {%- if taco_storage_backend == 'ceph' -%}rbd{%- elif taco_storage_backend == 'nfs' -%}nfs-client{%- endif -%}
 
 # Ceph
 # this will be removed soon
@@ -40,7 +47,7 @@ cinder_keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
 
 # RBD provisioner
 rbd_provisioner_enabled: >-
-  {%- if taco_storage == 'ceph' -%}true{%- else -%}false{%- endif -%}
+  {%- if taco_storage_backend == 'ceph' -%}true{%- else -%}false{%- endif -%}
 rbd_provisioner_namespace: kube-system
 rbd_provisioner_replicas: 1
 rbd_provisioner_pool: kube
