@@ -56,7 +56,6 @@
     - { role: k8s/kubectl, tags: taco-clients }
     - { role: k8s/helm, tags: taco-clients }
     - { role: k8s/tiller, tags: taco-clients }
-    - { role: k8s/armada, tags: taco-clients }
 
 # TODO: add tests for checking status of the new k8s cluster
 

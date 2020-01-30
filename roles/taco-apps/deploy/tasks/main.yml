@@ -1,17 +1,5 @@
 ---
 
-- name: set starting option and virtualenv folder in bashrc for centos
-  set_fact:
-    starting_option_folder: ".bashrc"
-    virtualenv_folder: "/usr/bin/virtualenvwrapper.sh"
-  when: ansible_distribution in ["CentOS","RedHat"] and armada_enabled|default(true)
-
-- name: set starting option and virtualenv folder in profile for ubuntu
-  set_fact:
-    starting_option_folder: ".profile"
-    virtualenv_folder: "/usr/local/bin/virtualenvwrapper.sh"
-  when: ansible_distribution in ["Ubuntu","Debian"] and armada_enabled|default(true)
-
 - name: check host where tiller is running
   shell: >-
     {{ bin_dir }}/kubectl get pods -n kube-system -o json |
@@ -42,10 +30,19 @@
     state: absent
   with_items: "{{ armada_processes.stdout_lines }}"
 
+- name: run armada docker container
+  docker_container:
+    name: "armada"
+    image: "{{ armada_image_name }}:{{ armada_image_tag }}"
+    volumes: 
+      - "{{ lookup('env','HOME') }}/:{{ lookup('env','HOME') }}/"
+      - "{{ lookup('env','HOME') }}/.kube:/armada/.kube/"
+    restart_policy: always
+    state: started
+
 - name: run armada apply 
   shell: >-
-    . {{ lookup('env','HOME') }}/{{ starting_option_folder }} && workon armada &&
-    ~/venv/armada/bin/armada apply
+    docker exec armada armada apply
     --tiller-host {{ tiller_host.stdout }}
     --tiller-port {{ tiller_port }}
     --timeout 7200
@@ -61,9 +58,7 @@
 - name: show armada apply usage for next try
   debug:
     msg: >-
-      ". ~/.bashrc &&
-      workon armada &&
-      armada apply
+      "docker exec armada armada apply
       --tiller-host {{ tiller_host.stdout }}
       --tiller-port {{ tiller_port }}
       --timeout 7200
