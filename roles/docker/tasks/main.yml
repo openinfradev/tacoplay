@@ -105,25 +105,6 @@
   register: installed_docker_version
   changed_when: false
 
-# Set docker_insecure_registries vars #
-vars:
-  docker_insecure_registries: []
-
-- name: Set docker_insecure_registries vars
-  set_fact:
-    docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ groups['registry'][0] + ':5000' }}' ]"
-  when:
-    - container_registry_enabled
-
-- name: Set docker_insecure_registries vars
-  set_fact:
-    docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ item.endpoint }}' ]"
-  when:
-    - not container_registry_enabled
-    - not item.cert
-  with_items:
-    - "{{ container_registries }}"
-
 - name: Create docker service systemd directory if it doesn't exist
   file:
     path: /etc/systemd/system/docker.service.d
