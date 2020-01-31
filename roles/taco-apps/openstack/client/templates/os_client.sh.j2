@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# run into an openstackclient container
+
+sudo docker run -it --network host --env-file /tmp/adminrc.env {{ openstackclient_image_name }}:{{openstackclient_image_tag }} bash
