@@ -1,0 +1,10 @@
+---
+- name: ensure jq package installed
+  yum:
+    name: jq
+
+- name: ensure pip packages are installed
+  pip:
+    name:
+      - yq
+      - docker

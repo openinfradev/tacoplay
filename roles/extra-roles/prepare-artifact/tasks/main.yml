@@ -1,0 +1,64 @@
+---
+- name: include vars for prepare-openstack-manifest task
+  include_vars: roles/taco-apps/openstack/pre-install/defaults/main.yml
+  when: '"openstack" in taco_apps'
+
+- name: prepare openstack manifest for image pulling
+  include_tasks: roles/taco-apps/openstack/pre-install/tasks/prepare-openstack-manifest.yml
+  when: '"openstack" in taco_apps'
+
+- name: pull all images used in application manifests
+  script: >-
+    {{ playbook_dir }}/scripts/pull-images.sh
+    {{ inventory_dir }}/{{ item }}-manifest.yml
+    registry.cicd.stg.taco
+  args:
+    creates: "/tmp/.{{ item }}-image-pull-done"
+  when:
+    - is_gating_test
+    - taco_apps
+  with_items: taco_apps
+
+- name: pull all images used in armada manifest
+  script: >-
+    {{ playbook_dir }}/scripts/pull-images.sh
+    {{ inventory_dir }}/{{ item }}-manifest.yml
+    registry-rel.cicd.stg.taco
+  args:
+    creates: "/tmp/.{{ item }}-image-pull-done"
+  when:
+    - not is_gating_test
+    - taco_apps
+  with_items: taco_apps
+
+- name: run registry container
+  docker_container:
+    name: taco-registry
+    image: registry:2.6.2
+    restart_policy: always
+    ports:
+      - 5000:5000
+    volumes:
+      - "{{ playbook_dir }}/docker_registry/:/var/lib/registry"
+
+- name: tag images
+  script: "{{ playbook_dir }}/scripts/tag-images.sh"
+  args:
+    creates: /tmp/.image-tag-done
+
+- name: push tagged images to registry
+  script: "{{ playbook_dir }}/scripts/push-images.sh"
+  args:
+    creates: /tmp/.image-push-done
+
+- name: archive registry image
+  docker_image:
+    name: registry
+    tag: 2.6.2
+    archive_path: "{{ playbook_dir }}/docker_registry/registry-2.6.2.tar"
+
+- name: bundle up tacoplay
+  shell: tar cvfz tacoplay.tar.gz tacoplay/
+  args:
+    chdir: "{{ playbook_dir | dirname }}"
+    creates: /tmp/.bundle-done
