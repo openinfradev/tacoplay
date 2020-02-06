@@ -2,13 +2,13 @@
 - name: backup current repository files
   import_tasks: backup_repo_files.yml
   when:
-    - local_repo_enabled
+    - local_pkg_repo_enabled
     - ansible_distribution in ["CentOS","RedHat"]
   ignore_errors: yes
 
 - name: set local repo urls
   import_tasks: set_repo_urls.yml
-  when: local_repo_enabled
+  when: local_pkg_repo_enabled or local_pip_repo_enabled or local_k8s_binary_repo_enabled
 
 - name: add local centos base repo
   template:

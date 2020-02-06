@@ -28,7 +28,7 @@
   ignore_errors: true
 
 - name: run web server for temporary package repositories
-  raw: "{{ role_path }}/files/busybox-x86_64 httpd -p {{ local_repo_port}} -h {{ pkg_repo_volume_path}}"
+  raw: "{{ role_path }}/files/busybox-x86_64 httpd -p {{ local_reposerver_port}} -h {{ pkg_repo_volume_path}}"
   register: busybox_cmd
   failed_when: busybox_cmd.rc != 0
 

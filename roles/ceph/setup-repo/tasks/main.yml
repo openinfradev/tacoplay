@@ -1,7 +1,7 @@
 ---
 - name: set ceph_repo_url and ceph_repository
   set_fact:
-    ceph_repo_url : "{{ groups['package-repository'][0] }}:{{ local_repo_port }}"
+    ceph_repo_url : "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
     ceph_repository: "custom"
   when: local_ceph_repo_enabled
 
