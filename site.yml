@@ -21,7 +21,7 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: setup-os, tags: setup-os }
-    - { role: container-registry/client, tags: always }
+    - { role: container-registry/client, tags: setup-os }
 
 # Use current docker role for now. Kubespray's container-engine role
 # can be considered later.
@@ -76,4 +76,4 @@
 - hosts: admin-node:controller-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/openstack/client, tags: openstack, when: '"openstack" in taco_apps' }
+    - { role: taco-apps/openstack/client, tags: openstack-client, when: '"openstack" in taco_apps' }
