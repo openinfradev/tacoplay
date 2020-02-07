@@ -22,6 +22,12 @@
         - "{{ playbook_dir }}/defaults/global_k8s-download.yml"
       when: local_k8s_binary_repo_enabled|default(false)
 
+    - name: include global override files - docker repo
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/defaults/global_docker-repo.yml"
+      when: local_pkg_repo_enabled|default(false)
+    
     - name: check whether local repository install is needed
       set_fact:
         local_reposerver_enabled: local_pip_repo_enabled or
