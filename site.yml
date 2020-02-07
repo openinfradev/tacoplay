@@ -7,7 +7,7 @@
   hosts: package-repository
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: package-repository/install, tags: package-repository, when: local_repo_enabled }
+    - { role: package-repository/install, tags: package-repository, when: local_reposerver_enabled }
     - { role: ceph/setup-repo, tags: package-repository, when: taco_storage_backend == 'ceph' and local_ceph_repo_enabled }
 
 - name: configure package repositories

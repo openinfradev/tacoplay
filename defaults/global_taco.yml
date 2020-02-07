@@ -4,7 +4,7 @@ nat_enabled: false
 tc_enabled: false
 
 # Container registry
-container_registry_enabled: true
+container_registry_enabled: false
 
 # When container_registry_enabled is 'true', then registry endpoint is
 # automatically set to "{{ groups['registry'][0] + ':5000' }}"
