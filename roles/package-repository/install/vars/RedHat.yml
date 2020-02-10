@@ -1,0 +1,10 @@
+---
+apache_name: httpd
+
+apache_configuration_items:
+  - file: "/etc/httpd/conf/httpd.conf"
+    regexp: "^Listen "
+    line: "Listen {{ local_repo_port }}"
+  - file: "/etc/httpd/conf/httpd.conf"
+    regexp: "^DocumentRoot "
+    line: "DocumentRoot {{ pkg_repo_volume_path }}"
