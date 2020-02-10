@@ -1,4 +1,9 @@
 ---
+- name: include specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_os_family }}.yml"
+
 - name: populate the taco repo into hosts file
   blockinfile:
     dest: /etc/hosts
@@ -33,8 +38,8 @@
   failed_when: busybox_cmd.rc != 0
 
 - name: install Apache web server
-  yum:
-    name: httpd
+  package:
+    name: {{ apache_name }}
     state: present
 
 - name: kill temporary repository web server
@@ -42,7 +47,7 @@
 
 - name: Configure Apache web server
   lineinfile:
-    dest: "{{ apache_server_root }}/conf/{{ apache_daemon }}.conf"
+    dest: "{{ item.file }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
@@ -50,6 +55,7 @@
 
 - name: restart httpd
   service:
-    name: httpd
+    name: "{{ apache_name }}"
     state: restarted
+    enabled: yes
 

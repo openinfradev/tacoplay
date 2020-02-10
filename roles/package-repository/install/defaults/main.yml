@@ -2,11 +2,3 @@
 pkg_repo_volume_archived: false
 pkg_repo_volume_archive_file: "{{ inventory_dir }}/pkg_repo.tar"
 pkg_repo_volume_path: "/DATA/taco_pkg_repo"
-
-apache_server_root: /etc/httpd
-apache_daemon: httpd
-apache_configuration_items:
-  - regexp: "^Listen "
-    line: "Listen {{ local_reposerver_port }}"
-  - regexp: "^DocumentRoot "
-    line: "DocumentRoot {{ pkg_repo_volume_path }}"
