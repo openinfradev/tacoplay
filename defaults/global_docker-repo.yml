@@ -1,6 +1,0 @@
-docker_rh_repo_base_url: http://{{ yum_repo_url }}/docker/linux/centos/7/$basearch/stable
-docker_rh_repo_gpgkey: http://{{ yum_repo_url }}/docker/linux/centos/gpg
-dockerproject_rh_repo_base_url: http://{{ yum_repo_url }}/dockerproject/repo/main/centos/7
-dockerproject_rh_repo_gpgkey: http://{{ yum_repo_url }}/dockerproject/gpg
-docker_ubuntu_repo_base_url: http://{{ yum_repo_url }}/docker/linux/ubuntu
-docker_ubuntu_repo_gpgkey: http://{{ yum_repo_url }}/docker/linux/ubuntu/gpg

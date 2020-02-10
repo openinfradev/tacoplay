@@ -4,22 +4,22 @@
     pip_repo_ip: "{{ hostvars[groups['package-repository'][0]]['ansible_default_ipv4']['address'] }}"
   when: local_pip_repo_enabled
 
-- name: set yum_repo_url
+- name: set pkg_repo_url for centos
   set_fact:
-    yum_repo_url: "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
-    docker_rh_repo_base_url: "http://{{ yum_repo_url }}/docker/linux/centos/7/$basearch/stable"
-    docker_rh_repo_gpgkey: "http://{{ yum_repo_url }}/docker/linux/centos/gpg"
-    dockerproject_rh_repo_base_url: "http://{{ yum_repo_url }}/dockerproject/repo/main/centos/7"
-    dockerproject_rh_repo_gpgkey: "http://{{ yum_repo_url }}/dockerproject/gpg"
+    pkg_repo_url: "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
+    docker_rh_repo_base_url: "http://{{ pkg_repo_url }}/docker/linux/centos/7/$basearch/stable"
+    docker_rh_repo_gpgkey: "http://{{ pkg_repo_url }}/docker/linux/centos/gpg"
+    dockerproject_rh_repo_base_url: "http://{{ pkg_repo_url }}/dockerproject/repo/main/centos/7"
+    dockerproject_rh_repo_gpgkey: "http://{{ pkg_repo_url }}/dockerproject/gpg"
   when:
     - ansible_distribution in ["CentOS", "RedHat"]
-    - local_pkg_repo_enabled 
+    - local_pkg_repo_enabled
 
-- name: set apt_repo_url
+- name: set pkg_repo_url for ubuntu
   set_fact:
-    apt_repo_url: "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
-    docker_ubuntu_repo_base_url: "http://{{ yum_repo_url }}/docker/linux/ubuntu"
-    docker_ubuntu_repo_gpgkey: "http://{{ yum_repo_url }}/docker/linux/ubuntu/gpg"
+    pkg_repo_url: "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
+    docker_ubuntu_repo_base_url: "http://{{ pkg_repo_url }}/docker/linux/ubuntu"
+    docker_ubuntu_repo_gpgkey: "http://{{ pkg_repo_url }}/docker/linux/ubuntu/gpg"
   when:
     - ansible_distribution in ["Ubuntu", "Debian"]
     - local_pkg_repo_enabled

@@ -31,8 +31,7 @@ container_registries: null
 local_repo_port: 80
 pip_repo_url: ""
 pip_repo_ip: ""
-yum_repo_url: ""
-apt_repo_url: ""
+pkg_repo_url: ""
 k8s_binary_repo_url: ""
 ceph_repo_url: ""
 
