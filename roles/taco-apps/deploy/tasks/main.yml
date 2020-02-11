@@ -30,35 +30,50 @@
     state: absent
   with_items: "{{ armada_processes.stdout_lines }}"
 
+- name: set docker.sock permission to 666
+  become: yes
+  file:
+    path: /var/run/docker.sock
+    mode: '0666'
+  run_once: yes
+
 - name: run armada docker container
   docker_container:
     name: "armada"
     image: "{{ armada_image_name }}:{{ armada_image_tag }}"
     volumes: 
       - "{{ lookup('env','HOME') }}/:{{ lookup('env','HOME') }}/"
-      - "{{ lookup('env','HOME') }}/.kube:/armada/.kube/"
+      - "{{ lookup('env','HOME') }}/.kube:/{{ lookup('env','USER') }}/.kube/"
+    network_mode: host
+    privileged: yes
     restart_policy: always
     state: started
+  become: no
+
+- name: adduser {{ lookup('env','USER') }} in armada container
+  shell: >-
+    docker exec -u root armada adduser {{ lookup('env','USER') }} --disabled-password --gecos ""
+  run_once: yes
+  ignore_errors: yes
 
 - name: run armada apply 
   shell: >-
-    docker exec armada armada apply
+    docker exec -u {{ lookup('env','USER') }} armada armada apply
     --tiller-host {{ tiller_host.stdout }}
     --tiller-port {{ tiller_port }}
     --timeout 7200
-    {{ inventory_dir }}/{{ item }}-manifest.yml >
+    {{ inventory_dir }}/{{ item }}-manifest.yaml >
     {{ lookup('env','HOME') }}/{{ item }}-deployment.log
-  when: auto_release_enabled|default(true) and tiller_host.stdout != ""
-  become: no
+  when: tiller_host.stdout != ""
   args:
     executable: /bin/bash
   run_once: yes
-  with_items: taco_apps
+  with_items: "{{ taco_apps }}"
 
 - name: show armada apply usage for next try
   debug:
     msg: >-
-      "docker exec armada armada apply
+      "docker exec -u {{ lookup('env','USER') }} armada armada apply
       --tiller-host {{ tiller_host.stdout }}
       --tiller-port {{ tiller_port }}
       --timeout 7200

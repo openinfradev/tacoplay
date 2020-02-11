@@ -9,6 +9,7 @@
     src: "{{ openstack_manifest_path }}"
     dest: "{{ openstack_manifest }}"
     mode: 0644
+    owner: "{{ lookup('env','USER') }}"
   when: stat_am_result.stat.exists == False
 
 - name: check if {{ openstack_manifest }} exists
