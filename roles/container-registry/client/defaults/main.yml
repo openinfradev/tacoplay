@@ -1,1 +1,2 @@
 # Necessary values are located in tacoplay/defaults directory.
+container_registries: []

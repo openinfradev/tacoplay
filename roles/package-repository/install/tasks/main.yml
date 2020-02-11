@@ -39,7 +39,7 @@
 
 - name: install Apache web server
   package:
-    name: {{ apache_name }}
+    name: "{{ apache_name }}"
     state: present
 
 - name: kill temporary repository web server

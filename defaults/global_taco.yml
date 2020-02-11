@@ -24,7 +24,7 @@ container_registry_enabled: false
 #      -----END CERTIFICATE-----
 #    }
 #  - { endpoint: 192.168.000.000, ip: null, cert: null } 
-container_registries: null
+container_registries: []
 
 # Package repository
 # if you want use existing repository, configure '*_repo_url' below.
