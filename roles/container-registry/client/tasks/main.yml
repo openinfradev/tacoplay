@@ -25,12 +25,14 @@
     backup: yes
   when:
     - not container_registry_enabled
+    - container_registries
 
 - name: registries | create directory for cert
   file:
     path: "/etc/docker/certs.d/{{ item.endpoint }}"
     state: directory
   when:
+    - container_registries
     - item.cert
   with_items:
     - "{{ container_registries }}"
@@ -40,6 +42,7 @@
     content: "{{ item.cert }}"
     dest: "/etc/docker/certs.d/{{ item.endpoint }}/ca.crt"
   when:
+    - container_registries
     - item.cert
   with_items:
     - "{{ container_registries }}"
@@ -55,6 +58,7 @@
     docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ item.endpoint }}' ]"
   when:
     - not container_registry_enabled
+    - container_registries
     - not item.cert
   with_items:
     - "{{ container_registries }}"
