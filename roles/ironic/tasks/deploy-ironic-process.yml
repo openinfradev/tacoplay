@@ -1,0 +1,120 @@
+---
+
+- name: add ironic repository on ubuntu
+  command: "add-apt-repository cloud-archive:{{ ironic_release }} -y"
+  register: command_result
+  when:
+    - localrepo_enabled | bool == false
+    - ansible_distribution in ["Ubuntu","Debian"]
+  failed_when: command_result.rc | bool == true
+
+- name: update apt repositories cache
+  apt:
+    update_cache: yes
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: add ironic repository on centos
+  yum:
+    name: centos-release-openstack-{{ ironic_release }}
+    state: present
+  when:
+    - localrepo_enabled | bool == false
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: create ironic database
+  mysql_db:
+    name: "ironic"
+    state: present
+    login_user: "ironic"
+    login_password: "password"
+  register: check_created_db
+
+- name: yum install packages required for ironic standalone
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - openstack-ironic-api
+    - openstack-ironic-conductor
+    - openstack-ironic-inspector
+    - python-ironicclient
+  ignore_errors: true
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: apt install packages required for ironic standalone
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - ironic-api
+    - ironic-conductor
+    - ironic-inspector
+    - python-ironicclient
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
+- name: ensures /etc/ironic directory exists
+  file: path=/etc/ironic state=directory
+
+- name: ensures rootwrap directory exists
+  file: path=/etc/ironic/rootwrap.d state=directory
+
+- name: edit ironic configuration file
+  template:
+    src: "ironic.conf.j2"
+    dest: "/etc/ironic/ironic.conf"
+
+- name: copy policy.json and rootwrap.conf file
+  copy:
+    src: "{{ item }}"
+    dest: /etc/ironic
+  with_items:
+    - policy.json
+    - rootwrap.conf
+
+- name: copy ironic filter files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/ironic/rootwrap.d
+  with_items:
+    - ironic-images.filters
+    - ironic-lib.filters
+    - ironic-utils.filters
+
+- name: ensure permission and owner of /etc/ironic
+  file:
+    path: "/etc/ironic"
+    state: directory
+    owner: ironic
+    group: ironic
+    mode: 0777
+    recurse: yes
+
+- name: create ironic db schema
+  command: ironic-dbsync --config-file /etc/ironic/ironic.conf create_schema
+  when: check_created_db.changed | bool == true
+
+- name: upgrade ironic db schema
+  command: ironic-dbsync --config-file /etc/ironic/ironic.conf upgrade
+  when: check_created_db.changed | bool == false
+
+- name: restart ironic services
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  loop:
+    - openstack-ironic-api
+    - openstack-ironic-conductor
+  when: ansible_distribution in ["CentOS","RedHat"]
+
+- name: restart ironic services
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  loop:
+    - ironic-api
+    - ironic-conductor
+  when: ansible_distribution in ["Ubuntu","Debian"]

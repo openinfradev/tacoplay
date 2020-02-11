@@ -14,6 +14,7 @@
   template:
     src: "mariadb_ironic.cnf.j2"
     dest: "/etc/my.cnf.d/ironic.cnf"
+  notify: restart mariadb service
   when:
     - ansible_distribution in ["CentOS","RedHat"]
 
@@ -31,18 +32,38 @@
     enabled: yes
   register: check_installed_mariadb
 
-- name: "wait for mariadb"
+- name: wait for mariadb
   wait_for:
     port: 3306
     delay: 5
   when: check_installed_mariadb | bool == 'true'
+
+- name: copy .my.cnf file with credentials for administrative user
+  template:
+    src: "my.cnf.j2"
+    dest: "/root/.my.cnf"
+    owner: root
+    group: root
+    mode: '0600'
+  when:
+    - ansible_distribution in ["Ubuntu","Debian"]
+
+- name: update root user password on localhost
+  mysql_user:
+    name: root
+    host: localhost
+    password: "password"
+    priv: "*.*:ALL,GRANT"
+    state: present
+  when:
+    - ansible_distribution in ["Ubuntu","Debian"]
 
 - name: Ensure ironic user is present on all hosts.
   mysql_user:
     name: "ironic"
     host: "{{ item }}"
     password: "password"
-    priv: '*.*:ALL,GRANT'
+    priv: "*.*:ALL,GRANT"
     state: present
   with_items:
     - 127.0.0.1
@@ -50,3 +71,8 @@
     - localhost
     - "{{ ansible_hostname }}" 
     - "{{ ironic_server }}"
+
+- name: restart mariadb service
+  systemd:
+    name: "{{ mysql_service_name }}"
+    state: restarted

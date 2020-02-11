@@ -60,9 +60,13 @@
       remote_src: true
   - name: copy library modules to tftpboot directory
     copy:
-      src: /usr/lib/syslinux/modules/*/ldlinux.*
+      src: "{{ item }}"
       dest: "{{ tftp_path }}"
       remote_src: true
+    with_fileglob:
+      - "/usr/lib/syslinux/modules/bios/ldlinux.*"
+      - "/usr/lib/syslinux/modules/efi32/ldlinux.*"
+      - "/usr/lib/syslinux/modules/efi32/ldlinux.*"
   when: ansible_distribution in ["Ubuntu","Debian"]
 
 - name: copy map-file
@@ -80,15 +84,9 @@
 
 - name: copy ironic images to ironic_images directory
   copy:
-    src: "{{ item }}"
+    src: "{{ playbook_dir }}/{{ ironic_image_dir }}/"
     dest: "{{ tftp_path }}/ironic_images"
     mode: 0777
-  with_items:
-    - "{{ playbook_dir }}/ironic-image/ubuntu-deploy/ubuntu-deploy.initramfs"
-    - "{{ playbook_dir }}/ironic-image/ubuntu-deploy/ubuntu-deploy.kernel"
-    - "{{ playbook_dir }}/ironic-image/centos7-user/user-centos7.initramfs"
-    - "{{ playbook_dir }}/ironic-image/centos7-user/user-centos7.kernel"
-    - "{{ playbook_dir }}/ironic-image/centos7-user/user-centos7.qcow2"
 
 - name: ensure permission and owner of tftpboot directory
   file:

@@ -18,7 +18,7 @@
     daemon_reload: yes
     enabled: yes
 
-- name: edit dhcpd conf file on redhat family
+- name: edit dhcpd conf file
   template:
     src: "dhcpd.conf.j2"
     dest: "/etc/dhcp/dhcpd.conf"
