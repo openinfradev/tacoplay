@@ -1,0 +1,42 @@
+### tacoplay
+cicd_registry_enabled: false
+replace_repo_file: false
+taco_storage: none
+
+### online configuration
+container_registry_enabled: false
+
+### offline configuration
+#container_registry_enabled: true
+#local_pip_repo_enabled: true
+#local_pkg_repo_enabled: true
+#local_k8s_binary_repo_enabled: true
+#local_ceph_repo_enabled: true
+#local_repo_port: 80
+
+### ironic configuration
+ironic_server: 10.10.10.10
+
+### DHCP Configuration
+dhcp_interfaces: bond0
+dhcp_server: 10.10.10.10
+dhcp_subnet: 10.10.10.0
+dhcp_netmask: 255.255.255.0
+
+### Node Configurations
+#ironic_nodes:
+#  - name: sample-node
+#    mac: '00:11:22:33:44:55'
+#    ip: 192.168.0.10
+#    driver: pxe_ipmitool
+#    driver_address: 192.168.100.10
+#    driver_user: root
+#    driver_password: root
+ironic_nodes:
+  - name: node01
+    mac: '00:00:00:00:00:00'
+    ip: 10.10.10.11
+    driver: ipmi
+    driver_address: 10.10.110.11
+    driver_user: root
+    driver_password: root

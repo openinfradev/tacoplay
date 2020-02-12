@@ -14,7 +14,6 @@
   template:
     src: "mariadb_ironic.cnf.j2"
     dest: "/etc/my.cnf.d/ironic.cnf"
-  notify: restart mariadb service
   when:
     - ansible_distribution in ["CentOS","RedHat"]
 
