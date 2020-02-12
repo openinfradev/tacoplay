@@ -7,7 +7,7 @@ tc_enabled: false
 container_registry_enabled: false
 
 # When container_registry_enabled is 'true', then registry endpoint is
-# automatically set to "{{ groups['registry'][0] + ':5000' }}"
+# automatically set to "{{ groups['taco-registry'][0] + ':5000' }}"
 # Otherwise (if you want to use existing registries), set 'container_registries' var.
 # You can provide domain name (as endpoint) and ip, or just use ip itself as endpoint.
 # If cert is null, then the registry is regarded as insecure registry.
