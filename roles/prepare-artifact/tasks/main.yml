@@ -1,4 +1,16 @@
 ---
+- name: ensure jq package installed
+  package:
+    name: jq
+    state: present
+
+# where is docker python package used?
+- name: ensure pip packages are installed
+  pip:
+    name:
+      - yq
+      - docker
+
 - name: pull all images used in application manifests
   script: >-
     {{ playbook_dir }}/scripts/pull-images.sh
