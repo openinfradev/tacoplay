@@ -1,23 +1,13 @@
 ---
-- hosts: localhost:all
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: include global override files
-      include_vars: "{{ item }}"
-      loop:
-        - "../defaults/global_taco.yml"
-        - "../defaults/global_docker.yml"
-        - "../defaults/global_ceph.yml"
-        - "../defaults/global_k8s-cluster.yml"
-        - "../defaults/global_k8s-images.yml"
-  tags: always
+- name: include global default variables
+  import_playbook: ../include_defaults.yml
 
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: docker }
     - { role: container-registry/client }
-    - { role: extra-roles/install-yaml-tools }
+    - { role: install-yaml-tools }
   tags: always
 
 - import_playbook: ../kubespray/cluster.yml
@@ -26,5 +16,6 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: extra-roles/prepare-artifact }
+    - { role: taco-apps/openstack/pre-install, prepare_manifest_only: true }
+    - { role: prepare-artifact }
   tags: always

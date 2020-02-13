@@ -11,3 +11,6 @@ openstack_manifest: "{{ inventory_dir }}/openstack-manifest.yaml"
 # default openstack release and namespace
 openstack_release: stein
 openstack_namespace: openstack
+
+# set this to 'true' to only run prepare-manifest task. (Eg, from 'site-prepare' play)
+prepare_manifest_only: false

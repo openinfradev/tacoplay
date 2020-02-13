@@ -1,12 +1,4 @@
 ---
-- name: include vars for prepare-openstack-manifest task
-  include_vars: roles/taco-apps/openstack/pre-install/defaults/main.yml
-  when: '"openstack" in taco_apps'
-
-- name: prepare openstack manifest for image pulling
-  include_tasks: roles/taco-apps/openstack/pre-install/tasks/prepare-openstack-manifest.yml
-  when: '"openstack" in taco_apps'
-
 - name: pull all images used in application manifests
   script: >-
     {{ playbook_dir }}/scripts/pull-images.sh
@@ -17,7 +9,7 @@
   when:
     - is_gating_test
     - taco_apps
-  with_items: taco_apps
+  with_items: "{{ taco_apps }}"
 
 - name: pull all images used in armada manifest
   script: >-
@@ -29,7 +21,7 @@
   when:
     - not is_gating_test
     - taco_apps
-  with_items: taco_apps
+  with_items: "{{ taco_apps }}"
 
 - name: run registry container
   docker_container:

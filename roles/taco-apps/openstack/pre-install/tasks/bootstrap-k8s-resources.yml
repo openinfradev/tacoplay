@@ -1,0 +1,30 @@
+---
+- name: ensures /tmp/manifests dir exists
+  file: path=/tmp/manifests state=directory
+
+- name: copy namespace, clusterrolebinding yml
+  template:
+    src: "{{item.file}}.j2"
+    dest: "/tmp/manifests/{{item.file}}"
+  with_items:
+    - {name: "{{ openstack_namespace }}", file: namespace.yml, type: namespace}
+    - {name: "{{ openstack_namespace }}", file: clusterrolebinding.yml, type: clusterrolebinding}
+  register: openstack_resources
+
+- name: start k8s resources for openstack
+  kube:
+    name: "{{item.item.name}}"
+    kubectl: "{{bin_dir}}/kubectl"
+    resource: "{{item.item.type}}"
+    filename: "/tmp/manifests/{{item.item.file}}"
+    state: "{{item.changed | ternary('latest','present') }}"
+  with_items:
+    - "{{ openstack_resources.results }}"
+  run_once: true
+  become: no
+
+- name: delete test pods in openstack namespace
+  shell: >-
+    {{ bin_dir }}/kubectl get pods -n openstack | grep test |
+    awk '{print $1}' | xargs {{ bin_dir }}/kubectl delete pods -n openstack
+  ignore_errors: yes

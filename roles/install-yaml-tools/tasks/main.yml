@@ -1,7 +1,8 @@
 ---
 - name: ensure jq package installed
-  yum:
+  package:
     name: jq
+    state: present
 
 - name: ensure pip packages are installed
   pip:
