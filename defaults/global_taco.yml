@@ -28,6 +28,11 @@ container_registries: []
 
 # Package repository
 # if you want use existing repository, configure '*_repo_url' below.
+local_pip_repo_enabled: false
+local_pkg_repo_enabled: false
+local_k8s_binary_repo_enabled: false
+local_ceph_repo_enabled: false
+
 local_reposerver_port: 80
 pip_repo_url: ""
 pip_repo_ip: ""
