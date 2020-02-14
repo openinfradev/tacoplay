@@ -1,118 +1,20 @@
 ---
-- hosts: localhost:all
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: include global override files
-      include_vars: "{{ item }}"
-      loop:
-        - "../defaults/global_taco.yml"
-        - "../defaults/global_docker.yml"
-        - "../defaults/global_ceph.yml"
-        - "../defaults/global_k8s-cluster.yml"
-        - "../defaults/global_k8s-images.yml"
-  tags: always
+- name: include global default variables
+  import_playbook: ../include_defaults.yml
 
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: docker }
-  tasks:
-    - name: ensure a list of packages installed
-      yum:
-        name: jq
-    - pip:
-        name: yq
-    - pip:
-        name: docker
-  tags: download
+    - { role: container-registry/client }
+  tags: always
+
+- import_playbook: ../kubespray/cluster.yml
+  when: not exclude_k8s_images
 
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: ceph/post-install, when: taco_storage_backend == 'ceph' }
+    - { role: taco-apps/openstack/pre-install, vars: { prepare_manifest_only: true } }
+    - { role: prepare-artifact }
   tags: always
-
-- include: ../kubespray/cluster.yml
-
-- hosts: localhost
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: create docker cert directory
-      file:
-        path: /etc/docker/certs.d/registry.cicd.stg.taco/
-        state: directory
-        mode: 0755
-
-    - name: copy registry cert file
-      copy:
-        src: "{{ playbook_dir }}/files/registry-certs"
-        dest: "/etc/docker/certs.d/registry.cicd.stg.taco/ca.crt"
-    
-    - name: copy .netrc file to home directory
-      copy:
-        src: "{{ playbook_dir }}/files/.netrc"
-        dest: "~/.netrc"
-      become: no
-
-    - name: include vars for prepare-openstack-manifest task
-      include_vars: roles/taco-apps/openstack/pre-install/defaults/main.yml
-      when: '"openstack" in taco_apps'
-
-    - name: prepare openstack manifest for image pulling
-      include_tasks: roles/taco-apps/openstack/pre-install/tasks/prepare-openstack-manifest.yml
-      when: '"openstack" in taco_apps'
-
-    - name: pull all images used in armada manifest
-      script: >-
-        {{ playbook_dir }}/scripts/pull-images.sh
-        {{ inventory_dir }}/{{ item }}-manifest.yml
-        registry.cicd.stg.taco
-      args:
-        creates: "/tmp/.{{ item }}-image-pull-done"
-      when:
-        - is_gating_test
-      with_items: taco_apps
-
-    - name: pull all images used in armada manifest
-      script: >-
-        {{ playbook_dir }}/scripts/pull-images.sh
-        {{ inventory_dir }}/{{ item }}-manifest.yml
-        registry-rel.cicd.stg.taco
-      args:
-        creates: "/tmp/.{{ item }}-image-pull-done"
-      when:
-        - not is_gating_test
-      with_items: taco_apps
-
-    - name: run registry container
-      docker_container:
-        name: taco-registry
-        image: registry:2.6.2
-        restart_policy: always
-        ports:
-          - 5000:5000
-        volumes:
-          - "{{ playbook_dir }}/docker_registry/:/var/lib/registry"
-
-    - name: tag images
-      script: "{{ playbook_dir }}/scripts/tag-images.sh"
-      args:
-        creates: /tmp/.image-tag-done
-
-    - name: push tagged images to registry
-      script: "{{ playbook_dir }}/scripts/push-images.sh"
-      args:
-        creates: /tmp/.image-push-done
-
-    - name: archive registry image
-      docker_image:
-        name: registry
-        tag: 2.6.2
-        archive_path: "{{ playbook_dir }}/docker_registry/registry-2.6.2.tar"
-
-    - name: bundle up tacoplay
-      shell: tar cvfz tacoplay.tar.gz tacoplay/
-      args:
-        chdir: "{{ playbook_dir | dirname }}"
-        creates: /tmp/.bundle-done
-  tags: download

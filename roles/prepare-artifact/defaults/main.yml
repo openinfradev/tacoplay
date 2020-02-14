@@ -1,0 +1,5 @@
+# For gating job
+is_gating_test: false
+
+# Set this to 'true' to exclude k8s component images in site-prepare job
+exclude_k8s_images: false
