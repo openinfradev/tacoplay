@@ -8,7 +8,8 @@
         - "{{ playbook_dir }}/defaults/global_docker.yml"
         - "{{ playbook_dir }}/defaults/global_ceph.yml"
         - "{{ playbook_dir }}/defaults/global_k8s-cluster.yml"
-        - "{{ playbook_dir }}/defaults/site_specific.yml"
+# Commenting out this until we have agreement after team level discussion
+#        - "{{ playbook_dir }}/defaults/site_specific.yml"
 
     - name: include global override files - k8s images
       include_vars: "{{ item }}"
