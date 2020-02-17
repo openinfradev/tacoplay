@@ -10,8 +10,8 @@ if [ "x$MANIFESTS" == "x" ]; then
 fi
 
 for IMAGE in $(cat $MANIFESTS | yq '.data.values.images.tags | map(.) | join(" ")' | tr -d '"'); do
-  if (!orig_registry_parsed)
-    ORIG_REGISTRY=$((awk '{print $2}' | awk -F "/" '/1/ {print $1}') <<< $IMAGE)
+  if [ "$orig_registry_parsed" != true ]; then
+    ORIG_REGISTRY=$((awk -F "/" '/1/ {print $1}') <<< $IMAGE)
     orig_registry_parsed=true
   fi
 

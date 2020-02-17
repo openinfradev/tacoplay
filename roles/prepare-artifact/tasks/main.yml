@@ -13,8 +13,8 @@
 
 - name: pull all images used in application manifests
   script: >-
-    {{ playbook_dir }}/scripts/pull-images.sh
-    {{ inventory_dir }}/{{ item }}-manifest.yml
+    {{ playbook_dir | dirname }}/scripts/pull-images.sh
+    {{ inventory_dir }}/{{ item }}-manifest.yaml
     registry.cicd.stg.taco
   args:
     creates: "/tmp/.{{ item }}-image-pull-done"
@@ -25,8 +25,8 @@
 
 - name: pull all images used in armada manifest
   script: >-
-    {{ playbook_dir }}/scripts/pull-images.sh
-    {{ inventory_dir }}/{{ item }}-manifest.yml
+    {{ playbook_dir | dirname }}/scripts/pull-images.sh
+    {{ inventory_dir }}/{{ item }}-manifest.yaml
     registry-rel.cicd.stg.taco
   args:
     creates: "/tmp/.{{ item }}-image-pull-done"
@@ -43,15 +43,15 @@
     ports:
       - 5000:5000
     volumes:
-      - "{{ playbook_dir }}/docker_registry/:/var/lib/registry"
+      - "{{ playbook_dir | dirname }}/docker_registry/:/var/lib/registry"
 
 - name: tag images
-  script: "{{ playbook_dir }}/scripts/tag-images.sh"
+  script: "{{ playbook_dir | dirname }}/scripts/tag-images.sh"
   args:
     creates: /tmp/.image-tag-done
 
 - name: push tagged images to registry
-  script: "{{ playbook_dir }}/scripts/push-images.sh"
+  script: "{{ playbook_dir | dirname }}/scripts/push-images.sh"
   args:
     creates: /tmp/.image-push-done
 
@@ -59,10 +59,10 @@
   docker_image:
     name: registry
     tag: 2.6.2
-    archive_path: "{{ playbook_dir }}/docker_registry/registry-2.6.2.tar"
+    archive_path: "{{ playbook_dir | dirname }}/docker_registry/registry-2.6.2.tar"
 
 - name: bundle up tacoplay
   shell: tar cvfz tacoplay.tar.gz tacoplay/
   args:
-    chdir: "{{ playbook_dir | dirname }}"
+    chdir: "{{ playbook_dir | dirname | dirname }}"
     creates: /tmp/.bundle-done
