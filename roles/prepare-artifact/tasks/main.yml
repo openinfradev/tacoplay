@@ -14,7 +14,7 @@
 - name: pull all images used in application manifests
   script: >-
     {{ playbook_dir | dirname }}/scripts/pull-images.sh
-    {{ inventory_dir }}/{{ item }}-manifest.yml
+    {{ inventory_dir }}/{{ item }}-manifest.yaml
     registry.cicd.stg.taco
   args:
     creates: "/tmp/.{{ item }}-image-pull-done"
@@ -26,7 +26,7 @@
 - name: pull all images used in armada manifest
   script: >-
     {{ playbook_dir | dirname }}/scripts/pull-images.sh
-    {{ inventory_dir }}/{{ item }}-manifest.yml
+    {{ inventory_dir }}/{{ item }}-manifest.yaml
     registry-rel.cicd.stg.taco
   args:
     creates: "/tmp/.{{ item }}-image-pull-done"
