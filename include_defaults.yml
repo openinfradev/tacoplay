@@ -5,23 +5,31 @@
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/defaults/global_taco.yml"
-        - "{{ playbook_dir }}/defaults/global_docker.yml"
-        - "{{ playbook_dir }}/defaults/global_ceph.yml"
         - "{{ playbook_dir }}/defaults/global_k8s-cluster.yml"
-# Commenting out this until we have agreement after team level discussion
-#        - "{{ playbook_dir }}/defaults/site_specific.yml"
 
-    - name: include global override files - k8s images
+    - name: include global override values - ceph
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/defaults/global_ceph.yml"
+      when: taco_storage_backend == 'ceph'
+
+    - name: include global override values - k8s images
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/defaults/global_k8s-images.yml"
       when: container_registry_enabled|default(false)
     
-    - name: include global override files - k8s downloads
+    - name: include global override values - k8s downloads
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/defaults/global_k8s-download.yml"
       when: local_k8s_binary_repo_enabled|default(false)
+
+    - name: include global override values - taco apps
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/defaults/global_taco-apps.yml"
+      when: taco_apps is defined and (taco_apps|length>0)
 
     - name: check whether local repository install is needed
       set_fact:
@@ -33,4 +41,11 @@
     - name: set ceph_repository variable
       set_fact:
         ceph_repository: "{{ 'custom' if local_pkg_repo_enabled|default(false) else 'community' }}"
+
+    - name: fill TACOFIXME for validating site specific vars
+      include_vars: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/defaults/TACOFIXME.yml"
+      when: var_assert_enabled|default(false)
+
   tags: always
