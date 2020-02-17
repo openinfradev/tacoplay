@@ -38,3 +38,15 @@ calico_felix_prometheusmetricsenabled: "true"
 calico_felix_prometheusmetricsport: 9091
 calico_felix_prometheusgometricsenabled: "true"
 calico_felix_prometheusprocessmetricsenabled: "true"
+
+# RBD provisioner
+# set below only when using existing ceph
+rbd_provisioner_admin_id: >-
+  {%- if groups["osds"] is not defined -%}TACOFIXME{%- else -%}kube{%- endif -%}
+rbd_provisioner_secret: >-
+  {%- if groups["osds"] is not defined -%}TACOFIXME{%- else -%}AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=={%- endif -%}
+rbd_provisioner_user_id: >-
+  {%- if groups["osds"] is not defined -%}TACOFIXME{%- else -%}kube{%- endif -%}
+rbd_provisioner_user_secret: >-
+  {%- if groups["osds"] is not defined -%}TACOFIXME{%- else -%}AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=={%- endif -%}
+
