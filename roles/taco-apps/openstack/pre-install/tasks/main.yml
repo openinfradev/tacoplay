@@ -1,4 +1,12 @@
 ---
+- name: apt install packages required to run taco-apps
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - jq
+  when: ansible_distribution in ["Ubuntu","Debian"]
+
 - include: prepare-openstack-manifest.yml
 
 - include: render-openstack-manifest.yml
