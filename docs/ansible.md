@@ -123,7 +123,7 @@ global_k8s-cluster.yml에 정의된 변수들은 kubespray에 선언된 변수 �
 
 | 변수                      | default               | 설명
 |--------------------------|-----------------------|------------
-| preinstall_selinux_state | disabled              | host의 selinux를 desable
+| preinstall_selinux_state | disabled              | host의 selinux를 disable
 | etcd_memory_limit        | 8192M                 | etcd가 사용하는 memory limit 변경
 | kubectl_localhost        | true                  | kubectl을 ansible 실행하는 node로 복사
 | kubeconfig_localhost     | true                  | kubeconfig를 ansible 실행하는 node로 복사
@@ -143,6 +143,25 @@ ceph_ansible을 이용해서 구축할 경우 ceph_ansible에 정의된 기본�
 
 주요 kubespray vars
 -------------------
+아래 변수 목록은 kubespray에 선언된 중요한 변수들로, 환경에 따라서 extra_vars에 선언해서 변경이 필요할 수 있다.
+
+| 변수                    | default        | 설명
+|------------------------|----------------|------------
+| kube_pods_subnet       | 10.233.64.0/18 | kubernetes에 배포되는 app pod들이 사용하는 대역
+| kube_service_addresses | 10.233.0.0/18  | kubernetes service pod이 사용하는 대역
+| ipip_mode              | Never          | subnet간 ip in ip encapsulation
+| peer_with_router       | false          | enable the peering with the datacenter's border router
 
 주요 ceph-ansible vars
 ----------------------
+아래 변수 목록은 ceph-ansible 선언된 중요한 변수들로, 환경에 따라서 extra_vars에 선언해서 변경이 필요할 수 있다.
+
+| 변수                      | default               | 설명
+|--------------------------|-----------------------|------------
+| ceph_monitors            |
+| ceph_admin_keyring       |
+| external_cluster_mon_ips |
+| monitor_interface        |
+| public_network           |
+| cluster_network          |
+| ntp_service_enabled      |
