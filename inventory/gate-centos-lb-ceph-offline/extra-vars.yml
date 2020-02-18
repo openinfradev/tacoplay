@@ -1,14 +1,23 @@
 # tacoplay
-cicd_registry_enabled: false
-docker_insecure_registries: 
- - VM-NAME-1:5000
 is_gating_test: true
 
-localrepo_enabled: true
-localrepo_yum: 192.168.197.39
-localrepo_k8s: VM-NAME-1
-localrepo_pypi: 192.168.197.39
-localrepo_port: 8888
+# Container registry
+container_registry_enabled: true
+container_registries: []
+
+# Package repository
+# if you want use existing repository, configure '*_repo_url' below.
+local_pip_repo_enabled: false
+local_pkg_repo_enabled: false
+local_k8s_binary_repo_enabled: false
+local_ceph_repo_enabled: false
+
+local_reposerver_port: 8888
+pip_repo_url: 192.168.197.39:8888
+pip_repo_ip: 192.168.197.39
+pkg_repo_url: 192.168.197.39:8888
+k8s_binary_repo_url: VM-NAME-1:8888
+ceph_repo_url: 192.168.197.39:8888
 
 kubeadm_download_url: http://192.168.197.39:8888/k8s/kubeadm-{{kubeadm_version}}-{{image_arch}}
 hyperkube_download_url: http://192.168.197.39:8888/k8s/hyperkube-{{kube_version}}-{{image_arch}}
