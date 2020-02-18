@@ -7,17 +7,17 @@
 
 - name: set ceph_custeom_repo for ceph-ansible
   set_fact:
-    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/local-ceph.repo"
+    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/ceph.repo"
   when:
     - ansible_distribution in ["CentOS", "RedHat"]
-    - local_ceph_repo_enabled
+    - local_ceph_repo_enabled or ceph_repo_url != ""
 
 - name: set ceph_custeom_repo for ceph-ansible
   set_fact:
-    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph"
+    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/"
   when:
     - ansible_distribution in ["Ubuntu", "Debian"]
-    - local_ceph_repo_enabled
+    - local_ceph_repo_enabled or ceph_repo_url != ""
 
 - name: create ceph.repo in {{ pkg_repo_volume_path }}
   template:
@@ -32,5 +32,5 @@
     url: "http://{{ ceph_repo_url }}/ceph/keys/release.asc"
     state: present
   when:
-    - local_ceph_repo_enabled
+    - local_ceph_repo_enabled or ceph_repo_url != ""
     - ansible_distribution in ["Ubuntu", "Debian"]
