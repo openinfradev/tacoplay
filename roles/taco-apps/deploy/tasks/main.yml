@@ -37,6 +37,7 @@
     mode: '0666'
   run_once: yes
 
+# FIXME: this causes an error when the container doesn't exist.
 - name: kill existing armada container
   docker_container:
     name: armada

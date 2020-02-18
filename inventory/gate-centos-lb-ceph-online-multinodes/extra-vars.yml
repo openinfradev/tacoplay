@@ -1,4 +1,4 @@
-# This value is also overriden by site-prepare job
+# tacoplay
 is_gating_test: true
 
 # ceph
@@ -75,10 +75,12 @@ openstack_pools:
   - "{{ openstack_cinder_backup_pool }}"
   - "{{ openstack_nova_vms_pool }}"
 
+rbd_provisioner_image_repo: "registry.cicd.stg.taco/external_storage/rbd-provisioner"
+
 # k8s
 kubectl_localhost: true
 kubeconfig_localhost: true
-ipip_mode: Never
+ipip_mode: Always
 peer_with_router: false
 kube_apiserver_insecure_bind_address: 0.0.0.0
 kube_apiserver_insecure_port: 8090
