@@ -26,11 +26,3 @@
   when:
     - ansible_distribution in ["CentOS","RedHat"]
     - local_ceph_repo_enabled
-
-- name: add ceph apt-key
-  apt_key:
-    url: "http://{{ ceph_repo_url }}/ceph/keys/release.asc"
-    state: present
-  when:
-    - local_ceph_repo_enabled or ceph_repo_url != ""
-    - ansible_distribution in ["Ubuntu", "Debian"]
