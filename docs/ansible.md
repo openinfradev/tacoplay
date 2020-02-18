@@ -120,6 +120,7 @@ container_registries:
 ### global_k8s-cluster.yml
 global_k8s-cluster.yml에 정의된 변수들은 kubespray에 선언된 변수 중 tacoplay에서 기본적으로 값을 바꿔서 사용하는 변수들이다.
 즉, 여기서 선언되지 않은 값들은 kubespray에 선언된 기본값이 사용된다.
+
 | 변수                      | default               | 설명
 |--------------------------|-----------------------|------------
 | preinstall_selinux_state | disabled              | host의 selinux를 desable
