@@ -29,3 +29,6 @@ var_assert_enabled: false
 
 # Workaround for missing 'Python Interpreter Discovery' feature in ansible 2.7
 ansible_python_interpreter: /usr/bin/python
+
+# decide if k8s images are excluded in the artifact by site-prepare job
+exclude_k8s_images: false
