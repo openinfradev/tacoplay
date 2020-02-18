@@ -22,7 +22,7 @@
 - name: create ceph.repo in {{ pkg_repo_volume_path }}
   template:
     src: local-ceph.repo.j2
-    dest: "{{ pkg_repo_volume_path }}/local-ceph.repo"
+    dest: "{{ pkg_repo_volume_path }}/ceph.repo"
   when:
     - ansible_distribution in ["CentOS","RedHat"]
     - local_ceph_repo_enabled
