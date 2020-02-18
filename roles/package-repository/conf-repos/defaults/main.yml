@@ -4,8 +4,6 @@ local_pkg_repo_enabled: false
 local_k8s_binary_repo_enabled: false
 local_ceph_repo_enabled: false
 
-local_reposerver_port: 80
-
 pip_repo_url: ""
 pip_repo_ip: ""
 pkg_repo_url: ""
