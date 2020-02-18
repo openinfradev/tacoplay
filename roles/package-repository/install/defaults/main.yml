@@ -1,4 +1,5 @@
 ---
+local_reposerver_port: 80
 pkg_repo_volume_archived: false
 pkg_repo_volume_archive_file: "{{ inventory_dir }}/pkg_repo.tar"
 pkg_repo_volume_path: "/DATA/taco_pkg_repo"

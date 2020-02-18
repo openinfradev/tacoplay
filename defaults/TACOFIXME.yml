@@ -20,17 +20,10 @@ ceph_monitors: >-
 ceph_admin_keyring: >-
   {%- if groups["osds"] is defined -%}{%- else -%}TACOFIXME{%- endif -%}
 
-# when using existing ceph
-external_cluster_mon_ips: "{{ ceph_monitors }}"
-
 # when deploying new ceph
 monitor_interface: TACOFIXME
 public_network: TACOFIXME
 cluster_network: TACOFIXME
-
-# lvm_volumes must be overrided in either extra-vars or hosts_vars
-# note that we don't override it here with TACOFIXME since include_vars has higher priority than host_vars
-#lvm_volumes:
 
 # K8S
 kube_pods_subnet: TACOFIXME
@@ -45,10 +38,6 @@ ipip_mode: TACOFIXME
 # set false if the cluster size is smaller then 100 nodes
 # as number and border router IP should be set only if it is enabled
 peer_with_router: TACOFIXME
-#global_as_num:
-#peers:
-#  - as:
-#    router_id:
 
 # RBD provisioner
 # set below only when using existing ceph

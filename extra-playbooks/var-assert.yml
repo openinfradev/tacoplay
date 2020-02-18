@@ -1,0 +1,97 @@
+---
+- name: include global default variables
+  import_playbook: include_defaults.yml
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Assert tacoplay specific variables are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - local_pip_repo_enabled
+        - local_pkg_repo_enabled
+        - local_k8s_binary_repo_enabled
+        - local_ceph_repo_enabled
+      tags: always
+
+    - name: Assert ceph monitors and admin keyring are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - ceph_monitors
+        - ceph_admin_keyring
+      when:
+        - taco_storage_backend == 'ceph'
+      tags: always
+
+    - name: Assert ceph specific variables when using existing ceph
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - external_cluster_mon_ips
+      when: taco_storage_backend == 'ceph' and groups["osds"] is not defined
+      tags: ceph
+
+    - name: Assert ceph specific variables when deploying new ceph
+      assert:
+        that:
+          - "{{ item }} is defined"
+          - "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - monitor_interface
+        - public_network
+        - cluster_network
+        - osd_objectstore
+        - openstack_config
+      when:
+        - taco_storage_backend == 'ceph' and groups["osds"] is defined and (groups["osds"] | length > 0)
+      tags: ceph
+
+    - name: Assert k8s specific variables are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - kube_pods_subnet
+        - kube_service_addresses
+        - ipip_mode
+        - peer_with_router
+      tags: k8s
+
+    - name: Assert RBD provisioner monitor is set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - rbd_provisioner_admin_id
+        - rbd_provisioner_secret
+        - rbd_provisioner_user_id
+        - rbd_provisioner_user_secret
+      when:
+        - taco_storage == 'ceph' and groups["osds"] is not defined
+        - rbd_provisioner_enabled
+      tags: k8s
+
+    - name: Assert external NFS server configurations are set properly
+      assert:
+        that: "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - nfs_server
+        - nfs_path
+      when:
+        - taco_storage == 'nfs'
+      tags: openstack
+
+- hosts: osds
+  gather_facts: false
+  tasks:
+    - name: Assert ceph OSD specific variables when deploying new ceph
+      assert:
+        that:
+          - "{{ item }} is defined"
+          - "{{ item }} != 'TACOFIXME'"
+      with_items:
+        - lvm_volumes
+      when:
+        - groups["osds"] is defined and (groups["osds"] | length > 0)
+      tags: ceph
+

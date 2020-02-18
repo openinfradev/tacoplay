@@ -1,4 +1,5 @@
 ---
+bin_dir: /usr/local/bin
 # create etcd certs' secret used for kube-state-metrics
 create_etcd_secret: true
 

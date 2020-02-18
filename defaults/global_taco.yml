@@ -1,93 +1,31 @@
-# Host
-bin_dir: /usr/bin
-nat_enabled: false
-tc_enabled: false
 
 # Container registry
 container_registry_enabled: false
-
-# When container_registry_enabled is 'true', then registry endpoint is
-# automatically set to "{{ groups['taco-registry'][0] + ':5000' }}"
-# Otherwise (if you want to use existing registries), set 'container_registries' var.
-# You can provide domain name (as endpoint) and ip, or just use ip itself as endpoint.
-# If cert is null, then the registry is regarded as insecure registry.
-#
-# Eg.)
-# container_registries:
-#  - { endpoint: registry.cicd.stg.taco, ip: 192.168.000.000, cert: |
-#      -----BEGIN CERTIFICATE-----
-#      MIIB+DCCAZ6gAwIBAgIUA1dN6Z3t/hNh795tcQD94mvgWGIwCgYIKoZIzj0EAwIw
-#      WjELMAkGA1UEBhMCS1IxDjAMBgNVBAgTBVNlb3VsMRAwDgYDVQQHEwdKdW5nLWd1
-#      ...
-#      AwIDSAAwRQIgc8/FlbbRyw22kt1ILAtqhYKdfibC/FjTqT4bQQ+cFb4CIQCpSBxE
-#      bAIZhGrI5HT/a4dq3GPZWo1ybJs5RliBnPUtRg==
-#      -----END CERTIFICATE-----
-#    }
-#  - { endpoint: 192.168.000.000, ip: null, cert: null } 
 container_registries: []
 
 # Package repository
-# if you want use existing repository, configure '*_repo_url' below.
 local_pip_repo_enabled: false
 local_pkg_repo_enabled: false
 local_k8s_binary_repo_enabled: false
 local_ceph_repo_enabled: false
-
 local_reposerver_port: 80
+
 pip_repo_url: ""
-pip_repo_ip: ""
 pkg_repo_url: ""
 k8s_binary_repo_url: ""
 ceph_repo_url: ""
 
 # storage configurations: ceph or nfs
 taco_storage_backend: "ceph"
-storage_class_name: >-
-  {%- if taco_storage_backend == 'ceph' -%}rbd{%- elif taco_storage_backend == 'nfs' -%}nfs-client{%- endif -%}
-
-# Ceph
-# this will be removed soon
-cinder_keyring: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg=="
-
-# RBD provisioner
-rbd_provisioner_enabled: >-
-  {%- if taco_storage_backend == 'ceph' -%}true{%- else -%}false{%- endif -%}
-rbd_provisioner_namespace: kube-system
-rbd_provisioner_replicas: 1
-rbd_provisioner_pool: kube
-rbd_provisioner_secret_name: ceph-secret-admin
-rbd_provisioner_user_secret_name: ceph-secret-user
-rbd_provisioner_user_secret_namespace: kube-system
-rbd_provisioner_fs_type: ext4
-rbd_provisioner_image_format: "2"
-rbd_provisioner_image_features: layering
-rbd_provisioner_storage_class: rbd
-rbd_provisioner_reclaim_policy: Delete
-rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
-rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
-
-# Armada
-armada_venv: "{{ lookup('env','HOME') }}/venv"
 
 # Taco Apps to deploy using Armada
 taco_apps: ["openstack"]
 
-# OpenStack
-openstack_manifest: "{{ inventory_dir }}/openstack-manifest.yaml"
-openstack_namespace: openstack
-vfat_config_drive_enabled: false
-
-# Install external openvswitch service 
-install_ovs_as_a_rpms: false
-
 # This affects tasks related to the TACO/SONA integrated environment.
 sona_integration: false
 
+# fill TACOFIXME to site specific values to assert
+var_assert_enabled: false
+
 # Workaround for missing 'Python Interpreter Discovery' feature in ansible 2.7
 ansible_python_interpreter: /usr/bin/python
-
-# For gating job
-is_gating_test: false
-
-# Set this to 'true' to exclude k8s component images in site-prepare job
-exclude_k8s_images: false
