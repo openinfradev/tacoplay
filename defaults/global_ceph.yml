@@ -2,7 +2,16 @@ ceph_stable_release: nautilus
 ceph_origin: repository
 ceph_mirror: http://hk.ceph.com
 
-ntp_service_enabled: false
+# when using existing ceph
+ceph_monitors: []
+ceph_admin_keyring: ""
+external_cluster_mon_ips: "{{ ceph_monitors }}"
+
+#when using new ceph
+monitor_interface: ""
+public_network: ""
+cluster_network: ""
+
 copy_admin_key: >-
   {%- if (groups["mons"]|length>0) -%}true{%- else -%}false{%- endif -%}
 ceph_mgr_modules: [status,dashboard,prometheus]

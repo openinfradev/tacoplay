@@ -40,7 +40,7 @@
 - name: run armada docker container
   docker_container:
     name: "armada"
-    image: "{{ armada_image_name }}:{{ armada_image_tag }}"
+    image: "{{ armada_image_repo }}:{{ armada_image_tag }}"
     volumes: 
       - "{{ lookup('env','HOME') }}/:{{ lookup('env','HOME') }}/"
       - "{{ lookup('env','HOME') }}/.kube:/{{ lookup('env','USER') }}/.kube/"

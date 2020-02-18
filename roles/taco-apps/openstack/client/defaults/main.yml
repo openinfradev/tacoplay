@@ -1,5 +1,6 @@
 ---
-openstackclient_image_name: "docker.io/sktdev/openstackclient"
+bin_dir: /usr/local/bin
+openstackclient_image_repo: "docker.io/sktdev/openstackclient"
 openstackclient_image_tag: "stein"
 
 os_project_domain: default
