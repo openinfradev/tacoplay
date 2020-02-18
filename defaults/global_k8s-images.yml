@@ -1,5 +1,6 @@
 armada_image_repo: "{{ container_registries[0].endpoint }}/sktdev/armada"
 openstackclient_image_repo: "{{ container_registries[0].endpoint }}/sktdev/openstackclient"
+rbd_provisioner_image_repo: "{{ container_registries[0].endpoint }}/sktdev/rbd-provisioner"
 
 # Containers
 # DO NOT TOUCH BELOWS!!
