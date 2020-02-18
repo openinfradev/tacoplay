@@ -3,7 +3,7 @@
   blockinfile:
     dest: /etc/hosts
     block: |-
-      {% for item in (groups['taco-registry']|default([]))|unique -%}{{ hostvars[item]['ip'] }} {{ item }} {% endfor %}
+      {% for item in (groups['registry']|default([]))|unique -%}{{ hostvars[item]['ip'] }} {{ item }} {% endfor %}
     state: present
     create: yes
     backup: yes
@@ -49,7 +49,7 @@
 
 - name: registries | set docker_insecure_registries vars
   set_fact:
-    docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ groups['taco-registry'][0] + ':5000' }}' ]"
+    docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ groups['registry'][0] + ':5000' }}' ]"
   when:
     - container_registry_enabled
 
