@@ -1,5 +1,6 @@
 *.retry
 .idea
+*.swp
 artifacts/
 docker_registry/
 /armada/
