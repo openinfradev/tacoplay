@@ -67,23 +67,25 @@ Roles
 
 Grobal Vars
 --------------------
+아래는 주요 global 변수에 대해 설명한다.
+
 ### global_taco.yml
 | 변수                           | default       | 설명
 |-------------------------------|---------------|------------
-| container_registry_enabled    | false         | container registry 를 설치한다.
-| container_registries          | []            |
-| local_pip_repo_enabled        | false         |
-| local_pkg_repo_enabled        | false         |
-| local_k8s_binary_repo_enabled | false         |
-| local_ceph_repo_enabled       | false         |
-| local_reposerver_port         | 80            |
-| pip_repo_url                  | ""            |
-| pkg_repo_url                  | ""            |
-| k8s_binary_repo_url           | ""            |
-| ceph_repo_url                 | ""            |
-| taco_storage_backend          | "ceph"        |
-| taco_apps                     | ["openstack"] |
-| var_assert_enabled            | false         |
+| container_registry_enabled    | false         | container_registry로 정의된 node에 registry 설치
+| container_registries          | []            | 이미 구축된 registry 정보 등록
+| local_pip_repo_enabled        | false         | package_repository로 정의된 node에 pip repo 설치
+| local_pkg_repo_enabled        | false         | package_repository로 정의된 node에 yum,apt등 repo 설치
+| local_k8s_binary_repo_enabled | false         | package_repository로 정의된 node에 k8s binary repo 설치
+| local_ceph_repo_enabled       | false         | package_repository로 정의된 node에 ceph repo 설치
+| local_reposerver_port         | 80            | local package repository server에서 사용하는 service port
+| pip_repo_url                  | ""            | 연동할 pip repo 주소
+| pkg_repo_url                  | ""            | 연동할 pkg repo 주소
+| k8s_binary_repo_url           | ""            | 연동할 k8s binary repo 주소
+| ceph_repo_url                 | ""            | 연동할 ceph repo 주소
+| taco_storage_backend          | "ceph"        | taco의 기본 backand storage
+| taco_apps                     | ["openstack"] | taco를 통해서 배포할 app의 목록 정의 (openstack, lma)
+| var_assert_enabled            | false         | site별 반드시 정의할 변수 선언 및 validate 기능 설정
 
 NOTE : container_registry_enabled이 true일 경우 registry endpoint는 자동으로 "{{ groups['container-registry'][0] + ':5000' }}" 로 정의된다. 
 만약에 이미 구축된 registry를 사용하고 싶다면 아래와 같은 형식으로 container_registries 변수를 정의한다.
@@ -103,10 +105,40 @@ container_registries:
 ```
 
 ### global_taco-apps.yml
+| 변수                       | default  | 설명
+|---------------------------|----------|------------
+| vfat_config_drive_enabled | false    | host에 vfat, loop등의 module 설치
+| pci_passthrough_enabled   | false    | host에 vfio-pci 등의 module 설치
+| ovs_package_installed     | false    | host에 openvswitch를 package로 설치
+| db_root_user              | root     | local package repository server에서 사용하는 service port
+| db_*_password             | password | 연동할 pip repo 주소
+| os_root_user              | admin    | 연동할 pkg repo 주소
+| os_*_password             | password | 연동할 k8s binary repo 주소
+| mq_root_user              | rabbitmq | 연동할 ceph repo 주소
+| mq_*_password             | password | taco의 기본 backand storage
+
 ### global_k8s-cluster.yml
+global_k8s-cluster.yml에 정의된 변수들은 kubespray에 선언된 변수 중 tacoplay에서 기본적으로 값을 바꿔서 사용하는 변수들이다.
+즉, 여기서 선언되지 않은 값들은 kubespray에 선언된 기본값이 사용된다.
+| 변수                      | default               | 설명
+|--------------------------|-----------------------|------------
+| preinstall_selinux_state | disabled              | host의 selinux를 desable
+| etcd_memory_limit        | 8192M                 | etcd가 사용하는 memory limit 변경
+| kubectl_localhost        | true                  | kubectl을 ansible 실행하는 node로 복사
+| kubeconfig_localhost     | true                  | kubeconfig를 ansible 실행하는 node로 복사
+| kubelet_custom_flags     | ["--registry-qps=30"] | registry에 요청하는 queries for second 값을 5에서 30으로 변경 ( 동시 container image download 숫자 증가 )
+| helm_enabled             | true                  | kubespray를 이용해서 helm 배포
+| rbd_provisioner_*        |                       | taco_storage_backend가 ceph일 경우를 위한 기본값들
+
+
 ### gloabl_k8s-download.yml
+k8s_binary_repo_enabled가 true일 경우 override하는 k8s binary repo 주소
+
 ### gloabl_k8s-images.yml
+container_registry_enabled가 true일 경우 override하는 k8s image repo 주소
+
 ### global_ceph.yml
+ceph_ansible을 이용해서 구축할 경우 ceph_ansible에 정의된 기본값들을 override
 
 주요 kubespray vars
 -------------------
