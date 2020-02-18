@@ -15,6 +15,6 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/openstack/pre-install, vars: { prepare_manifest_only: true } }
+    - { role: taco-apps/openstack/pre-install, when: '"openstack" in taco_apps', vars: { prepare_manifest_only: true } }
     - { role: prepare-artifact }
   tags: always
