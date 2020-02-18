@@ -100,6 +100,7 @@ Ceph 관련 그룹 정의는 그대로 두되 호스트는 비워둔다.
 |-----------------------------|---------------------------------------------------------|
 | ceph_monitors               | 연동하고자 하는 Ceph 클러스터의 Monitor IP 주소         |
 | ceph_admin_keyring          | 위Ceph 클러스터 client.admin의 Keyring                  |
+| rbd_provisioner_pool        | K8S Persistent 볼륨용 Pool의 이름                       |
 | rbd_provisioner_admin_id    | K8S Persistent 볼륨용 Pool에 접근할 Ceph User ID        |
 | rbd_provisioner_secret      | 위 Ceph User의 Keyring |
 | rbd_provisioner_user_id     | rbd_provisioner_admin_id와 동일한 값으로 설정|
