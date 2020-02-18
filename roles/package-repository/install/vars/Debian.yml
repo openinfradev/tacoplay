@@ -4,7 +4,7 @@ apache_name: apache2
 apache_configuration_items:
   - file: "/etc/apache2/ports.conf"
     regexp: "^Listen "
-    line: "Listen {{ local_repo_port }}"
+    line: "Listen {{ local_reposerver_port }}"
   - file: "/etc/apache2/sites-available/000-default.conf"
     regexp: "^DocumentRoot "
     line: "DocumentRoot {{ pkg_repo_volume_path }}"
