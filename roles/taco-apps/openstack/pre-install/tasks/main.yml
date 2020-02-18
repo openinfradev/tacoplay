@@ -1,6 +1,6 @@
 ---
 - name: install jq packages required to run taco-apps
-  pip:
+  package:
     name: "{{ item }}"
     state: present
   loop:
