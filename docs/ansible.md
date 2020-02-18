@@ -65,8 +65,48 @@ Roles
 | taco-apps/openstack/pre-install  | openstack을 설치하기 위한 사전 작업
 | taco-apps/setup-os               | openstack을 설치하기 위한 os 환경 설정
 
-Vars
+Grobal Vars
 --------------------
+### global_taco.yml
+| 변수                           | default       | 설명
+|-------------------------------|---------------|------------
+| container_registry_enabled    | false         | container registry 를 설치한다.
+| container_registries          | []            |
+| local_pip_repo_enabled        | false         |
+| local_pkg_repo_enabled        | false         |
+| local_k8s_binary_repo_enabled | false         |
+| local_ceph_repo_enabled       | false         |
+| local_reposerver_port         | 80            |
+| pip_repo_url                  | ""            |
+| pkg_repo_url                  | ""            |
+| k8s_binary_repo_url           | ""            |
+| ceph_repo_url                 | ""            |
+| taco_storage_backend          | "ceph"        |
+| taco_apps                     | ["openstack"] |
+| var_assert_enabled            | false         |
+
+NOTE : container_registry_enabled이 true일 경우 registry endpoint는 자동으로 "{{ groups['container-registry'][0] + ':5000' }}" 로 정의된다. 
+만약에 이미 구축된 registry를 사용하고 싶다면 아래와 같은 형식으로 container_registries 변수를 정의한다.
+```ShellSession
+# Eg.)
+container_registries:
+ - { endpoint: registry.cicd.stg.taco, ip: 192.168.000.000, cert: |
+     -----BEGIN CERTIFICATE-----
+     MIIB+DCCAZ6gAwIBAgIUA1dN6Z3t/hNh795tcQD94mvgWGIwCgYIKoZIzj0EAwIw
+     WjELMAkGA1UEBhMCS1IxDjAMBgNVBAgTBVNlb3VsMRAwDgYDVQQHEwdKdW5nLWd1
+     ...
+     AwIDSAAwRQIgc8/FlbbRyw22kt1ILAtqhYKdfibC/FjTqT4bQQ+cFb4CIQCpSBxE
+     bAIZhGrI5HT/a4dq3GPZWo1ybJs5RliBnPUtRg==
+     -----END CERTIFICATE-----
+   }
+ - { endpoint: 192.168.000.000, ip: null, cert: null }
+```
+
+### global_taco-apps.yml
+### global_k8s-cluster.yml
+### gloabl_k8s-download.yml
+### gloabl_k8s-images.yml
+### global_ceph.yml
 
 주요 kubespray vars
 -------------------
