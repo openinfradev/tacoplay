@@ -64,4 +64,3 @@ rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
 #dns_cores_per_replica: 256
 
 #helm_deployment_type: host
-

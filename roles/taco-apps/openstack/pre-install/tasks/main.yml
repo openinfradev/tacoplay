@@ -1,4 +1,11 @@
 ---
+- name: install jq packages required to run taco-apps
+  pip:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - jq
+
 - include: prepare-openstack-manifest.yml
 
 - include: render-openstack-manifest.yml

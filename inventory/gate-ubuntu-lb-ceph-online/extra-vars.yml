@@ -1,7 +1,4 @@
 # tacoplay
-cicd_registry_enabled: true
-localrepo_enabled: false
-docker_insecure_registries: ""
 # This value is also overriden by site-prepare job
 is_gating_test: true
 
