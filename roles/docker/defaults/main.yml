@@ -44,6 +44,12 @@ dockerproject_repo_key_info:
 dockerproject_repo_info:
   repos:
 
+docker_container_storage_setup: false
+docker_storage_options: -s overlay2
+
+docker_daemon_graph: "/var/lib/docker"
+docker_log_opts: "--log-opt max-size=50m --log-opt max-file=5"
+
 registry_docker_options: >-
   {%- if docker_insecure_registries is defined -%}
   {{ docker_insecure_registries | map('regex_replace', '^(.*)$', '--insecure-registry=\1' ) | list | join(' ') }}
