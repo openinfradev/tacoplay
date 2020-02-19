@@ -13,5 +13,15 @@
   when:
     - ansible_distribution in ["Ubuntu","Debian"]
 
+- name: install python-pip on registry nodes
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - epel-release
+    - python-pip
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
 - import_tasks: setup-interfaces.yml
 - import_tasks: setup-net-services.yml
