@@ -1,7 +1,7 @@
 Tacoplay ansible variables
 ==========================
 
-이 문서는 tacoplay에 정의된 inventory, tags, roles, vars를 비롯하여 tacoplay에서 include하는 playbook인 kubespray, ceph-ansible의 주요 vars에 대해 다룬다.
+이 문서는 tacoplay에 정의된 inventory, tags, roles, vars를 비롯하여 tacoplay에서 include하는 playbook인 kubespray의 주요 vars에 대해 다룬다.
 
 ***
 
@@ -125,7 +125,7 @@ k8s_binary_repo_enabled가 true일 경우 override하는 k8s binary repo 주소
 container_registry_enabled가 true일 경우 override하는 k8s image repo 주소
 
 ### global_ceph.yml
-ceph_ansible을 이용해서 ceph을 구축할 경우 ceph_ansible에 정의된 기본값들을 override
+ceph_ansible을 이용해서 ceph을 구축할 경우 ceph_ansible에 정의된 기본값들을 override한다.
 자세한 내용은 [TACO에서 Ceph 사용을 위한 설정](ceph.md) 문서 참조
 
 주요 kubespray vars
