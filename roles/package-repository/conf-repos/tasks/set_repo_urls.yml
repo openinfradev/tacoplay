@@ -1,8 +1,12 @@
 - name: set pip_repo_url
   set_fact:
     pip_repo_url: "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
-    pip_repo_ip: "{{ hostvars[groups['package-repository'][0]]['ansible_default_ipv4']['address'] }}"
   when: local_pip_repo_enabled
+
+- name: set pip_repo_url
+  set_fact:
+    pip_repo_ip: "{{ pip_repo_url.split(':')[0] | lower }}"
+  when: local_pip_repo_enabled or pip_repo_url != ""
 
 - name: set pkg_repo_url
   set_fact:

@@ -10,7 +10,7 @@
   import_tasks: set_repo_urls.yml
   when:
     - local_pkg_repo_enabled or local_pip_repo_enabled or local_k8s_binary_repo_enabled or
-      pkg_repo_url != ""
+      pkg_repo_url != "" or pip_repo_url != ""
 
 - name: add local centos base repo
   template:
@@ -50,4 +50,4 @@
   template:
     src: pip.conf.j2
     dest: /etc/pip.conf
-  when: local_pip_repo_enabled or pip_repo_url != "" or pip_repo_ip != ""
+  when: local_pip_repo_enabled or pip_repo_url != ""
