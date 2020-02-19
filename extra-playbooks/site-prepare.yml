@@ -12,7 +12,7 @@
 - import_playbook: ../kubespray/cluster.yml
   when: not exclude_k8s_images
 
-- hosts: admin-node
+- hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-apps/openstack/pre-install, when: '"openstack" in taco_apps', vars: { prepare_manifest_only: true } }
