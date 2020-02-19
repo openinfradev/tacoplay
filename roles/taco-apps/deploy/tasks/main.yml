@@ -49,7 +49,9 @@
     image: "{{ armada_image_repo }}:{{ armada_image_tag }}"
     volumes:
       - "{{ lookup('env','HOME') }}/:{{ lookup('env','HOME') }}/"
-      - "{{ lookup('env','HOME') }}/.kube:/{{ lookup('env','USER') }}/.kube/"
+      - "{{ lookup('env','HOME') }}/.kube:/root/.kube/"
+      - "/tmp/:/tmp/"
+      - "{{ lookup('env','HOME') }}/.netrc:/root/.netrc"
     dns_servers:
       - 8.8.8.8
     network_mode: host
@@ -58,20 +60,14 @@
     state: started
   become: no
 
-- name: adduser {{ lookup('env','USER') }} in armada container
-  shell: >-
-    docker exec -u root armada adduser {{ lookup('env','USER') }} --disabled-password --gecos ""
-  run_once: yes
-  ignore_errors: yes
-
 - name: run armada apply 
   shell: >-
-    docker exec -u {{ lookup('env','USER') }} armada armada apply
+    docker exec -u root armada armada apply
     --tiller-host {{ tiller_host.stdout }}
     --tiller-port {{ tiller_port }}
     --timeout 7200
     {{ inventory_dir }}/{{ item }}-manifest.yaml >
-    {{ lookup('env','HOME') }}/{{ item }}-deployment.log
+    /tmp/{{ item }}-deployment.log
   when: tiller_host.stdout != ""
   args:
     executable: /bin/bash
@@ -81,9 +77,9 @@
 - name: show armada apply usage for next try
   debug:
     msg: >-
-      "docker exec -u {{ lookup('env','USER') }} armada armada apply
+      "docker exec -u root armada armada apply
       --tiller-host {{ tiller_host.stdout }}
       --tiller-port {{ tiller_port }}
       --timeout 7200
-      {{ inventory_dir }}/[YOUR_APP]-manifest.yaml"
+      /tmp/[YOUR_APP]-manifest.yaml"
   when: tiller_host.stdout != ""
