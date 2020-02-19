@@ -13,14 +13,14 @@ Prepare single host(either baremetal machine or virtual machine) with at least f
  ```sh
  $ sudo yum install -y git selinux-policy-targeted bridge-utils epel-release
  $ sudo yum install -y python-pip
- $ sudo pip install --upgrade pip==9.0.3
+ $ sudo pip install --upgrade
  $ git clone https://github.com/openinfradev/tacoplay.git
  $ cd tacoplay/
  ```
  * Ubuntu 18.04
  ```sh
  $ sudo apt install -y python-pip
- $ sudo pip install --upgrade pip==9.0.3
+ $ sudo pip install --upgrade
  $ git clone https://github.com/openinfradev/tacoplay.git
  $ cd tacoplay/
  ```
@@ -34,11 +34,7 @@ $ sudo systemctl disable firewalld
  ```sh
  $ ./fetch-sub-projects.sh
  ```
-#### 3. Generate ceph-ansible/site.yml
- ```sh
- $ cp ceph-ansible/site.yml.sample ceph-ansible/site.yml
- ```
-#### 4. Edit extra-vars.yml and armada-manifest.yaml
+#### 3. Edit extra-vars.yml and armada-manifest.yaml
  * Check extra disk names(not used) with "lsblk".  
   **Ex)** Extra disk names can be different by machine(vdb, vdc)
  ```sh
@@ -103,7 +99,7 @@ vda     252:0    0   160G  0 disk
    $ vi armada-manifest.yaml
  ```  
 
-#### 5. Edit OS setting("hosts")
+#### 4. Edit OS setting("hosts")
  Add taco-aio host to your 127.0.0.1 in hosts file
  ```sh
  $ sudo vi /etc/hosts
@@ -111,15 +107,15 @@ vda     252:0    0   160G  0 disk
   127.0.0.1 taco-aio localhost localhost.localdomain localhost4 localhost4.localdomain4
  ```
 
-#### 6. Install Packages for tacoplay
+#### 5. Install Packages for tacoplay
 
  ```sh
  $ cd ~/tacoplay
  $ sudo pip install -r ceph-ansible/requirements.txt
- $ sudo pip install -r kubespray/requirements.txt --upgrade
- $ sudo pip install -r requirements.txt --upgrade
+ $ sudo pip install -r kubespray/requirements.txt --upgrade --ignore-installed
+ $ sudo pip install -r requirements.txt --upgrade --ignore-installed
  ```
-#### 7. Install TACO
+#### 6. Install TACO
  Install TACO with ansible-playbook. You can add "-vvv" option for detailed logs.
  ```sh
   ##"$YOUR_INVEN" means "aio" or "5node" inventory under "sample" folder.
