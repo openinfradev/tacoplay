@@ -22,7 +22,7 @@
     when:
       - ansible_distribution in ["CentOS","RedHat"]
       - ovs_package_installed
-  tags: always
+    tags: always
 
   - name: uninstall openvswitch
     apt:
@@ -31,7 +31,7 @@
     when:
       - ansible_distribution in ["Ubuntu","Debian"]
       - ovs_package_installed
-  tags: always
+    tags: always
 
 # Remove target nodes from SONA configuration
 - hosts: localhost:all
