@@ -13,7 +13,7 @@
     service:
       name: openvswitch
       state: stopped
-    when: install_ovs_as_a_rpms
+    when: ovs_package_installed
 
   - name: uninstall openvswitch
     yum:
@@ -21,8 +21,17 @@
       state: absent
     when:
       - ansible_distribution in ["CentOS","RedHat"]
-      - install_ovs_as_a_rpms
-  tags: always
+      - ovs_package_installed
+    tags: always
+
+  - name: uninstall openvswitch
+    apt:
+      name: openvswitch
+      state: absent
+    when:
+      - ansible_distribution in ["Ubuntu","Debian"]
+      - ovs_package_installed
+    tags: always
 
 # Remove target nodes from SONA configuration
 - hosts: localhost:all
