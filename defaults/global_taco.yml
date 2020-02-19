@@ -32,6 +32,3 @@ ansible_python_interpreter: /usr/bin/python
 
 # decide if k8s images are excluded in the artifact by site-prepare job
 exclude_k8s_images: false
-
-# install OVS as system package, not as doceker container
-install_ovs_as_a_rpms: false
