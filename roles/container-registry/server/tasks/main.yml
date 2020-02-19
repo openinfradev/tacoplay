@@ -7,16 +7,6 @@
   when:
     - ansible_distribution in ["CentOS","RedHat"]
 
-- name: registries | install python-pip on registry nodes
-  yum:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - epel-release
-    - python-pip
-  when:
-    - ansible_distribution in ["CentOS","RedHat"]
-
 - name: install python docker package 
   pip:
     name: "{{ item.name }}"
