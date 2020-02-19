@@ -88,21 +88,7 @@ Grobal Vars
 | var_assert_enabled            | false         | site별 반드시 정의할 변수 선언 및 validate 기능 설정
 
 NOTE : container_registry_enabled이 true일 경우 registry endpoint는 자동으로 "{{ groups['container-registry'][0] + ':5000' }}" 로 정의된다. 
-만약에 이미 구축된 registry를 사용하고 싶다면 아래와 같은 형식으로 container_registries 변수를 정의한다.
-```ShellSession
-# Eg.)
-container_registries:
- - { endpoint: registry.cicd.stg.taco, ip: 192.168.000.000, cert: |
-     -----BEGIN CERTIFICATE-----
-     MIIB+DCCAZ6gAwIBAgIUA1dN6Z3t/hNh795tcQD94mvgWGIwCgYIKoZIzj0EAwIw
-     WjELMAkGA1UEBhMCS1IxDjAMBgNVBAgTBVNlb3VsMRAwDgYDVQQHEwdKdW5nLWd1
-     ...
-     AwIDSAAwRQIgc8/FlbbRyw22kt1ILAtqhYKdfibC/FjTqT4bQQ+cFb4CIQCpSBxE
-     bAIZhGrI5HT/a4dq3GPZWo1ybJs5RliBnPUtRg==
-     -----END CERTIFICATE-----
-   }
- - { endpoint: 192.168.000.000, ip: null, cert: null }
-```
+자세한 내용은 [컨테이너 레지스트리 구축 및 사용하기](container-registry.md) 문서 참조
 
 ### global_taco-apps.yml
 | 변수                       | default  | 설명
@@ -110,12 +96,12 @@ container_registries:
 | vfat_config_drive_enabled | false    | host에 vfat, loop등의 module 설치
 | pci_passthrough_enabled   | false    | host에 vfio-pci 등의 module 설치
 | ovs_package_installed     | false    | host에 openvswitch를 package로 설치
-| db_root_user              | root     | local package repository server에서 사용하는 service port
-| db_*_password             | password | 연동할 pip repo 주소
-| os_root_user              | admin    | 연동할 pkg repo 주소
-| os_*_password             | password | 연동할 k8s binary repo 주소
-| mq_root_user              | rabbitmq | 연동할 ceph repo 주소
-| mq_*_password             | password | taco의 기본 backand storage
+| db_root_user              | root     | db의 root user name
+| db_*_password             | password | 각 user의 db password
+| os_root_user              | admin    | openstack root user name
+| os_*_password             | password | openstack 각 user의 password
+| mq_root_user              | rabbitmq | mq의 root user name
+| mq_*_password             | password | 각 mq user의 password
 
 ### global_k8s-cluster.yml
 global_k8s-cluster.yml에 정의된 변수들은 kubespray에 선언된 변수 중 tacoplay에서 기본적으로 값을 바꿔서 사용하는 변수들이다.
@@ -139,7 +125,8 @@ k8s_binary_repo_enabled가 true일 경우 override하는 k8s binary repo 주소
 container_registry_enabled가 true일 경우 override하는 k8s image repo 주소
 
 ### global_ceph.yml
-ceph_ansible을 이용해서 구축할 경우 ceph_ansible에 정의된 기본값들을 override
+ceph_ansible을 이용해서 ceph을 구축할 경우 ceph_ansible에 정의된 기본값들을 override
+자세한 내용은 [TACO에서 Ceph 사용을 위한 설정](ceph.md) 문서 참조
 
 주요 kubespray vars
 -------------------
@@ -151,17 +138,3 @@ ceph_ansible을 이용해서 구축할 경우 ceph_ansible에 정의된 기본�
 | kube_service_addresses | 10.233.0.0/18  | kubernetes service pod이 사용하는 대역
 | ipip_mode              | Never          | subnet간 ip in ip encapsulation
 | peer_with_router       | false          | enable the peering with the datacenter's border router
-
-주요 ceph-ansible vars
-----------------------
-아래 변수 목록은 ceph-ansible 선언된 중요한 변수들로, 환경에 따라서 extra_vars에 선언해서 변경이 필요할 수 있다.
-
-| 변수                      | default               | 설명
-|--------------------------|-----------------------|------------
-| ceph_monitors            |
-| ceph_admin_keyring       |
-| external_cluster_mon_ips |
-| monitor_interface        |
-| public_network           |
-| cluster_network          |
-| ntp_service_enabled      |
