@@ -11,7 +11,7 @@ fi
 
 for IMAGE in $(cat $MANIFESTS | yq '.data.values.images.tags | map(.) | join(" ")' | tr -d '"'); do
   if [ "$orig_registry_parsed" != true ]; then
-    ORIG_REGISTRY=$((awk -F "/" '/1/ {print $1}') <<< $IMAGE)
+    ORIG_REGISTRY=$((awk -F "/" '{print $1}') <<< $IMAGE)
     orig_registry_parsed=true
   fi
 
