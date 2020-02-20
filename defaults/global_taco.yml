@@ -2,6 +2,7 @@
 # Container registry
 container_registry_enabled: false
 container_registries: []
+docker_insecure_registries: []
 
 # Package repository
 local_pip_repo_enabled: false
