@@ -62,7 +62,9 @@
     --timeout 7200
     {{ inventory_dir }}/{{ item }}-manifest.yaml >
     /tmp/{{ item }}-deployment.log
-  when: tiller_host.stdout != ""
+  when:
+    - tiller_host.stdout != ""
+    - taco_apps and taco_apps|length > 0
   args:
     executable: /bin/bash
   run_once: yes

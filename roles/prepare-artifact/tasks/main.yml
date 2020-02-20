@@ -20,10 +20,10 @@
     creates: "/tmp/.{{ item }}-image-pull-done"
   when:
     - is_gating_test
-    - taco_apps
+    - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
 
-- name: pull all images used in armada manifest
+- name: pull all images used in application manifests
   script: >-
     {{ playbook_dir | dirname }}/scripts/pull-images.sh
     {{ inventory_dir }}/{{ item }}-manifest.yaml
@@ -32,7 +32,7 @@
     creates: "/tmp/.{{ item }}-image-pull-done"
   when:
     - not is_gating_test
-    - taco_apps
+    - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
 
 - name: run registry container
