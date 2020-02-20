@@ -14,6 +14,22 @@
   - create_etcd_secret
   - stat_etcd_dir.stat.exists == False
 
+- name: Check if namespace exists
+  shell: | 
+    {{ bin_dir }}/kubectl --kubeconfig /etc/kubernetes/admin.conf get namespace | grep {{ lma_namespace }} | wc -l
+  register: is_namespace_existing
+  ignore_errors: yes
+  when:
+  - create_etcd_secret
+
+- name: Create namespace for lma
+  command: >-
+    {{ bin_dir }}/kubectl --kubeconfig /etc/kubernetes/admin.conf create namespace {{ lma_namespace }}
+  register: namespace_result
+  when:
+  - create_etcd_secret
+  - is_namespace_existing.stdout == "0"
+
 - name: Check if secret exists
   shell: | 
     {{ bin_dir }}/kubectl --kubeconfig /etc/kubernetes/admin.conf get secret --namespace {{ lma_namespace }} | grep etcd-client-cert | wc -l
