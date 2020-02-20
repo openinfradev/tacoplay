@@ -23,7 +23,7 @@
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
 
-- name: pull all images used in armada manifest
+- name: pull all images used in application manifests
   script: >-
     {{ playbook_dir | dirname }}/scripts/pull-images.sh
     {{ inventory_dir }}/{{ item }}-manifest.yaml
