@@ -850,7 +850,7 @@ data:
           show_image_direct_url: true
           show_multiple_locations: true
     bootstrap:
-      enabled: true
+      enabled: false
       structured:
         images:
           cirros:
@@ -891,7 +891,7 @@ data:
     subpath: glance
     reference: master
   test:
-    enabled: true
+    enabled: false
     timeout: 3600
   dependencies:
   - helm-toolkit
@@ -1546,9 +1546,11 @@ data:
   release_prefix: single
   chart_groups:
   - openstack-infra
-  - openstack-services
-  - logging-infra
-  - monitoring-infra
+  - openstack-services1
+  - openstack-services2
+  - openstack-services3
+    #  - logging-infra
+    #  - monitoring-infra
 ---
 schema: armada/Chart/v1
 metadata:
@@ -2144,19 +2146,37 @@ data:
 schema: armada/ChartGroup/v1
 metadata:
   schema: metadata/Document/v1
-  name: openstack-services
+  name: openstack-services1
 data:
-  description: "Openstack Services"
+  description: "Openstack Services1"
+  sequenced: True
+  chart_group:
+    - keystone
+    - cinder
+    - glance
+    - horizon
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-services2
+data:
+  description: "Openstack Services2"
   sequenced: False
   chart_group:
     - libvirt
-    - keystone
-    - glance
-    - cinder
-    - heat
     - nova
     - neutron
-    - horizon
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-services3
+data:
+  description: "Openstack Services3"
+  sequenced: False
+  chart_group:
+    - heat
 ---
 schema: armada/Chart/v1
 metadata:
