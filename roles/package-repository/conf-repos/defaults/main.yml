@@ -5,7 +5,6 @@ local_k8s_binary_repo_enabled: false
 local_ceph_repo_enabled: false
 
 pip_repo_url: ""
-pip_repo_ip: ""
 pkg_repo_url: ""
 k8s_binary_repo_url: ""
 ceph_repo_url: ""
