@@ -1,13 +1,5 @@
 ---
-- name: install jq packages required to run taco-apps
-  package:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - jq
-
 - include: prepare-openstack-manifest.yml
-
 - include: render-openstack-manifest.yml
   when:
     - not prepare_manifest_only

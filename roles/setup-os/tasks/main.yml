@@ -23,5 +23,12 @@
   when:
     - ansible_distribution in ["CentOS","RedHat"]
 
+- name: install jq packages
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - jq
+
 - import_tasks: setup-interfaces.yml
 - import_tasks: setup-net-services.yml
