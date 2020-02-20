@@ -28,6 +28,14 @@
     - local_pkg_repo_enabled or pkg_repo_url != ""
     - ansible_distribution in ["CentOS","RedHat"]
 
+- name: add docker repo
+  template:
+    src: local-docker.repo.j2
+    dest: /etc/yum.repos.d/local-docker.repo
+  when:
+    - local_pkg_repo_enabled or pkg_repo_url != ""
+    - ansible_distribution in ["CentOS","RedHat"]
+
 - name: add local ubuntu repo
   template:
     src: local-sources.list.j2
