@@ -13,13 +13,18 @@
   when:
     - ansible_distribution in ["Ubuntu","Debian"]
 
-- name: install python-pip on registry nodes
+- name: install epel-release when online env
   yum:
-    name: "{{ item }}"
+    name: epel-release
     state: present
-  loop:
-    - epel-release
-    - python-pip
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+    - not local_pkg_repo_enabled | bool
+
+- name: install python-pip
+  yum:
+    name: python-pip
+    state: present
   when:
     - ansible_distribution in ["CentOS","RedHat"]
 
