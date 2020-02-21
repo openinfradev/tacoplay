@@ -39,11 +39,14 @@
 
 - name: registries | create cert file
   copy:
-    content: "{{ item.cert }}"
+    src: "{{ inventory_dir }}/{{ item.certfile }}"
     dest: "/etc/docker/certs.d/{{ item.endpoint }}/ca.crt"
+    owner: taco
+    group: taco
+    mode: '0644'
   when:
     - container_registries
-    - item.cert
+    - item.certfile
   with_items:
     - "{{ container_registries }}"
 

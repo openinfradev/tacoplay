@@ -12,11 +12,11 @@ tacoplay는 컨테이너 이미지 레지스트리를 사용하는 방법으로 
 tacoplay에서 구축하는 컨테이너 레지스트리는 docker 기반 컨테이너로 실행된다.
 
 #### hosts.ini 설정
-[taco-registry] 그룹에 컨테이너 레지스트리를 구축할 호스트를 추가한다.
+[container-registry] 그룹에 컨테이너 레지스트리를 구축할 호스트를 추가한다.
 
 **(예제)**
 ```
-[taco-registry]
+[container-registry]
 container-registry-host
 ```
 
@@ -52,19 +52,19 @@ container_registries 변수에 리스트 형태로 사용하고자 하는 레지
 |---------|------|
 |  endpoint | 레지스트리 도메인 이름, IP 주소 설정 가능 |
 |  ip | 레지스트 IP 주소 |
-|  cert | 레지스트리 인증서, null로 지정할 경우 insecure 레지스트리로 간주됨 |
+|  certfile | 레지스트리 인증서 파일명 |
 
 **(예제)**
 ```
 container_registries:
- - { endpoint: registry.cicd.stg.taco, ip: 192.168.000.000, cert: |
-     -----BEGIN CERTIFICATE-----
-     MIIB+DCCAZ6gAwIBAgIUA1dN6Z3t/hNh795tcQD94mvgWGIwCgYIKoZIzj0EAwIw
-     WjELMAkGA1UEBhMCS1IxDjAMBgNVBAgTBVNlb3VsMRAwDgYDVQQHEwdKdW5nLWd1
-     ...
-     AwIDSAAwRQIgc8/FlbbRyw22kt1ILAtqhYKdfibC/FjTqT4bQQ+cFb4CIQCpSBxE
-     bAIZhGrI5HT/a4dq3GPZWo1ybJs5RliBnPUtRg==
-     -----END CERTIFICATE-----
-   }
+ - { endpoint: registry.cicd.stg.taco, ip: 192.168.000.000, certfile: registry.cert }
+   # 여기서 registry.cert 파일은 실제 인증서 내용을 담고 있는 파일이며 inventory directory에 위치해야 한다. (Eg, tacoplay/inventory/foo/registry.cert)
+   -----BEGIN CERTIFICATE-----
+   MIIB+DCCAZ6gAwIBAgIUA1dN6Z3t/hNh795tcQD94mvgWGIwCgYIKoZIzj0EAwIw
+   WjELMAkGA1UEBhMCS1IxDjAMBgNVBAgTBVNlb3VsMRAwDgYDVQQHEwdKdW5nLWd1
+   ...
+   AwIDSAAwRQIgc8/FlbbRyw22kt1ILAtqhYKdfibC/FjTqT4bQQ+cFb4CIQCpSBxE
+   bAIZhGrI5HT/a4dq3GPZWo1ybJs5RliBnPUtRg==
+   -----END CERTIFICATE-----
  - { endpoint: 192.168.000.000, ip: null, cert: null }
 ```
