@@ -55,7 +55,7 @@
 - name: run docker registry container
   docker_container:
     name: "{{ container_registry_name }}"
-    image: "{{ container_registry_image }}"
+    image: "{{ container_registry_image.name }}:{{ container_registry_image.tag }}"
     env: "{{ container_registry_env }}"
     exposed_ports: "{{ container_registry_expose }}"
     ports: "{{ container_registry_ports }}"
