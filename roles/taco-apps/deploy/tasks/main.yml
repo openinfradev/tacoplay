@@ -37,6 +37,13 @@
     mode: '0666'
   run_once: yes
 
+- name: forcereinstall cryptography on centos (avoid docker pip package error)
+  become: yes
+  pip:
+    name: cryptography
+    state: forcereinstall
+  when: ansible_distribution in ["CentOS","RedHat"]
+
 - name: run armada docker container
   docker_container:
     name: "armada"
