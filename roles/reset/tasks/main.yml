@@ -1,0 +1,19 @@
+---
+- name: Reset Open vSwitch
+  include_tasks: reset-openvswitch.ym
+  when:
+    - ovs_package_installed
+    - inventory_hostname in groups['controller-node'] or inventory_hostname in groups['compute-node']
+
+- name: remove SONA configuration
+  include_tasks: reset-sona-configuration.ym
+  when: sona_integration|default(false)
+
+- name: Restore OpenStack manifest to previous state
+  shell: |
+    sed -i "s/admin_keyring:.*/admin_keyring: TACO_ADMIN_KEYRING/" {{ openstack_manifest }}
+    sed -i "s/mon_host:.*/mon_host: TACO_MON_HOST/" {{ openstack_manifest }}
+  when:
+    - taco_storage_backend == 'ceph'
+    - inventory_hostname in groups['admin-node']
+  ignore_errors: yes

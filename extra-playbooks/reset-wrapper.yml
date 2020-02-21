@@ -1,15 +1,7 @@
 - hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   tasks:
-    - name: Install pexpect module
-      pip:
-        name: pexpect
-      become: yes
-    - name: Confirm prompt
-      expect:
-        chdir: "{{ playbook_dir }}"
-        echo: yes
-        command: ansible-playbook -vv -u taco -b -i {{ inventory_dir }}/hosts.ini {{ playbook_dir }}/reset.yml -e @{{ inventory_dir }}/extra-vars.yml
-        responses:
-          Are you sure you want to: 'yes'
-        timeout: 1200
+    - name: run reset.yml without confirmation
+      command:
+        chdir: "{{ playbook_dir }}/.."
+        cmd: ansible-playbook -vv -u taco -b -i {{ inventory_dir }}/hosts.ini reset.yml -e @{{ inventory_dir }}/extra-vars.yml -e reset_confirmation=yes -e ireallymeanit=yes

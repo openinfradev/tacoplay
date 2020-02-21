@@ -1,0 +1,9 @@
+- name: Stop Open vSwitch Service
+  service:
+    name: openvswitch
+    state: stopped
+
+- name: Uninstall Open vSwitch
+  package:
+    name: openvswitch
+    state: absent

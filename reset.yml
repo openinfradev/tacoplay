@@ -1,92 +1,16 @@
 ---
-
-# TODO: remove openstack resources
-# TODD: remove k8s resources created for TACO
-
 - name: include global default variables
   import_playbook: include_defaults.yml
 
-- hosts: compute-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-  - name: stop openvswitch service
-    service:
-      name: openvswitch
-      state: stopped
-    when: ovs_package_installed
-
-  - name: uninstall openvswitch
-    yum:
-      name: openvswitch
-      state: absent
-    when:
-      - ansible_distribution in ["CentOS","RedHat"]
-      - ovs_package_installed
-    tags: always
-
-  - name: uninstall openvswitch
-    apt:
-      name: openvswitch
-      state: absent
-    when:
-      - ansible_distribution in ["Ubuntu","Debian"]
-      - ovs_package_installed
-    tags: always
-
-# Remove target nodes from SONA configuration
-- hosts: localhost:all
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-  - name: get active ip of sona chart
-    shell: >-
-      {{ bin_dir }}/kubectl get pod -n openstack -o wide |
-      grep sona-onos-0 |
-      awk '{print $6}'
-    register: active_ip
-    become: no
-    delegate_to: "{{ groups['admin-node']|first }}"
-    when: sona_integration|default(false)
-  - name: get slave ip of sona chart
-    shell: >-
-      {{ bin_dir }}/kubectl get pod -n openstack -o wide |
-      grep sona-onos-1 |
-      awk '{print $6}'
-    register: slave_ip
-    become: no
-    delegate_to: "{{ groups['admin-node']|first }}"
-    when: sona_integration|default(false)
-  - name: api call for deleting limit hosts
-    shell: |
-      curl --user onos:rocks -X DELETE http://{{ active_ip.stdout }}:8181/onos/openstacknode/configure/{{ item }}
-      curl --user onos:rocks -X DELETE http://{{ slave_ip.stdout }}:8181/onos/openstacknode/configure/{{ item }}
-    with_items: "{{ ansible_play_hosts }}"
-    delegate_to: "{{ groups['admin-node']|first }}"
-    when: sona_integration|default(false)
+- hosts: all
+  roles:
+    - { role: reset, tags: reset }
 
 # Reset K8S cluster
 - include: kubespray/reset.yml
   tags: k8s
 
-# Stop docker registry
-- hosts: registry
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - docker_container:
-        name: "{{ registry_name|default('taco-registry') }}"
-        state: absent
-  tags: registry
-
 # Purge Ceph cluster
 - include: ceph-ansible/infrastructure-playbooks/purge-cluster.yml
   tags: ceph
-  when: taco_storage == 'ceph'
-
-- hosts: admin-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  tasks:
-    - name: Restore armada-manifest to previous state
-      shell: |
-        sed -i "s/admin_keyring:.*/admin_keyring: TACO_ADMIN_KEYRING/" {{ armada_manifest }}
-        sed -i "s/mon_host:.*/mon_host: TACO_MON_HOST/" {{ armada_manifest }}
-      when: taco_storage == 'ceph'
-      ignore_errors: yes
+  when: taco_storage_backend == 'ceph'
