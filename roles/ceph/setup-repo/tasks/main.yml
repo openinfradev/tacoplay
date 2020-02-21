@@ -18,7 +18,7 @@
 
 - name: set ceph_custeom_repo for ceph-ansible
   set_fact:
-    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/"
+    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/debian-nautilus"
   when:
     - ansible_distribution in ["Ubuntu", "Debian"]
     - local_ceph_repo_enabled or ceph_repo_url != ""
