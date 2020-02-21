@@ -32,17 +32,17 @@
 - name: Load ironic-base image from file
   shell: docker load < "{{ ironic_base_container_file }}"
   args:
-    chdir: "{{ playbook_dir }}/{{ ironic_container_dir }}/"
+    chdir: "{{ inventory_dir }}/{{ ironic_container_dir }}/"
   when: run_ironic_container | bool == true
 
 - name: Load ironic-api image from file
   shell: docker load < "{{ ironic_api_container_file }}"
   args:
-    chdir: "{{ playbook_dir }}/{{ ironic_container_dir }}/"
+    chdir: "{{ inventory_dir }}/{{ ironic_container_dir }}/"
   when: run_ironic_container | bool == true
 
 - name: Load ironic-conductor image from file
   shell: docker load < "{{ ironic_conductor_container_file }}"
   args:
-    chdir: "{{ playbook_dir }}/{{ ironic_container_dir }}/"
+    chdir: "{{ inventory_dir }}/{{ ironic_container_dir }}/"
   when: run_ironic_container | bool == true

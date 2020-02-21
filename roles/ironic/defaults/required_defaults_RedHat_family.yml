@@ -40,3 +40,9 @@ required_packages:
   - gcc
   - socat
   - gdisk
+ironic_services:
+  - openstack-ironic-api
+  - openstack-ironic-conductor
+  - openstack-ironic-inspector
+ironic_clients:
+  - python-ironicclient

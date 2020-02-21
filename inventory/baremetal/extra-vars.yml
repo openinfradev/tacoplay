@@ -1,10 +1,7 @@
 ### tacoplay
 cicd_registry_enabled: false
 replace_repo_file: false
-taco_storage: none
-
-### online configuration
-container_registry_enabled: false
+taco_storage_backend: ""
 
 ### offline configuration
 #container_registry_enabled: true
@@ -13,6 +10,18 @@ container_registry_enabled: false
 #local_k8s_binary_repo_enabled: true
 #local_ceph_repo_enabled: true
 #local_repo_port: 80
+#pip_repo_url: ""
+#pip_repo_ip: ""
+#pkg_repo_url: ""
+#k8s_binary_repo_url: ""
+#ceph_repo_url: ""
+
+### online configuration
+container_registry_enabled: false
+local_pip_repo_enabled: false
+local_pkg_repo_enabled: false
+local_k8s_binary_repo_enabled: false
+local_ceph_repo_enabled: false
 
 ### ironic configuration
 ironic_server: 10.10.10.10

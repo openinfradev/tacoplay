@@ -32,3 +32,9 @@ required_packages:
   - curl
   #- python-configparser
   #- python-openwsman
+ironic_services:
+  - ironic-api
+  - ironic-conductor
+  - ironic-inspector
+ironic_clients:
+  - python-ironicclient

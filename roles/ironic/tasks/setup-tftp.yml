@@ -84,7 +84,7 @@
 
 - name: copy ironic images to ironic_images directory
   copy:
-    src: "{{ playbook_dir }}/{{ ironic_image_dir }}/"
+    src: "{{ inventory_dir }}/{{ ironic_image_dir }}/"
     dest: "{{ tftp_path }}/ironic_images"
     mode: 0777
 

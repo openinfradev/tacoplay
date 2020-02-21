@@ -1,7 +1,7 @@
 ---
 # import global vars
 - name: include global default variables
-  import_playbook: include_defaults.yml
+  import_playbook: ../include_defaults.yml
 
 # setup local repositories
 - name: setup a local package repository for the offline environment
@@ -11,7 +11,7 @@
     - { role: package-repository/install, tags: package-repository, when: local_reposerver_enabled }
 
 - name: configure package repositories
-  hosts: localhost
+  hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: package-repository/conf-repos, tags: package-repository }
@@ -33,7 +33,7 @@
     - { role: container-registry/server, tags: container-registry, when: container_registry_enabled }
 
 # Install ironic standalone
-- hosts: localhost
+- hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   become: yes
   roles:
