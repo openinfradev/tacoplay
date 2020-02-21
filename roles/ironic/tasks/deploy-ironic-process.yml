@@ -4,7 +4,7 @@
   command: "add-apt-repository cloud-archive:{{ ironic_release }} -y"
   register: command_result
   when:
-    - localrepo_enabled | bool == false
+    - local_pkg_repo_enabled | bool == false
     - ansible_distribution in ["Ubuntu","Debian"]
   failed_when: command_result.rc | bool == true
 
@@ -18,7 +18,7 @@
     name: centos-release-openstack-{{ ironic_release }}
     state: present
   when:
-    - localrepo_enabled | bool == false
+    - local_pkg_repo_enabled | bool == false
     - ansible_distribution in ["CentOS","RedHat"]
 
 - name: create ironic database
@@ -30,14 +30,12 @@
   register: check_created_db
 
 - name: install packages required for ironic standalone
-  yum:
-    name: "{{ item }}"
-    state: present
-    update_cache: yes
+  action: >
+    "{{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes"
   with_items:
     - "{{ ironic_services }}"
     - "{{ ironic_clients }}"
-    
+
 - name: ensures /etc/ironic directory exists
   file: path=/etc/ironic state=directory
 
