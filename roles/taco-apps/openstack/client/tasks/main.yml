@@ -39,7 +39,6 @@
 - name: pull the openstackclient image
   docker_image:
     name: "{{ openstackclient_image_repo }}:{{ openstackclient_image_tag }}"
-    source: pull
 
 - name: create the os_client.sh file
   template:
