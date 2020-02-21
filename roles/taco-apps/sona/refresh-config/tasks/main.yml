@@ -1,0 +1,9 @@
+---
+# Delete sona-config POD for synchronizing node status to SONA
+- name: delete sona-config pod
+  shell: >-
+    {{ bin_dir }}/kubectl get pod -n openstack |
+    grep sona-config |
+    awk '{print $1}' |
+    xargs -i kubectl delete pod {} -n openstack
+  become: no
