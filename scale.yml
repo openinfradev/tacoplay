@@ -90,7 +90,7 @@
 # Add Ceph OSD
 - import_playbook: ceph-ansible/infrastructure-playbooks/add-osd.yml
   tags: ceph
-  when: taco_storage == 'ceph'
+  when: taco_storage_backend == 'ceph'
 
 # TODO: add tests for checking status of the new ceph cluster
 

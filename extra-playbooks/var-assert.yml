@@ -67,7 +67,7 @@
         - rbd_provisioner_user_id
         - rbd_provisioner_user_secret
       when:
-        - taco_storage == 'ceph' and groups["osds"] is not defined
+        - taco_storage_backend == 'ceph' and groups["osds"] is not defined
         - rbd_provisioner_enabled
       tags: k8s
 
@@ -78,7 +78,7 @@
         - nfs_server
         - nfs_path
       when:
-        - taco_storage == 'nfs'
+        - taco_storage_backend == 'nfs'
       tags: openstack
 
 - hosts: osds
