@@ -1,27 +1,8 @@
 ---
-- name: set ceph_repository type
-  set_fact:
-    ceph_repository: "custom"
-  when: local_ceph_repo_enabled or ceph_repo_url != ""
-
 - name: set ceph_repo_url
   set_fact:
     ceph_repo_url : "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
   when: local_ceph_repo_enabled
-
-- name: set ceph_custeom_repo for ceph-ansible
-  set_fact:
-    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/ceph.repo"
-  when:
-    - ansible_distribution in ["CentOS", "RedHat"]
-    - local_ceph_repo_enabled or ceph_repo_url != ""
-
-- name: set ceph_custeom_repo for ceph-ansible
-  set_fact:
-    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/debian-nautilus"
-  when:
-    - ansible_distribution in ["Ubuntu", "Debian"]
-    - local_ceph_repo_enabled or ceph_repo_url != ""
 
 - name: create ceph.repo in {{ pkg_repo_volume_path }}
   template:

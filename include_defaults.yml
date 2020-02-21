@@ -31,17 +31,6 @@
         - "{{ playbook_dir }}/defaults/global_taco-apps.yml"
       when: taco_apps is defined and (taco_apps|length>0)
 
-    - name: check whether local repository install is needed
-      set_fact:
-        local_reposerver_enabled: local_pip_repo_enabled or
-                                  local_pkg_repo_enabled or 
-                                  local_k8s_binary_repo_enabled or 
-                                  local_ceph_repo_enabled
-
-    - name: set ceph_repository variable
-      set_fact:
-        ceph_repository: "{{ 'custom' if local_pkg_repo_enabled|default(false) else 'community' }}"
-
     - name: fill TACOFIXME for validating site specific vars
       include_vars: "{{ item }}"
       loop:

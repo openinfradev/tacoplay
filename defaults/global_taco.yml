@@ -10,6 +10,11 @@ local_pkg_repo_enabled: false
 local_k8s_binary_repo_enabled: false
 local_ceph_repo_enabled: false
 local_reposerver_port: 80
+local_reposerver_enabled: >-
+  {%- if (local_pip_repo_enabled or
+          local_pkg_repo_enabled or
+          local_k8s_binary_repo_enabled or
+          local_ceph_repo_enabled) -%}true{%- else -%}false{%- endif -%}
 
 pip_repo_url: ""
 pkg_repo_url: ""
