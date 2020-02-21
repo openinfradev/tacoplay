@@ -19,7 +19,7 @@
     state: present
   when:
     - ansible_distribution in ["CentOS","RedHat"]
-    - not local_pkg_repo_enabled | bool
+    - not (local_pkg_repo_enabled or pkg_repo_url != "")
 
 - name: install python-pip
   yum:
