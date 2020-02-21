@@ -34,17 +34,26 @@
   with_items:
     - "{{ container_registry_volume }}"
 
+- name: check exists container registry directory
+  stat:
+    path: "{{ container_registry_volume }}"
+  register: registry_result
+
 - name: unarchive registry volume
   unarchive:
     src: "{{ container_registry_volume_archive }}"
     dest: "{{ container_registry_volume }}"
-  when: registry_volume_archived
+  when:
+    - registry_volume_archived
+    - not registry_result.stat.exists
 
 - name: copy registry volume to local registry volume path
   synchronize:
     src: "{{ container_registry_volume_dir }}/"
     dest: "{{ container_registry_volume }}"
-  when: not registry_volume_archived
+  when:
+    - not registry_volume_archived
+    - not registry_result.stat.exists
 
 - name: remove existing {{ container_registry_name }} container
   docker_container:
