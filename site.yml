@@ -62,6 +62,7 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-apps/openstack/setup-os, tags: openstack, when: '"openstack" in taco_apps' }
+    - { role: openvswitch, tags: openvswitch, when: ovs_package_installed }
 
 - name: prepare lma installation
   hosts: kube-master[0]
