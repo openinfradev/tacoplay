@@ -33,7 +33,7 @@
     state: directory
   when:
     - container_registries
-    - item.cert
+    - item.certfile
   with_items:
     - "{{ container_registries }}"
 
@@ -50,7 +50,7 @@
 
 - name: registries | set docker_insecure_registries vars
   set_fact:
-    docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ groups['container-registry'][0] + ':5000' }}' ]"
+    docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ groups['container-registry'][0] }}:5000' ]"
   when:
     - container_registry_enabled
 
@@ -60,6 +60,6 @@
   when:
     - not container_registry_enabled
     - container_registries
-    - not item.cert
+    - not "{{ item.certfile }}"
   with_items:
     - "{{ container_registries }}"
