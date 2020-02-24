@@ -349,7 +349,7 @@ data:
                 failure_rate:
                   max: 0
     bootstrap:
-      enabled: true
+      enabled: false
       structured:
         images:
           cirros:
