@@ -1,5 +1,0 @@
----
-local_reposerver_port: 80
-pkg_repo_volume_archived: false
-pkg_repo_volume_archive_file: "{{ playbook_dir }}/mirros"
-pkg_repo_volume_path: "/DATA/taco_pkg_repo"

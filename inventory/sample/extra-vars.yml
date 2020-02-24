@@ -1,10 +1,5 @@
 # tacoplay
 cicd_registry_enabled: false
-localrepo_enabled: true
-localrepo_yum: 192.168.95.11
-localrepo_k8s: 192.168.95.11
-localrepo_pypi: 192.168.95.11
-localrepo_port: 80
 
 # ceph
 monitor_interface: eth0

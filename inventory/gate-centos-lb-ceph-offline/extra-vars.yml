@@ -5,14 +5,6 @@ is_gating_test: true
 container_registry_enabled: true
 container_registries: []
 
-# Package repository
-# if you want use existing repository, configure '*_repo_url' below.
-local_pip_repo_enabled: false
-local_pkg_repo_enabled: false
-local_k8s_binary_repo_enabled: false
-local_ceph_repo_enabled: false
-
-local_reposerver_port: 8888
 pip_repo_url: 192.168.197.39:8888
 pip_repo_ip: 192.168.197.39
 pkg_repo_url: 192.168.197.39:8888

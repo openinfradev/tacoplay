@@ -5,16 +5,6 @@
 - hosts: localhost
   gather_facts: false
   tasks:
-    - name: Assert tacoplay specific variables are set properly
-      assert:
-        that: "{{ item }} != 'TACOFIXME'"
-      with_items:
-        - local_pip_repo_enabled
-        - local_pkg_repo_enabled
-        - local_k8s_binary_repo_enabled
-        - local_ceph_repo_enabled
-      tags: always
-
     - name: Assert ceph monitors and admin keyring are set properly
       assert:
         that: "{{ item }} != 'TACOFIXME'"

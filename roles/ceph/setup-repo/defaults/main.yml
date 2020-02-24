@@ -1,3 +1,0 @@
-local_reposerver_port: 80
-local_ceph_repo_enabled: false
-ceph_repo_url: ""

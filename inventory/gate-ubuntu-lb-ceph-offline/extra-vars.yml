@@ -4,12 +4,6 @@ docker_insecure_registries:
  - VM-NAME-1:5000
 is_gating_test: true
 
-localrepo_enabled: true
-localrepo_yum: 192.168.197.39
-localrepo_k8s: VM-NAME-1
-localrepo_pypi: 192.168.197.39
-localrepo_port: 8888
-
 ceph_custom_repo: "http://tacorepo:8888/ubuntu/ceph/debian-nautilus"
 
 # ceph

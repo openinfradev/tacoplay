@@ -2,22 +2,20 @@
 - name: backup current repository files
   import_tasks: backup_repo_files.yml
   when:
-    - local_pkg_repo_enabled or
       pkg_repo_url != ""
   ignore_errors: yes
 
 - name: set local repo urls
   import_tasks: set_repo_urls.yml
   when:
-    - local_pkg_repo_enabled or local_pip_repo_enabled or local_k8s_binary_repo_enabled or
-      pkg_repo_url != "" or pip_repo_url != ""
+    - pkg_repo_url != "" or pip_repo_url != ""
 
 - name: add local centos base repo
   template:
     src: local-centosbase.repo.j2
     dest: /etc/yum.repos.d/local-centosbase.repo
   when:
-    - local_pkg_repo_enabled or pkg_repo_url != ""
+    - pkg_repo_url != ""
     - ansible_distribution in ["CentOS","RedHat"]
 
 - name: add epel repo
@@ -25,7 +23,7 @@
     src: local-epel.repo.j2
     dest: /etc/yum.repos.d/local-epel.repo
   when:
-    - local_pkg_repo_enabled or pkg_repo_url != ""
+    - pkg_repo_url != ""
     - ansible_distribution in ["CentOS","RedHat"]
 
 - name: add docker repo
@@ -33,7 +31,7 @@
     src: local-docker.repo.j2
     dest: /etc/yum.repos.d/local-docker.repo
   when:
-    - local_pkg_repo_enabled or pkg_repo_url != ""
+    - pkg_repo_url != ""
     - ansible_distribution in ["CentOS","RedHat"]
 
 - name: add local ubuntu repo
@@ -41,7 +39,7 @@
     src: local-sources.list.j2
     dest: /etc/apt/sources.list
   when:
-    - local_pkg_repo_enabled or pkg_repo_url != ""
+    - pkg_repo_url != ""
     - ansible_distribution in ["Ubuntu","Debian"]
 
 - name: set ceph_custom_repo for ceph-ansible
@@ -49,13 +47,13 @@
     ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/ceph.repo"
   when:
     - ansible_distribution in ["CentOS", "RedHat"]
-    - local_ceph_repo_enabled or ceph_repo_url != ""
+    - ceph_repo_url != ""
 
 - name: set ceph_custom_repo for ceph-ansible
   set_fact:
     ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/debian-nautilus"
   when:
-    - local_ceph_repo_enabled or ceph_repo_url != ""
+    - ceph_repo_url != ""
     - ansible_distribution in ["Ubuntu", "Debian"]
 
 - name: configure debian/ubuntu ceph stable repository key
@@ -65,11 +63,11 @@
   register: result
   until: result is succeeded
   when:
-    - local_ceph_repo_enabled or ceph_repo_url != ""
+    - ceph_repo_url != ""
     - ansible_distribution in ["Ubuntu", "Debian"]
 
 - name: add local pypi repo
   template:
     src: pip.conf.j2
     dest: /etc/pip.conf
-  when: local_pip_repo_enabled or pip_repo_url != ""
+  when: pip_repo_url != ""

@@ -10,11 +10,11 @@
   register: repo_bak_dir
 
 - name: Create repository backup directory
-  file: 
+  file:
     path: "{{ repo_dir }}/taco_bak"
-    owner: root 
-    group: root 
-    mode: 0755 
+    owner: root
+    group: root
+    mode: 0755
     state: directory
   when: repo_bak_dir.stat.exists == false
 
