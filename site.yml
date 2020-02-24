@@ -67,7 +67,8 @@
     - { role: taco-apps/openstack/pre-install, tags: openstack, when: '"openstack" in taco_apps' }
     - { role: taco-apps/deploy, tags: deploy }
 
-- hosts: admin-node:controller-node
+- name: run opentackclient container and make os_clients.sh file for user
+  hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-apps/openstack/client, tags: openstack-client, when: '"openstack" in taco_apps' }
