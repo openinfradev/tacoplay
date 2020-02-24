@@ -1,18 +1,7 @@
 - name: set pip_repo_url
   set_fact:
-    pip_repo_url: "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
-  when: local_pip_repo_enabled
-
-- name: set pip_repo_url
-  set_fact:
     pip_repo_ip: "{{ pip_repo_url.split(':')[0] | lower }}"
-  when: local_pip_repo_enabled or pip_repo_url != ""
-
-- name: set pkg_repo_url
-  set_fact:
-    pkg_repo_url: "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
-  when:
-    - local_pkg_repo_enabled
+  when: pip_repo_url != ""
 
 - name: set package repository urls for centos
   set_fact:
@@ -22,7 +11,7 @@
     dockerproject_rh_repo_gpgkey: "http://{{ pkg_repo_url }}/dockerproject/gpg"
   when:
     - ansible_distribution in ["CentOS", "RedHat"]
-    - local_pkg_repo_enabled or pkg_repo_url != ""
+    - pkg_repo_url != ""
 
 - name: set pkg_repo_url for ubuntu
   set_fact:
@@ -30,9 +19,4 @@
     docker_ubuntu_repo_gpgkey: "http://{{ pkg_repo_url }}/docker/linux/ubuntu/gpg"
   when:
     - ansible_distribution in ["Ubuntu", "Debian"]
-    - local_pkg_repo_enabled or pkg_repo_url != ""
-
-- name: set k8s_binary_repo_url
-  set_fact:
-    k8s_binary_repo_url: "{{ groups['package-repository'][0] }}:{{ local_reposerver_port }}"
-  when: local_k8s_binary_repo_enabled
+    - pkg_repo_url != ""

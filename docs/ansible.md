@@ -74,11 +74,6 @@ Grobal Vars
 |-------------------------------|---------------|------------
 | container_registry_enabled    | false         | container_registry로 정의된 node에 registry 설치
 | container_registries          | []            | 이미 구축된 registry 정보 등록
-| local_pip_repo_enabled        | false         | package_repository로 정의된 node에 pip repo 설치
-| local_pkg_repo_enabled        | false         | package_repository로 정의된 node에 yum,apt등 repo 설치
-| local_k8s_binary_repo_enabled | false         | package_repository로 정의된 node에 k8s binary repo 설치
-| local_ceph_repo_enabled       | false         | package_repository로 정의된 node에 ceph repo 설치
-| local_reposerver_port         | 80            | local package repository server에서 사용하는 service port
 | pip_repo_url                  | ""            | 연동할 pip repo 주소
 | pkg_repo_url                  | ""            | 연동할 pkg repo 주소
 | k8s_binary_repo_url           | ""            | 연동할 k8s binary repo 주소
@@ -119,7 +114,7 @@ global_k8s-cluster.yml에 정의된 변수들은 kubespray에 선언된 변수 �
 
 
 ### gloabl_k8s-download.yml
-k8s_binary_repo_enabled가 true일 경우 override하는 k8s binary repo 주소
+k8s_binary_repo_url이 설정되었을 경우 override하는 k8s binary repo 주소
 
 ### gloabl_k8s-images.yml
 container_registry_enabled가 true일 경우 override하는 k8s image repo 주소

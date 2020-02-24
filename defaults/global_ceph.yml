@@ -3,7 +3,7 @@ ceph_origin: repository
 ceph_mirror: http://hk.ceph.com
 
 ceph_repository: >-
-  {%- if (local_ceph_repo_enabled or ceph_repo_url != "") -%}custom{%- else -%}community{%- endif -%}
+  {%- if ceph_repo_url != "" -%}custom{%- else -%}community{%- endif -%}
 
 # when using existing ceph
 ceph_monitors: []
