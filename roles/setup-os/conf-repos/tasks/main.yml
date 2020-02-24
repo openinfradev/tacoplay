@@ -70,7 +70,7 @@
   template:
     src: pip.conf.j2
     dest: /etc/pip.conf
-  when: local_pip_repo_enabled or pip_repo_url != ""
+  when: pip_repo_url != ""
 
 - name: update yum repository cache
   yum:
