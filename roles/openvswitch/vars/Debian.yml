@@ -1,0 +1,5 @@
+---
+openvswitch_name: openvswitch-switch
+
+openvswitch_services:
+  - openvswitch-switch

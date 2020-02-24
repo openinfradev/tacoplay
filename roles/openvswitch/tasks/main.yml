@@ -1,0 +1,32 @@
+---
+- name: include specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_os_family }}.yml"
+
+- name: install openvswitch
+  package:
+    name: "{{ openvswitch_name }}"
+    state: present
+
+- name: remove previous ovsdb port configuration in the ovs-ctl script
+  lineinfile:
+    path: /usr/share/openvswitch/scripts/ovs-ctl
+    regexp: 'remote=ptcp:'
+    state: absent
+
+- name: add ovsdb port configuration to the ovs-ctl script
+  lineinfile:
+    path: /usr/share/openvswitch/scripts/ovs-ctl
+    insertafter: "set ovsdb-server"
+    firstmatch: true
+    line: "        set \"$@\" --remote=ptcp:{{ openvswitch_db_port }}"
+    state: present
+
+- name: restart openvswitch services
+  service:
+    name: "{{ item }}"
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+  with_items: "{{ openvswitch_services }}"

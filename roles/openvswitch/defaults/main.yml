@@ -1,0 +1,3 @@
+---
+ovs_package_installed: false
+openvswitch_db_port: 6650
