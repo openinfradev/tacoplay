@@ -4,7 +4,7 @@
   replace:
     dest: /etc/hosts
     regexp: '^(127\.0\.0\.1(?!.*\b{{ inventory_hostname }}\b).*)$'
-    replace: '\1 {{ inventory_hostname }}'
+    replace: '127.0.0.1 localhost {{ inventory_hostname }}'
 
 - name: change sh directory from dash to bash
   shell: >-
