@@ -30,8 +30,9 @@
   register: check_created_db
 
 - name: install packages required for ironic standalone
-  action: >
-    "{{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes"
+  package:
+    name: "{{ item }}"
+    state: present
   with_items:
     - "{{ ironic_services }}"
     - "{{ ironic_clients }}"

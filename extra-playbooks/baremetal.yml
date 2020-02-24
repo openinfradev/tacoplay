@@ -3,19 +3,6 @@
 - name: include global default variables
   import_playbook: ../include_defaults.yml
 
-# setup local repositories
-- name: setup a local package repository for the offline environment
-  hosts: package-repository
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: package-repository/install, tags: package-repository, when: local_reposerver_enabled }
-
-- name: configure package repositories
-  hosts: admin-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: package-repository/conf-repos, tags: package-repository }
-
 - name: setup host operating systems in taco host group
   hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
