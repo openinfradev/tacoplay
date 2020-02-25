@@ -111,8 +111,6 @@ vda     252:0    0   160G  0 disk
 
  ```sh
  $ cd ~/tacoplay
- $ sudo pip install -r ceph-ansible/requirements.txt
- $ sudo pip install -r kubespray/requirements.txt --upgrade --ignore-installed
  $ sudo pip install -r requirements.txt --upgrade --ignore-installed
  ```
 #### 6. Install TACO
