@@ -67,8 +67,3 @@ docker_dns_servers_strict: false
 #dns_cores_per_replica: 256
 
 #helm_deployment_type: host
-# FIXME
-etc_hosts_localhost_entries:
-  127.0.0.1:
-    expected:
-      - localhost
