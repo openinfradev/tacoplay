@@ -4,6 +4,13 @@ is_gating_test: false
 # Set this to 'true' to exclude k8s component images in site-prepare job
 exclude_k8s_images: false
 
+rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
+rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
+armada_image_repo: "docker.io/sktdev/armada"
+armada_image_tag: "0.2.0"
+openstackclient_image_repo: "docker.io/sktdev/openstackclient"
+openstackclient_image_tag: "stein"
+
 # Since prepare-artifact role is called from extra-playbook directory,
 # the volume_dir should be set to upper directory of the playbook_dir
 container_registry_volume_relative_dir: "{{ playbook_dir | dirname }}/container_registry"

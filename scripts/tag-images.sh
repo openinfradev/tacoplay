@@ -14,6 +14,7 @@ if [ $# == 0 ]; then
     IMAGE_NS=`echo $IMAGE | cut -d'/' -f1`
     if [ "$IMAGE_NS" == "calico" ] \
       || [ "$IMAGE_NS" == "cilium" ] \
+      || [ "$IMAGE_NS" == "sktdev" ] \
       || [ "$IMAGE_NS" == "cloudnativelabs" ] \
       || [ "$IMAGE_NS" == "contiv" ] \
       || [ "$IMAGE_NS" == "coredns" ] \

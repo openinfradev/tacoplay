@@ -10,6 +10,8 @@
     name:
       - yq
       - docker
+    state: forcereinstall
+  become: yes
 
 - name: pull all images used in application manifests
   script: >-
@@ -34,6 +36,15 @@
     - not is_gating_test
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
+
+- name: pull images provided by taco
+  docker_image:
+    name: "{{ item.repo }}:{{item.tag }}"
+  with_items:
+    - { repo: "{{ openstackclient_image_repo }}", tag: "{{ openstackclient_image_tag }}" }
+    - { repo: "{{ armada_image_repo }}", tag: "{{ armada_image_tag }}" }
+    - { repo: "{{ rbd_provisioner_image_repo }}", tag: "{{ rbd_provisioner_image_tag }}" }
+  become: yes
 
 - name: run registry container
   docker_container:
