@@ -7,7 +7,6 @@ container_registry_url: >-
   {%- elif container_registries -%}{{ container_registries[0].endpoint }}
   {%- endif -%}
 docker_insecure_registries: []
-container_registry_volume_dir: "{{ playbook_dir }}/container_registry"
 
 pip_repo_url: ""
 pkg_repo_url: ""

@@ -3,3 +3,7 @@ is_gating_test: false
 
 # Set this to 'true' to exclude k8s component images in site-prepare job
 exclude_k8s_images: false
+
+# Since prepare-artifact role is called from extra-playbook directory,
+# the volume_dir should be set to upper directory of the playbook_dir
+container_registry_volume_relative_dir: "{{ playbook_dir | dirname }}/container_registry"

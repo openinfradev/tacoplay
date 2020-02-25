@@ -43,7 +43,7 @@
     ports:
       - 5000:5000
     volumes:
-      - "{{ container_registry_volume_dir }}:/var/lib/registry"
+      - "{{ container_registry_volume_relative_dir }}:/var/lib/registry"
 
 - name: tag images
   script: "{{ playbook_dir | dirname }}/scripts/tag-images.sh"
@@ -59,7 +59,7 @@
   docker_image:
     name: registry
     tag: 2.6.2
-    archive_path: "{{ container_registry_volume_dir }}/registry-2.6.2.tar"
+    archive_path: "{{ container_registry_volume_relative_dir }}/registry-2.6.2.tar"
 
 - name: bundle up tacoplay
   shell: tar cvfz tacoplay.tar.gz tacoplay/
