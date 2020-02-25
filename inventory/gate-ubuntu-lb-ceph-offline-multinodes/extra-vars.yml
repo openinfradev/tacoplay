@@ -1,10 +1,15 @@
 # tacoplay
-cicd_registry_enabled: false
-docker_insecure_registries: 
- - VM-NAME-1:5000
 is_gating_test: true
 
-ceph_custom_repo: "http://tacorepo:8888/ubuntu/ceph/debian-nautilus"
+# Container registry
+container_registry_enabled: true
+container_registries: []
+
+# FIXME
+ceph_repo_url: "tacorepo:8888"
+pkg_repo_url: "tacorepo:8888"
+container_registry_image_repo: registry
+k8s_binary_repo_url: http://192.168.197.39:8888
 
 # ceph
 monitor_interface: ens5
