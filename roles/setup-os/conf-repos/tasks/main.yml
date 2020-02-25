@@ -71,3 +71,15 @@
     src: pip.conf.j2
     dest: /etc/pip.conf
   when: pip_repo_url != ""
+
+- name: update yum repository cache
+  yum:
+    update_cache: yes
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: update apt repository cache
+  apt:
+    update_cache: yes
+  when:
+    - ansible_distribution in ["Ubuntu", "Debian"]
