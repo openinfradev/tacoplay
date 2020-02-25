@@ -2,6 +2,10 @@
 # Container registry
 container_registry_enabled: false
 container_registries: []
+container_registry_url: >-
+  {%- if container_registry_enabled -%}"{{ groups['container-registry'][0] }}:5000"
+  {%- elif container_registries -%}"{{ container_registries[0].endpoint }}"
+  {%- endif -%}
 docker_insecure_registries: []
 container_registry_volume_dir: "{{ playbook_dir }}/container_registry"
 
