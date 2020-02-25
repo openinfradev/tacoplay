@@ -10,6 +10,8 @@ armada_image_repo: "docker.io/sktdev/armada"
 armada_image_tag: "0.2.0"
 openstackclient_image_repo: "docker.io/sktdev/openstackclient"
 openstackclient_image_tag: "stein"
+container_registry_image_repo: "docker.io/registry"
+container_registry_image_tag: "2.6.2"
 
 # Since prepare-artifact role is called from extra-playbook directory,
 # the volume_dir should be set to upper directory of the playbook_dir
