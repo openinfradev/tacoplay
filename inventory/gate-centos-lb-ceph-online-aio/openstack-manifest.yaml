@@ -34,7 +34,7 @@ data:
     conf:
       ceph:
         global:
-          mon_host: 192.168.201.98
+          mon_host: TACO_MON_HOST
     manifests:
       configmap_bin: false
       configmap_bin_common: false
@@ -2033,7 +2033,7 @@ data:
           disk_allocation_ratio: 1.0
           cpu_allocation_ratio: 3.0
         vnc:
-          novncproxy_base_url: http://192.168.97.120:30608/vnc_auto.html
+          novncproxy_base_url: http://taco-aio:30608/vnc_auto.html
         libvirt:
           images_type: rbd
           rbd_user: cinder
