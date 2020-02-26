@@ -11,6 +11,12 @@
     - { role: setup-os, tags: setup-os }
     - { role: container-registry/client, tags: setup-os }
 
+- name: setup docker on admin-node
+  hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: docker, tags: setup-os }
+
 # Use current docker role for now. Kubespray's container-engine role
 # can be considered later.
 - name: setup a local container registry for the offline environment
@@ -65,7 +71,7 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-apps/openstack/pre-install, tags: openstack, when: '"openstack" in taco_apps' }
-    - { role: taco-apps/deploy, tags: deploy }
+    - { role: taco-apps/deploy, tags: deploy, when: 'taco_apps and taco_apps|length > 0' }
 
 - name: run opentackclient container and make os_clients.sh file for user
   hosts: admin-node

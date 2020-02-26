@@ -1,3 +1,5 @@
+configure_firewall: false
+
 ceph_stable_release: nautilus
 ceph_origin: repository
 ceph_mirror: http://hk.ceph.com
