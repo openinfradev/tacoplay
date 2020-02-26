@@ -43,6 +43,12 @@ rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
 # docker option
 docker_dns_servers_strict: false
 
+# do not add localhost.localdomain into /etc/hosts
+etc_hosts_localhost_entries:
+  127.0.0.1:
+    expected:
+      - localhost
+
 # OS
 #disable_swap: true
 #epel_enabled: true
