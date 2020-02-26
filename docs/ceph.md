@@ -110,6 +110,7 @@ Ceph 관련 그룹 정의는 그대로 두되 호스트는 비워둔다.
 ```
 ceph_monitors: "192.168.1.51,192.168.1.52,192.168.1,53"
 ceph_admin_keyring: 'AQD+3INa1wtjEhAAUFQ1xmhsc7PccAx0r+NGPA=='
+rbd_provisioner_pool: kube
 rbd_provisioner_admin_id: kube
 rbd_provisioner_secret: 'AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=='
 rbd_provisioner_user_id: kube
