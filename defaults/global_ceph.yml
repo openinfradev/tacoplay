@@ -37,3 +37,8 @@ openstack_keys:
   - { name: client.cinder, caps: { mon: "profile rbd", osd: "profile rbd pool=volumes, profile rbd pool=backups, profile rbd pool=images"}, key: "AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==",  mode: "0600" }
 
 dashboard_enabled: false
+
+# epel-release shouldn't be installed in offline env.
+# In online env, it'll be installed by setup-os role anyway.
+centos_package_dependencies:
+  - libselinux-python
