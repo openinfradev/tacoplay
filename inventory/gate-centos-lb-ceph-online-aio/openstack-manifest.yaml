@@ -159,7 +159,7 @@ data:
         logger_cinder:
           level: DEBUG
       ceph:
-        admin_keyring: AQB5l09egeeJJhAAyFumixIL96ijfENN6JQaDQ==
+        admin_keyring: TACO_ADMIN_KEYRING
         enabled: true
         pools:
           volumes-test:
@@ -841,7 +841,7 @@ data:
     conf:
       ceph:
         enabled: true
-        admin_keyring: AQB5l09egeeJJhAAyFumixIL96ijfENN6JQaDQ==
+        admin_keyring: TACO_ADMIN_KEYRING
       glance:
         glance_store:
           rbd_store_user: glance
@@ -1506,7 +1506,7 @@ data:
     conf:
       ceph:
         enabled: true
-        admin_keyring: AQB5l09egeeJJhAAyFumixIL96ijfENN6JQaDQ==
+        admin_keyring: TACO_ADMIN_KEYRING
         cinder:
           user: cinder
           keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
@@ -2018,7 +2018,7 @@ data:
         live_migration_interface: eth1
       ceph:
         enabled: true
-        admin_keyring: AQB5l09egeeJJhAAyFumixIL96ijfENN6JQaDQ==
+        admin_keyring: TACO_ADMIN_KEYRING
         cinder:
           user: cinder
           keyring: AQAin8tU0CFgEhAATb7sYgtWsh+S5HEbg6MrGg==
