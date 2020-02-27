@@ -24,13 +24,14 @@
     reload: yes
   when:
   - es_update_kernel_var
-  
+
 - name: Check if etcd cert directory exists
   stat:
     path: "{{ etcd_cert_dir }}"
   register: stat_etcd_dir
   when:
   - create_etcd_secret
+  delegate_to: master[0]
 
 - name: Fail if etcd directory does not exist
   fail:
@@ -38,6 +39,7 @@
   when:
   - create_etcd_secret
   - stat_etcd_dir.stat.exists == False
+  delegate_to: master[0]
 
 - name: Check if namespace exists
   shell: | 
@@ -46,6 +48,7 @@
   ignore_errors: yes
   when:
   - create_etcd_secret
+  delegate_to: master[0]
 
 - name: Create namespace for lma
   command: >-
@@ -54,6 +57,7 @@
   when:
   - create_etcd_secret
   - is_namespace_existing.stdout == "0"
+  delegate_to: master[0]
 
 - name: Check if secret exists
   shell: | 
@@ -62,6 +66,7 @@
   ignore_errors: yes
   when:
   - create_etcd_secret
+  delegate_to: master[0]
 
 - name: Create Secret for etcd monitoring
   command: >-
@@ -74,3 +79,4 @@
   when:
   - create_etcd_secret
   - is_secret_existing.stdout == "0"
+  delegate_to: master[0]
