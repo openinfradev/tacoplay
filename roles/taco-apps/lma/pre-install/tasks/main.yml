@@ -1,5 +1,30 @@
 ---
+- name: Update max_map_count for elasticsearch
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^vm.max_map_count='
+    line: vm.max_map_count=262144
+  register: stat_kernel_var
+  when:
+  - es_update_kernel_var
 
+- name: Insert max_map_count for elasticsearch
+  lineinfile:
+    path: /etc/sysctl.conf
+    state: present
+    line: vm.max_map_count=262144
+  when:
+  - es_update_kernel_var
+  - not stat_kernel_var
+
+- name: Apply max_map_count for elasticsearch
+  sysctl:
+    name: vm.max_map_count
+    value: '262144'
+    reload: yes
+  when:
+  - es_update_kernel_var
+  
 - name: Check if etcd cert directory exists
   stat:
     path: "{{ etcd_cert_dir }}"

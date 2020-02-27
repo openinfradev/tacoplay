@@ -9,3 +9,5 @@ etcd_cert_dir: /etc/ssl/etcd/ssl
 # k8s namespace lma will be deployed
 lma_namespace: lma
 
+# update kernel variable for elastiesearch
+es_update_kernel_var: true
