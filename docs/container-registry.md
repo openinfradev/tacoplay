@@ -66,5 +66,5 @@ container_registries:
    AwIDSAAwRQIgc8/FlbbRyw22kt1ILAtqhYKdfibC/FjTqT4bQQ+cFb4CIQCpSBxE
    bAIZhGrI5HT/a4dq3GPZWo1ybJs5RliBnPUtRg==
    -----END CERTIFICATE-----
- - { endpoint: 192.168.000.000, ip: null, cert: null }
+ - { endpoint: 192.168.000.000, ip: null, certfile: null }
 ```
