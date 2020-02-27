@@ -9,14 +9,6 @@
     - { role: container-registry/client }
   tags: always
 
-- name: pull TACO provided images
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  docker_image:
-    name: "openstackclient"
-    repository: openstackclient_image_repo
-    tag: openstackclient_image_tag
-    source: pull
-
 - import_playbook: ../kubespray/cluster.yml
   when: not exclude_k8s_images
 
