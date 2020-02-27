@@ -19,6 +19,16 @@ taco_storage_backend: "ceph"
 # Taco Apps to deploy using Armada
 taco_apps: ["openstack"]
 
+# These images are managed by TACO
+rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
+rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
+armada_image_repo: "docker.io/sktdev/armada"
+armada_image_tag: "0.2.0"
+openstackclient_image_repo: "docker.io/sktdev/openstackclient"
+openstackclient_image_tag: "stein"
+container_registry_image_repo: "docker.io/registry"
+container_registry_image_tag: "2.6.2"
+
 # This affects tasks related to the TACO/SONA integrated environment.
 sona_integration: false
 

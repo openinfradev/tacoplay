@@ -49,7 +49,6 @@ registry_proxy_image_repo: "{{ container_registry_url }}/google_containers/kube-
 metrics_server_image_repo: "{{ container_registry_url }}/google_containers/metrics-server-amd64"
 local_volume_provisioner_image_repo: "{{ container_registry_url }}/external_storage/local-volume-provisioner"
 cephfs_provisioner_image_repo: "{{ container_registry_url }}/external_storage/cephfs-provisioner"
-rbd_provisioner_image_repo: "{{ container_registry_url }}/external_storage/rbd-provisioner"
 local_path_provisioner_image_repo: "{{ container_registry_url }}/rancher/local-path-provisioner"
 ingress_nginx_controller_image_repo: "{{ container_registry_url }}/kubernetes-ingress-controller/nginx-ingress-controller"
 cert_manager_controller_image_repo: "{{ container_registry_url }}/jetstack/cert-manager-controller"

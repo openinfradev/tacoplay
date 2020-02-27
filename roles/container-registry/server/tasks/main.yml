@@ -22,8 +22,7 @@
 
 - name: load registry image from archive
   docker_image:
-    name: "{{ container_registry_image.name }}"
-    tag: "{{ container_registry_image.tag }}"
+    name: "{{ container_registry_image_repo }}:{{ container_registry_image_tag }}"
     load_path: "/tmp/registry-2.6.2.tar"
     state: present
 
@@ -57,14 +56,13 @@
 
 - name: remove existing {{ container_registry_name }} container
   docker_container:
-    image: "{{ container_registry_image }}"
     name: "{{ container_registry_name }}"
     state: absent
 
 - name: run docker registry container
   docker_container:
     name: "{{ container_registry_name }}"
-    image: "{{ container_registry_image.name }}:{{ container_registry_image.tag }}"
+    image: "{{ container_registry_image_repo }}:{{ container_registry_image_tag }}"
     env: "{{ container_registry_env }}"
     exposed_ports: "{{ container_registry_expose }}"
     ports: "{{ container_registry_ports }}"
