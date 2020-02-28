@@ -32,11 +32,7 @@
     path: "{{ item | regex_replace('^(?P<host>.+):(?P<container>.+):(?P<mode>.+)', '\\g<host>') }}"
   with_items:
     - "{{ container_registry_volume }}"
-
-- name: check exists container registry directory
-  stat:
-    path: "{{ container_registry_volume }}"
-  register: registry_result
+  register: directory_ensure_result 
 
 - name: unarchive registry volume
   unarchive:
@@ -44,7 +40,7 @@
     dest: "{{ container_registry_volume }}"
   when:
     - registry_volume_archived
-    - not registry_result.stat.exists
+    - directory_ensure_result.changed
 
 - name: copy registry volume to local registry volume path
   synchronize:
@@ -52,7 +48,7 @@
     dest: "{{ container_registry_volume }}"
   when:
     - not registry_volume_archived
-    - not registry_result.stat.exists
+    - directory_ensure_result.changed
 
 - name: remove existing {{ container_registry_name }} container
   docker_container:
