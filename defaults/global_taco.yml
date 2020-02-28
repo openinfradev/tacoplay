@@ -2,9 +2,13 @@
 # Container registry
 container_registry_enabled: false
 container_registries: []
+
+# TODO: this value is better to be set via set_fact later so that
+# the value wouldn't be touched when we use upstream k8s images.
 container_registry_url: >-
   {%- if container_registry_enabled -%}{{ groups['container-registry'][0] }}:5000
-  {%- elif container_registries -%}{{ container_registries[0].endpoint }}
+  {%- elif container_registries and container_registries[0].default -%}{{ container_registries[0].endpoint }}
+  {%- else -%}""
   {%- endif -%}
 docker_insecure_registries: []
 
