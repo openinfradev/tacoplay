@@ -26,7 +26,10 @@ armada_image_repo: "docker.io/sktdev/armada"
 armada_image_tag: "0.2.0"
 openstackclient_image_repo: "docker.io/sktdev/openstackclient"
 openstackclient_image_tag: "stein"
-container_registry_image_repo: "docker.io/registry"
+
+# These values are shared by container-registry and prepare-artifact role
+# Do not use full URL such as 'docker.io/registry' since it doesn't work.
+container_registry_image_repo: "registry"
 container_registry_image_tag: "2.6.2"
 
 # This affects tasks related to the TACO/SONA integrated environment.
