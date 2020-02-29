@@ -69,9 +69,9 @@
 
 - name: archive registry image
   docker_image:
-    name: registry
-    tag: 2.6.2
-    archive_path: "{{ container_registry_volume_relative_dir }}/registry-2.6.2.tar"
+    name: "{{ container_registry_image_repo }}"
+    tag: "{{ container_registry_image_tag }}"
+    archive_path: "{{ container_registry_volume_relative_dir }}/registry.tar"
 
 - name: bundle up tacoplay
   shell: tar cvfz tacoplay.tar.gz tacoplay/
