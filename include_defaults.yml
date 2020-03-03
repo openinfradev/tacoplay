@@ -17,7 +17,7 @@
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/defaults/global_k8s-images.yml"
-      when: container_registry_enabled or container_registries
+      when: container_registry_enabled or (container_registries and container_registries[0].default)
     
     - name: include global override values - k8s downloads
       include_vars: "{{ item }}"
