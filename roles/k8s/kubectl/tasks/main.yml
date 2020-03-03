@@ -48,3 +48,32 @@
     src: "{{ artifacts_dir }}/helm"
     dest: "{{ bin_dir }}/helm"
     mode: 0755
+
+- name: check whether .bashrc contains PATH
+  command: grep -Frn "export PATH=" {{ lookup('env','HOME') }}/.bashrc
+  register: checkpath
+  ignore_errors: True
+  changed_when: False
+
+- name: add PATH into bashrc
+  lineinfile:
+    dest: "{{ lookup('env','HOME') }}/.bashrc"
+    state: present
+    line: 'export PATH=$PATH:{{bin_dir}}'
+  when: not checkpath.rc == 0
+
+- name: add {{ bin_dir }} to PATH
+  lineinfile:
+    path: "{{ lookup('env','HOME') }}/.bashrc"
+    state: present
+    regexp: 'export PATH=(["]*)((?!.*?{{bin_dir}}).*?)(["]*)$'
+    line: 'export PATH=\1\2:{{bin_dir}}\3'
+    backrefs: yes
+  become: no
+  when: checkpath.rc == 0
+
+- name: source bashrc
+  become: no
+  shell: source {{ lookup('env','HOME') }}/.bashrc
+  args:
+    executable: /bin/bash

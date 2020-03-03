@@ -84,5 +84,5 @@
       --tiller-host {{ tiller_host.stdout }}
       --tiller-port {{ tiller_port }}
       --timeout 7200
-      /tmp/[YOUR_APP]-manifest.yaml"
+      {{ inventory_dir }}/[YOUR_APP]-manifest.yaml"
   when: tiller_host.stdout != ""
