@@ -10,7 +10,7 @@
     name:
       - yq
       - docker
-    state: forcereinstall
+    extra_args: --ignore-installed
   become: yes
 
 - name: pull all images used in application manifests
