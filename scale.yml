@@ -1,4 +1,5 @@
 ---
+
 - name: include global default variables
   import_playbook: include_defaults.yml
 
@@ -6,13 +7,14 @@
   hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
+    - { role: setup-os/conf-repos, tags: setup-os }
     - { role: setup-os, tags: setup-os }
     - { role: container-registry/client, tags: setup-os }
 
 # Add Ceph OSD
-- import_playbook: ceph-ansible/infrastructure-playbooks/add-osd.yml
-  tags: ceph
-  when: taco_storage_backend == 'ceph'
+# - import_playbook: ceph-ansible/infrastructure-playbooks/add-osd.yml
+#  tags: ceph
+#  when: taco_storage_backend == 'ceph'
 
 # TODO: add tests for checking status of the new ceph cluster
 
@@ -25,7 +27,7 @@
     - { role: taco-apps/openstack/setup-os, tags: openstack, when: '"openstack" in taco_apps' }
 
 # Install K8S
-- import_playbook: kubespray/scale.yml
+- include: kubespray/scale.yml
   tags: k8s
 
 # TODO: add tests for checking the status of the updated k8s cluster
