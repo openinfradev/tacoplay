@@ -31,7 +31,8 @@
   register: stat_etcd_dir
   when:
   - create_etcd_secret
-  delegate_to: master[0]
+  delegate_to: "{{ groups['kube-master']|first }}"
+  run_once: true
 
 - name: Fail if etcd directory does not exist
   fail:
@@ -39,7 +40,8 @@
   when:
   - create_etcd_secret
   - stat_etcd_dir.stat.exists == False
-  delegate_to: master[0]
+  delegate_to: "{{ groups['kube-master']|first }}"
+  run_once: true
 
 - name: Check if namespace exists
   shell: | 
@@ -48,7 +50,8 @@
   ignore_errors: yes
   when:
   - create_etcd_secret
-  delegate_to: master[0]
+  delegate_to: "{{ groups['kube-master']|first }}"
+  run_once: true
 
 - name: Create namespace for lma
   command: >-
@@ -57,7 +60,8 @@
   when:
   - create_etcd_secret
   - is_namespace_existing.stdout == "0"
-  delegate_to: master[0]
+  delegate_to: "{{ groups['kube-master']|first }}"
+  run_once: true
 
 - name: Check if secret exists
   shell: | 
@@ -66,17 +70,19 @@
   ignore_errors: yes
   when:
   - create_etcd_secret
-  delegate_to: master[0]
+  delegate_to: "{{ groups['kube-master']|first }}"
+  run_once: true
 
 - name: Create Secret for etcd monitoring
   command: >-
     {{ bin_dir }}/kubectl --kubeconfig /etc/kubernetes/admin.conf create secret generic etcd-client-cert
     --from-file=etcd-ca={{ etcd_cert_dir }}/ca.pem
-    --from-file=etcd-client={{ etcd_cert_dir }}/member-{{ ansible_hostname }}.pem 
-    --from-file=etcd-client-key={{ etcd_cert_dir }}/member-{{ ansible_hostname }}-key.pem 
+    --from-file=etcd-client={{ etcd_cert_dir }}/member-{{ groups['kube-master']|first }}.pem 
+    --from-file=etcd-client-key={{ etcd_cert_dir }}/member-{{ groups['kube-master']|first }}-key.pem 
     --namespace {{ lma_namespace }}
   register: secret_result
   when:
   - create_etcd_secret
   - is_secret_existing.stdout == "0"
-  delegate_to: master[0]
+  delegate_to: "{{ groups['kube-master']|first }}"
+  run_once: true
