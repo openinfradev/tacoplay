@@ -13,22 +13,11 @@
   become: no
   ignore_errors: yes
 
-- name: get existing armada processes
-  shell: >-
-    ps -ef | grep -v grep | grep -w 'armada apply' | awk '{print $2}'
-  register: armada_processes
-  become: no
-
-- name: kill existing armada processes
-  shell: kill {{ item }}
-  with_items: "{{ armada_processes.stdout_lines }}"
-  become: no
-
-- name: wait until existing armada processes are killed
-  wait_for:
-    path: "/proc/{{ item }}/status"
+- name: remove existing armada container
+  docker_container:
+    name: "armada"
     state: absent
-  with_items: "{{ armada_processes.stdout_lines }}"
+  become: yes
 
 - name: set docker.sock permission to 666
   become: yes
