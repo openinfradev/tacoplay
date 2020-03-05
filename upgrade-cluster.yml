@@ -14,3 +14,11 @@
 # Install K8S
 - include: kubespray/upgrade-cluster.yml
   tags: k8s
+
+- name: setup kubernetes ralated clients to admin-node
+  hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: k8s/kubectl, tags: taco-clients }
+    - { role: k8s/helm, tags: taco-clients }
+    - { role: k8s/tiller, tags: taco-clients }
