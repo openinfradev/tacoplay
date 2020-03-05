@@ -1,0 +1,7 @@
+---
+- name: include global default variables
+  import_playbook: include_defaults.yml
+
+# Reset K8S cluster
+- include: kubespray/remove-node.yml
+  tags: k8s

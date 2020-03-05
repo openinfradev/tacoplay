@@ -1,0 +1,16 @@
+---
+
+- name: include global default variables
+  import_playbook: include_defaults.yml
+
+- name: setup host operating systems in taco host group
+  hosts: taco
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: setup-os/conf-repos, tags: setup-os }
+    - { role: setup-os, tags: setup-os }
+    - { role: container-registry/client, tags: setup-os }
+
+# Install K8S
+- include: kubespray/upgrade-cluster.yml
+  tags: k8s
