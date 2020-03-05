@@ -62,4 +62,6 @@ registry_docker_options: >-
   --add-runtime docker-runc=/usr/libexec/docker/docker-runc-current
   --default-runtime=docker-runc --exec-opt native.cgroupdriver=systemd
   --userland-proxy-path=/usr/libexec/docker/docker-proxy-current --signature-verification=false
+  {%- else %}
+  --exec-opt native.cgroupdriver=systemd
   {%- endif -%}
