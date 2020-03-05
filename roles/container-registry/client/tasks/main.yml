@@ -24,7 +24,6 @@
     create: yes
     backup: yes
   when:
-    - not container_registry_enabled
     - container_registries
 
 - name: registries | create directory for cert
@@ -58,7 +57,6 @@
   set_fact:
     docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ item.endpoint }}' ]"
   when:
-    - not container_registry_enabled
     - container_registries
     - not "{{ item.certfile }}"
   with_items:
