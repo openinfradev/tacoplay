@@ -17,7 +17,11 @@
     block: |-
       {% for item in container_registries -%}
         {% if item.endpoint and item.ip -%}
-          {{ item.ip }} {{ item.endpoint }}
+          {% if ':' in item.endpoint -%}
+            {{ item.ip }} {{ item.endpoint.split(":")[0] }}
+          {% else -%}
+            {{ item.ip }} {{ item.endpoint }}
+          {% endif -%}
         {% endif -%}
       {% endfor %}
     state: present
@@ -47,13 +51,13 @@
   with_items:
     - "{{ container_registries }}"
 
-- name: registries | set docker_insecure_registries vars
+- name: registries | set docker_insecure_registries var
   set_fact:
     docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ groups['container-registry'][0] }}:5000' ]"
   when:
     - container_registry_enabled
 
-- name: registries | set docker_insecure_registries vars
+- name: registries | set docker_insecure_registries var
   set_fact:
     docker_insecure_registries: "{{ docker_insecure_registries }} + [ '{{ item.endpoint }}' ]"
   when:
@@ -61,3 +65,7 @@
     - not "{{ item.certfile }}"
   with_items:
     - "{{ container_registries }}"
+
+- name: registries | debug docker_insecure_registries var
+  debug:
+    msg: "docker_insecure_registries has been set to: {{ docker_insecure_registries }}"

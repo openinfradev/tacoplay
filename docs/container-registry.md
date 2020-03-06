@@ -68,5 +68,10 @@ container_registries:
    AwIDSAAwRQIgc8/FlbbRyw22kt1ILAtqhYKdfibC/FjTqT4bQQ+cFb4CIQCpSBxE
    bAIZhGrI5HT/a4dq3GPZWo1ybJs5RliBnPUtRg==
    -----END CERTIFICATE-----
- - { endpoint: 192.168.000.000, ip: null, certfile: null, default: false }
+
+ # Registry URL이 port 번호를 포함할 경우, 'endpoint'에는 port번호를 포함한 full path를 적어주며, 'ip'에는 port 번호는 적지 않는다
+ - { endpoint: taco-registry:5000, ip: 192.168.000.000, certfile: null, default: false }
+
+ # Registry URL 자체가 ip로 이루어져 있다면 'ip' 항목에는 null을 넣어준다
+ - { endpoint: 192.168.000.000:5000, ip: null, certfile: null, default: false }
 ```
