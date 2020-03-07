@@ -43,23 +43,8 @@ rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
 # docker option
 docker_dns_servers_strict: false
 docker_options: >-
-  {%- if docker_insecure_registries is defined %}
-  {{ docker_insecure_registries | map('regex_replace', '^(.*)$', '--insecure-registry=\1' ) | list | join(' ') }}
-  {%- endif %}
-  {% if docker_registry_mirrors is defined %}
-  {{ docker_registry_mirrors | map('regex_replace', '^(.*)$', '--registry-mirror=\1' ) | list | join(' ') }}
-  {%- endif %}
-  {%- if docker_version != "latest" and docker_version is version('17.05', '<') %}
-  --graph={{ docker_daemon_graph }} {% if ansible_os_family not in ["openSUSE Leap", "openSUSE Tumbleweed", "Suse"] %}{{ docker_log_opts }}{% endif %}
-  {%- else %}
-  --data-root={{ docker_daemon_graph }} {% if ansible_os_family not in ["openSUSE Leap", "openSUSE Tumbleweed", "Suse"] %}{{ docker_log_opts }}{% endif %}
-  {%- endif %}
-  {%- if ansible_architecture == "aarch64" and ansible_os_family == "RedHat" %}
-  --add-runtime docker-runc=/usr/libexec/docker/docker-runc-current
-  --default-runtime=docker-runc --exec-opt native.cgroupdriver=systemd
-  --userland-proxy-path=/usr/libexec/docker/docker-proxy-current --signature-verification=false
-  {%- else %}
-  --exec-opt native.cgroupdriver=systemd
+  {%- if ansible_architecture != "aarch64" and ansible_os_family == "RedHat" %}--exec-opt native.cgroupdriver=systemd
+  {%- else %}""
   {%- endif -%}
 
 # do not add localhost.localdomain into /etc/hosts
