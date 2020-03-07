@@ -355,7 +355,7 @@ data:
           cirros:
             name: Cirros 0.4.0 64-bit
             id: 201084fc-c276-4744-8504-cb974dbb3610
-            source_url: http://download.cirros-cloud.net/0.4.0/
+            source_url: http://192.168.97.117:8888/cirros/
             image_file: cirros-0.4.0-x86_64-disk.img
             private: false
     endpoints:
