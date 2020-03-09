@@ -1488,7 +1488,6 @@ data:
   chart_group:
     - ceph-provisioners
     - ingress
-    - etcd
     - rabbitmq
     - memcached
     - mariadb
