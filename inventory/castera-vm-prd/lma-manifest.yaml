@@ -1,0 +1,1010 @@
+#####################################################################
+# List of Values should be modified before deployment
+# 1. prometheus chart
+#   - kubeEtcd.endpoints 
+#    : etcd endpoints address
+#   - prometheus.prometheusSepc.static_configs
+#    : set with federation target
+# 2. taco-addons-lma chart
+#    - metricbeat.prometheus.hosts 
+#####################################################################
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-operator
+data:
+  chart_name: prometheus
+  release: prometheus-operator
+  namespace: lma
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    ## Config prometheus operator
+    #
+    defaultRules:
+      create: false
+    alertmanager:
+      enabled: false
+    coreDns:
+      enabled: false
+    grafana:
+      enabled: false
+    kubeApiServer:
+      enabled: false
+    kubeControllerManager:
+      enabled: false
+    kubeDns:
+      enabled: false
+    kubelet:
+      enabled: false
+    kubeProxy:
+      enabled: false
+    kubeScheduler:
+      enabled: false
+    kubeStateMetrics:
+      enabled: false
+    nodeExporter:
+      enabled: false
+    prometheusOperator:
+      enabled: true
+      createCustomResource: true
+      cleanupCustomResource: true
+      cleanupCustomResourceBeforeInstall: true
+      tlsProxy:
+        image:
+          repository: castera-admin:5000/squareup/ghostunnel
+          tag: v1.5.2
+      patch:
+        image:
+          repository: castera-admin:5000/jettech/kube-webhook-certgen
+          tag: v1.0.0
+      image:
+        repository: castera-admin:5000/coreos/prometheus-operator
+        tag: v0.35.0
+      configmapReloadImage:
+        repository: castera-admin:5000/coreos/configmap-reload
+        tag: v0.0.1
+      prometheusConfigReloaderImage:
+        repository: castera-admin:5000/coreos/prometheus-config-reloader
+        tag: v0.35.0
+      hyperkubeImage:
+        repository: castera-admin:5000/hyperkube
+        tag: v1.12.1
+    prometheus:
+      enabled: false
+    images:
+      tags:
+        alertmanager: castera-admin:5000/prometheus/alertmanager:v0.20.0
+        prometheus-operator: castera-admin:5000/coreos/prometheus-operator:v0.35.0
+        tlx-proxy: castera-admin:5000/squareup/ghostunnel:v1.5.2
+        patch: castera-admin:5000/jettech/kube-webhook-certgen:v1.0.0
+        configmap-reload: castera-admin:5000/coreos/configmap-reload:v0.0.1
+        prometheus-config-reloader: castera-admin:5000/coreos/prometheus-config-reloader:v0.35.0
+        hyperkube: castera-admin:5000/hyperkube:v1.12.1
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/helm
+    subpath: stable/prometheus-operator
+    reference: temporary
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: elasticsearch-operator
+data:
+  chart_name: elasticsearch-operator
+  release: elasticsearch-operator
+  namespace: elastic-system
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    elasticsearchOperator:
+      enabled: true
+      createNamespace: false
+      createCustomResource: true
+      image:
+        repository: castera-admin:5000/eck/eck-operator
+        tag: 1.0.0
+    customResource:
+      elasticsearch:
+        enabled: false
+      kibana:
+        enabled: false
+    images:
+      tags:
+        eck-operator: castera-admin:5000/eck/eck-operator:1.0.0
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/taco-helm
+    subpath: elasticsearch-operator
+    reference: master
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus
+data:
+  chart_name: prometheus
+  release: prometheus
+  namespace: lma
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    defaultRules:
+      create: false
+    alertmanager:
+      enabled: false
+    coreDns:
+      enabled: true
+    grafana:
+      enabled: false
+    kubeApiServer:
+      enabled: true
+    kubeControllerManager:
+      enabled: true
+    kubeDns:
+      enabled: true
+    kubelet:
+      enabled: true
+    kubeProxy:
+      enabled: true
+    kubeScheduler:
+      enabled: true
+    kubeStateMetrics:
+      enabled: false
+    nodeExporter:
+      enabled: false
+    prometheusOperator:
+      enabled: false
+      admissionWebhooks:
+        enabled: false
+      createCustomResource: false
+      cleanupCustomResource: false
+      cleanupCustomResourceBeforeInstall: false
+    prometheus:
+      service:
+        nodePort: 30008
+        type: NodePort
+      prometheusSpec:
+        #image:
+        #  repository: castera-admin:5000/prometheus/prometheus
+        #  tag: v2.15.2
+        serviceMonitorSelectorNilUsesHelmValues: false
+        externalLabels:
+          taco_cluster: main
+        secrets:
+        - etcd-client-cert
+        replicas: 1
+        additionalScrapeConfigs:
+        - job_name: kubernetes-service-endpoints
+          scrape_interval: 1m
+          scrape_timeout: 10s
+          metrics_path: /metrics
+          scheme: http
+          kubernetes_sd_configs:
+          - api_server: null
+            role: endpoints
+            namespaces:
+              names: []
+          relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            separator: ;
+            regex: (.*node-exporter|openstack-metrics|prom-metrics|.*kube-state-metrics)
+            replacement: $1
+            action: drop
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+            separator: ;
+            regex: "true"
+            replacement: $1
+            action: keep
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+            separator: ;
+            regex: (https?)
+            target_label: __scheme__
+            replacement: $1
+            action: replace
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+            separator: ;
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: $1
+            action: replace
+          - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+            separator: ;
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            target_label: __address__
+            replacement: $1:$2
+            action: replace
+          - separator: ;
+            regex: __meta_kubernetes_service_label_(.+)
+            replacement: $1
+            action: labelmap
+          - source_labels: [__meta_kubernetes_namespace]
+            separator: ;
+            regex: (.*)
+            target_label: kubernetes_namespace
+            replacement: $1
+            action: replace
+          - source_labels: [__meta_kubernetes_service_name]
+            separator: ;
+            regex: (.*)
+            target_label: kubernetes_name
+            replacement: $1
+            action: replace
+          - source_labels: [__meta_kubernetes_service_name]
+            separator: ;
+            regex: (.*)
+            target_label: job
+            replacement: ${1}
+            action: replace
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: rbd
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 50Gi
+    kubeEtcd:
+      endpoints:
+      - 192.168.97.39
+      - 192.168.97.47
+      - 192.168.97.77
+      serviceMonitor:
+        scheme: https
+        insecureSkipVerify: false
+        serverName: localhost
+        caFile: /etc/prometheus/secrets/etcd-client-cert/etcd-ca
+        certFile: /etc/prometheus/secrets/etcd-client-cert/etcd-client
+        keyFile: /etc/prometheus/secrets/etcd-client-cert/etcd-client-key
+    images:
+      tags:
+        prometheus: castera-admin:5000/prometheus/prometheus:v2.15.2
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/helm
+    subpath: stable/prometheus-operator
+    reference: temporary
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-fed-master
+data:
+  chart_name: prometheus
+  release: prometheus-fed-master
+  namespace: fed
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    defaultRules:
+      create: true
+    alertmanager:
+      enabled: true
+      # alertmanagerSpec:
+      #   nodeSelector:
+      #     taco-lma: enabled
+      config:
+        global:
+          smtp_smarthost: null
+          smtp_from: null
+          smtp_auth_username: null
+          smtp_auth_password: null
+          hipchat_auth_token: null
+          hipchat_api_url: null
+          slack_api_url: "https://hooks.slack.com/services/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"
+        # templates:
+        #   - '/etc/alertmanager/template/alert-templates.tmpl'
+        route:
+          group_by: ['alertname']
+          group_wait: 10s
+          repeat_interval: 1h
+          receiver: 'default-alert'
+          routes:
+          - receiver: 'slack-alert'
+            group_by: ['alertname']
+            match:
+              severity: page
+        receivers:
+        - name: 'default-alert'
+          slack_configs:
+          - channel: "#alert-test"
+            username: "Prometheus"
+            send_resolved: true
+            title: |-
+              [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }} {{ range .Alerts.Firing }}{{ .Labels.alertname }}{{ end }}{{ range .Alerts.Resolved }}{{ .Labels.alertname }}{{ end }}{{ end }}
+            text: |-
+              {{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }}
+                {{ range .Alerts.Firing }}{{ .Annotations.message }}{{ end }}{{ range .Alerts.Resolved }}{{ .Annotations.message }}{{ end }}
+              {{ else }}
+              {{ if gt (len .Alerts.Firing) 0 }}
+              *Alerts Firing:*
+                {{ range .Alerts.Firing }}- {{ .Labels.alertname  }}: {{ .Annotations.message }}
+              {{ end }}{{ end }}
+              {{ if gt (len .Alerts.Resolved) 0 }}
+              *Alerts Resolved:*
+                {{ range .Alerts.Resolved }}- {{ .Labels.alertname }}: {{ .Annotations.message }}
+              {{ end }}{{ end }}
+              {{ end }}
+        - name: 'slack-alert'
+          slack_configs:
+          - channel: "#pangyo-alert"
+            username: "Prometheus"
+            send_resolved: true
+            title: |-
+              [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }} {{ range .Alerts.Firing }}{{ .Labels.alertname }}{{ end }}{{ range .Alerts.Resolved }}{{ .Labels.alertname }}{{ end }}{{ end }}
+            text: |-
+              {{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }}
+                {{ range .Alerts.Firing }}{{ .Annotations.message }}{{ end }}{{ range .Alerts.Resolved }}{{ .Annotations.message }}{{ end }}
+              {{ else }}
+              {{ if gt (len .Alerts.Firing) 0 }}
+              *Alerts Firing:*
+                {{ range .Alerts.Firing }}- {{ .Labels.alertname }}: {{ .Annotations.message }}
+              {{ end }}{{ end }}
+              {{ if gt (len .Alerts.Resolved) 0 }}
+              *Alerts Resolved:*
+                {{ range .Alerts.Resolved }}- {{ .Labels.alertname }}: {{ .Annotations.message }}
+              {{ end }}{{ end }}
+              {{ end }}
+        - name: 'telegram-alert'
+          webhook_configs:
+          - send_resolved: True
+            url: http://prometheus-bot:9087/alert/-GROUP_ID
+    coreDns:
+      enabled: false
+    grafana:
+      enabled: false
+    kubeApiServer:
+      enabled: false
+    kubeControllerManager:
+      enabled: false
+    kubeDns:
+      enabled: false
+    kubelet:
+      enabled: false
+    kubeProxy:
+      enabled: false
+    kubeScheduler:
+      enabled: false
+    kubeStateMetrics:
+      enabled: true
+    nodeExporter:
+      enabled: false
+    prometheusOperator:
+      enabled: false
+      admissionWebhooks:
+        enabled: false
+      createCustomResource: false
+      cleanupCustomResource: false
+      cleanupCustomResourceBeforeInstall: false
+    prometheus:
+      service:
+        nodePort: 30018
+        type: NodePort
+      prometheusSpec:
+        image:
+          repository: castera-admin:5000/prometheus/prometheus
+          tag: v2.15.2
+        externalLabels:
+          taco_cluster: federation-master
+        replicas: 1
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: rbd
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 50Gi
+        additionalScrapeConfigs:
+        - job_name: federate
+          scrape_interval: 45s
+          basic_auth:
+            username: taco
+            password: password
+          honor_labels: true
+          metrics_path: /federate
+          params:
+            match[]:
+            - '{job=~".*exporter|.*kube-state-metrics|.*ceph-exporter|openstack-metrics"}'
+            - '{__name__=~"etcd_server_has_leader|node_cpu_seconds_total|node_memory_MemTotal_bytes-node_memory_MemFree_bytes|node_memory_MemFree_bytes|node_network_receive_bytes_total|node_network_transmit_bytes_total|namedprocess_namegroup_cpu_user_seconds_total|coredns_build_info|up|ceph_health_status"}'
+          static_configs:
+          # federate target prometheuses
+          - targets:
+            - 192.168.97.39:30008
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/helm
+    subpath: stable/prometheus-operator
+    reference: temporary
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: kube-state-metrics
+data:
+  chart_name: kube-state-metrics
+  release: kube-state-metrics
+  namespace: lma
+  values:
+    image:
+      repository: castera-admin:5000/coreos/kube-state-metrics
+      tag: v1.9.4
+    images:
+      tags:
+        kube-state-metrics: castera-admin:5000/coreos/kube-state-metrics:v1.9.4
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/helm
+    subpath: stable/kube-state-metrics
+    reference: temporary
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-node-exporter
+data:
+  chart_name: prometheus-node-exporter
+  release: prometheus-node-exporter
+  namespace: lma
+  values:
+    image:
+      repository: castera-admin:5000/prometheus/node-exporter
+      tag: v0.18.1
+    images:
+      tags:
+        node-exporter: castera-admin:5000/prometheus/node-exporter:v0.18.1
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/helm
+    subpath: stable/prometheus-node-exporter
+    reference: temporary
+  dependencies: 
+  - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: prometheus-process-exporter
+data:
+  chart_name: prometheus-process-exporter
+  release: prometheus-process-exporter
+  namespace: lma
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      tags:
+        process_exporter: castera-admin:5000/process-exporter:0.2.11
+        dep_check: castera-admin:5000/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: castera-admin:5000/docker:17.07.0
+      pull_policy: Always
+    labels:
+      process_exporter:
+        process_selector_key: process-exporter
+        process_selector_value: enabled
+    pod:
+      mandatory_access_control:
+        type: null
+      tolerations:
+        process_exporter:
+          enabled: true
+          tolerations:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
+          - key: node-role.kubernetes.io/node
+            operator: Exists
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: prometheus-process-exporter
+    reference: taco-v19.03
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: elasticsearch-kibana
+data:
+  chart_name: elasticsearch-operator
+  release: elasticsearch-kibana
+  namespace: lma
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    elasticsearchOperator:
+      enabled: false
+      image:
+        repository: castera-admin:5000/eck/eck-operator
+        tag: 1.0.0
+    customResource:
+      elasticsearch:
+        image: castera-admin:5000/elasticsearch/elasticsearch
+        version: 7.5.1
+        enabled: true
+        count: 1        # FIXME
+        config:
+          node.master: true # FIXME
+        volumeClaimTemplate:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessMode: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 5Gi
+            storageClassName: rbd
+      kibana:
+        image: castera-admin:5000/kibana/kibana
+        version: 7.4.2
+        enabled: true
+        http:
+          service:
+            spec:
+              type: NodePort
+          ports:
+          - name: kibana-dashboard-kb-http 
+            nodePort: 30001
+            targetPort: 5601
+            port: 5601
+    images:
+      tags:
+        eck-operator: castera-admin:5000/eck/eck-operator:1.0.0
+        elasticsearch: castera-admin:5000/elasticsearch/elasticsearch:7.5.1
+        kibana: castera-admin:5000/kibana/kibana:7.4.2
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/taco-helm
+    subpath: elasticsearch-operator
+    reference: master
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: grafana
+data:
+  chart_name: grafana
+  release: grafana
+  namespace: fed
+  values: 
+    adminPassword: password
+    image:
+      repository: castera-admin:5000/grafana/grafana
+      tag: 6.5.2
+    testFramework:
+      image: castera-admin:5000/dduportal/bats
+      tag: 0.4.0
+    initChownData:
+      image:
+        repository: busybox
+        tag: 1.30
+    sidecar:
+      image: castera-admin:5000/kiwigrid/k8s-sidecar:0.0.16
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+      datasources:
+        enabled: true
+        label: grafana_datasource
+    images:
+      tags:
+        grafana: castera-admin:5000/grafana/grafana:6.5.2
+        testFramework: castera-admin:5000/dduportal/bats:0.4.0
+        busybox: castera-admin:5000/busybox:1.30
+        sidecar: castera-admin:5000/kiwigrid/k8s-sidecar:0.0.16
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/helm
+    subpath: stable/grafana
+    reference: temporary
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: fluent-bit
+data:
+  chart_name: fluent-bit
+  release: fluent-bit
+  namespace: lma
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    image:
+      fluent_bit:
+        repository: castera-admin:5000/fluent/fluent-bit
+        tag: 1.3.2
+      pullPolicy: IfNotPresent
+    testFramework:
+      image: castera-admin:5000/dduportal/bats
+      tag: 0.4.0
+    backend:
+      type: es
+      es:
+        host: taco-elasticsearch-es-http
+        port: 9200
+        index: logging
+        logstash_prefix: logging
+        http_user: elastic
+        http_password: tacoword
+
+    nodeSelector:
+      fluent-logging: enabled
+
+    service:
+      flush: 5
+      logLevel: info
+
+    images:
+      tags:
+        fluent-bit: castera-admin:5000/fluent/fluent-bit:1.3.2
+        test: castera-admin:5000/dduportal/bats:0.4.0
+    extraEntries:
+      input: |-
+        [INPUT]
+            Buffer_Chunk_Size 1M
+            Buffer_Max_Size 1M
+            Mem_Buf_Limit 5MB
+            Name tail
+            Path /var/log/kern.log
+            Tag kernel
+
+        [INPUT]
+            Buffer_Chunk_Size 1M
+            Buffer_Max_Size 1M
+            Mem_Buf_Limit 5MB
+            Name tail
+            Parser docker
+            Path /var/log/containers/*.log
+            Tag kube.*
+
+        [INPUT]
+            Buffer_Chunk_Size 1M
+            Buffer_Max_Size 1M
+            Mem_Buf_Limit 5MB
+            Name tail
+            Path /var/log/libvirt/libvirtd.log
+            Tag libvirt
+
+        [INPUT]
+            Buffer_Chunk_Size 1M
+            Buffer_Max_Size 1M
+            Mem_Buf_Limit 5MB
+            Name tail
+            Path /var/log/libvirt/qemu/*.log
+            Tag qemu
+
+        [INPUT]
+            Buffer_Chunk_Size 1M
+            Buffer_Max_Size 1M
+            Mem_Buf_Limit 5MB
+            Name systemd
+            Path ${JOURNAL_PATH}
+            Systemd_Filter _SYSTEMD_UNIT=kubelet.service
+            Tag journal.*
+
+        [INPUT]
+            Buffer_Chunk_Size 1M
+            Buffer_Max_Size 1M
+            Mem_Buf_Limit 5MB
+            Name systemd
+            Path ${JOURNAL_PATH}
+            Systemd_Filter _SYSTEMD_UNIT=docker.service
+            Tag journal.*
+
+        [INPUT]
+            Buffer_Chunk_Size 1M
+            Buffer_Max_Size 1M
+            Mem_Buf_Limit 5MB
+            Name tail
+            Parser syslog-kubelet
+            Path /var/log/messages
+            Tag syslog.*
+
+        [INPUT]
+            Buffer_Chunk_Size 1M
+            Buffer_Max_Size 1M
+            Mem_Buf_Limit 5MB
+            Name tail
+            Parser syslog-kubelet
+            Path /var/log/syslog
+            Tag syslog.*
+
+      filter: |-
+        [FILTER]
+            Interval 1s
+            Match **
+            Name throttle
+            Rate 1000
+            Window 300
+
+        [FILTER]
+            Match libvirt
+            Name record_modifier
+            Record hostname ${HOSTNAME}
+
+        [FILTER]
+            Match qemu
+            Name record_modifier
+            Record hostname ${HOSTNAME}
+
+        [FILTER]
+            Match kernel
+            Name record_modifier
+            Record hostname ${HOSTNAME}
+
+        [FILTER]
+            Match journal.**
+            Name modify
+            Rename _BOOT_ID BOOT_ID
+            Rename _CAP_EFFECTIVE CAP_EFFECTIVE
+            Rename _CMDLINE CMDLINE
+            Rename _COMM COMM
+            Rename _EXE EXE
+            Rename _GID GID
+            Rename _HOSTNAME HOSTNAME
+            Rename _MACHINE_ID MACHINE_ID
+            Rename _PID PID
+            Rename _SYSTEMD_CGROUP SYSTEMD_CGROUP
+            Rename _SYSTEMD_SLICE SYSTEMD_SLICE
+            Rename _SYSTEMD_UNIT SYSTEMD_UNIT
+            Rename _TRANSPORT TRANSPORT
+            Rename _UID UID
+
+        [FILTER]
+            Match kube.*
+            Merge_JSON_Log true
+            Name kubernetes
+
+        [FILTER]
+            Match *
+            Name record_modifier
+            record cluster singlenode-general
+
+      output: |-
+        [OUTPUT]
+            Match **.fluentd**
+            Name null
+
+        [OUTPUT]
+            HTTP_Passwd password
+            HTTP_User taco
+            Host elasticsearch-logging
+            Logstash_Format true
+            Match kube.*
+            Name es
+            Port 80
+            Type fluent
+
+        [OUTPUT]
+            HTTP_Passwd password
+            HTTP_User taco
+            Host elasticsearch-logging
+            Logstash_Format true
+            Logstash_Prefix syslog
+            Match syslog.*
+            Name es
+            Port 80
+            Type syslog
+
+        [OUTPUT]
+            HTTP_Passwd password
+            HTTP_User taco
+            Host elasticsearch-logging
+            Logstash_Format true
+            Logstash_Prefix libvirt
+            Match libvirt
+            Name es
+            Port 80
+            Type libvirt
+
+        [OUTPUT]
+            HTTP_Passwd password
+            HTTP_User taco
+            Host elasticsearch-logging
+            Logstash_Format true
+            Logstash_Prefix qemu
+            Match qemu.*
+            Name es
+            Port 80
+            Type qemu
+
+        [OUTPUT]
+            HTTP_Passwd password
+            HTTP_User taco
+            Host elasticsearch-logging
+            Logstash_Format true
+            Logstash_Prefix journal
+            Match journal.*
+            Name es
+            Port 80
+            Type journal
+
+        [OUTPUT]
+            HTTP_Passwd password
+            HTTP_User taco
+            Host elasticsearch-logging
+            Logstash_Format true
+            Logstash_Prefix kernel
+            Match kernel.*
+            Name es
+            Port 80
+            Type kernel
+    tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+      - key: node-role.kubernetes.io/node
+        operator: Exists
+
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/taco-helm
+    subpath: fluent-bit
+    reference: master
+  test:
+    enabled: false
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: addons-lma
+data:
+  chart_name: taco-addons-lma
+  release: addons-lma
+  namespace: lma
+  values:
+    metricbeat:
+      image: castera-admin:5000/beats/metricbeat:taco-1.0.0
+      enabled: true
+      prometheus:
+        hosts: ["192.168.97.39:30018"] #FIXME
+      additionalModules: []
+      elasticsearch:
+        host: "https://taco-elasticsearch-es-http:9200"
+        username: elastic
+        password: tacoword
+      kibana:
+        host: "taco-kibana-dashboard-kb-http:5601"
+    grafanaDashboard:
+      enabled: false
+    serviceMonitor:
+      processExporter:
+        enabled: true
+        selector:
+          matchLabels:
+            application: process_exporter
+            component: metrics
+            release_group: lma-prometheus-process-exporter
+      grafana:
+        enabled: false
+    images:
+      tags:
+        metricbeat: castera-admin:5000/beats/metricbeat:taco-1.0.0
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/taco-addons
+    subpath: lma
+    reference: master
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: fed-addons-lma
+data:
+  chart_name: taco-addons-lma
+  release: fed-addons-lma
+  namespace: fed
+  values:
+    metricbeat:
+      enabled: false
+    grafanaDashboard:
+      enabled: true
+      sidecar:
+        datasources:
+          prometheusAddress: "lma-prometheus-fed-master-prometheus:9090"
+    serviceMonitor:
+      processExporter:
+        enabled: false
+      grafana:
+        enabled: true
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/taco-addons
+    subpath: lma
+    reference: master
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: helm-toolkit
+data:
+  chart_name: helm-toolkit
+  release: helm-toolkit
+  namespace: helm-tookit
+  values: {}
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: helm-toolkit
+    reference: taco-v19.03
+  dependencies: []
+---
+schema: armada/ChartGroup/v1
+metadata:
+  name: operator-infra
+data:
+  description: "Install operators"
+  sequenced: True
+  chart_group:
+  - prometheus-operator
+  - elasticsearch-operator
+---
+schema: armada/ChartGroup/v1
+metadata:
+  name: prometheus-infra
+data:
+  description: "Install Prometheus"
+  sequenced: True
+  chart_group:
+  - prometheus
+  - kube-state-metrics
+  - prometheus-process-exporter
+  - addons-lma
+---
+schema: armada/ChartGroup/v1
+metadata:
+  name: prometheus-fed-infra
+data:
+  description: "Install Fed-master"
+  sequenced: True
+  chart_group:
+  - prometheus-fed-master
+  - grafana
+  - fed-addons-lma
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: logging-infra
+data:
+  description: "Logging Infrastructure"
+  sequenced: False
+  chart_group:
+  - elasticsearch-kibana
+  - fluent-bit
+---
+schema: armada/Manifest/v1
+metadata:
+  schema: metadata/Document/v1
+  name: lma
+data:
+  release_prefix: lma
+  chart_groups:
+  - operator-infra
+  - prometheus-infra
+  - prometheus-fed-infra
+  - logging-infra

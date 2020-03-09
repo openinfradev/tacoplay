@@ -1,0 +1,123 @@
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: sona
+data:
+  chart_name: sona
+  release: sona
+  namespace: openstack
+  protected:
+    continue_processing: false
+  test:
+    enabled: true
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  values:
+    images:
+      pull_policy: Always
+      tags:
+        curl: 'castera-admin:5000/os-client-docker:latest'
+        python: 'castera-admin:5000/python:2-alpine'
+        onos: 'castera-admin:5000/onos-sona-nightly-docker:stable'
+    onos:
+      node_selector:
+        key: sona-control-plane
+        value: enabled
+      hostNetwork: true
+      config:
+        ovsdb_port: 6650
+        stateful_snat: true
+    openstack:
+      endpoints:
+        keystone:
+          endpoint: keystone.openstack.svc.cluster.local:80/v3
+          version: v3
+        neutron:
+          endpoint: neutron.openstack.svc.cluster.local:80
+      keystone:
+        endpoint: keystone/v3
+        version: v3
+      project: admin
+      username: admin
+      password: password
+      # neutron:
+      #  metadataProxySecret: password
+      #  novaMetadataIp: nova-metadata.openstack.svc.cluster.local
+      #  novaMetadataPort: 8775
+    controller:
+      master: 192.168.97.113
+      slave: 192.168.97.131
+    hosts:
+    - name: castera-prd-com-1
+      nodeType: COMPUTE
+      managementIp: 192.168.97.122
+      dataIp: 192.168.201.84
+      integrationBridge: "of:0000000000000001"
+      phyIntfs:
+      - network: provider
+        intf: ens4
+    - name: castera-prd-com-2
+      nodeType: COMPUTE
+      managementIp: 192.168.97.112
+      dataIp: 192.168.201.92
+      integrationBridge: "of:0000000000000002"
+      phyIntfs:
+      - network: provider
+        intf: ens4
+    - name: castera-prd-ctrl-2
+      nodeType: GATEWAY
+      managementIp: 192.168.97.131
+      dataIp: 192.168.201.85
+      integrationBridge: "of:00000000000000f2"
+      uplinkPort: router
+    - name: castera-prd-ctrl-3
+      nodeType: GATEWAY
+      managementIp: 192.168.97.113
+      dataIp: 192.168.201.58
+      integrationBridge: "of:00000000000000f3"
+      uplinkPort: router
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/sona-helm
+    subpath: sona
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/ChartGroup/v1
+metadata:
+  name: sona-infra
+data:
+  description: "Install sona"
+  sequenced: False
+  chart_group:
+  - sona
+---
+schema: armada/Manifest/v1
+metadata:
+  schema: metadata/Document/v1
+  name: sona-manifest
+data:
+  release_prefix: castera
+  chart_groups:
+  - sona-infra
+
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: helm-toolkit
+data:
+  chart_name: helm-toolkit
+  release: helm-toolkit
+  namespace: helm-tookit
+  values: {}
+  source:
+    type: local
+    location: /home/taco/tacoplay/charts/openstack-helm-infra
+    subpath: helm-toolkit
+    reference: taco-v19.03
+  dependencies: []
