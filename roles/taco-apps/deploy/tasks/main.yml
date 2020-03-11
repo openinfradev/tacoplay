@@ -50,22 +50,6 @@
     state: started
   become: no
 
-- name: run armada apply 
-  shell: >-
-    docker exec -u root armada armada apply
-    --tiller-host {{ tiller_host.stdout }}
-    --tiller-port {{ tiller_port }}
-    --timeout 7200
-    {{ inventory_dir }}/{{ item }}-manifest.yaml >
-    /tmp/{{ item }}-deployment.log
-  when:
-    - tiller_host.stdout != ""
-    - taco_apps and taco_apps|length > 0
-  args:
-    executable: /bin/bash
-  run_once: yes
-  with_items: "{{ taco_apps }}"
-
 - name: show armada apply usage for next try
   debug:
     msg: >-
@@ -75,3 +59,20 @@
       --timeout 7200
       {{ inventory_dir }}/[YOUR_APP]-manifest.yaml"
   when: tiller_host.stdout != ""
+
+- name: deploy apps using 'armada apply'
+  shell: >-
+    set -e;
+    for app in {{ taco_apps|join(' ') }}; do
+       docker exec -u root armada armada apply \
+       --tiller-host {{ tiller_host.stdout }} \
+       --tiller-port {{ tiller_port }} \
+       --timeout 7200 \
+       {{ inventory_dir }}/${app}-manifest.yaml > ~/${app}-deployment.log
+    done
+  when:
+    - tiller_host.stdout != ""
+    - taco_apps and taco_apps|length > 0
+  args:
+    executable: /bin/bash
+  run_once: yes
