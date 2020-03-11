@@ -11,6 +11,12 @@
     - { role: setup-os, tags: setup-os }
     - { role: container-registry/client, tags: setup-os }
 
+- name: pre upgrade for greaceful upgrade
+  hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: k8s/pre-upgrade, tags: pre-upgrade }
+
 # Install K8S
 - include: kubespray/upgrade-cluster.yml
   tags: k8s

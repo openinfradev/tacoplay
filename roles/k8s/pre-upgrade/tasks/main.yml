@@ -1,0 +1,5 @@
+- name: delete tiller service
+  shell: >-
+    {{ bin_dir }}/kubectl delete service tiller-deploy -n kube-system
+  become: no
+  ignore_errors: yes
