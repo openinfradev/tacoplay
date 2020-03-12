@@ -1561,4 +1561,4 @@ data:
   - openstack-services1
   - openstack-services2
   - openstack-services3
-  #- openstack-monitoring
+  - openstack-monitoring
