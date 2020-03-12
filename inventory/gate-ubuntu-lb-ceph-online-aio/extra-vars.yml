@@ -2,8 +2,8 @@
 # This value is also overriden by site-prepare job
 is_gating_test: true
 
-localrepo_k8s: 192.168.97.117
-localrepo_port: 8888
+# NOTE: downlaod binaries from private repository.
+k8s_binary_repo_url: 192.168.97.117:8888
 
 # ceph
 monitor_interface: ens3

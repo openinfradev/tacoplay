@@ -1,6 +1,9 @@
 # tacoplay
 is_gating_test: true
 
+# NOTE: downlaod binaries from private repository.
+k8s_binary_repo_url: 192.168.97.117:8888
+
 # ceph
 monitor_interface: eth2
 public_network: 192.168.201.0/24,192.168.202.0/24

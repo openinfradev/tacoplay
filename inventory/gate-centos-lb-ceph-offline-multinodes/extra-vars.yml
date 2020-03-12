@@ -11,12 +11,6 @@ pkg_repo_url: 192.168.197.39:8888
 k8s_binary_repo_url: VM-NAME-1:8888
 ceph_repo_url: 192.168.197.39:8888
 
-kubeadm_download_url: http://192.168.197.39:8888/k8s/kubeadm-{{kubeadm_version}}-{{image_arch}}
-hyperkube_download_url: http://192.168.197.39:8888/k8s/hyperkube-{{kube_version}}-{{image_arch}}
-cni_download_url: http://192.168.197.39:8888/k8s/cni-plugins-linux-{{image_arch}}-{{cni_version}}.tgz
-calicoctl_download_url: http://192.168.197.39:8888/k8s/calicoctl
-crictl_download_url: http://192.168.197.39:8888/k8s/crictl-{{crictl_version}}-linux-{{image_arch}}.tar.gz
-
 # ceph
 monitor_interface: eth2
 public_network: 192.168.201.0/24,192.168.202.0/24
