@@ -5,11 +5,10 @@ is_gating_test: true
 container_registry_enabled: true
 container_registries: []
 
-# FIXME
-ceph_repo_url: "tacorepo:8888"
-pkg_repo_url: "tacorepo:8888"
-container_registry_image_repo: registry
-k8s_binary_repo_url: http://192.168.197.39:8888
+pip_repo_url: 192.168.197.39:8888
+pkg_repo_url: 192.168.197.39:8888
+k8s_binary_repo_url: VM-NAME-1:8888
+ceph_repo_url: 192.168.197.39:8888
 
 # ceph
 monitor_interface: ens5

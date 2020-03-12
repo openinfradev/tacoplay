@@ -2,6 +2,9 @@
 # This value is also overriden by site-prepare job
 is_gating_test: true
 
+# NOTE: downlaod binaries from private repository.
+k8s_binary_repo_url: 192.168.97.117:8888
+
 # ceph
 monitor_interface: ens3
 public_network: 192.168.97.0/24,192.168.98.0/24
