@@ -1442,10 +1442,10 @@ data:
   values:
     images:
       tags:
-        prometheus_openstack_exporter: castera-admin:5000/openstackhelm/prometheus-openstack-exporter:ubuntu_bionic-20191017
-        dep_check: castera-admin:5000/stackanetes/kubernetes-entrypoint:v0.3.1
-        image_repo_sync: castera-admin:5000/docker:17.07.0
-        ks_user: castera-admin:5000/stein/ubuntu-source-heat-engine:taco-0.1.0
+        prometheus_openstack_exporter: registry.cicd.stg.taco/openstackhelm/prometheus-openstack-exporter:ubuntu_bionic-20191017
+        dep_check: registry.cicd.stg.taco/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: registry.cicd.stg.taco/docker:17.07.0
+        ks_user: registry.cicd.stg.taco/stein/ubuntu-source-heat-engine:taco-0.1.0
       pull_policy: IfNotPresent
     endpoints:
       identity:
