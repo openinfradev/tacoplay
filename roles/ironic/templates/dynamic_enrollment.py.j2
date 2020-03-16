@@ -17,11 +17,11 @@ else:
 
 FILENAME = "{{ lookup('env','HOME') }}/ironic_scripts/nodes.txt"
 IRONIC_DRIVERS = ["pxe_ipmitool", "pxe_drac", "pxe_ilo"]
-DEPLOY_KERNEL = "file:///var/lib/tftpboot/ironic_images/{{ deploy_kernel }}"
-DEPLOY_RAMDISK =  "file:///var/lib/tftpboot/ironic_images/{{ deploy_ramdisk }}"
-USER_KERNEL = "file:///var/lib/tftpboot/ironic_images/{{ user_kernel }}"
-USER_RAMDISK = "file:///var/lib/tftpboot/ironic_images/{{ user_ramdisk }}"
-USER_IMAGE = "file:///var/lib/tftpboot/ironic_images/{{ user_image }}"
+DEPLOY_KERNEL = "file://{{ tftp_path }}/ironic_images/{{ deploy_kernel }}"
+DEPLOY_RAMDISK =  "file://{{ tftp_path }}/ironic_images/{{ deploy_ramdisk }}"
+USER_KERNEL = "file://{{ tftp_path }}/ironic_images/{{ user_kernel }}"
+USER_RAMDISK = "file://{{ tftp_path }}/ironic_images/{{ user_ramdisk }}"
+USER_IMAGE = "file://{{ tftp_path }}/ironic_images/{{ user_image }}"
 USER_IMAGE_CHECKSUM = "{{ user_image_checksum }}"
 
 

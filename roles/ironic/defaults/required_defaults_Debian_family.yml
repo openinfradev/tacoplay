@@ -1,15 +1,11 @@
 ---
-dhcp_service_name: dhcpd
+dhcp_service_name: isc-dhcp-server
 mysql_service_name: mysql
 tftp_service_name: tftpd-hpa
 tftp_path: '/tftpboot'
 required_packages:
-  - python-dev
-  - python-pip
-  - rabbitmq-server
-  - mysql-server
-  - python-pymysql
-  - python-mysqldb
+  - mariadb-server
+  - python3-pymysql
   - isc-dhcp-server
   - software-properties-common
   - open-iscsi
@@ -18,7 +14,6 @@ required_packages:
   - xinetd
   - syslinux-common
   - pxelinux
-  - python-configparser
   - libffi-dev
   - libxslt1-dev
   - libssl-dev
@@ -32,7 +27,14 @@ required_packages:
   - genisoimage
   - kpartx
   - qemu-utils
-  - python-openwsman
   - debootstrap
   - uuid-runtime
   - curl
+  #- python-configparser
+  #- python-openwsman
+ironic_services:
+  - ironic-api
+  - ironic-conductor
+  - ironic-inspector
+ironic_clients:
+  - python-ironicclient

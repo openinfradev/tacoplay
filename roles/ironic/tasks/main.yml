@@ -4,6 +4,7 @@
 
 - name: Install RabbitMQ Service
   include: install-rabbitmq.yml
+  when: json_rpc_enabled | bool == false
 
 - name: Install MariaDB Service
   include: install-mariadb.yml
@@ -14,8 +15,13 @@
 - name: Setup TFTP Service
   include: setup-tftp.yml
 
-- name: Install IRONIC Standalone
-  include: install-ironic.yml
+- name: Deploy Ironic as Containers
+  include: deploy-ironic-container.yml
+  when: run_ironic_container | bool == true
+
+- name: Deploy Ironic as Services 
+  include: deploy-ironic-process.yml
+  when: run_ironic_container | bool == false
 
 - name: Setup Client
   include: setup-client.yml

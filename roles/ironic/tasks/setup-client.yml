@@ -7,6 +7,7 @@
     - python-ironicclient==2.7.0
     - decorator==4.4.0
     - oslo.config==6.8.1
+  when: run_ironic_container | bool == false
 
 - name: create scripts directory
   file:

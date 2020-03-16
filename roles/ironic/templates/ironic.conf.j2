@@ -3,10 +3,16 @@ debug = true
 debug_tracebacks_in_api = true
 use_syslog = false
 use_stderr = false
+{% if json_rpc_enabled %}
+rpc_transport = json-rpc
+{% else %}
 transport_url = rabbit://openstack:password@{{ ironic_server }}:5672//
+{% endif %}
 auth_strategy = noauth
 my_ip = {{ ironic_server }}
-enabled_drivers = {{ ironic_driver }}
+enabled_hardware_types = {{ ironic_hardware_types }}
+enabled_boot_interfaces = {{ ironic_boot_interfaces }}
+
 
 [conductor]
 api_url = http://{{ ironic_server }}:6385
@@ -19,6 +25,9 @@ connection = mysql+pymysql://ironic:password@{{ ironic_server }}/ironic?charset=
 
 [dhcp]
 dhcp_provider = none
+
+[neutron]
+auth_strategy = noauth
 
 [agent]
 deploy_logs_collect = never

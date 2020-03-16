@@ -1,5 +1,10 @@
 ---
 
+### ironic service type
+ironic_release: stein
+run_ironic_container: false
+json_rpc_enabled: true
+
 ### DHCP Configuration
 dhcp_interfaces: ens786f0
 dhcp_server: 192.168.48.11
@@ -8,13 +13,14 @@ dhcp_netmask: 255.255.255.0
 
 ### Node Configuration
 ironic_server: 192.168.48.11
-ironic_driver: pxe_ipmitool, pxe_drac, pxe_ilo
-deploy_kernel: ubuntu-deploy.kernel
-deploy_ramdisk:  ubuntu-deploy.initramfs
-user_kernel: user-centos7.kernel
-user_ramdisk: user-centos7.initramfs
-user_image: user-centos7.qcow2
-user_image_checksum: 1628706adac12fe4a1298f19489cce68
+ironic_hardware_types: ipmi
+ironic_boot_interfaces: pxe
+deploy_kernel: "ubuntu-deploy/ubuntu-deploy.kernel"
+deploy_ramdisk:  "ubuntu-deploy/ubuntu-deploy.initramfs"
+user_kernel: "ubuntu-bionic-user/ubuntu-bionic-image.vmlinuz"
+user_ramdisk: "ubuntu-bionic-user/ubuntu-bionic-image.initrd"
+user_image: "ubuntu-bionic-user/ubuntu-bionic-image.qcow2"
+user_image_checksum: 79e9529d4558827f9397ec33477d1d81
 
 # Node Information for dynamic enrollment
 # key: name, desc: name of node, don't duplicate the name
@@ -34,6 +40,11 @@ user_image_checksum: 1628706adac12fe4a1298f19489cce68
 #    driver_user: root
 #    driver_password: root
 
+### baremetal image directory
+baremetal_image_dir: baremetal-images
+ironic_container_dir: "{{ baremetal_image_dir }}/ironic-container"
+ironic_image_dir: "{{ baremetal_image_dir }}/ironic-image"
+
 ### container file
 ironic_api_container_file: ironic-api-pike.tar
 ironic_conductor_container_file: ironic-conductor-pike.tar
@@ -43,4 +54,3 @@ ironic_base_container_file: ironic-base-pike.tar
 ironic_base_container_image: kolla/centos-source-ironic-base:5.0.5
 ironic_api_container_image:  kolla/centos-source-ironic-api:5.0.5
 ironic_conductor_container_image: kolla/centos-source-ironic-conductor:5.0.5
-

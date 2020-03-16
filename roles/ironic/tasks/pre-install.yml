@@ -9,42 +9,40 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
   with_items: "{{ required_packages }}"
 
-- name: disable selinux
+- name: set package facts
+  package_facts:
+    manager: "auto"
+
+- name: disable selinux if the package installled
   selinux:
     state: disabled
+  when: "'selinux' in ansible_facts.packages"
 
-- name: add docker repo
-  get_url:
-    url: https://download.docker.com/linux/centos/docker-ce.repo
-    dest: /etc/yum.repos.d/docer-ce.repo
-
-- name: Install Docker
-  package:
-    name: docker-ce
-    state: latest
-
-- name: Start Docker service
-  service:
-    name: docker
-    state: started
-    enabled: yes
+- name: stop service apparmor ond ufw in ubuntu, if running
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: no
+  loop:
+    - apparmor
+    - ufw
+  when:
+    - ansible_distribution in ["Ubuntu","Debian"]
 
 - name: Load ironic-base image from file
   shell: docker load < "{{ ironic_base_container_file }}"
   args:
-    chdir: "{{ playbook_dir }}/ironic-image/"
+    chdir: "{{ inventory_dir }}/{{ ironic_container_dir }}/"
+  when: run_ironic_container | bool == true
 
 - name: Load ironic-api image from file
   shell: docker load < "{{ ironic_api_container_file }}"
   args:
-    chdir: "{{ playbook_dir }}/ironic-image/"
+    chdir: "{{ inventory_dir }}/{{ ironic_container_dir }}/"
+  when: run_ironic_container | bool == true
 
 - name: Load ironic-conductor image from file
   shell: docker load < "{{ ironic_conductor_container_file }}"
   args:
-    chdir: "{{ playbook_dir }}/ironic-image/"
-
-- name: Add iscsi_tcp module
-  modprobe:
-    name: iscsi_tcp
-    state: present
+    chdir: "{{ inventory_dir }}/{{ ironic_container_dir }}/"
+  when: run_ironic_container | bool == true

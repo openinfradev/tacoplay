@@ -1,4 +1,6 @@
 ---
+- name: install dependent packages
+  action: "{{ ansible_pkg_mgr }} name=rabbitmq-server state=present"
 
 - name: ensure started rabbitmq service
   systemd:
