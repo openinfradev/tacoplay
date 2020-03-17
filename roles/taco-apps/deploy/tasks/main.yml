@@ -68,7 +68,7 @@
        --tiller-host {{ tiller_host.stdout }} \
        --tiller-port {{ tiller_port }} \
        --timeout 7200 \
-       {{ inventory_dir }}/${app}-manifest.yaml > ~/${app}-deployment.log
+       {{ inventory_dir }}/${app}-manifest.yaml > /tmp/${app}-deployment.log
     done
   when:
     - tiller_host.stdout != ""
