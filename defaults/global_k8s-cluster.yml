@@ -16,7 +16,7 @@ calico_felix_prometheusmetricsport: 9091
 calico_felix_prometheusgometricsenabled: "true"
 calico_felix_prometheusprocessmetricsenabled: "true"
 
-# external provisioner
+# external provisioners > rbd_provisioner
 rbd_provisioner_enabled: >-
     {%- if taco_storage_backend == 'ceph' -%}true{%- else -%}false{%- endif -%}
 
@@ -39,6 +39,13 @@ rbd_provisioner_user_secret: "AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=="
 
 rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
 rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
+
+# external provisioners > local_provisioners
+# For more customization, refer to "roles/kubernetes-apps/external_provisioner
+local_volume_provisioner_enabled: false
+local_path_provisioner_enabled: false
+local_path_provisioner_namespace: "kube-system"
+local_path_provisioner_is_default_storageclass: "false"
 
 # docker option
 docker_dns_servers_strict: false
