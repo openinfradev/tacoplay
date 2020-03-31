@@ -12,7 +12,7 @@ pipeline {
       defaultValue: 'master',
       description: 'branch or tag of tacoplay (Eg, \'master\' or \'2.0.0\')')
     string(name: 'SITE',
-      defaultValue: 'gate-centos-lb-ceph-offline-multinodes',
+      defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
     string(name: 'INCLUDED_APPS',
       defaultValue: '',
@@ -21,7 +21,7 @@ pipeline {
       defaultValue: 'centos7',
       description: 'guest OS of target VM')
     string(name: 'FLAVOR',
-      defaultValue: 't1.xlarge',
+      defaultValue: 't1.4xlarge',
       description: 'flavor of target VM')
     string(name: 'AZ',
       defaultValue: 'jenkins',
