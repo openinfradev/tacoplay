@@ -5,7 +5,8 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: docker }
+    - { role: ../kubespray/roles/kubespray-defaults }
+    - { role: ../kubespray/roles/container-engine }
     - { role: container-registry/client }
   tags: always
 
