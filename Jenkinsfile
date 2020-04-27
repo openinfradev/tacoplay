@@ -60,7 +60,7 @@ pipeline {
           script {
             ADMIN_NODE = ''
             VM_COUNT = 5
-            SECURITY_GROUP = '7db40031-df4a-402a-ac56-53d71de65fc6' // Jenkins project's default sec group
+            SECURITY_GROUP = '57aa4e93-0a9c-4ff9-bcb5-33fe1c1ca344' // Jenkins project's default sec group
             online = false
 
             println("*********************************************")
@@ -87,18 +87,18 @@ pipeline {
 
               // Use three net interfaces for each VM instance
               networks = [:]
-              networks.mgmt = 'mgmt-net'
-              networks.flat = 'data-net1'
-              networks.vxlan = 'data-net2'
+              networks.mgmt = 'private-mgmt'
+              networks.flat = 'private-data1'
+              networks.vxlan = 'private-data2'
 
               if (params.SITE.contains("online")) {
                 online = true
-                networks.mgmt = 'public-net'
+                networks.mgmt = 'private-mgmt-routed'
                 if (!params.SITE.contains("multi")) {
                   VM_COUNT = 1
                 }
               } else {
-                SECURITY_GROUP = 'offline-rule'
+                //SECURITY_GROUP = 'offline-rule'
               }
 
               deleteBdm = true

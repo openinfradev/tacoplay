@@ -60,31 +60,20 @@ sed -i "s/#PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd
 sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
 systemctl restart sshd
 
-###################################
-# Set br-data and default gateway #
-###################################
 until [ -n "$net0_stat" ] && [ -n "$net1_stat" ]
 do
   sleep 3
   if [ "$OS" = "\"centos\"" ]; then
-    net0_stat=$(ip a | grep eth0 | grep 192.168)
-    net1_stat=$(ip a | grep eth1 | grep 192.168)
-  elif [ "$OS" = "ubuntu" ]; then
-    net0_stat=$(ip a | grep ens3 | grep 192.168)
-    net1_stat=$(ip a | grep ens4 | grep 192.168)
+    net0_stat=$(ip a | grep eth0 | grep 172.16)
+    net1_stat=$(ip a | grep eth0 | grep 172.16)
   fi
 done
 
-if echo $net0_stat | grep 192.168.97
+if echo $net0_stat | grep 172.16.50
 then
-  gateway='192.168.97.1'
+  gateway='172.16.50.1'
 #  route delete default gw 192.168.201.1 || true
 #  route add default gw 192.168.97.1 dev eth0
-elif echo $net0_stat | grep 192.168.98
-then
-  gateway='192.168.98.1'
-#  route delete default gw 192.168.202.1 || true
-#  route add default gw 192.168.98.1 dev eth0
 else
   echo "Something went wrong! Exiting.."
   exit 1
