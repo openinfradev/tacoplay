@@ -8,9 +8,6 @@ pipeline {
     }
   }
   parameters {
-    string(name: 'TACOPLAY_VERSION',
-      defaultValue: 'master',
-      description: 'branch or tag of tacoplay (Eg, \'master\' or \'2.0.0\')')
     string(name: 'SITE',
       defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
@@ -64,13 +61,10 @@ pipeline {
             online = false
 
             println("*********************************************")
-            println("TACOPLAY VERSION: ${params.TACOPLAY_VERSION}")
             println("SITE (Inventory): ${params.SITE}")
             println("*********************************************")
 
             sh """
-              git checkout ${params.TACOPLAY_VERSION}
-
               git clone https://tde.sktelecom.com/stash/scm/oreotools/vslab-inventories.git
               cp -r vslab-inventories/${params.SITE} ./inventory/
 
@@ -186,7 +180,7 @@ pipeline {
                 mv gate/adminInitOnline.sh gate/adminInit.sh
                 sed -i 's/SITE_NAME/${params.SITE}/g' gate/adminInit.sh
                 ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'mkdir tacoplay'
-                scp -o StrictHostKeyChecking=no -i jenkins.key -r ./* taco@$ADMIN_NODE:/home/taco/tacoplay/
+                scp -o StrictHostKeyChecking=no -i jenkins.key -rp ./. taco@$ADMIN_NODE:/home/taco/tacoplay/
                 ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cp /home/taco/tacoplay/gate/adminInit.sh /home/taco/'
                 scp -o StrictHostKeyChecking=no -i jenkins.key /var/lib/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
               """
