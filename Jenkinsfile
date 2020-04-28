@@ -21,7 +21,7 @@ pipeline {
       defaultValue: 't1.4xlarge',
       description: 'flavor of target VM')
     string(name: 'AZ',
-      defaultValue: 'jenkins',
+      defaultValue: 'r06',
       description: 'Availability Zone Name')
     string(name: 'ARTIFACT',
       defaultValue: 'latest-gate-centos-lb-ceph-offline-multinodes',
