@@ -60,6 +60,9 @@ etc_hosts_localhost_entries:
     expected:
       - localhost
 
+# expose metrics to 0.0.0.0
+kube_proxy_metrics_bind_address: 0.0.0.0:10249
+
 # OS
 #disable_swap: true
 #epel_enabled: true
