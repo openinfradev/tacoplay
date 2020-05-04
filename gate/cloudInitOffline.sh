@@ -77,8 +77,6 @@ done
 if echo $net0_stat | grep 172.16.10
 then
   gateway='172.16.10.1'
-  #route delete default gw 192.168.201.1 || true
-  #route add default gw 192.168.197.1 dev eth0
 else
   echo "Something went wrong! Exiting.."
   exit 1
@@ -89,9 +87,8 @@ if [ "$OS" = "\"centos\"" ]; then
   systemctl restart network
 fi
 
-# TODO: update repository address
 # set tacorepo into /etc/hosts
-echo '0.0.0.0 tacorepo' >> /etc/hosts
+echo '192.168.199.11 tacorepo' >> /etc/hosts
 
 # back up repo files
 for f in /etc/yum.repos.d/*.repo; do mv -- "$f" "${f%}.bak"; done

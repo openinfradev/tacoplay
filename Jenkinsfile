@@ -81,13 +81,13 @@ pipeline {
 
               // Use three net interfaces for each VM instance
               networks = [:]
-              networks.mgmt = 'private-mgmt'
+              networks.mgmt = 'private-mgmt-offline'
               networks.flat = 'private-data1'
               networks.vxlan = 'private-data2'
 
               if (params.SITE.contains("online")) {
                 online = true
-                networks.mgmt = 'private-mgmt-routed'
+                networks.mgmt = 'private-mgmt-online'
                 if (!params.SITE.contains("multi")) {
                   VM_COUNT = 1
                 }

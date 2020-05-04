@@ -67,41 +67,25 @@ systemctl restart sshd
 until [ -n "$net0_stat" ] && [ -n "$net1_stat" ] && [ -n "$net2_stat" ]
 do
   sleep 3
-  if [ "$OS" = "\"centos\"" ]; then
-    net0_stat=$(ip a | grep eth0 | grep 192.168)
-    net1_stat=$(ip a | grep eth1 | grep 192.168)
-    net2_stat=$(ip a | grep eth2 | grep 192.168)
-  elif [ "$OS" = "ubuntu" ]; then
-    net0_stat=$(ip a | grep ens3 | grep 192.168)
-    net1_stat=$(ip a | grep ens4 | grep 192.168)
-    net2_stat=$(ip a | grep ens5 | grep 192.168)
+  if [ "$OS" = "ubuntu" ]; then
+    net0_stat=$(ip a | grep ens3 | grep 172.16)
+    net1_stat=$(ip a | grep ens4 | grep 172.16)
+    net2_stat=$(ip a | grep ens5 | grep 172.16)
   fi
 done
 
-if echo $net0_stat | grep 192.168.197
+if echo $net0_stat | grep 172.16.10
 then
-  gateway='192.168.197.1'
-  #route delete default gw 192.168.201.1 || true
-  #route add default gw 192.168.197.1 dev eth0
-elif echo $net0_stat | grep 192.168.198
-then
-  gateway='192.168.198.1'
-  #route delete default gw 192.168.202.1 || true
-  #route add default gw 192.168.198.1 dev eth0
+  gateway='172.16.10.1'
 else
   echo "Something went wrong! Exiting.."
   exit 1
 fi
 
-if [ "$OS" = "\"centos\"" ]; then
-  echo "GATEWAY=$gateway" >> /etc/sysconfig/network
-  systemctl restart network
-elif [ "$OS" = "ubuntu" ]; then
-  ip route add default via $gateway
-fi
+ip route add default via $gateway
 
 # set tacorepo into /etc/hosts
-echo '192.168.198.24 tacorepo' >> /etc/hosts
+echo '192.168.199.11 tacorepo' >> /etc/hosts
 
 # back up repo files
 mv /etc/apt/sources.list /etc/apt/sources.list.bak
@@ -126,7 +110,7 @@ EOF
 
 #cat >> /etc/pip.conf << EOF
 #[global]
-#proxy = 192.168.197.17:8888
+#proxy = 192.168.199.11:8888
 #EOF
 
 # Chanage a default python interpreter to python3.6

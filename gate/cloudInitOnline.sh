@@ -72,8 +72,6 @@ done
 if echo $net0_stat | grep 172.16.50
 then
   gateway='172.16.50.1'
-#  route delete default gw 192.168.201.1 || true
-#  route add default gw 192.168.97.1 dev eth0
 else
   echo "Something went wrong! Exiting.."
   exit 1
