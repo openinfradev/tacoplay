@@ -23,7 +23,7 @@ sudo pip install --upgrade pip
 # Put all artifacts into tacoplay directory #
 #################################################
 
-wget http://tacorepo:8888/bin/mc && chmod 0755 mc && sudo mv mc /usr/local/bin
+wget http://tacorepo/bin/mc && chmod 0755 mc && sudo mv mc /usr/local/bin
 
 mkdir -p /home/taco/.mc
 cat > /home/taco/.mc/config.json <<EOF
@@ -95,12 +95,9 @@ sudo mkdir /data && sudo cp -r /home/taco/tacoplay/mirrors /data
 
 if [ "$OS" = "\"centos\"" ]; then
   sudo yum install -y httpd
-  sudo sed -i 's/Listen 80/Listen 8888/g' /etc/httpd/conf/httpd.conf
   sudo setenforce 0 && sudo systemctl start httpd && sudo systemctl enable httpd
 elif [ "$OS" = "ubuntu" ]; then
   sudo apt install -y apache2
-  sudo sed -i 's/:80/:8888/g' /etc/apache2/sites-enabled/000-default.conf
-  sudo sed -i 's/Listen 80/Listen 8888/g' /etc/apache2/ports.conf
   sudo service apache2 restart
 fi
 

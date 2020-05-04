@@ -92,25 +92,25 @@ mv /etc/apt/sources.list /etc/apt/sources.list.bak
 
 # use private repo for offline environment
 cat >> /etc/apt/sources.list << EOF
-deb http://tacorepo:8888/ubuntu bionic main restricted universe multiverse
-deb http://tacorepo:8888/ubuntu bionic-security main restricted universe multiverse
-deb http://tacorepo:8888/ubuntu bionic-updates main restricted universe multiverse
+deb http://tacorepo:80/ubuntu bionic main restricted universe multiverse
+deb http://tacorepo:80/ubuntu bionic-security main restricted universe multiverse
+deb http://tacorepo:80/ubuntu bionic-updates main restricted universe multiverse
 
-deb-src http://tacorepo:8888/ubuntu bionic main restricted universe multiverse
-deb-src http://tacorepo:8888/ubuntu bionic-security main restricted universe multiverse
-deb-src http://tacorepo:8888/ubuntu bionic-updates main restricted universe multiverse
+deb-src http://tacorepo:80/ubuntu bionic main restricted universe multiverse
+deb-src http://tacorepo:80/ubuntu bionic-security main restricted universe multiverse
+deb-src http://tacorepo:80/ubuntu bionic-updates main restricted universe multiverse
 EOF
 
 cat >> /etc/pip.conf << EOF
 [global]
-index-url = http://tacorepo:8888/pip/simple
+index-url = http://tacorepo:80/pip/simple
 trusted-host = tacorepo
 disable_pip_version_check=1
 EOF
 
 #cat >> /etc/pip.conf << EOF
 #[global]
-#proxy = 192.168.199.11:8888
+#proxy = 192.168.199.11:80
 #EOF
 
 # Chanage a default python interpreter to python3.6

@@ -97,60 +97,60 @@ for f in /etc/yum.repos.d/*.repo; do mv -- "$f" "${f%}.bak"; done
 cat >> /etc/yum.repos.d/epel.repo << EOF
 [epel]
 name=Local Extra Packages for Enterprise Linux 7 - \$basearch
-baseurl=http://tacorepo:8888/epel/7/\$basearch
+baseurl=http://tacorepo:80/epel/7/\$basearch
 failovermethod=priority
 enabled=1
 gpgcheck=1
-gpgkey=http://tacorepo:8888/epel/RPM-GPG-KEY-EPEL-7
+gpgkey=http://tacorepo:80/epel/RPM-GPG-KEY-EPEL-7
 EOF
 
 cat >> /etc/yum.repos.d/localrepo.repo << EOF
 [base]
 name=Local CentOS-\$releasever - Base
-baseurl=http://tacorepo:8888/centos/\$releasever/os/\$basearch/
+baseurl=http://tacorepo:80/centos/\$releasever/os/\$basearch/
 gpgcheck=1
-gpgkey=http://tacorepo:8888/centos/RPM-GPG-KEY-CentOS-7
+gpgkey=http://tacorepo:80/centos/RPM-GPG-KEY-CentOS-7
 
 [updates]
 name=Local CentOS-\$releasever - Updates
-baseurl=http://tacorepo:8888/centos/\$releasever/updates/\$basearch/
+baseurl=http://tacorepo:80/centos/\$releasever/updates/\$basearch/
 gpgcheck=1
-gpgkey=http://tacorepo:8888/centos/RPM-GPG-KEY-CentOS-7
+gpgkey=http://tacorepo:80/centos/RPM-GPG-KEY-CentOS-7
 
 [extras]
 name=Local CentOS-\$releasever - Extras
-baseurl=http://tacorepo:8888/centos/\$releasever/extras/\$basearch/
+baseurl=http://tacorepo:80/centos/\$releasever/extras/\$basearch/
 gpgcheck=1
-gpgkey=http://tacorepo:8888/centos/RPM-GPG-KEY-CentOS-7
+gpgkey=http://tacorepo:80/centos/RPM-GPG-KEY-CentOS-7
 EOF
 
 cat >> /etc/yum.repos.d/docker.repo << EOF
 [docker-ce]
 name=Docker-CE Repository
-baseurl=http://tacorepo:8888/docker/linux/centos/7/\$basearch/stable
+baseurl=http://tacorepo:80/docker/linux/centos/7/\$basearch/stable
 enabled=1
 gpgcheck=1
-gpgkey=http://tacorepo:8888/docker/linux/centos/gpg
+gpgkey=http://tacorepo:80/docker/linux/centos/gpg
 
 [docker-engine]
 name=Docker-Engine Repository
-baseurl=http://tacorepo:8888/dockerproject/repo/main/centos/7
+baseurl=http://tacorepo:80/dockerproject/repo/main/centos/7
 enabled=1
 gpgcheck=1
-gpgkey=http://tacorepo:8888/dockerproject/gpg
+gpgkey=http://tacorepo:80/dockerproject/gpg
 EOF
 
 cat >> /etc/yum.repos.d/ceph.repo << EOF
 [ceph]
 name=Ceph Mimic
-baseurl=http://tacorepo:8888/ceph/rpm-nautilus/el7/x86_64
-gpgkey=http://tacorepo:8888/ceph/keys/release.asc
+baseurl=http://tacorepo:80/ceph/rpm-nautilus/el7/x86_64
+gpgkey=http://tacorepo:80/ceph/keys/release.asc
 gpgcheck=0
 EOF
 
 cat >> /etc/pip.conf << EOF
 [global]
-index-url = http://tacorepo:8888/pip/simple
+index-url = http://tacorepo:80/pip/simple
 trusted-host = tacorepo
 disable_pip_version_check=1
 EOF
