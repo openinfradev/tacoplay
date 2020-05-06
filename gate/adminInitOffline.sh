@@ -7,8 +7,6 @@ ARTIFACT="ARTIFACT_NAME"
 python --version
 if [ "$OS" = "\"centos\"" ]; then
   sudo yum update -y
-  # back up repo files
-  for f in /etc/yum.repos.d/CentOS*.repo; do sudo mv -f -- "$f" "${f%}.bak"; done
   sudo yum install -y openssh-server.x86_64 openssh-clients gcc make git sshpass wget
   sudo yum install -y epel-release
   sudo yum install -y python-pip
