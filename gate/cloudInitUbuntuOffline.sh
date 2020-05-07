@@ -103,15 +103,10 @@ EOF
 
 cat >> /etc/pip.conf << EOF
 [global]
-index-url = http://tacorepo:80/pip/simple
+index-url = http://tacorepo:80/pip3/simple
 trusted-host = tacorepo
 disable_pip_version_check=1
 EOF
-
-#cat >> /etc/pip.conf << EOF
-#[global]
-#proxy = 192.168.199.11:80
-#EOF
 
 # Chanage a default python interpreter to python3.6
 update-alternatives --install /usr/bin/python python /usr/bin/python3.6 1

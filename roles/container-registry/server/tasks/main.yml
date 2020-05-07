@@ -12,7 +12,8 @@
     name: "{{ item.name }}"
     version: "{{ item.version }}"
     state: present
-    extra_args: --ignore-installed
+    executable: "/usr/bin/pip3"
+    extra_args: "--ignore-installed --trusted-host tacorepo"
   loop:
     - { name: 'docker', version: '3.5.1' }
 

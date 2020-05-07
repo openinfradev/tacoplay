@@ -9,14 +9,17 @@ if [ "$OS" = "\"centos\"" ]; then
   sudo yum update -y
   sudo yum install -y openssh-server.x86_64 openssh-clients gcc make git sshpass wget
   sudo yum install -y epel-release
-  sudo yum install -y python-pip
+  sudo yum install -y python36 python3-pip
 elif [ "$OS" = "ubuntu" ]; then
   sudo apt-get update
   sudo apt install -y openssh-server openssh-client gcc make sshpass wget
   sudo apt install -y python3-pip
-  sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 fi
+
+sudo mv /usr/bin/pip /usr/bin/pip2.bak || true
+sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 sudo pip install --upgrade pip
+
 #################################################
 # Put all artifacts into tacoplay directory #
 #################################################
