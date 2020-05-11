@@ -23,7 +23,7 @@
 
 - name: install python-pip
   yum:
-    name: python3-pip
+    name: python-pip
     state: present
   when:
     - ansible_distribution in ["CentOS","RedHat"]

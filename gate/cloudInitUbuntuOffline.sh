@@ -103,7 +103,8 @@ EOF
 
 cat >> /etc/pip.conf << EOF
 [global]
-index-url = http://tacorepo:80/pip3/simple
+index-url = http://tacorepo:80/pip/simple
+extra-index-url = http://tacorepo:80/pip3/simple
 trusted-host = tacorepo
 disable_pip_version_check=1
 EOF
