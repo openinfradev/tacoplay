@@ -1,4 +1,4 @@
-@Library('pipeline-library@taco-k8s-v20.07-v2-20.07.08') _
+@Library('pipeline-library@taco-k8s-v20.07-v2') _
 
 pipeline {
   agent {
