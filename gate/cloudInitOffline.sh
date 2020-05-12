@@ -68,26 +68,15 @@ until [ -n "$net0_stat" ] && [ -n "$net1_stat" ] && [ -n "$net2_stat" ]
 do
   sleep 3
   if [ "$OS" = "\"centos\"" ]; then
-    net0_stat=$(ip a | grep eth0 | grep 192.168)
-    net1_stat=$(ip a | grep eth1 | grep 192.168)
-    net2_stat=$(ip a | grep eth2 | grep 192.168)
-  elif [ "$OS" = "ubuntu" ]; then
-    net0_stat=$(ip a | grep ens3 | grep 192.168)
-    net1_stat=$(ip a | grep ens4 | grep 192.168)
-    net2_stat=$(ip a | grep ens5 | grep 192.168)
+    net0_stat=$(ip a | grep eth0 | grep 172.16)
+    net1_stat=$(ip a | grep eth1 | grep 172.16)
+    net2_stat=$(ip a | grep eth2 | grep 172.16)
   fi
 done
 
-if echo $net0_stat | grep 192.168.197
+if echo $net0_stat | grep 172.16.10
 then
-  gateway='192.168.197.1'
-  #route delete default gw 192.168.201.1 || true
-  #route add default gw 192.168.197.1 dev eth0
-elif echo $net0_stat | grep 192.168.198
-then
-  gateway='192.168.198.1'
-  #route delete default gw 192.168.202.1 || true
-  #route add default gw 192.168.198.1 dev eth0
+  gateway='172.16.10.1'
 else
   echo "Something went wrong! Exiting.."
   exit 1
@@ -99,7 +88,7 @@ if [ "$OS" = "\"centos\"" ]; then
 fi
 
 # set tacorepo into /etc/hosts
-echo '192.168.197.39 tacorepo' >> /etc/hosts
+echo '192.168.199.11 tacorepo' >> /etc/hosts
 
 # back up repo files
 for f in /etc/yum.repos.d/*.repo; do mv -- "$f" "${f%}.bak"; done
@@ -108,60 +97,61 @@ for f in /etc/yum.repos.d/*.repo; do mv -- "$f" "${f%}.bak"; done
 cat >> /etc/yum.repos.d/epel.repo << EOF
 [epel]
 name=Local Extra Packages for Enterprise Linux 7 - \$basearch
-baseurl=http://tacorepo:8888/epel/7/\$basearch
+baseurl=http://tacorepo:80/epel/7/\$basearch
 failovermethod=priority
 enabled=1
 gpgcheck=1
-gpgkey=http://tacorepo:8888/epel/RPM-GPG-KEY-EPEL-7
+gpgkey=http://tacorepo:80/epel/RPM-GPG-KEY-EPEL-7
 EOF
 
 cat >> /etc/yum.repos.d/localrepo.repo << EOF
 [base]
 name=Local CentOS-\$releasever - Base
-baseurl=http://tacorepo:8888/centos/\$releasever/os/\$basearch/
+baseurl=http://tacorepo:80/centos/\$releasever/os/\$basearch/
 gpgcheck=1
-gpgkey=http://tacorepo:8888/centos/RPM-GPG-KEY-CentOS-7
+gpgkey=http://tacorepo:80/centos/RPM-GPG-KEY-CentOS-7
 
 [updates]
 name=Local CentOS-\$releasever - Updates
-baseurl=http://tacorepo:8888/centos/\$releasever/updates/\$basearch/
+baseurl=http://tacorepo:80/centos/\$releasever/updates/\$basearch/
 gpgcheck=1
-gpgkey=http://tacorepo:8888/centos/RPM-GPG-KEY-CentOS-7
+gpgkey=http://tacorepo:80/centos/RPM-GPG-KEY-CentOS-7
 
 [extras]
 name=Local CentOS-\$releasever - Extras
-baseurl=http://tacorepo:8888/centos/\$releasever/extras/\$basearch/
+baseurl=http://tacorepo:80/centos/\$releasever/extras/\$basearch/
 gpgcheck=1
-gpgkey=http://tacorepo:8888/centos/RPM-GPG-KEY-CentOS-7
+gpgkey=http://tacorepo:80/centos/RPM-GPG-KEY-CentOS-7
 EOF
 
 cat >> /etc/yum.repos.d/docker.repo << EOF
 [docker-ce]
 name=Docker-CE Repository
-baseurl=http://tacorepo:8888/docker/linux/centos/7/\$basearch/stable
+baseurl=http://tacorepo:80/docker/linux/centos/7/\$basearch/stable
 enabled=1
 gpgcheck=1
-gpgkey=http://tacorepo:8888/docker/linux/centos/gpg
+gpgkey=http://tacorepo:80/docker/linux/centos/gpg
 
 [docker-engine]
 name=Docker-Engine Repository
-baseurl=http://tacorepo:8888/dockerproject/repo/main/centos/7
+baseurl=http://tacorepo:80/dockerproject/repo/main/centos/7
 enabled=1
 gpgcheck=1
-gpgkey=http://tacorepo:8888/dockerproject/gpg
+gpgkey=http://tacorepo:80/dockerproject/gpg
 EOF
 
 cat >> /etc/yum.repos.d/ceph.repo << EOF
 [ceph]
 name=Ceph Mimic
-baseurl=http://tacorepo:8888/ceph/rpm-nautilus/el7/x86_64
-gpgkey=http://tacorepo:8888/ceph/keys/release.asc
+baseurl=http://tacorepo:80/ceph/rpm-nautilus/el7/x86_64
+gpgkey=http://tacorepo:80/ceph/keys/release.asc
 gpgcheck=0
 EOF
 
 cat >> /etc/pip.conf << EOF
 [global]
-index-url = http://tacorepo:8888/pip/simple
+index-url = http://tacorepo:80/pip/simple
+extra-index-url = http://tacorepo:80/pip3/simple
 trusted-host = tacorepo
 disable_pip_version_check=1
 EOF

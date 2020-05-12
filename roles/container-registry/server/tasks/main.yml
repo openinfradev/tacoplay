@@ -12,7 +12,7 @@
     name: "{{ item.name }}"
     version: "{{ item.version }}"
     state: present
-    extra_args: --ignore-installed
+    extra_args: "--ignore-installed"
   loop:
     - { name: 'docker', version: '3.5.1' }
 

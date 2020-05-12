@@ -8,9 +8,6 @@ pipeline {
     }
   }
   parameters {
-    string(name: 'TACOPLAY_VERSION',
-      defaultValue: 'master',
-      description: 'branch or tag of tacoplay (Eg, \'master\' or \'2.0.0\')')
     string(name: 'SITE',
       defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
@@ -24,7 +21,7 @@ pipeline {
       defaultValue: 't1.4xlarge',
       description: 'flavor of target VM')
     string(name: 'AZ',
-      defaultValue: 'jenkins',
+      defaultValue: 'r06',
       description: 'Availability Zone Name')
     string(name: 'ARTIFACT',
       defaultValue: 'latest-gate-centos-lb-ceph-offline-multinodes',
@@ -60,17 +57,14 @@ pipeline {
           script {
             ADMIN_NODE = ''
             VM_COUNT = 5
-            SECURITY_GROUP = '7db40031-df4a-402a-ac56-53d71de65fc6' // Jenkins project's default sec group
+            SECURITY_GROUP = '57aa4e93-0a9c-4ff9-bcb5-33fe1c1ca344' // Jenkins project's default sec group
             online = false
 
             println("*********************************************")
-            println("TACOPLAY VERSION: ${params.TACOPLAY_VERSION}")
             println("SITE (Inventory): ${params.SITE}")
             println("*********************************************")
 
             sh """
-              git checkout ${params.TACOPLAY_VERSION}
-
               git clone https://tde.sktelecom.com/stash/scm/oreotools/vslab-inventories.git
               cp -r vslab-inventories/${params.SITE} ./inventory/
 
@@ -87,18 +81,18 @@ pipeline {
 
               // Use three net interfaces for each VM instance
               networks = [:]
-              networks.mgmt = 'mgmt-net'
-              networks.flat = 'data-net1'
-              networks.vxlan = 'data-net2'
+              networks.mgmt = 'private-mgmt-offline'
+              networks.flat = 'private-data1'
+              networks.vxlan = 'private-data2'
 
               if (params.SITE.contains("online")) {
                 online = true
-                networks.mgmt = 'public-net'
+                networks.mgmt = 'private-mgmt-online'
                 if (!params.SITE.contains("multi")) {
                   VM_COUNT = 1
                 }
               } else {
-                SECURITY_GROUP = 'offline-rule'
+                //SECURITY_GROUP = 'offline-rule'
               }
 
               deleteBdm = true
@@ -186,7 +180,7 @@ pipeline {
                 mv gate/adminInitOnline.sh gate/adminInit.sh
                 sed -i 's/SITE_NAME/${params.SITE}/g' gate/adminInit.sh
                 ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'mkdir tacoplay'
-                scp -o StrictHostKeyChecking=no -i jenkins.key -r ./* taco@$ADMIN_NODE:/home/taco/tacoplay/
+                scp -o StrictHostKeyChecking=no -i jenkins.key -rp ./. taco@$ADMIN_NODE:/home/taco/tacoplay/
                 ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cp /home/taco/tacoplay/gate/adminInit.sh /home/taco/'
                 scp -o StrictHostKeyChecking=no -i jenkins.key /var/lib/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
               """
@@ -237,12 +231,12 @@ pipeline {
 
             if (params.REINSTALL) {
               deleteGlanceBootstrapImage(params.SITE)
-              sh "ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cd tacoplay && git checkout ${params.TACOPLAY_VERSION} && ansible-playbook -T 30 -vv -u taco -i inventory/${params.SITE}/hosts.ini -e @inventory/${params.SITE}/extra-vars.yml reset-wrapper.yml'"
+              sh "ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cd tacoplay && ansible-playbook -T 30 -vv -u taco -i inventory/${params.SITE}/hosts.ini -e @inventory/${params.SITE}/extra-vars.yml reset-wrapper.yml'"
             }
 
             // [Robert] Do we need to pass 'site_name' var as a param? (Is there any case where inventory name != manifest name?)
             sh """
-              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git checkout ${params.TACOPLAY_VERSION} && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
+              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
             """
 
 /*

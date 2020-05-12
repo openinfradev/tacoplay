@@ -7,8 +7,6 @@ ARTIFACT="ARTIFACT_NAME"
 python --version
 if [ "$OS" = "\"centos\"" ]; then
   sudo yum update -y
-  # back up repo files
-  for f in /etc/yum.repos.d/CentOS*.repo; do sudo mv -f -- "$f" "${f%}.bak"; done
   sudo yum install -y openssh-server.x86_64 openssh-clients gcc make git sshpass wget
   sudo yum install -y epel-release
   sudo yum install -y python-pip
@@ -18,12 +16,14 @@ elif [ "$OS" = "ubuntu" ]; then
   sudo apt install -y python3-pip
   sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 fi
+
 sudo pip install --upgrade pip
+
 #################################################
 # Put all artifacts into tacoplay directory #
 #################################################
 
-wget http://tacorepo:8888/bin/mc && chmod 0755 mc && sudo mv mc /usr/local/bin
+wget http://tacorepo/bin/mc && chmod 0755 mc && sudo mv mc /usr/local/bin
 
 mkdir -p /home/taco/.mc
 cat > /home/taco/.mc/config.json <<EOF
@@ -95,12 +95,9 @@ sudo mkdir /data && sudo cp -r /home/taco/tacoplay/mirrors /data
 
 if [ "$OS" = "\"centos\"" ]; then
   sudo yum install -y httpd
-  sudo sed -i 's/Listen 80/Listen 8888/g' /etc/httpd/conf/httpd.conf
   sudo setenforce 0 && sudo systemctl start httpd && sudo systemctl enable httpd
 elif [ "$OS" = "ubuntu" ]; then
   sudo apt install -y apache2
-  sudo sed -i 's/:80/:8888/g' /etc/apache2/sites-enabled/000-default.conf
-  sudo sed -i 's/Listen 80/Listen 8888/g' /etc/apache2/ports.conf
   sudo service apache2 restart
 fi
 
