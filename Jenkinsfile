@@ -60,6 +60,8 @@ pipeline {
             SECURITY_GROUP = '57aa4e93-0a9c-4ff9-bcb5-33fe1c1ca344' // Jenkins project's default sec group
             online = false
 
+            println("* This is from MASTER branch *")
+
             println("*********************************************")
             println("SITE (Inventory): ${params.SITE}")
             println("*********************************************")
