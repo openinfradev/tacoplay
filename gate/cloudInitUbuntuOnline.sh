@@ -79,10 +79,6 @@ else
   exit 1
 fi
 
-if [ "$OS" = "ubuntu" ]; then
-  ip route add default via $gateway
-fi
-
 # Chanage a default python interpreter to python3.6
 update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
