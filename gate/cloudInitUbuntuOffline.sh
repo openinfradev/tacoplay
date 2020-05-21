@@ -84,8 +84,6 @@ else
   exit 1
 fi
 
-ip route add default via $gateway
-
 # set tacorepo into /etc/hosts
 echo '192.168.199.11 tacorepo' >> /etc/hosts
 
