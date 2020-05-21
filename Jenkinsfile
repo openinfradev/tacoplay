@@ -229,6 +229,8 @@ pipeline {
               tacoplay_params += " -e 'site_name=${params.SITE} openstack_release=${params.OPENSTACK_RELEASE}'"
             }
 
+            // HOTFIX: if kubespray support docker_version 19.03, delete this.
+            tacoplay_params += " -e docker_version=latest"
             println("tacoplay_params: ${tacoplay_params}")
 
             if (params.REINSTALL) {
