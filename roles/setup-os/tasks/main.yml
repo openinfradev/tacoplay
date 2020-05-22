@@ -36,4 +36,10 @@
     - jq
 
 - import_tasks: setup-interfaces.yml
+
 - import_tasks: setup-net-services.yml
+
+- include_tasks: disable-kmem-accounting-for-cgroup.yml
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+    - ansible_distribution_major_version == '7'

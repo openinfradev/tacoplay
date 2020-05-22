@@ -1,0 +1,29 @@
+---
+
+- name: Check if kernel memory accounting disabled
+  shell: grep GRUB_CMDLINE_LINUX /etc/default/grub | grep -c "cgroup.memory=nokmem"
+  register: cgroup_nokmem_status
+  ignore_errors: true
+
+- name: Disable cgroup kernel memory accouting
+  lineinfile:
+    path="/etc/default/grub"
+    regexp='GRUB_CMDLINE_LINUX="(.*)"'
+    line='GRUB_CMDLINE_LINUX="\1 cgroup.memory=nokmem"'
+    backrefs=yes
+    state=present
+  become: yes
+  when: cgroup_nokmem_status.stdout == "0"
+
+- name: Update grub configuration
+  command: "grub2-mkconfig -o /etc/grub2.cfg"
+  become: yes
+  when: cgroup_nokmem_status.stdout == "0"
+
+- name: Reboot to apply kernel parameter change
+  reboot:
+  become: yes
+  when: 
+    - not is_gating_test or is_gating_test is undefined
+    - cgroup_nokmem_status.stdout == "0"
+    - inventory_hostname not in groups['admin-node']
