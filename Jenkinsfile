@@ -182,7 +182,7 @@ pipeline {
                 mv gate/adminInitOnline.sh gate/adminInit.sh
                 sed -i 's/SITE_NAME/${params.SITE}/g' gate/adminInit.sh
                 ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'mkdir tacoplay'
-                scp -o StrictHostKeyChecking=no -i jenkins.key -rp ./. taco@$ADMIN_NODE:/home/taco/tacoplay/
+                scp -o StrictHostKeyChecking=no -i jenkins.key -rp ./* .git taco@$ADMIN_NODE:/home/taco/tacoplay/
                 ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cp /home/taco/tacoplay/gate/adminInit.sh /home/taco/'
                 scp -o StrictHostKeyChecking=no -i jenkins.key /var/lib/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
               """
