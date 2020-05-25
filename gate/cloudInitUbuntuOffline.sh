@@ -60,6 +60,8 @@ sed -i "s/#PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd
 sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
 systemctl restart sshd
 
+/sbin/dhclient
+
 #######################
 # Set default gateway #
 #######################
@@ -81,8 +83,6 @@ else
   echo "Something went wrong! Exiting.."
   exit 1
 fi
-
-ip route add default via $gateway
 
 # set tacorepo into /etc/hosts
 echo '192.168.199.11 tacorepo' >> /etc/hosts

@@ -60,6 +60,8 @@ sed -i "s/#PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd
 sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
 systemctl restart sshd
 
+/sbin/dhclient
+
 until [ -n "$net0_stat" ] && [ -n "$net1_stat" ]
 do
   sleep 3
@@ -75,10 +77,6 @@ then
 else
   echo "Something went wrong! Exiting.."
   exit 1
-fi
-
-if [ "$OS" = "ubuntu" ]; then
-  ip route add default via $gateway
 fi
 
 # Chanage a default python interpreter to python3.6
