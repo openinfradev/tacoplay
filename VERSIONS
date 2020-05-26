@@ -1,9 +1,7 @@
-kubespray https://tde.sktelecom.com/stash/scm/oreotools/kubespray.git v2.12.5
-charts/openstack-helm https://tde.sktelecom.com/stash/scm/openstack/openstack-helm.git taco-k8s-v20.05
-charts/openstack-helm-infra https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra.git taco-k8s-v20.05
-manifests https://tde.sktelecom.com/stash/scm/oreotools/armada-manifests.git taco-k8s-v20.05
-ceph-ansible https://tde.sktelecom.com/stash/scm/oreotools/ceph-ansible.git stable-4.0
-charts/helm https://tde.sktelecom.com/stash/scm/oreotools/helm-charts.git taco-k8s-v20.05
-charts/sona-helm https://tde.sktelecom.com/stash/scm/openstack/sona-helm.git hamode
-charts/taco-helm https://tde.sktelecom.com/stash/scm/oreotools/taco-helm.git taco-k8s-v20.05
-charts/taco-addons https://tde.sktelecom.com/stash/scm/oreotools/taco-addons.git taco-k8s-v20.05
+kubespray https://tde.sktelecom.com/stash/scm/oreotools/kubespray.git v2.12.5-fix-docker-cli
+charts/openstack-helm https://github.com/openinfradev/openstack-helm.git taco-v20.05
+charts/openstack-helm-infra https://github.com/openinfradev/openstack-helm-infra.git taco-v20.05
+ceph-ansible https://github.com/openinfradev/ceph-ansible.git stable-4.0
+charts/helm https://github.com/openinfradev/helm-charts.git taco-v20.05
+charts/taco-helm https://github.com/openinfradev/taco-helm.git taco-v20.05
+charts/taco-addons https://github.com/openinfradev/taco-addons.git taco-v20.05
