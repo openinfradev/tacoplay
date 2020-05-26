@@ -1,4 +1,4 @@
-kubespray https://tde.sktelecom.com/stash/scm/oreotools/kubespray.git v2.12.5-fix-docker-cli
+kubespray https://github.com/openinfradev/kubespray.git v2.12.5-fix-docker-cli
 charts/openstack-helm https://github.com/openinfradev/openstack-helm.git taco-v20.05
 charts/openstack-helm-infra https://github.com/openinfradev/openstack-helm-infra.git taco-v20.05
 ceph-ansible https://github.com/openinfradev/ceph-ansible.git stable-4.0
