@@ -55,6 +55,9 @@
     - { role: kubespray/roles/kubespray-defaults, tags: taco-clients }
     - { role: k8s/client/kubectl, tags: taco-clients }
     - { role: k8s/client/helm, vars: { helm_binary_name: helm3 }, tags: taco-clients }
+    - { role: k8s/client/kubectx, tags: taco-clients }
+    - { role: k8s/client/kubens, tags: taco-clients }
+    - { role: k8s/client/kube-ps1, tags: taco-clients }
 
 - name: setup helm client for version2
   hosts: admin-node:kube-master

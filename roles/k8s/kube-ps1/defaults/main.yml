@@ -1,0 +1,6 @@
+---
+bin_dir: /usr/local/bin
+artifacts_dir: "{{ inventory_dir }}/artifacts"
+
+# Download URL
+kubeps1_download_url: "https://raw.githubusercontent.com/jonmosco/kube-ps1/v0.7.0/kube-ps1.sh"

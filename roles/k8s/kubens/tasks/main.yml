@@ -1,0 +1,17 @@
+---
+- name: download kubens binary
+  get_url:
+    url: "{{ kubens_download_url }}"
+    dest: "{{ artifacts_dir }}/kubens.tar.gz"
+    checksum: "{{ 'sha256:' + kubens_checksum }}"
+
+- name: unarchive kubens.tar.gz
+  unarchive:
+    src: "{{ artifacts_dir }}/kubens.tar.gz"
+    dest: "{{ artifacts_dir }}"
+
+- name: copy kubens to bin_dir
+  copy:
+    src: "{{ artifacts_dir }}/kubens"
+    dest: "{{ bin_dir }}/kubens"
+    mode: 0755
