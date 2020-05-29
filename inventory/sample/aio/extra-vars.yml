@@ -1,8 +1,15 @@
 # tacoplay
+
+# TACO parameter : a backend storage for kubernetes shared storage (ceph|nfs)
 taco_storage_backend: "ceph"
+
+# TACO parameter : applications will be deployed on kubernetes. (openstack|lma|sona)
 taco_apps: ["openstack"]
 
-# ceph
+# TACO parameter : container image registry will be deployed on the node defined in container-registry in hosts.ini
+#container_registry_enabled: true
+
+# ceph parameter
 monitor_interface: br-data
 public_network: 192.168.97.0/24
 cluster_network: 192.168.97.0/24
@@ -16,10 +23,15 @@ ceph_conf_overrides:
 osd_objectstore: bluestore
 lvm_volumes:
   - data: /dev/vdb
+  
+# kubespray parameter : enable calico IP-in-IP encapsulation of the inter-workload traffic. (Always | Never | CrossSubnet)
+ipip_mode: Always
+#peer_with_router: false
 
 # Override openstack release (Default value is defined in Tacoplay)
 #Openstack_release: stein
 
+# OpenStack parameter
 openstack_config: true
 kube_pool:
   name: "kube"
@@ -70,10 +82,7 @@ openstack_pools:
   - "{{ openstack_cinder_backup_pool }}"
   - "{{ openstack_nova_vms_pool }}"
 
-ipip_mode: Always
-#peer_with_router: false
-
-# Openstack ACCOUNT
+# OpenStack ACCOUNT
 os_root_user: admin
 os_root_password: password
 
