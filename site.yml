@@ -7,6 +7,7 @@
   hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
+    - { role: validate-cluster, tags: setup-os }
     - { role: setup-os/conf-repos, tags: setup-os }
     - { role: setup-os, tags: setup-os }
     - { role: container-registry/client, tags: setup-os }
