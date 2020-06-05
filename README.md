@@ -1,5 +1,20 @@
 # tacoplay 
 
+tacoplay is a set of ansible playbooks to selectively deploy and configure various services (platforms) developed under TACO project. 
+
+List of services (platforms) is as following: 
+
+* Docker registry
+* Ceph (via ceph-ansible) 
+* Kubernetes (via Kubespray)
+* CSI/CNI
+* Helm 
+* Airship-armada
+* OpenStack (via openstack-helm & armada) 
+* Logging, Monitoring, Alarm (via openstack-helm-infra & operators)
+* and more tools under TACO project. 
+
+## Document & Installation Guide  
 Refer to detailed installation guide on the following documentation site.
 
 **Warning: Use 'sample/aio' inventory for now, since 'sample/5nodes' hasn't been updated to the recent version yet. It'll be updated soon.**
