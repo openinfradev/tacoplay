@@ -2,7 +2,7 @@
 - name: copy admin kubeconfig to ansible host
   fetch:
     src: "/root/.kube/config"
-    dest: "{{ artifacts_dir }}/admin.conf"
+    dest: "{{ artifacts_dir }}/{{ cluster_name }}-admin.conf"
     flat: yes
     validate_checksum: no
   delegate_to: "{{ groups['kube-master']|first }}"
@@ -16,8 +16,8 @@
 
 - name: copy admin kubeconfig to home
   copy:
-    src: "{{ artifacts_dir }}/admin.conf"
-    dest: "{{ lookup('env','HOME') }}/.kube/config"
+    src: "{{ artifacts_dir }}/{{ cluster_name }}-admin.conf"
+    dest: "{{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config"
   become: no
 
 - name: copy kubectl binary to ansible host
@@ -71,6 +71,30 @@
     backrefs: yes
   become: no
   when: checkpath.rc == 0
+
+- name: check whether .bashrc contains KUBECONFIG
+  command: grep -Frn "export KUBECONFIG=" {{ lookup('env','HOME') }}/.bashrc
+  register: kubeconfig_grep_result
+  ignore_errors: True
+  changed_when: False
+
+- name: add KUBECONFIG into bashrc
+  lineinfile:
+    dest: "{{ lookup('env','HOME') }}/.bashrc"
+    state: present
+    line: 'export KUBECONFIG=$HOME/.kube/{{ cluster_name }}-config'
+  become: no
+  when: not kubeconfig_grep_result.rc == 0
+
+- name: add {{ cluster_name }}-config to KUBECONFIG
+  lineinfile:
+    path: "{{ lookup('env','HOME') }}/.bashrc"
+    state: present
+    regexp: 'export KUBECONFIG=(.*config)+$'
+    line: 'export KUBECONFIG=\1:$HOME/.kube/{{ cluster_name }}-config'
+    backrefs: yes
+  become: no
+  when: kubeconfig_grep_result.rc == 0
 
 - name: source bashrc
   become: no

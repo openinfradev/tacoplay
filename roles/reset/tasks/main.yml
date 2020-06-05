@@ -1,5 +1,5 @@
 ---
-- name: Reset Open vSwitch
+- name: Reset OpenvSwitch
   include_tasks: reset-openvswitch.ym
   when:
     - ovs_package_installed
@@ -17,3 +17,19 @@
     - taco_storage_backend == 'ceph'
     - inventory_hostname in groups['admin-node']
   ignore_errors: yes
+
+- name: Remove {{ cluster_name }} config
+  file:
+    path: "$HOME/.kube/{{ cluster_name }}-config"
+    state: absent
+
+- name: Remove {{ cluster_name }} from bashrc
+  replace:
+    path: "{{ lookup('env','HOME') }}/.bashrc"
+    regexp: '\$HOME\/.kube\/{{ cluster_name }}-config:|:\$HOME\/.kube\/{{ cluster_name }}-config|^(export KUBECONFIG=\$HOME\/.kube\/cluster.local-config)$'
+
+- name: source bashrc
+  become: no
+  shell: source {{ lookup('env','HOME') }}/.bashrc
+  args:
+    executable: /bin/bash
