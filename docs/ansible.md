@@ -24,6 +24,8 @@ tacoplay는 아래와 같은 inventory로 node를 group으로 구성한다.
 * [admin-node]: ansible-play를 실행할 node
 * [taco:children]: taco를 구성하는 모든 node들의 목록
 
+<br/>
+
 Tags
 ---------------------
 ### site.yml에 정의된 tags
@@ -39,6 +41,8 @@ Tags
 | lma                | 구축된 kubernetes위에 lma tools 배포를 위한 준비
 | deploy             | armada를 이용해서 위 openstack, lma을 kubernetes에 배포
 | openstack-client   | openstack client 설치
+
+<br/>
 
 Roles
 ----------------------
@@ -62,6 +66,8 @@ Roles
 | taco-apps/openstack/client       | openstack client container 배포
 | taco-apps/openstack/pre-install  | openstack을 설치하기 위한 사전 작업
 | taco-apps/openstack/setup-os     | openstack을 설치하기 위한 os 환경 설정
+
+<br/>
 
 Grobal Vars
 --------------------
@@ -121,6 +127,8 @@ container_registry_enabled가 true일 경우 override하는 k8s image repo 주�
 ceph_ansible을 이용해서 ceph을 구축할 경우 ceph_ansible에 정의된 기본값들을 override한다.
 자세한 내용은 [TACO에서 Ceph 사용을 위한 설정](ceph.md) 문서 참조
 
+<br/>
+
 주요 kubespray vars
 -------------------
 아래 변수 목록은 kubespray에 선언된 중요한 변수들로, 환경에 따라서 extra_vars에 선언해서 변경이 필요할 수 있다.
@@ -131,3 +139,9 @@ ceph_ansible을 이용해서 ceph을 구축할 경우 ceph_ansible에 정의된 
 | kube_service_addresses | 10.233.0.0/18  | kubernetes service pod이 사용하는 대역
 | ipip_mode              | Never          | subnet간 ip in ip encapsulation
 | peer_with_router       | false          | enable the peering with the datacenter's border router
+| cluster_name           | cluster.local  | 설치될 k8s cluster의 이름. multi-cluster 구성을 위해서는 각각 다른 이름을 사용해야 함.
+
+### Multi-cluster 구성 ###
+복수 개의 cluster를 구성하고자 할 경우, 각각의 cluster는 서로 다른 cluster_name을 사용해야 한다.  
+예를 들어 cluster명이 'dev'일 경우, $HOME/.kube/dev-config 형태로 config 파일이 생성되며, KUBECONFIG 환경변수에 해당 파일명이 추가되어 kubectl 명령어로 해당 cluster 관리가 가능해진다.  
+cluster간 전환은 함께 설치되는 kubectx 를 사용하게 손쉽게 가능하며, 사용법은 https://github.com/ahmetb/kubectx를 참고하도록 한다.
