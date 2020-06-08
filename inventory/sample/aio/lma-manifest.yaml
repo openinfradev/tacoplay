@@ -272,7 +272,7 @@ data:
                   storage: 50Gi #FIXME
     kubeEtcd:
       endpoints:
-      - 10.10.10.114 #FIXME
+      - 192.168.97.120 #FIXME
 #      - 192.168.5.194 #FIXME
 #      - 192.168.5.195 #FIXME
       serviceMonitor:
@@ -440,7 +440,7 @@ data:
       prometheusSpec:
         nodeSelector:
           taco-lma: enabled
-        serviceMonitorSelectorNilUsersHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
         serviceMonitorNamespaceSelector:
           matchLabels:
             name: fed
@@ -864,7 +864,7 @@ data:
       kibana:
         host: "taco-kibana-dashboard-kb-http:5601"
       prometheus:
-        hosts: ["10.10.10.114:30018"] #FIXME
+        hosts: ["192.168.97.120:30018"] #FIXME
       addtionalModules: []
     grafanaDashboard:
       enabled: false
@@ -880,6 +880,9 @@ data:
         enabled: false
       openstack:
         enabled: true
+      ceph:
+        mon_hosts:
+        - ip: 192.168.97.120   #FIXME
     tacoWatcher:
       rbac:
         create: false
@@ -923,16 +926,7 @@ data:
       - name: main-federate
         interval: 45s
         path: /federate
-        address: 10.10.10.114 #FIXME
-        port: 30008
-        params:
-          match[]:
-          - '{job=~".*exporter|.*kube-state-metrics|ceph.*|openstack.*"}'
-          - '{__name__=~"etcd_server_has_leader|node_cpu_seconds_total|node_memory_MemTotal_bytes-      node_memory_MemFree_bytes|node_memory_MemFree_bytes|node_network_receive_bytes_total|node_network_trans mit_bytes_total|namedprocess_namegroup_cpu_user_seconds_total|coredns_build_info|up|ceph_health_status" }'
-          -                                                                                             '{__name__=~"container_cpu_user_seconds_total|container_cpu_usage_seconds_total|kube_pod_container_reso urce_requests_cpu_cores|kube_pod_container_resource_limits_cpu_cores|container_memory_working_set_bytes |kube_pod_container_resource_requests_memory_bytes|kube_pod_container_resource_limits_memory_bytes|cont ainer_network_transmit_bytes_total|container_network_receive_bytes_total"}'
-      - name: siim-dev-federate
-        path: /federate
-        address: 10.10.10.114 #FIXME
+        address: 192.168.97.120 #FIXME
         port: 30008
         params:
           match[]:
@@ -940,7 +934,7 @@ data:
           - '{__name__=~"etcd_server_has_leader|node_cpu_seconds_total|node_memory_MemTotal_bytes-      node_memory_MemFree_bytes|node_memory_MemFree_bytes|node_network_receive_bytes_total|node_network_trans mit_bytes_total|namedprocess_namegroup_cpu_user_seconds_total|coredns_build_info|up|ceph_health_status" }'
           -                                                                                             '{__name__=~"container_cpu_user_seconds_total|container_cpu_usage_seconds_total|kube_pod_container_reso urce_requests_cpu_cores|kube_pod_container_resource_limits_cpu_cores|container_memory_working_set_bytes |kube_pod_container_resource_requests_memory_bytes|kube_pod_container_resource_limits_memory_bytes|cont ainer_network_transmit_bytes_total|container_network_receive_bytes_total"}'
     tacoWatcher:
-      host: "10.10.10.114" #FIXME
+      host: "192.168.97.120" #FIXME
       port: 32000
       rbac:
         create: true
@@ -948,14 +942,14 @@ data:
         enabled: true
         body:
           isMain: true
-          kibanaUrl: "http://10.10.10.114:30001" #FIXME
-          grafanaUrl: "http://10.10.10.114:30009" #FIXME
-          k8sUrl: "http://10.10.10.114:6443" #FIXME
+          kibanaUrl: "http://192.168.97.120:30001" #FIXME
+          grafanaUrl: "http://192.168.97.120:30009" #FIXME
+          k8sUrl: "http://192.168.97.120:6443" #FIXME
           menu:
             enabled: true
     kibanaInit:
       enabled: true
-      url: "http://10.10.10.114:30001" #FIXME
+      url: "http://192.168.97.120:30001" #FIXME
       image: sktdev/kibana-init:v4
     prometheusRules:
       create: true
