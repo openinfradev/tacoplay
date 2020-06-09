@@ -7,8 +7,6 @@
 #    : set with federation target
 # 2. taco-addons-lma chart
 #    - metricbeat.prometheus.hosts 
-# 3. taco-watcher chart
-#    - config.extra.sql: watcher initialization
 #####################################################################
 ---
 schema: armada/Chart/v1
@@ -974,44 +972,6 @@ data:
 schema: armada/Chart/v1
 metadata:
   schema: metadata/Document/v1
-  name: taco-watcher
-data:
-  chart_name: taco-watcher
-  release: taco-watcher
-  namespace: fed
-  values:
-    nodeSelector:
-      taco-lma: enabled
-    image:
-      repository: sktdev/taco-watcher
-      tag: 1.0.4
-    service:
-      type: NodePort
-      port: 32000
-      targetPort: 32000
-      nodePort: 32000
-      proxy_from: 32001
-      proxy_to: 32009
-    resources:
-      storageClassName: rbd
-    config:
-      initDB: true
-      username: taco
-      password: password
-      kibana:
-        authkey: elastic:tacoword
-      grafana:
-        authkey: admin:password
-  source:
-    type: git
-    location: https://github.com/openinfradev/taco-helm
-    subpath: taco-watcher
-    reference: taco-v20.05
-  dependencies: []
----
-schema: armada/Chart/v1
-metadata:
-  schema: metadata/Document/v1
   name: helm-toolkit
 data:
   chart_name: helm-toolkit
@@ -1056,7 +1016,6 @@ data:
   description: "Install Fed-master"
   sequenced: True
   chart_group:
-  - taco-watcher
   - prometheus-fed-master
   - fed-addons-lma
   - grafana
