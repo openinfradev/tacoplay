@@ -12,12 +12,13 @@ container_registry_url: >-
   {%- endif -%}
 docker_insecure_registries: []
 
+# Repositories
 pip_repo_url: ""
 pkg_repo_url: ""
 k8s_binary_repo_url: ""
 ceph_repo_url: ""
 
-# storage configurations: ceph or nfs
+# Storage configurations: ceph or nfs
 taco_storage_backend: "ceph"
 
 # Taco Apps to deploy using Armada
@@ -51,3 +52,7 @@ exclude_k8s_images: false
 # install helmv2 in case of the armada deploys taco apps
 use_helmv2_for_armada: true
 helmv2_version: "v2.16.7"
+
+# If set to false, one can't deploy a cluster with the same cluster_name as existing one.
+# If set to true, the new deployment overwrites existing one, if same cluster name is used.
+allow_redeployment: false

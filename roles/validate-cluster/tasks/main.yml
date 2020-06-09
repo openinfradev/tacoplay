@@ -4,8 +4,11 @@
     path: "$HOME/.kube/{{ cluster_name }}-config"
   register: stat_cc_result
   become: no
+  when: not allow_redeployment
 
 - name: fail if {{ cluster_name }} already exists
   fail:
     msg: "Error! {{ cluster_name }} already exists."
-  when: stat_cc_result.stat.exists == True
+  when:
+    - stat_cc_result.stat.exists == True
+    - not allow_redeployment
