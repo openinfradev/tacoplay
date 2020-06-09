@@ -53,7 +53,8 @@
 - name: show armada apply usage for next try
   debug:
     msg: >-
-      "docker exec -u root armada armada apply
+      "docker exec -u root armada armada
+      --kubeconfig $HOME/.kube/{{ cluster_name }}-config apply
       --tiller-host {{ tiller_host.stdout }}
       --tiller-port {{ tiller_port }}
       --timeout 7200
@@ -64,7 +65,8 @@
   shell: >-
     set -e;
     for app in {{ taco_apps|join(' ') }}; do
-       docker exec -u root armada armada apply \
+       docker exec -u root armada armada \
+       --kubeconfig $HOME/.kube/{{ cluster_name }}-config apply \
        --tiller-host {{ tiller_host.stdout }} \
        --tiller-port {{ tiller_port }} \
        --timeout 7200 \
