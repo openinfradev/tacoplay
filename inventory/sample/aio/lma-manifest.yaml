@@ -269,12 +269,13 @@ data:
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
-                  storage: 50Gi #FIXME
+                  ## prometheus's volume size
+                  storage: 200Gi	# FIXME
     kubeEtcd:
       endpoints:
-      - 192.168.97.120 #FIXME
-#      - 192.168.5.194 #FIXME
-#      - 192.168.5.195 #FIXME
+      ## Kubernetes Cluster Master IPs
+      ## If you use multiple k8s masters, list all those node endpoints
+      - ENTER_YOUR_MASTER1_IP	# FIXME
       serviceMonitor:
         scheme: https
         insecureSkipVerify: false
@@ -306,7 +307,7 @@ data:
     no_hooks: false
   values:
     defaultRules:
-      create: true
+      create: false
     alertmanager:
       enabled: true
       alertmanagerSpec:
@@ -461,7 +462,8 @@ data:
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
-                  storage: 50Gi
+                  ## Federated master prometheus's volume size
+                  storage: 500Gi	# FIXME
   source:
     type: git
     location: https://github.com/openinfradev/helm-charts
@@ -601,17 +603,19 @@ data:
         # image: registry.cicd.stg.taco/elasticsearch/elasticsearch
         version: 7.5.1
         enabled: true
-        count: 1        # FIXME
+        ## The number of Elasticsearch instance. recommended to avoid multiple instances at one node.
+        count: 1	# FIXME
         config:
           node.master: true
-        volumeClaimTemplate:
+        volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
           spec:
-            accessMode: ["ReadWriteOnce"]
+            accessModes: ["ReadWriteOnce"]
             resources:
               requests:
-                storage: 5Gi
+                ## Elasticsearch's volume size
+                storage: 2000Gi		# FIXME
             storageClassName: rbd
         nodeSelector:
           taco-lma: enabled
@@ -678,7 +682,8 @@ data:
       nodePort: 30009
     persistence:
       enabled: true
-      size: 10G
+      ## Grafana's volume size
+      size: 10G 	# FIXME
       storageClassName: rbd
     grafana.ini:
       plugins: 
@@ -848,23 +853,25 @@ data:
 schema: armada/Chart/v1
 metadata:
   schema: metadata/Document/v1
-  name: addons-lma
+  name: addons
 data:
   chart_name: taco-addons-lma
-  release: addons-lma
+  release: addons
   namespace: lma
   values:
     metricbeat:
       # image: registry.cicd.stg.taco/beats/metricbeat:taco-1.0.0
-      enabled: true
+      enabled: false
       elasticsearch:
-        host: "https://taco-elasticsearch-es-http:9200" #FIXME
+        ## Elasticsearch URL to send metrics from prometheus
+        host: "https://taco-elasticsearch-es-http:9200"		# FIXME
         username: elastic
         password: tacoword
       kibana:
         host: "taco-kibana-dashboard-kb-http:5601"
       prometheus:
-        hosts: ["192.168.97.120:30018"] #FIXME
+        ## Datasource Prometheus URL
+        hosts: ["lma-prometheus-fed-master-prometheus.fed.svc.cluster.local:9090"]	# FIXME
       addtionalModules: []
     grafanaDashboard:
       enabled: false
@@ -878,11 +885,12 @@ data:
             release_group: lma-prometheus-process-exporter
       grafana:
         enabled: false
-      openstack:
-        enabled: true
       ceph:
         mon_hosts:
-        - ip: 192.168.97.120   #FIXME
+        ## Ceph Monitor daemon hosts
+        - ip: ENTER_YOUR_CEPH_MONITOR_IP	# FIXME
+      openstack:
+        enabled: true
     tacoWatcher:
       rbac:
         create: false
@@ -890,7 +898,7 @@ data:
       aggregation:
         enabled: true
       alert:
-        enabled: true
+        enabled: false
     # images:
     #   tags:
     #     metricbeat: registry.cicd.stg.taco/beats/metricbeat:taco-1.0.0
@@ -904,14 +912,26 @@ data:
 schema: armada/Chart/v1
 metadata:
   schema: metadata/Document/v1
-  name: fed-addons-lma
+  name: fed-addons
 data:
   chart_name: taco-addons-lma
-  release: fed-addons-lma
+  release: fed-addons
   namespace: fed
   values:
     metricbeat:
-      enabled: false
+      # image: registry.cicd.stg.taco/beats/metricbeat:taco-1.0.0
+      enabled: true
+      elasticsearch:
+        ## Elasticsearch URL to send metrics from prometheus
+        host: "https://taco-elasticsearch-es-http.lma.svc.cluster.local:9200" 	# FIXME
+        username: elastic
+        password: tacoword
+      kibana:
+        host: "taco-kibana-dashboard-kb-http.lma.svc.cluster.local:5601" 	# FIXME
+      prometheus:
+        ## Datasource Prometheus URL
+        hosts: ["lma-prometheus-fed-master-prometheus.fed.svc.cluster.local:9090"]	# FIXME
+      addtionalModules: []
     grafanaDashboard:
       enabled: true
       sidecar:
@@ -922,11 +942,18 @@ data:
         enabled: false
       grafana:
         enabled: true
+      ceph:
+        enabled: false
+      kubeStateMetrics:
+        enabled: false
+      nodeExporter:
+        enabled: false
       additionalScrapeConfigs:
       - name: main-federate
         interval: 45s
         path: /federate
-        address: 192.168.97.120 #FIXME
+        ## IP for federation, It's option
+        address: ENTER_YOUR_MASTER1_IP	# FIXME
         port: 30008
         params:
           match[]:
@@ -934,36 +961,19 @@ data:
           - '{__name__=~"etcd_server_has_leader|node_cpu_seconds_total|node_memory_MemTotal_bytes-      node_memory_MemFree_bytes|node_memory_MemFree_bytes|node_network_receive_bytes_total|node_network_trans mit_bytes_total|namedprocess_namegroup_cpu_user_seconds_total|coredns_build_info|up|ceph_health_status" }'
           -                                                                                             '{__name__=~"container_cpu_user_seconds_total|container_cpu_usage_seconds_total|kube_pod_container_reso urce_requests_cpu_cores|kube_pod_container_resource_limits_cpu_cores|container_memory_working_set_bytes |kube_pod_container_resource_requests_memory_bytes|kube_pod_container_resource_limits_memory_bytes|cont ainer_network_transmit_bytes_total|container_network_receive_bytes_total"}'
     tacoWatcher:
-      host: "192.168.97.120" #FIXME
-      port: 32000
       rbac:
-        create: true
+        create: false
       joinCluster:
-        enabled: true
-        body:
-          isMain: true
-          kibanaUrl: "http://192.168.97.120:30001" #FIXME
-          grafanaUrl: "http://192.168.97.120:30009" #FIXME
-          k8sUrl: "http://192.168.97.120:6443" #FIXME
-          menu:
-            enabled: true
+        enabled: false
     kibanaInit:
       enabled: true
-      url: "http://192.168.97.120:30001" #FIXME
+      url: "http://taco-kibana-dashboard-kb-http.lma.svc.cluster.local:5601"     # FIXME
       image: sktdev/kibana-init:v4
     prometheusRules:
-      create: true
-      rule:
-        alertmanager: true
-        basicLinux: true
-        calico: true
-        ceph: true
-        elasticsearch: true
-        kubeApiserver: true
-        kubeControllerManager: true
-        kubelet: true
-        mariadb: true
-        rabbitmq: true
+      aggregation:
+        enabled: false
+      alert:
+        enabled: true
   source:
     type: git
     location: https://github.com/openinfradev/taco-addons
@@ -1047,7 +1057,7 @@ data:
   - prometheus-process-exporter
   - prometheus-pushgateway
   - prometheus-node-exporter
-  - addons-lma
+  - addons
 ---
 schema: armada/ChartGroup/v1
 metadata:
@@ -1056,9 +1066,9 @@ data:
   description: "Install Fed-master"
   sequenced: True
   chart_group:
-  - taco-watcher
+#  - taco-watcher
   - prometheus-fed-master
-  - fed-addons-lma
+  - fed-addons
   - grafana
 ---
 schema: armada/ChartGroup/v1
