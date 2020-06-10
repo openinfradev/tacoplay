@@ -3,11 +3,17 @@
 - name: include global default variables
   import_playbook: include_defaults.yml
 
+- name: check if the same cluster already exists
+  hosts: admin-node
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: kubespray/roles/kubespray-defaults, tags: setup-os }
+    - { role: validate-cluster, tags: setup-os }
+
 - name: setup host operating systems in taco host group
   hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: validate-cluster, tags: setup-os }
     - { role: setup-os/conf-repos, tags: setup-os }
     - { role: setup-os, tags: setup-os }
     - { role: container-registry/client, tags: setup-os }
@@ -46,6 +52,7 @@
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
+    - { role: kubespray/roles/kubespray-defaults, tags: taco-clients }
     - { role: k8s/client/kubectl, tags: taco-clients }
     - { role: k8s/client/helm, vars: { helm_binary_name: helm3 }, tags: taco-clients }
 
@@ -77,6 +84,7 @@
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
+    - { role: kubespray/roles/kubespray-defaults, tags: deploy }
     - { role: taco-apps/openstack/pre-install, tags: openstack, when: '"openstack" in taco_apps' }
     - { role: taco-apps/deploy, tags: deploy, when: 'taco_apps and taco_apps|length > 0' }
 
