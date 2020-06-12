@@ -12,19 +12,15 @@
   register: openstack_resources
 
 - name: start k8s resources for openstack
-  kube:
-    name: "{{item.item.name}}"
-    kubectl: "{{bin_dir}}/kubectl"
-    resource: "{{item.item.type}}"
-    filename: "/tmp/manifests/{{item.item.file}}"
-    state: "{{item.changed | ternary('latest','present') }}"
+  shell: >-
+    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config apply -f /tmp/manifests/{{ item.item.file }}
   with_items:
     - "{{ openstack_resources.results }}"
-  run_once: true
   become: no
 
 - name: delete test pods in openstack namespace
   shell: >-
-    {{ bin_dir }}/kubectl get pods -n openstack | grep test |
-    awk '{print $1}' | xargs {{ bin_dir }}/kubectl delete pods -n openstack
+    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config get pods -n openstack | grep test | awk '{print $1}' |
+    xargs {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config delete pods -n openstack
   ignore_errors: yes
+  become: no

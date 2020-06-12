@@ -2,14 +2,14 @@
 
 - name: check host where tiller is running
   shell: >-
-    {{ bin_dir }}/kubectl get pods -n kube-system -o json |
+    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config get pods -n kube-system -o json |
     jq -r '.items[] | select(.metadata.name|test("tiller")).status.hostIP'
   register: tiller_host
   become: no
 
 - name: delete armada lock
   shell: >-
-    {{ bin_dir }}/kubectl delete lock --all -n kube-system
+    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config delete lock --all -n kube-system
   become: no
   ignore_errors: yes
 
