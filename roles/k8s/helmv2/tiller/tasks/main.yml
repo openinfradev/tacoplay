@@ -1,0 +1,31 @@
+---
+- name: ensures /tmp/manifests dir exists
+  file: path=/tmp/manifests state=directory
+  when: inventory_hostname in groups['admin-node']
+
+- name: copy tiller deploy yml
+  template:
+    src: "{{item.file}}.j2"
+    dest: "/tmp/manifests/{{item.file}}"
+  with_items:
+    - {name: "tiller-deploy", file: tiller-deploy-nodeport.yml, type: service}
+  register: manifests
+  when: inventory_hostname in groups['admin-node']
+
+- name: check service type of tiller is clusterip
+  shell: >-
+    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config describe svc tiller-deploy -n kube-system |
+    grep Type |
+    awk '{print $2}' |
+    awk NF
+  register: tiller_type
+  when: inventory_hostname in groups['admin-node']
+
+- name: create nodeport for tiller
+  shell: >-
+    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config apply -f /tmp/manifests/{{ item.item.file }}
+  with_items:
+    - "{{ manifests.results }}"
+  when:
+    - inventory_hostname in groups['admin-node']
+    - tiller_type.stdout == 'ClusterIP'

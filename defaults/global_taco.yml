@@ -47,3 +47,7 @@ ansible_python_interpreter: /usr/bin/python
 
 # decide if k8s images are excluded in the artifact by site-prepare job
 exclude_k8s_images: false
+
+# install helmv2 in case of the armada deploys taco apps
+use_helmv2_for_armada: true
+helmv2_version: "v2.16.7"

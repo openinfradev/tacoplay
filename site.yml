@@ -46,12 +46,18 @@
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: k8s/kubectl, tags: taco-clients }
-    - { role: k8s/helm, tags: taco-clients }
-    - { role: k8s/tiller, tags: taco-clients }
+    - { role: k8s/client/kubectl, tags: taco-clients }
+    - { role: k8s/client/helm, vars: { helm_binary_name: helm3 }, tags: taco-clients }
+
+- name: setup helm client for version2
+  hosts: admin-node:kube-master
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: k8s/helmv2/install, tags: helmv2, when: use_helmv2_for_armada }
+    - { role: k8s/client/helm, vars: { helm_binary_name: helm2 }, tags: helmv2, when: use_helmv2_for_armada }
+    - { role: k8s/helmv2/tiller, tags: helmv2, when: use_helmv2_for_armada }
 
 # TODO: add tests for checking status of the new k8s cluster
-
 - name: setup openstack-related config on operating system
   hosts: controller-node:compute-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"

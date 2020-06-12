@@ -18,6 +18,25 @@
     - inventory_hostname in groups['admin-node']
   ignore_errors: yes
 
+- name: delete helm2 binary file
+  file:
+    path: "{{ bin_dir }}/helm2"
+    state: absent
+  when:
+    - inventory_hostname in groups['admin-node']
+    - use_helmv2_for_armada
+
+- name: delete all configurations for helm2
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ lookup('env','HOME') }}/.helm"
+  become: no
+  when:
+    - inventory_hostname in groups['admin-node']
+    - use_helmv2_for_armada
+
 - name: Remove {{ cluster_name }} config
   file:
     path: "$HOME/.kube/{{ cluster_name }}-config"

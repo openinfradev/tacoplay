@@ -1,0 +1,20 @@
+- name: override helm_version to v2
+  set_fact:
+    helm_version: "{{ helmv2_version }}"
+
+- name: debug helm version
+  debug:
+    var: helm_version
+
+- name: run kubespray default role
+  import_role:
+    name: kubespray-defaults
+
+- name: run kubespray helmv2 role
+  import_role:
+    name: kubernetes-apps
+  tags:
+    - apps
+    - helm
+  vars:
+    helm_version: helm_version
