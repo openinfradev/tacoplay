@@ -11,12 +11,10 @@ spec:
   - name: tiller
     protocol: TCP
     port: 44134
-    targetPort: tiller
+    targetPort: 44134
     nodePort: {{ tiller_port }}
   selector:
     app: helm
     name: tiller
   sessionAffinity: None
   type: NodePort
-status:
-  loadBalancer: {}
