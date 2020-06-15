@@ -12,7 +12,7 @@
 
 - name: run kubespray helmv2 role
   import_role:
-    name: kubernetes-apps
+    name: kubernetes-apps/helm
   tags:
     - apps
     - helm
