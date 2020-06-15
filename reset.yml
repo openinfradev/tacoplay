@@ -4,6 +4,7 @@
 
 - hosts: all
   roles:
+    - { role: kubespray/roles/kubespray-defaults, tags: reset }
     - { role: reset, tags: reset }
 
 # Reset K8S cluster
