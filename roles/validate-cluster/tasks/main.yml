@@ -10,5 +10,5 @@
   fail:
     msg: "Error! {{ cluster_name }} already exists."
   when:
-    - stat_cc_result.stat.exists == True
     - not allow_redeployment
+    - stat_cc_result.stat.exists == True
