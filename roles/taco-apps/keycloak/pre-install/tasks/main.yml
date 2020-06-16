@@ -1,0 +1,20 @@
+---
+- name: create ssl directory
+  file:
+    path: /etc/keycloak/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+ 
+- name: with SSL for Keycloak
+  block:
+    - name: generate a Self Signed OpenSSL certificate for Keycloak
+      shell: |
+        test -f /etc/keycloak/ssl/keycloak.key -a -f /etc/keycloak/ssl/keycloak.crt || \
+        openssl req -new -nodes -x509 -subj '/O=IT/CN={{ keycloak_domain }}' -days 3650 -keyout /etc/keycloak/ssl/keycloak.key -out /etc/keycloak/ssl/keycloak.crt
+    - name: add secret for ingress
+      shell: |
+        kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config create namespace keycloak
+        kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config create secret tls tls-keycloak --key /etc/keycloak/ssl/keycloak.key --cert /etc/keycloak/ssl/keycloak.crt -n keycloak
+

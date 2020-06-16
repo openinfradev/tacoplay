@@ -1,0 +1,9 @@
+---
+- name: Copy cert to dest servers
+  copy:
+    src: /etc/keycloak/ssl/keycloak.crt
+    dest: /etc/pki/ca-trust/source/anchors/
+
+- name: update trust ca
+  shell: |
+    sudo update-ca-trust
