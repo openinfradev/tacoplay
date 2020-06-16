@@ -270,12 +270,12 @@ data:
               resources:
                 requests:
                   ## prometheus's volume size
-                  storage: 200Gi	# FIXME
+                  storage: 200Gi      # FIXME
     kubeEtcd:
       endpoints:
       ## Kubernetes Cluster Master IPs
       ## If you use multiple k8s masters, list all those node endpoints
-      - ENTER_YOUR_MASTER1_IP	# FIXME
+      - ENTER_YOUR_MASTER1_IP      # FIXME
       serviceMonitor:
         scheme: https
         insecureSkipVerify: false
@@ -463,7 +463,7 @@ data:
               resources:
                 requests:
                   ## Federated master prometheus's volume size
-                  storage: 500Gi	# FIXME
+                  storage: 500Gi      # FIXME
   source:
     type: git
     location: https://github.com/openinfradev/helm-charts
@@ -604,7 +604,7 @@ data:
         version: 7.5.1
         enabled: true
         ## The number of Elasticsearch instance. recommended to avoid multiple instances at one node.
-        count: 1	# FIXME
+        count: 1      # FIXME
         config:
           node.master: true
         volumeClaimTemplates:
@@ -615,7 +615,7 @@ data:
             resources:
               requests:
                 ## Elasticsearch's volume size
-                storage: 2000Gi		# FIXME
+                storage: 2000Gi      # FIXME
             storageClassName: rbd
         nodeSelector:
           taco-lma: enabled
@@ -683,7 +683,7 @@ data:
     persistence:
       enabled: true
       ## Grafana's volume size
-      size: 10G 	# FIXME
+      size: 10G      # FIXME
       storageClassName: rbd
     grafana.ini:
       plugins: 
@@ -864,14 +864,14 @@ data:
       enabled: false
       elasticsearch:
         ## Elasticsearch URL to send metrics from prometheus
-        host: "https://taco-elasticsearch-es-http:9200"		# FIXME
+        host: "https://taco-elasticsearch-es-http:9200"      # FIXME
         username: elastic
         password: tacoword
       kibana:
         host: "taco-kibana-dashboard-kb-http:5601"
       prometheus:
         ## Datasource Prometheus URL
-        hosts: ["lma-prometheus-fed-master-prometheus.fed.svc.cluster.local:9090"]	# FIXME
+        hosts: ["lma-prometheus-fed-master-prometheus.fed.svc.cluster.local:9090"]      # FIXME
       addtionalModules: []
     grafanaDashboard:
       enabled: false
@@ -888,7 +888,7 @@ data:
       ceph:
         mon_hosts:
         ## Ceph Monitor daemon hosts
-        - ip: ENTER_YOUR_CEPH_MONITOR_IP	# FIXME
+        - ip: ENTER_YOUR_CEPH_MONITOR_IP      # FIXME
       openstack:
         enabled: true
     tacoWatcher:
@@ -923,14 +923,14 @@ data:
       enabled: true
       elasticsearch:
         ## Elasticsearch URL to send metrics from prometheus
-        host: "https://taco-elasticsearch-es-http.lma.svc.cluster.local:9200" 	# FIXME
+        host: "https://taco-elasticsearch-es-http.lma.svc.cluster.local:9200"      # FIXME
         username: elastic
         password: tacoword
       kibana:
-        host: "taco-kibana-dashboard-kb-http.lma.svc.cluster.local:5601" 	# FIXME
+        host: "taco-kibana-dashboard-kb-http.lma.svc.cluster.local:5601"      # FIXME
       prometheus:
         ## Datasource Prometheus URL
-        hosts: ["lma-prometheus-fed-master-prometheus.fed.svc.cluster.local:9090"]	# FIXME
+        hosts: ["lma-prometheus-fed-master-prometheus.fed.svc.cluster.local:9090"]      # FIXME
       addtionalModules: []
     grafanaDashboard:
       enabled: true
@@ -953,7 +953,7 @@ data:
         interval: 45s
         path: /federate
         ## IP for federation, It's option
-        address: ENTER_YOUR_MASTER1_IP	# FIXME
+        address: ENTER_YOUR_MASTER1_IP      # FIXME
         port: 30008
         params:
           match[]:
@@ -967,7 +967,7 @@ data:
         enabled: false
     kibanaInit:
       enabled: true
-      url: "http://taco-kibana-dashboard-kb-http.lma.svc.cluster.local:5601"     # FIXME
+      url: "http://taco-kibana-dashboard-kb-http.lma.svc.cluster.local:5601"      # FIXME
       image: sktdev/kibana-init:v4
     prometheusRules:
       aggregation:
