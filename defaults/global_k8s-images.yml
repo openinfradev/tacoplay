@@ -4,5 +4,3 @@ quay_image_repo: "{{ container_registry_url }}"
 armada_image_repo: "{{ container_registry_url }}/sktdev/armada"
 openstackclient_image_repo: "{{ container_registry_url }}/sktdev/openstackclient"
 rbd_provisioner_image_repo: "{{ container_registry_url }}/sktdev/rbd-provisioner"
-#TODO: temporary workaround until TACODEV-261 is fixed
-nginx_image_repo: "{{ container_registry_url }}/nginx"
