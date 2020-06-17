@@ -1,0 +1,22 @@
+---
+- name: download istioctl tarball to local release dir
+  get_url:
+    url: "{{ istioctl_download_url }}"
+    dest: "{{ local_release_dir }}"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg or 'Not Modified' in get_url_result.msg"
+  retries: 4
+  delay: "{{ retry_stagger | default(5) }}"
+  become: true
+
+- name: pull images for istio
+  docker_image:
+    name: "{{ item.repo }}:{{item.tag }}"
+    source: pull
+  with_items:
+    - { repo: "{{ jaeger_image_repo }}", tag: "{{ jaeger_image_tag }}" }
+    - { repo: "{{ istio_proxyv2_image_repo }}", tag: "{{ istio_proxyv2_image_tag }}" }
+    - { repo: "{{ istio_pilot_image_repo }}", tag: "{{ istio_pilot_image_tag }}" }
+    - { repo: "{{ kiali_image_repo }}", tag: "{{ kiali_image_tag }}" }
+  become: true
+  when: download_istio_images

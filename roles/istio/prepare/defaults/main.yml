@@ -1,0 +1,31 @@
+download_istio_images: false
+
+# Dirs
+local_release_dir: /tmp/releases
+
+# Versions
+istio_version: "1.6.2"
+jaeger_version: "1.16"
+kiali_version: "v1.18"
+prometheus_version: "v2.15.1"
+
+# istioctl binary
+istioctl_binary_name: "istioctl"
+istioctl_binary_repo_url: "https://github.com/istio/istio/releases/download/{{ istio_version }}"
+image_arch: "{{host_architecture | default('amd64')}}"
+istioctl_download_url: "{{ istioctl_binary_repo_url }}/istio-{{ istio_version }}-linux-{{ image_arch }}.tar.gz" 
+
+# images
+docker_image_repo: "docker.io"
+quay_image_repo: "quay.io"
+
+jaeger_image_repo: "{{ docker_image_repo }}/jaegertracing/all-in-one"
+jaeger_image_tag: "{{ jaeger_version }}"
+istio_proxyv2_image_repo: "{{ docker_image_repo }}/istio/proxyv2"
+istio_proxyv2_image_tag: "{{ istio_version }}"
+istio_pilot_image_repo: "{{ docker_image_repo }}/istio/pilot"
+istio_pilot_image_tag: "{{ istio_version }}"
+kiali_image_repo: "{{ quay_image_repo }}/kiali/kiali"
+kiali_image_tag: "{{ kiali_version }}"
+prometheus_image_repo: "{{ docker_image_repo }}/prom/prometheus"
+prometheus_image_tag: "{{ prometheus_version }}"
