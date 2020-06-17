@@ -78,17 +78,17 @@
   roles:
     - { role: taco-apps/lma/pre-install, tags: lma, when: '"lma" in taco_apps' }
 
-- name: prepare keycloak installation
+- name: install keycloack chart
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/keycloak/pre-install, when: '"keycloak" in taco_apps' }
+    - { role: taco-apps/keycloak/install, when: kube_oidc_auth | default(false) }
 
 - name: add a self-signed cert to ca-trust
   hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/keycloak/post-install, when: '"keycloak" in taco_apps' }
+    - { role: taco-apps/keycloak/post-install, when: kube_oidc_auth | default(false) }
 
 # Once we support various apps other than openstack, we should be able to
 # deploy those apps selectively.
