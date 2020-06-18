@@ -1,0 +1,5 @@
+---
+- name: include global default variables
+  import_playbook: include_defaults.yml
+
+- include: kubespray/recover-control-plane.yml
