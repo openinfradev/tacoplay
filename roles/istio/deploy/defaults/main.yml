@@ -1,6 +1,6 @@
 istio_enabled: false
 istio_injection_namespaces: ["default"]
-cluster_name: "cluster.local"
+# cluster_name: This value is defined in kubespray.
 
 # Dirs
 bin_dir: /usr/local/bin
