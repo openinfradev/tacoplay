@@ -1,0 +1,38 @@
+---
+- name: Check that keycloak.yaml in inventory folder.
+  stat: 
+    path: "{{ inventory_dir }}/keycloak.yaml"
+  register: stat_result
+
+- name: copy keycloak.yaml to inventory folder.
+  template:
+    src: keycloak.yaml.j2
+    dest: "{{ inventory_dir }}/keycloak.yaml"
+  when: not stat_result.stat.exists
+
+- name: install keycloak chart
+  shell: |
+    {{ bin_dir }}/helm upgrade --install keycloak {{ playbook_dir }}/charts/taco-helm/keycloak --namespace keycloak --values {{ inventory_dir }}/keycloak.yaml
+
+- name: create ssl directory
+  file:
+    path: /etc/keycloak/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: with SSL for Keycloak
+  block:
+    - name: generate a Self Signed OpenSSL certificate for Keycloak
+      shell: |
+        test -f /etc/keycloak/ssl/keycloak.key -a -f /etc/keycloak/ssl/keycloak.crt || \
+        openssl req -new -nodes -x509 -subj '/O=IT/CN={{ keycloak_domain }}' -days 3650 -keyout /etc/keycloak/ssl/keycloak.key -out /etc/keycloak/ssl/keycloak.crt
+    - name: add secret for ingress
+      shell: |
+        {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config delete secret tls-keycloak -n keycloak
+      ignore_errors: yes
+
+    - name: add secret for ingress
+      shell: |
+        {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config create secret tls tls-keycloak --key /etc/keycloak/ssl/keycloak.key --cert /etc/keycloak/ssl/keycloak.crt -n keycloak

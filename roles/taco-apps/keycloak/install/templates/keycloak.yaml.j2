@@ -1,0 +1,20 @@
+global:
+  storageClass: {{ rbd_provisioner_storage_class | default('rbd') }}
+keycloak:
+  ingress:
+    enabled: true
+    hosts:
+      - {{ keycloak_domain }}
+    tls:
+      - hosts:
+        - {{ keycloak_domain }}
+        secretName: tls-keycloak
+  persistence:
+    deployPostgres: true
+    dbVendor: postgres
+postgresql:
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 20Gi
