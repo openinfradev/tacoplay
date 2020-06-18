@@ -1,0 +1,83 @@
+---
+- name: download istioctl tarball
+  get_url:
+    url: "{{ istioctl_download_url }}"
+    dest: "{{ istioctl_download_dest }}"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg or 'Not Modified' in get_url_result.msg"
+  retries: 4
+  delay: "{{ retry_stagger | default(5) }}"
+  become: false
+
+- name: extract istioctl download
+  unarchive:
+    src: "{{ istioctl_download_dest }}"
+    dest: "/tmp/"
+    copy: no
+  become: false
+
+- name: copy istioctl to bin_dir
+  copy:
+    src: "/tmp/istio-{{ istio_version }}/bin/{{ istioctl_binary_name }}"
+    dest: "{{ bin_dir }}/{{ istioctl_binary_name }}"
+    mode: 0755
+  become: false
+
+- name: check istio profile exists
+  stat:
+    path: "{{ inventory_dir }}/istio-profile.yml"
+  register: stat_result
+
+- name: prepare istio profile
+  template:
+    src: "istio-profile.yml.j2"
+    dest: "{{ inventory_dir }}/istio-profile.yml"
+  become: false
+  when: not stat_result.stat.exists
+
+- name: install istio by profile
+  shell: >-
+    {{ bin_dir }}/istioctl manifest apply -f {{ inventory_dir }}/istio-profile.yml
+  become: false
+
+- name: ensures /tmp/manifests dir exists
+  file: path=/tmp/manifests state=directory
+  when: inventory_hostname in groups['admin-node']
+
+- name: copy manifest yml for istio addon services
+  template:
+    src: "{{item.file}}.j2"
+    dest: "/tmp/manifests/{{item.file}}"
+  with_items:
+    - {name: "kiali", file: kiali-nodeport.yml, type: service}
+    - {name: "jaeger", file: jaeger-nodeport.yml, type: service}
+  register: manifests
+  when: inventory_hostname in groups['admin-node']
+
+- name: create nodeport for istio addon services
+  shell: >-
+    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config apply -f /tmp/manifests/{{ item.item.file }}
+  with_items:
+    - "{{ manifests.results }}"
+  when:
+    - inventory_hostname in groups['admin-node']
+
+- name: create namespace to add istio-injection tag
+  shell: >-
+    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config create namespace {{ item }}
+  with_items:
+    - "{{ istio_injection_namespaces }}"
+  ignore_errors: true
+  when:
+    - inventory_hostname in groups['admin-node']
+    - istio_injection_namespaces and istio_injection_namespaces|length > 0
+
+- name: add istio-injection tag to namespaces
+  shell: >-
+    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config label namespace {{ item }} istio-injection=enabled --overwrite
+  with_items:
+    - "{{ istio_injection_namespaces }}"
+  when:
+    - inventory_hostname in groups['admin-node']
+    - istio_injection_namespaces and istio_injection_namespaces|length > 0
+  

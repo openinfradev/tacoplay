@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jaeger
+    jaeger-infra: jaeger-service
+    release: istio
+  name: jaeger-query
+  namespace: istio-system
+spec:
+  ports:
+  - name: query-http
+    port: 16686
+    protocol: TCP
+    targetPort: 16686
+    nodePort: {{ jaeger_port }}
+  selector:
+    app: jaeger
+  sessionAffinity: None
+  type: NodePort
