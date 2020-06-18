@@ -1,3 +1,4 @@
 ---
 bin_dir: /usr/local/bin
-cluster_name: cluster.local
+
+# cluster_name is a defined default variable in kubespray 
