@@ -56,3 +56,6 @@ helmv2_version: "v2.16.7"
 # If set to false, one can't deploy a cluster with the same cluster_name as existing one.
 # If set to true, the new deployment overwrites existing one, if same cluster name is used.
 allow_redeployment: false
+
+# kubespray's version
+kubespray_version: v2.13.1
