@@ -70,12 +70,12 @@ echo "Installing pip packages..."
 cd /home/taco/tacoplay
 if [ "$OS" = "\"centos\"" ]; then
   sudo pip install -r requirements.txt --upgrade --ignore-installed
-  sudo pip install -r kubespray/requirements.txt --upgrade --ignore-installed
-  sudo pip install -r ceph-ansible/requirements.txt --upgrade --ignore-installed
+  #sudo pip install -r kubespray/requirements.txt --upgrade --ignore-installed
+  #sudo pip install -r ceph-ansible/requirements.txt --upgrade --ignore-installed
 elif [ "$OS" = "ubuntu" ]; then
   sudo pip install -r requirements.txt --upgrade
-  sudo pip install -r kubespray/requirements.txt --upgrade 
-  sudo pip install -r ceph-ansible/requirements.txt --upgrade
+  #sudo pip install -r kubespray/requirements.txt --upgrade 
+  #sudo pip install -r ceph-ansible/requirements.txt --upgrade
 fi
 
 # Parse node file to get target nodes' public ip addresses #

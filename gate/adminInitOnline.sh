@@ -41,11 +41,12 @@ elif [ "$OS" = "ubuntu" ]; then
   sudo apt install -y python-pip
 fi
 sudo pip install --upgrade pip
-if [ "$OS" = "\"centos\"" ]; then
-  sudo pip install -r kubespray/requirements.txt --upgrade --ignore-installed
-elif [ "$OS" = "ubuntu" ]; then
-  sudo pip install -r kubespray/requirements.txt --upgrade 
-fi
+
+#if [ "$OS" = "\"centos\"" ]; then
+#  sudo pip install -r kubespray/requirements.txt --upgrade --ignore-installed
+#elif [ "$OS" = "ubuntu" ]; then
+#  sudo pip install -r kubespray/requirements.txt --upgrade 
+#fi
 sudo pip install -r requirements.txt --upgrade
 
 # Parse node file to get target nodes' public ip addresses #
