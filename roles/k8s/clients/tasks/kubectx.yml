@@ -1,0 +1,17 @@
+---
+- name: download kubectx binary
+  get_url:
+    url: "{{ kubectx_download_url }}"
+    dest: "{{ artifacts_dir }}/kubectx.tar.gz"
+    checksum: "{{ 'sha256:' + kubectx_checksum }}"
+
+- name: unarchive kubectx.tar.gz
+  unarchive:
+    src: "{{ artifacts_dir }}/kubectx.tar.gz"
+    dest: "{{ artifacts_dir }}"
+
+- name: copy kubectx to bin_dir
+  copy:
+    src: "{{ artifacts_dir }}/kubectx"
+    dest: "{{ bin_dir }}/kubectx"
+    mode: 0755
