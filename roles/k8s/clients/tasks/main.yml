@@ -1,0 +1,16 @@
+---
+- include_tasks: kubectl.yml
+  when: use_kubectl
+
+- include_tasks: helm3.yml
+  when: use_helm
+
+- include_tasks: kube-ps1.yml
+  when: use_kubeps1
+
+- include_tasks: kubectx.yml
+  when: use_kubectx
+
+- include_tasks: kubens.yml
+  when: use_kubens
+

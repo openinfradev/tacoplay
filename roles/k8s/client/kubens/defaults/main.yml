@@ -1,8 +1,0 @@
----
-bin_dir: /usr/local/bin
-artifacts_dir: "{{ inventory_dir }}/artifacts"
-
-# Download URL
-kubens_download_url: "https://github.com/ahmetb/kubectx/releases/download/v0.9.0/kubens_v0.9.0_linux_x86_64.tar.gz"
-
-kubens_checksum: 5391ed8e9ddf608352fed2a2fa749ad2dd57fcce878bb0e8b733bd37b747d711

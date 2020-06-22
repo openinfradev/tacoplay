@@ -18,3 +18,5 @@
     - helm
   vars:
     helm_version: helm_version
+ 
+- include_tasks: copy_helmv2_binary.yml

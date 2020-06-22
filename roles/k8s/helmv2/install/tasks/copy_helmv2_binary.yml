@@ -1,21 +1,17 @@
 ---
-- name: debug of helm_binary_name
-  debug:
-    var: helm_binary_name
-
-- name: copy helm binary to ansible host
+- name: copy helm2 binary to ansible host
   fetch:
     src: "{{ bin_dir }}/helm"
-    dest: "{{ artifacts_dir }}/{{ helm_binary_name }}"
+    dest: "{{ artifacts_dir }}/helm2"
     flat: yes
     validate_checksum: no
   become: no
   delegate_to: "{{ groups['kube-master']|first }}"
 
-- name: copy helm to bin_dir
+- name: copy helm2 to bin_dir
   copy:
-    src: "{{ artifacts_dir }}/{{ helm_binary_name }}"
-    dest: "{{ bin_dir }}/{{ helm_binary_name }}"
+    src: "{{ artifacts_dir }}/helm2"
+    dest: "{{ bin_dir }}/helm2"
     mode: 0755
 
 # install helm v2tov3 plugin 
@@ -26,14 +22,12 @@
   register: check_dir
   when:
     - inventory_hostname in groups['admin-node']
-    - helm_binary_name == "helm2"
 
 - name: helmv2 init with clien only
   shell: "{{ bin_dir }}/helm2 init --client-only"
   become: no
   when:
     - inventory_hostname in groups['admin-node']
-    - helm_binary_name == "helm2"
     - check_dir.stat.exists == false
 
 - name: install helm2to3 plugin
@@ -42,4 +36,3 @@
   ignore_errors: True
   when:
     - inventory_hostname in groups['admin-node']
-    - helm_binary_name == "helm2"

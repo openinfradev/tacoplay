@@ -1,8 +1,0 @@
----
-bin_dir: /usr/local/bin
-artifacts_dir: "{{ inventory_dir }}/artifacts"
-
-# Download URL
-kubectx_download_url: "https://github.com/ahmetb/kubectx/releases/download/v0.9.0/kubectx_v0.9.0_linux_x86_64.tar.gz"
-
-kubectx_checksum: cdda58b3e865cd6421b4bde0dadad66cbc9eec19b6df2f67df5ce78f40fd4a0c
