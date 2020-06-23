@@ -65,7 +65,7 @@
 
 - name: Labeling namespace for lma
   command: >-
-    {{ bin_dir }}/kubectl --kubeconfig /etc/kubernetes/admin.conf label namespace {{ lma_namespace }} name={{ lma_namespace }}
+    {{ bin_dir }}/kubectl --kubeconfig /etc/kubernetes/admin.conf label namespace {{ lma_namespace }} name={{ lma_namespace }} --overwrite
   register: label_namespace_result
   when:
   - create_etcd_secret
