@@ -9,6 +9,7 @@ bin_dir: /usr/local/bin
 istio_version: "1.6.2"
 jaeger_version: "1.16"
 kiali_version: "v1.18"
+prometheus_version: "v2.15.1"
 
 # istioctl binary
 istioctl_binary_name: "istioctl"
