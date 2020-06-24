@@ -27,7 +27,7 @@ local_release_dir: "../../mirros/k8s/"
 download_istio_images: true
 
 위와 같이 설정 후 site-prepare 실행
-> ansible-playbook -b -i inventory/preperation/local.ini -e @inventory/preperation/extra-vars.yml extra-playbooks/site-prepare.yml --tags download,upload,preinstall --skip-tags upgrade
+> ansible-playbook -b -i inventory/preparation/local.ini -e @inventory/preparation/extra-vars.yml extra-playbooks/site-prepare.yml --tags download,upload,preinstall,untagged --skip-tags upgrade
 ```
 
 * * *
