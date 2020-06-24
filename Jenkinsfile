@@ -18,7 +18,7 @@ pipeline {
       defaultValue: 'centos7',
       description: 'guest OS of target VM')
     string(name: 'FLAVOR',
-      defaultValue: 't1.4xlarge',
+      defaultValue: 'auto',
       description: 'flavor of target VM')
     string(name: 'AZ',
       defaultValue: 'r06',
@@ -113,7 +113,18 @@ pipeline {
                 }
               }
 
-              vmNamePrefix = createOpenstackVMs(params.SITE, params.OS, params.FLAVOR, VM_COUNT, [50, 50, 50], "gate/cloudInit.sh", null, SECURITY_GROUP, params.AZ, online, deleteBdm, networks)
+              // Automatically choose flavor ID based on gating inventory 
+              // For AIO inventory, larger flavor is used
+              flavor = params.FLAVOR
+              if (flavor == 'auto') {
+                if (!params.SITE.contains("multi")) {
+                  flavor = 't1.4xlarge'
+                } else {
+                  flavor = 't1.xlarge'
+                }
+              }
+
+              vmNamePrefix = createOpenstackVMs(params.SITE, params.OS, flavor, VM_COUNT, [50, 50, 50], "gate/cloudInit.sh", null, SECURITY_GROUP, params.AZ, online, deleteBdm, networks)
               vmMgmtIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt)
               vmFlatIPs = getOpenstackVMinfo(vmNamePrefix, networks.flat)
               vmVxlanIPs = getOpenstackVMinfo(vmNamePrefix, networks.vxlan)
