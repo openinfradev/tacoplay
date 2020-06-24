@@ -21,7 +21,7 @@
     src: "/tmp/istio-{{ istio_version }}/bin/{{ istioctl_binary_name }}"
     dest: "{{ bin_dir }}/{{ istioctl_binary_name }}"
     mode: 0755
-  become: false
+  become: true
 
 - name: check istio profile exists
   stat:
