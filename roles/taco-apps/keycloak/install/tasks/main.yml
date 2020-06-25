@@ -30,9 +30,9 @@
         openssl req -new -nodes -x509 -subj '/O=IT/CN={{ keycloak_domain }}' -days 3650 -keyout /etc/keycloak/ssl/keycloak.key -out /etc/keycloak/ssl/keycloak.crt
     - name: add secret for ingress
       shell: |
-        {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config delete secret tls-keycloak -n keycloak
+        {{ bin_dir }}/kubectl delete secret tls-keycloak -n keycloak
       ignore_errors: yes
 
     - name: add secret for ingress
       shell: |
-        {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config create secret tls tls-keycloak --key /etc/keycloak/ssl/keycloak.key --cert /etc/keycloak/ssl/keycloak.crt -n keycloak
+        {{ bin_dir }}/kubectl create secret tls tls-keycloak --key /etc/keycloak/ssl/keycloak.key --cert /etc/keycloak/ssl/keycloak.crt -n keycloak

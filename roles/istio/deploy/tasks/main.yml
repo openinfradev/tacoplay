@@ -56,7 +56,7 @@
 
 - name: create nodeport for istio addon services
   shell: >-
-    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config apply -f /tmp/manifests/{{ item.item.file }}
+    {{ bin_dir }}/kubectl apply -f /tmp/manifests/{{ item.item.file }}
   with_items:
     - "{{ manifests.results }}"
   when:
@@ -64,7 +64,7 @@
 
 - name: create namespace to add istio-injection tag
   shell: >-
-    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config create namespace {{ item }}
+    {{ bin_dir }}/kubectl create namespace {{ item }}
   with_items:
     - "{{ istio_injection_namespaces }}"
   ignore_errors: true
@@ -74,7 +74,7 @@
 
 - name: add istio-injection tag to namespaces
   shell: >-
-    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config label namespace {{ item }} istio-injection=enabled --overwrite
+    {{ bin_dir }}/kubectl label namespace {{ item }} istio-injection=enabled --overwrite
   with_items:
     - "{{ istio_injection_namespaces }}"
   when:

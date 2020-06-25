@@ -14,7 +14,7 @@
 
 - name: check service type of tiller is clusterip
   shell: >-
-    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config describe svc tiller-deploy -n kube-system |
+    {{ bin_dir }}/kubectl describe svc tiller-deploy -n kube-system |
     grep Type |
     awk '{print $2}' |
     awk NF
@@ -23,7 +23,7 @@
 
 - name: create nodeport for tiller
   shell: >-
-    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config apply -f /tmp/manifests/{{ item.item.file }}
+    {{ bin_dir }}/kubectl apply -f /tmp/manifests/{{ item.item.file }}
   with_items:
     - "{{ manifests.results }}"
   when:

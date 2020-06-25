@@ -2,14 +2,14 @@
 
 - name: check host where tiller is running
   shell: >-
-    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config get pods -n kube-system -o json |
+    {{ bin_dir }}/kubectl get pods -n kube-system -o json |
     jq -r '.items[] | select(.metadata.name|test("tiller")).status.hostIP'
   register: tiller_host
   become: no
 
 - name: delete armada lock
   shell: >-
-    {{ bin_dir }}/kubectl --kubeconfig {{ lookup('env','HOME') }}/.kube/{{ cluster_name }}-config delete lock --all -n kube-system
+    {{ bin_dir }}/kubectl delete lock --all -n kube-system
   become: no
   ignore_errors: yes
 
@@ -53,8 +53,7 @@
 - name: show armada apply usage for next try
   debug:
     msg: >-
-      "docker exec -u root armada armada
-      --kubeconfig $HOME/.kube/{{ cluster_name }}-config apply
+      "docker exec -u root armada armada apply
       --tiller-host {{ tiller_host.stdout }}
       --tiller-port {{ tiller_port }}
       --timeout 7200
@@ -65,8 +64,7 @@
   shell: >-
     set -e;
     for app in {{ taco_apps|join(' ') }}; do
-       docker exec -u root armada armada \
-       --kubeconfig $HOME/.kube/{{ cluster_name }}-config apply \
+       docker exec -u root armada armada apply \
        --tiller-host {{ tiller_host.stdout }} \
        --tiller-port {{ tiller_port }} \
        --timeout 7200 \

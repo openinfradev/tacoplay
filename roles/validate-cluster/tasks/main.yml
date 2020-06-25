@@ -1,7 +1,6 @@
 ---
 - name: check if {{ cluster_name }} already exists
-  stat:
-    path: "$HOME/.kube/{{ cluster_name }}-config"
+  command: grep -Frn "cluster{{ ":" }} {{ cluster_name }}" {{ lookup('env','HOME') }}/.kube/config
   register: stat_cc_result
   become: no
   when: not allow_redeployment
@@ -11,4 +10,4 @@
     msg: "Error! {{ cluster_name }} already exists."
   when:
     - not allow_redeployment
-    - stat_cc_result.stat.exists == True
+    - stat_cc_result.rc == 0

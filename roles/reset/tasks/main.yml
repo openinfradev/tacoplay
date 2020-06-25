@@ -37,18 +37,20 @@
     - inventory_hostname in groups['admin-node']
     - use_helmv2_for_armada
 
-- name: Remove {{ cluster_name }} config
-  file:
-    path: "$HOME/.kube/{{ cluster_name }}-config"
-    state: absent
-
-- name: Remove {{ cluster_name }} from bashrc
-  replace:
-    path: "{{ lookup('env','HOME') }}/.bashrc"
-    regexp: '\$HOME\/.kube\/{{ cluster_name }}-config:|:\$HOME\/.kube\/{{ cluster_name }}-config|^(export KUBECONFIG=\$HOME\/.kube\/cluster.local-config)$'
-
-- name: source bashrc
+- name: Remove {{ cluster_name }} context from .kube/config
   become: no
-  shell: source {{ lookup('env','HOME') }}/.bashrc
-  args:
-    executable: /bin/bash
+  shell: >-
+    {{ bin_dir }}/kubectl config delete-context kubernetest-admin-{{ cluster_name }}@{{ cluster_name }}
+  ignore_errors: yes 
+
+- name: Remove {{ cluster_name }} cluster from .kube/config
+  become: no
+  shell: >-
+    {{ bin_dir }}/kubectl config delete-cluster {{ cluster_name }}
+  ignore_errors: yes 
+
+- name: Remove {{ cluster_name }} cluster's user from .kube/config
+  become: no
+  shell: >-
+    {{ bin_dir }}/kubectl config unset users.kubernetes-admin-{{ cluster_name }}
+  ignore_errors: yes 
