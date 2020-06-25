@@ -43,27 +43,13 @@
   become: no
   when: checkpath.rc == 0
 
-- name: check whether .bashrc contains KUBECONFIG
-  command: grep -Frn "export KUBECONFIG=" {{ lookup('env','HOME') }}/.bashrc
-  register: kubeconfig_grep_result
-  ignore_errors: True
-  changed_when: False
-
-- name: add KUBECONFIG into bashrc
-  lineinfile:
-    dest: "{{ lookup('env','HOME') }}/.bashrc"
-    state: present
-    line: 'export KUBECONFIG=$HOME/.kube/config'
-  become: no
-  when: not kubeconfig_grep_result.rc == 0
-
 - name: source bashrc
   become: no
   shell: source {{ lookup('env','HOME') }}/.bashrc
   args:
     executable: /bin/bash
 
-- name: check if already exists new cluster in .kube/config 
+- name: check if new cluster already exists in .kube/config 
   become: no
   shell: >-
     KUBECONFIG={{ lookup('env','HOME') }}/.kube/config {{ bin_dir }}/kubectl config get-clusters | grep {{ cluster_name }}
