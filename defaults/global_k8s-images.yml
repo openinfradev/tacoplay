@@ -1,6 +1,7 @@
 gcr_image_repo: "{{ container_registry_url }}"
 docker_image_repo: "{{ container_registry_url }}"
 quay_image_repo: "{{ container_registry_url }}"
+kube_image_repo: "{{ container_registry_url }}"
 armada_image_repo: "{{ container_registry_url }}/sktdev/armada"
 openstackclient_image_repo: "{{ container_registry_url }}/sktdev/openstackclient"
 rbd_provisioner_image_repo: "{{ container_registry_url }}/sktdev/rbd-provisioner"
