@@ -68,5 +68,5 @@
 - name: copy merged_config into .kube/config
   become: no
   copy: content="{{ merged_kube_config.stdout }}" dest="{{ lookup('env', 'HOME') }}/.kube/config"
-  
+  when: not cluster_registered.rc == 0
   
