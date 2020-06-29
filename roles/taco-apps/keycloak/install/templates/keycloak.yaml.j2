@@ -12,9 +12,11 @@ keycloak:
   persistence:
     deployPostgres: true
     dbVendor: postgres
+  password: {{ keycloak_password | default('password') }}
 postgresql:
   persistence:
     enabled: true
     accessModes:
       - ReadWriteOnce
     size: 20Gi
+  postgresqlPassword: {{ keycloak_db_password | default('password') }}
