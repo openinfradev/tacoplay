@@ -20,6 +20,15 @@
   tags: always
 
 - hosts: localhost
+  name: download k8s clients
+  roles:
+    - { role: k8s/clients }
+  vars:
+    artifacts_dir: "{{ local_release_dir }}"
+    install_k8s_clients: false
+  tags: always
+
+- hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: ../kubespray/roles/kubespray-defaults }

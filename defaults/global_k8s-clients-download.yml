@@ -1,0 +1,3 @@
+kubeps1_download_url: "http://{{k8s_binary_repo_url}}/clients/kube-ps1.sh"
+kubectx_download_url: "http://{{k8s_binary_repo_url}}/clients/kubectx_v0.9.0_linux_x86_64.tar.gz"
+kubens_download_url: "http://{{k8s_binary_repo_url}}/clients/kubens_v0.9.0_linux_x86_64.tar.gz"

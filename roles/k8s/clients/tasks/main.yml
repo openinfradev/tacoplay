@@ -1,16 +1,20 @@
 ---
+- import_tasks: download_clients.yml
+  when:
+    - not skip_k8s_clients_download|default(false)
+
 - include_tasks: kubectl.yml
-  when: use_kubectl
+  when: install_k8s_clients and use_kubectl
 
 - include_tasks: helm3.yml
-  when: use_helm
+  when: install_k8s_clients and use_helm
 
 - include_tasks: kube-ps1.yml
-  when: use_kubeps1
+  when: install_k8s_clients and use_kubeps1
 
 - include_tasks: kubectx.yml
-  when: use_kubectx
+  when: install_k8s_clients and use_kubectx
 
 - include_tasks: kubens.yml
-  when: use_kubens
+  when: install_k8s_clients and use_kubens
 

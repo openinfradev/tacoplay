@@ -23,6 +23,7 @@
       include_vars: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/defaults/global_k8s-download.yml"
+        - "{{ playbook_dir }}/defaults/global_k8s-clients-download.yml"
       when: k8s_binary_repo_url != ""
 
     - name: include global override values - taco apps

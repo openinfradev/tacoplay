@@ -13,7 +13,6 @@
     extra_args: --ignore-installed
   become: yes
 
-
 - name: pull all images used in application manifests
   script: >-
     {{ playbook_dir | dirname }}/scripts/pull-images.sh
