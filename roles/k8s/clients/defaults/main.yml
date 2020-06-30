@@ -2,6 +2,7 @@
 bin_dir: /usr/local/bin
 artifacts_dir: "{{ inventory_dir }}/artifacts"
 
+install_k8s_clients: true
 use_kubeps1: true
 use_kubectx: true
 use_kubectl: true
@@ -15,3 +16,5 @@ kubens_download_url: "https://github.com/ahmetb/kubectx/releases/download/v0.9.0
 
 kubectx_checksum: cdda58b3e865cd6421b4bde0dadad66cbc9eec19b6df2f67df5ce78f40fd4a0c
 kubens_checksum: 5391ed8e9ddf608352fed2a2fa749ad2dd57fcce878bb0e8b733bd37b747d711
+
+skip_k8s_clients_downloads: false

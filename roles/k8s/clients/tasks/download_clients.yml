@@ -1,0 +1,17 @@
+---
+- name: download kube-ps1 script
+  get_url:
+    url: "{{ kubeps1_download_url }}"
+    dest: "{{ artifacts_dir }}/kube-ps1.sh"
+
+- name: download kubectx binary
+  get_url:
+    url: "{{ kubectx_download_url }}"
+    dest: "{{ artifacts_dir }}/kubectx.tar.gz"
+    checksum: "{{ 'sha256:' + kubectx_checksum }}"
+
+- name: download kubens binary
+  get_url:
+    url: "{{ kubens_download_url }}"
+    dest: "{{ artifacts_dir }}/kubens.tar.gz"
+    checksum: "{{ 'sha256:' + kubens_checksum }}"

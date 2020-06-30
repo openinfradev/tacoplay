@@ -1,10 +1,4 @@
 ---
-- name: download kubens binary
-  get_url:
-    url: "{{ kubens_download_url }}"
-    dest: "{{ artifacts_dir }}/kubens.tar.gz"
-    checksum: "{{ 'sha256:' + kubens_checksum }}"
-
 - name: unarchive kubens.tar.gz
   unarchive:
     src: "{{ artifacts_dir }}/kubens.tar.gz"

@@ -1,9 +1,4 @@
 ---
-- name: download kube-ps1 script
-  get_url:
-    url: "{{ kubeps1_download_url }}"
-    dest: "{{ artifacts_dir }}/kube-ps1.sh"
-
 - name: copy kube-ps1.sh into /etc/profile.d
   become: yes
   copy:
