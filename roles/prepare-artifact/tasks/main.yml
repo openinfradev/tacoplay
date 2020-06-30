@@ -81,16 +81,6 @@
     tag: "{{ container_registry_image_tag }}"
     archive_path: "{{ container_registry_volume_relative_dir }}/registry.tar"
 
-- name: download k8s clients
-  include_role:
-    name: ../roles/k8s/clients
-    apply:
-      tags:
-      - k8s_clients_download
-  vars:
-    artifacts_dir: "{{ local_release_dir }}"
-    install_k8s_clients: false
- 
 - name: bundle up tacoplay
   shell: tar cvfz tacoplay.tar.gz tacoplay/
   args:
