@@ -13,8 +13,8 @@ if [ $# == 0 ]; then
   # repository name with *.io, *:INTEGER, *.cicd.stg.taco will be replaced to NEW_REGISTRY.
   docker images --format "{{.Repository}}:{{.Tag}} {{.Repository}}:{{.Tag}}" \
 	| grep "\/" \
-	| sed -e "s/[a-z0-9.-]*.co\///2" \
-	| sed -e "s/[a-z0-9.-]*.io\///2" \
+	| sed -e "s/[a-z0-9.-]*\.co\///2" \
+	| sed -e "s/[a-z0-9.-]*\.io\///2" \
 	| sed -e "s/[a-z0-9.-]*:[0-9]*\///2" \
 	| sed -e "s/[a-z0-9.-]*.cicd.stg.taco\///2" \
 	| sed -e "s/squareup\///2" \
