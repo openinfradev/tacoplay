@@ -1,3 +1,24 @@
 ---
 bin_dir: /usr/local/bin
 keycloak_domain: keycloak.example.com
+
+keycloak_init_image: "{{ container_registry_url }}/library/busybox"
+keycloak_init_image_tag: 1.31
+
+keycloak_image: "{{ container_registry_url }}/jboss/keycloak"
+keycloak_image_tag: 10.0.0
+
+keycloak_test_image: "{{ container_registry_url }}/unguiculus/docker-python3-phantomjs-selenium"
+keycloak_test_image_tag: v1
+
+postgresql_image_registry: "{{ container_registry_url }}"
+postgresql_image: bitnami/postgresql
+postgresql_image_tag: 11.7.0-debian-10-r98
+
+postgresql_minideb_registry: "{{ container_registry_url }}"
+postgresql_minideb_image: bitnami/minideb
+postgresql_minideb_image_tag: buster
+
+postgresql_exporter_registry: "{{ container_registry_url }}"
+postgresql_exporter_image: bitnami/postgres-exporter
+postgresql_exporter_image_tag: 0.8.0-debian-10-r106

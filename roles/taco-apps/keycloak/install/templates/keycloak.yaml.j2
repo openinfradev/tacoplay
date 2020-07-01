@@ -1,6 +1,22 @@
 global:
   storageClass: {{ rbd_provisioner_storage_class | default('rbd') }}
+
+{% if container_registry_enabled %}
+init:
+  image:
+    repository: {{ keycloak_init_image }}
+    tag: {{ keycloak_init_image_tag }}
+{% endif %}
 keycloak:
+{% if container_registry_enabled %}
+  image:
+    repository: {{ keycloak_image }}
+    tag: {{ keycloak_image_tag }}
+  test:
+    image:
+      repository: {{ keycloak_test_image }}
+      tag: {{ keycloak_test_image_tag }}
+{% endif %}
   ingress:
     enabled: true
     hosts:
@@ -9,11 +25,28 @@ keycloak:
       - hosts:
         - {{ keycloak_domain }}
         secretName: tls-keycloak
+  password: {{ keycloak_password | default('password') }}
   persistence:
     deployPostgres: true
     dbVendor: postgres
   password: {{ keycloak_password | default('password') }}
 postgresql:
+{% if container_registry_enabled %}
+  image:
+    registry: {{ postgresql_image_registry }}
+    repository: {{ postgresql_image }}
+    tag: {{ postgresql_image_tag }}
+  metrics:
+    image:
+      registry: {{ postgresql_exporter_registry }}
+      repository: {{ postgresql_exporter_image }}
+      tag: {{ postgresql_exporter_image_tag }}
+  volumePermissions:
+    image:
+      registry: {{ postgresql_minideb_registry }}
+      repository: {{ postgresql_minideb_image }}
+      tag: {{ postgresql_minideb_image_tag }}
+{% endif %}
   persistence:
     enabled: true
     accessModes:
