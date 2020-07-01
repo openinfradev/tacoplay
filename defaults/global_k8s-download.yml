@@ -6,3 +6,4 @@ kubelet_download_url: "http://{{k8s_binary_repo_url}}/kubespray/{{ kubespray_ver
 kubectl_download_url: "http://{{k8s_binary_repo_url}}/kubespray/{{ kubespray_version }}/kubectl-{{kube_version}}-{{image_arch}}"
 crictl_download_url: "http://{{k8s_binary_repo_url}}/kubespray/{{ kubespray_version }}/crictl-{{crictl_version}}-linux-{{image_arch}}.tar.gz"
 calicoctl_download_url: "http://{{k8s_binary_repo_url}}/kubespray/{{ kubespray_version }}/calicoctl"
+helm_2to3_plugin_download_url: "http://{{k8s_binary_repo_url}}/k8s/helm-2to3_0.5.1_linux_amd64.tar.gz"
