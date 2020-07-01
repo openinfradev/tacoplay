@@ -27,6 +27,7 @@ if [ $# == 0 ]; then
 	| sed -e "s/siim\///2" \
 	| sed -e "s/directxman12\///2" \
 	| sed -e "s/ncabatoff\///2" \
+	| sed -e "s/sktdev\///2" \
 	| sed -e "s/ / $NEW_REGISTRY\//g" \
 	| xargs -n2 docker tag $1 $2
 
