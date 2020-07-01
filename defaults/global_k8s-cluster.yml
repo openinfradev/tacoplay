@@ -87,3 +87,10 @@ kube_proxy_metrics_bind_address: 0.0.0.0:10249
 #dns_cores_per_replica: 256
 
 #helm_deployment_type: host
+
+# These variables are defined in cluster.yaml without any tags.
+# TODO: kubesrpay might move theses variables into the kubernetes-default.
+proxy_env:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
