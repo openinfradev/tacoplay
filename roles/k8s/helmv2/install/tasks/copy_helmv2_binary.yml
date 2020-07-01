@@ -1,4 +1,10 @@
 ---
+- name: check helm version of helm binary file
+  shell: "{{ bin_dir }}/helm version --short --client | grep -o 'v[0-9]'"
+  register: helm_binary_version
+  become: no
+  delegate_to: "{{ groups['kube-master']|first }}"
+
 - name: copy helm2 binary to ansible host
   fetch:
     src: "{{ bin_dir }}/helm"
@@ -7,12 +13,18 @@
     validate_checksum: no
   become: no
   delegate_to: "{{ groups['kube-master']|first }}"
+  when:
+    - inventory_hostname in groups['admin-node']
+    - helm_binary_version.stdout == "v2"
 
 - name: copy helm2 to bin_dir
   copy:
     src: "{{ artifacts_dir }}/helm2"
     dest: "{{ bin_dir }}/helm2"
     mode: 0755
+  when:
+    - inventory_hostname in groups['admin-node']
+    - helm_binary_version.stdout == "v2"
 
 # install helm v2tov3 plugin 
 - name: check helm configuration directory
