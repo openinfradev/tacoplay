@@ -24,7 +24,7 @@
     - inventory_hostname in groups['admin-node']
 
 - name: helmv2 init with clien only
-  shell: "{{ bin_dir }}/helm2 init --client-only"
+  shell: "{{ bin_dir }}/helm2 init --client-only --skip-refresh"
   become: no
   when:
     - inventory_hostname in groups['admin-node']
