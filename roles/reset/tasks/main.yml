@@ -40,7 +40,7 @@
 - name: Remove {{ cluster_name }} context from .kube/config
   become: no
   shell: >-
-    {{ bin_dir }}/kubectl config delete-context kubernetest-admin-{{ cluster_name }}@{{ cluster_name }}
+    {{ bin_dir }}/kubectl config delete-context kubernetes-admin-{{ cluster_name }}@{{ cluster_name }}
   ignore_errors: yes 
 
 - name: Remove {{ cluster_name }} cluster from .kube/config
