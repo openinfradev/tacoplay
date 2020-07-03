@@ -59,6 +59,7 @@
     {{ bin_dir }}/kubectl apply -f /tmp/manifests/{{ item.item.file }}
   with_items:
     - "{{ manifests.results }}"
+  become: false
   when:
     - inventory_hostname in groups['admin-node']
 
@@ -68,6 +69,7 @@
   with_items:
     - "{{ istio_injection_namespaces }}"
   ignore_errors: true
+  become: false
   when:
     - inventory_hostname in groups['admin-node']
     - istio_injection_namespaces and istio_injection_namespaces|length > 0
@@ -77,6 +79,7 @@
     {{ bin_dir }}/kubectl label namespace {{ item }} istio-injection=enabled --overwrite
   with_items:
     - "{{ istio_injection_namespaces }}"
+  become: false
   when:
     - inventory_hostname in groups['admin-node']
     - istio_injection_namespaces and istio_injection_namespaces|length > 0

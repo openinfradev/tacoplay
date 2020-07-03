@@ -18,5 +18,6 @@
     - { repo: "{{ istio_proxyv2_image_repo }}", tag: "{{ istio_proxyv2_image_tag }}" }
     - { repo: "{{ istio_pilot_image_repo }}", tag: "{{ istio_pilot_image_tag }}" }
     - { repo: "{{ kiali_image_repo }}", tag: "{{ kiali_image_tag }}" }
+    - { repo: "{{ prometheus_image_repo }}", tag: "{{ prometheus_image_tag }}" }
   become: true
   when: download_istio_images
