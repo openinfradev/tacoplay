@@ -48,12 +48,14 @@
   include: kubespray/cluster.yml
   tags: k8s
 
-- name: setup kubernetes ralated clients to admin-node
+- name: post install for kubernetes
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: kubespray/roles/kubespray-defaults, tags: taco-clients }
-    - { role: k8s/clients, tags: taco-clients }
+    - { role: kubespray/roles/kubespray-defaults, tags: k8s-post-install }
+    - { role: k8s/post-install, tags: k8s-post-install }
+    - { role: k8s/clients, tags: k8s-post-install }
+    - { role: istio/deploy, tags: deploy-istio, when: istio_enabled }
 
 - name: setup helm client for version2
   hosts: admin-node:kube-master
@@ -97,12 +99,6 @@
     - { role: kubespray/roles/kubespray-defaults, tags: deploy }
     - { role: taco-apps/openstack/pre-install, tags: openstack, when: '"openstack" in taco_apps' }
     - { role: taco-apps/deploy, tags: deploy, when: 'taco_apps and taco_apps|length > 0' }
-
-- name: deploy istio
-  hosts: admin-node
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: istio/deploy, tags: deploy-istio, when: istio_enabled }
 
 - name: run opentackclient container and make os_clients.sh file for user
   hosts: admin-node

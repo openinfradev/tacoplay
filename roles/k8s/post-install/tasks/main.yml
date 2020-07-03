@@ -1,0 +1,19 @@
+- name: check coredns label on nodes
+  shell: >-
+    {{ bin_dir }}/kubectl get nodes --selector coredns=enabled --ignore-not-found=true | wc -l
+  register: coredns_node_count
+  become: no
+
+- name: add nodeSelector to coredns deploy
+  shell: >-
+    {{ bin_dir }}/kubectl patch deploy/coredns -n kube-system -p '{"spec": {"template": {"spec": {"nodeSelector": {"coredns": "enabled"}}}}}'
+  become: no
+  ignore_errors: yes
+  when: coredns_node_count.stdout|int > 0
+
+- name: restart coredns
+  shell: >-
+    {{ bin_dir }}/kubectl delete pod -n kube-system -lk8s-app=kube-dns --ignore-not-found=true
+  become: no
+  when: coredns_node_count.stdout|int > 0
+

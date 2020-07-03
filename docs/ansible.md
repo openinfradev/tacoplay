@@ -36,7 +36,7 @@ Tags
 | ceph               | ceph-ansible을 이용해서 ceph 설치
 | ceph-post-install  | ceph 설치 이후 필요한 추가 작업
 | k8s                | kubespray를 이용해서 kubernetes 설치
-| taco-clients       | admin-node에 각종 client 설치
+| k8s-post-install   | admin-node에 client 설치, coredns 설정 등 필요한 작업
 | openstack          | 구축된 kubernetes위에 openstack 배포를 위한 준비
 | lma                | 구축된 kubernetes위에 lma tools 배포를 위한 준비
 | deploy             | armada를 이용해서 위 openstack, lma을 kubernetes에 배포

@@ -25,8 +25,9 @@
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: k8s/client/kubectl, tags: taco-clients }
-    - { role: k8s/client/helm, vars: { helm_binary_name: helm3 }, tags: taco-clients }
+    - { role: k8s/post-install, tags: k8s-post-install }
+    - { role: k8s/client/kubectl, tags: k8s-post-install }
+    - { role: k8s/client/helm, vars: { helm_binary_name: helm3 }, tags: k8s-post-install }
     - { role: k8s/helmv2/install, tags: helmv2, when: use_helmv2_for_armada }
     - { role: k8s/client/helm, vars: { helm_binary_name: helm2 }, tags: helmv2, when: use_helmv2_for_armada }
     - { role: k8s/helmv2/tiller, tags: helmv2, when: use_helmv2_for_armada }
