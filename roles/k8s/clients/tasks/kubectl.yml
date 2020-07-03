@@ -70,3 +70,20 @@
   copy: content="{{ merged_kube_config.stdout }}" dest="{{ lookup('env', 'HOME') }}/.kube/config"
   when: not cluster_registered.rc == 0
   
+- name: use {{ cluster_name }} context in .kube/config
+  become: no
+  command: "{{ bin_dir }}/kubectl config use-context kubernetes-admin-{{ cluster_name }}@{{ cluster_name }}"
+
+- name: get current context
+  become: no
+  command: "{{ bin_dir }}/kubectl config current-context"
+  register: k8s_context
+
+- name: debug current context
+  debug:
+    msg: "Current k8s context: {{ k8s_context.stdout }}"
+
+- name: fail if current context wasn't set properly
+  fail:
+    msg: "Error! Current context hasn't been set perperly!"
+  when: k8s_context.stdout != "kubernetes-admin-{{ cluster_name }}@{{ cluster_name }}"
