@@ -19,6 +19,7 @@
     awk '{print $2}' |
     awk NF
   register: tiller_type
+  become: no
   when: inventory_hostname in groups['admin-node']
 
 - name: create nodeport for tiller
@@ -26,6 +27,7 @@
     {{ bin_dir }}/kubectl apply -f /tmp/manifests/{{ item.item.file }}
   with_items:
     - "{{ manifests.results }}"
+  become: no
   when:
     - inventory_hostname in groups['admin-node']
     - tiller_type.stdout == 'ClusterIP'
