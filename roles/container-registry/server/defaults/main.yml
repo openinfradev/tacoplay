@@ -1,5 +1,6 @@
 ---
 container_registry_name: "taco-registry"
+reinstall_registry: false
 
 # These values are defined in global_taco vars since these are
 # shared by container-registry and prepare-artifact role.
