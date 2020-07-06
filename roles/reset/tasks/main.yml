@@ -25,7 +25,6 @@
   when:
     - inventory_hostname in groups['admin-node']
     - use_helmv2_for_armada
-  delegate_to: "{{ groups['admin-node']|first }}"
 
 - name: delete all configurations for helm2
   file:
@@ -37,25 +36,27 @@
   when:
     - inventory_hostname in groups['admin-node']
     - use_helmv2_for_armada
-  delegate_to: "{{ groups['admin-node']|first }}"
 
 - name: Remove {{ cluster_name }} context from .kube/config
   become: no
   shell: >-
     {{ bin_dir }}/kubectl config delete-context kubernetes-admin-{{ cluster_name }}@{{ cluster_name }}
   ignore_errors: yes 
-  delegate_to: "{{ groups['admin-node']|first }}"
+  when:
+    - inventory_hostname in groups['admin-node']
 
 - name: Remove {{ cluster_name }} cluster from .kube/config
   become: no
   shell: >-
     {{ bin_dir }}/kubectl config delete-cluster {{ cluster_name }}
   ignore_errors: yes 
-  delegate_to: "{{ groups['admin-node']|first }}"
+  when:
+    - inventory_hostname in groups['admin-node']
 
 - name: Remove {{ cluster_name }} cluster's user from .kube/config
   become: no
   shell: >-
     {{ bin_dir }}/kubectl config unset users.kubernetes-admin-{{ cluster_name }}
   ignore_errors: yes 
-  delegate_to: "{{ groups['admin-node']|first }}"
+  when:
+    - inventory_hostname in groups['admin-node']
