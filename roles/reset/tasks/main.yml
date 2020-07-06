@@ -1,12 +1,12 @@
 ---
 - name: Reset OpenvSwitch
-  include_tasks: reset-openvswitch.ym
+  include_tasks: reset-openvswitch.yml
   when:
     - ovs_package_installed
     - inventory_hostname in groups['controller-node'] or inventory_hostname in groups['compute-node']
 
 - name: remove SONA configuration
-  include_tasks: reset-sona-configuration.ym
+  include_tasks: reset-sona-configuration.yml
   when: sona_integration|default(false)
 
 - name: Restore OpenStack manifest to previous state
@@ -40,17 +40,23 @@
 - name: Remove {{ cluster_name }} context from .kube/config
   become: no
   shell: >-
-    {{ bin_dir }}/kubectl config delete-context kubernetest-admin-{{ cluster_name }}@{{ cluster_name }}
+    {{ bin_dir }}/kubectl config delete-context kubernetes-admin-{{ cluster_name }}@{{ cluster_name }}
   ignore_errors: yes 
+  when:
+    - inventory_hostname in groups['admin-node']
 
 - name: Remove {{ cluster_name }} cluster from .kube/config
   become: no
   shell: >-
     {{ bin_dir }}/kubectl config delete-cluster {{ cluster_name }}
   ignore_errors: yes 
+  when:
+    - inventory_hostname in groups['admin-node']
 
 - name: Remove {{ cluster_name }} cluster's user from .kube/config
   become: no
   shell: >-
     {{ bin_dir }}/kubectl config unset users.kubernetes-admin-{{ cluster_name }}
   ignore_errors: yes 
+  when:
+    - inventory_hostname in groups['admin-node']
