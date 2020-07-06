@@ -1,7 +1,7 @@
 ---
 - name: Copy cert to dest servers
   copy:
-    src: /etc/keycloak/ssl/keycloak.crt
+    src: "{{ keycloak_certificate }}"
     dest: /etc/pki/ca-trust/source/anchors/
   when:
     - ansible_distribution in ["CentOS","RedHat"]
@@ -14,7 +14,7 @@
 
 - name: Copy cert to dest servers
   copy:
-    src: /etc/keycloak/ssl/keycloak.crt
+    src: "{{ keycloak_certificate }}"
     dest: /usr/local/share/ca-certificates/
   when:
     - ansible_distribution in ["Ubuntu","Debian"]

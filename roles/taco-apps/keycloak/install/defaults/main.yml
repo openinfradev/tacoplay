@@ -1,5 +1,6 @@
 ---
 bin_dir: /usr/local/bin
+keycloak_chart_installed: false
 keycloak_domain: keycloak.example.com
 
 keycloak_init_image: "{{ container_registry_url }}/library/busybox"
@@ -22,3 +23,9 @@ postgresql_minideb_image_tag: buster
 postgresql_exporter_registry: "{{ container_registry_url }}"
 postgresql_exporter_image: bitnami/postgres-exporter
 postgresql_exporter_image_tag: 0.8.0-debian-10-r106
+
+# keycloak_certificate and keycloak_certifate_key needs to be configured
+# if these values are not configured, it will be set automatically to
+# '/etc/keycloak/ssl/keycloak.crt' and /etc/keycloak/ssl/keycloak.key'
+# keycloak_certificate:
+# keycloak_certificate_key:
