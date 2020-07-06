@@ -11,6 +11,7 @@
   when:
     - not allow_redeployment
     - stat_kubeconfig_result.stat.exists
+  ignore_errors: yes
 
 - name: fail if {{ cluster_name }} already exists
   fail:
