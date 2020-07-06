@@ -80,7 +80,7 @@ quay_image_repo: "localrepo:5000"
 **(예제)**
 ```
 istio-profile.yml 변경 후
-> ansible-playbook -b -i inventory/test/hosts.ini -e @inventory/test/extra-vars.yml site.yml --tags deploy-istio --skip-tags setup-os,ceph,k8s,taco-clients
+> ansible-playbook -b -i inventory/test/hosts.ini -e @inventory/test/extra-vars.yml site.yml --tags deploy-istio --skip-tags setup-os,ceph,k8s,k8s-post-install
 또는
 > istioctl manifest apply -f inventory/istio-profile.yml
 ```
