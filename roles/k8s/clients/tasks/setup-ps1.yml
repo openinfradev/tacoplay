@@ -12,12 +12,12 @@
     line: "export PS1='($(kubectl config current-context):$(kubectl config view --minify -ojsonpath={..namespace})) [\\u@\\h \\W]\\$ '"
   when: not checkps1.rc == 0
 
-- name: setup default namespace
+- name: check if current namespace exists
   become: no
   command: "{{ bin_dir }}/kubectl config view --minify -ojsonpath={..namespace}"
   register: currentNs
   
-- name: update default namespace
+- name: set default namespace if current namespace does not exist
   become: no
   command: "{{ bin_dir }}/kubectl config set-context kubernetes-admin-{{ cluster_name }}@{{ cluster_name }} --namespace=default"
   when: currentNs.stdout == ''
