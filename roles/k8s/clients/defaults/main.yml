@@ -3,14 +3,12 @@ bin_dir: /usr/local/bin
 artifacts_dir: "{{ inventory_dir }}/artifacts"
 
 install_k8s_clients: true
-use_kubeps1: true
 use_kubectx: true
 use_kubectl: true
 use_kubens: true
 use_helm: true
 
 # Download URL
-kubeps1_download_url: "https://raw.githubusercontent.com/jonmosco/kube-ps1/v0.7.0/kube-ps1.sh"
 kubectx_download_url: "https://github.com/ahmetb/kubectx/releases/download/v0.9.0/kubectx_v0.9.0_linux_x86_64.tar.gz"
 kubens_download_url: "https://github.com/ahmetb/kubectx/releases/download/v0.9.0/kubens_v0.9.0_linux_x86_64.tar.gz"
 
