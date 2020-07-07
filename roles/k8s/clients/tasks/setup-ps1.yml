@@ -1,0 +1,29 @@
+---
+- name: check whether .bashrc contains PS1
+  command: grep -Frn "PS1='($(kubectl config current-context):$(kubectl config view --minify -ojsonpath={..namespace})) [\u@\h \W]\$ '" {{ lookup('env','HOME') }}/.bashrc
+  register: checkps1
+  ignore_errors: True
+  changed_when: False
+
+- name: add PS1 into basrc
+  lineinfile:
+    dest: "{{ lookup('env','HOME') }}/.bashrc"
+    state: present
+    line: "export PS1='($(kubectl config current-context):$(kubectl config view --minify -ojsonpath={..namespace})) [\\u@\\h \\W]\\$ '"
+  when: not checkps1.rc == 0
+
+- name: setup default namespace
+  become: no
+  command: "{{ bin_dir }}/kubectl config view --minify -ojsonpath={..namespace}"
+  register: currentNs
+  
+- name: update default namespace
+  become: no
+  command: "{{ bin_dir }}/kubectl config set-context kubernetes-admin-{{ cluster_name }}@{{ cluster_name }} --namespace=default"
+  when: currentNs.stdout == ''
+
+- name: source bashrc
+  become: no
+  shell: source {{ lookup('env','HOME') }}/.bashrc
+  args:
+    executable: /bin/bash

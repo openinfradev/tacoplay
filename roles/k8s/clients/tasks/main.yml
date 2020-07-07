@@ -9,12 +9,10 @@
 - include_tasks: helm3.yml
   when: install_k8s_clients and use_helm
 
-- include_tasks: kube-ps1.yml
-  when: install_k8s_clients and use_kubeps1
-
 - include_tasks: kubectx.yml
   when: install_k8s_clients and use_kubectx
 
 - include_tasks: kubens.yml
   when: install_k8s_clients and use_kubens
 
+- include_tasks: setup-ps1.yml
