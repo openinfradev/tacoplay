@@ -2,7 +2,7 @@
 bin_dir: /usr/local/bin
 keycloak_enabled: false
 keycloak_domain: keycloak.example.com
-keycloak_namespace: keycloak
+keycloak_namespace: fed
 
 keycloak_init_image: "{{ container_registry_url }}/library/busybox"
 keycloak_init_image_tag: 1.31
