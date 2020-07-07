@@ -1,6 +1,6 @@
 ---
 bin_dir: /usr/local/bin
-keycloak_chart_installed: false
+keycloak_enabled: false
 keycloak_domain: keycloak.example.com
 keycloak_namespace: keycloak
 
