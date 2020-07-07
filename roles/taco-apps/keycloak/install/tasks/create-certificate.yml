@@ -1,0 +1,18 @@
+- name: create ssl directory
+  file:
+    path: /etc/keycloak/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: with SSL for Keycloak
+  block:
+    - name: generate a Self Signed OpenSSL certificate for Keycloak
+      shell: |
+        test -f /etc/keycloak/ssl/keycloak.key -a -f /etc/keycloak/ssl/keycloak.crt || \
+        openssl req -new -nodes -x509 -subj '/O=IT/CN={{ keycloak_domain }}' -days 3650 -keyout /etc/keycloak/ssl/keycloak.key -out /etc/keycloak/ssl/keycloak.crt
+    - name: set the keycloak certificate path
+      set_fact:
+        keycloak_certificate: '/etc/keycloak/ssl/keycloak.crt'
+        keycloak_certificate_key: '/etc/keycloak/ssl/keycloak.key'

@@ -82,7 +82,7 @@
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/keycloak/install, when: kube_oidc_auth | default(false) }
+    - { role: taco-apps/keycloak/install, when: keycloak_enabled | default(false) }
 
 - name: add a self-signed cert to ca-trust
   hosts: taco
