@@ -1,0 +1,68 @@
+---
+# How to run this task also on ansible host node?
+- name: registries | install rsync on ansible-host and registry nodes
+  yum:
+    name: rsync
+    state: present
+  when:
+    - ansible_distribution in ["CentOS","RedHat"]
+
+- name: install python docker package
+  pip:
+    name: "{{ item.name }}"
+    version: "{{ item.version }}"
+    state: present
+    extra_args: "--ignore-installed"
+  loop:
+    - { name: 'docker', version: '3.5.1' }
+
+- name: get registry image
+  synchronize:
+    src: "{{ container_registry_volume_dir }}/registry.tar"
+    dest: "/tmp/registry.tar"
+
+- name: load registry image from archive
+  docker_image:
+    name: "{{ container_registry_image_repo }}:{{ container_registry_image_tag }}"
+    load_path: "/tmp/registry.tar"
+    state: present
+
+- name: ensure docker volume mapping host directories exist
+  file:
+    state: directory
+    path: "{{ item | regex_replace('^(?P<host>.+):(?P<container>.+):(?P<mode>.+)', '\\g<host>') }}"
+  with_items:
+    - "{{ container_registry_volume }}"
+  register: directory_ensure_result 
+
+- name: unarchive registry volume
+  unarchive:
+    src: "{{ container_registry_volume_archive }}"
+    dest: "{{ container_registry_volume }}"
+  when:
+    - registry_volume_archived
+    - directory_ensure_result.changed
+
+- name: copy registry volume to local registry volume path
+  synchronize:
+    src: "{{ container_registry_volume_dir }}/"
+    dest: "{{ container_registry_volume }}"
+  when:
+    - not registry_volume_archived
+    - directory_ensure_result.changed
+
+- name: remove existing {{ container_registry_name }} container
+  docker_container:
+    name: "{{ container_registry_name }}"
+    state: absent
+
+- name: run docker registry container
+  docker_container:
+    name: "{{ container_registry_name }}"
+    image: "{{ container_registry_image_repo }}:{{ container_registry_image_tag }}"
+    env: "{{ container_registry_env }}"
+    exposed_ports: "{{ container_registry_expose }}"
+    ports: "{{ container_registry_ports }}"
+    volumes: "{{ container_registry_volume }}:/var/lib/registry"
+    restart_policy: always
+    state: started
