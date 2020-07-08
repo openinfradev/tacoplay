@@ -16,3 +16,4 @@
   when: install_k8s_clients and use_kubens
 
 - include_tasks: setup-ps1.yml
+  when: install_k8s_clients and setup_ps1
