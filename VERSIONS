@@ -1,9 +1,9 @@
 kubespray https://tde.sktelecom.com/stash/scm/oreotools/kubespray.git v2.13.1
-charts/openstack-helm https://tde.sktelecom.com/stash/scm/openstack/openstack-helm.git master
-charts/openstack-helm-infra https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra.git master
-manifests https://tde.sktelecom.com/stash/scm/oreotools/armada-manifests.git master
+charts/openstack-helm https://tde.sktelecom.com/stash/scm/openstack/openstack-helm.git taco-20.07.08
+charts/openstack-helm-infra https://tde.sktelecom.com/stash/scm/openstack/openstack-helm-infra.git taco-20.07.08
+manifests https://tde.sktelecom.com/stash/scm/oreotools/armada-manifests.git taco-20.07.08
 ceph-ansible https://tde.sktelecom.com/stash/scm/oreotools/ceph-ansible.git stable-4.0
-charts/helm https://tde.sktelecom.com/stash/scm/oreotools/helm-charts.git master
+charts/helm https://tde.sktelecom.com/stash/scm/oreotools/helm-charts.git taco-20.07.08
 charts/sona-helm https://tde.sktelecom.com/stash/scm/openstack/sona-helm.git hamode
-charts/taco-helm https://tde.sktelecom.com/stash/scm/oreotools/taco-helm.git master
-charts/taco-addons https://tde.sktelecom.com/stash/scm/oreotools/taco-addons.git master
+charts/taco-helm https://tde.sktelecom.com/stash/scm/oreotools/taco-helm.git taco-20.07.08
+charts/taco-addons https://tde.sktelecom.com/stash/scm/oreotools/taco-addons.git taco-20.07.08

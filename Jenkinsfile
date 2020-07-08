@@ -1,4 +1,4 @@
-@Library('pipeline-library@master') _
+@Library('pipeline-library@taco-20.07.08') _
 
 pipeline {
   agent {
