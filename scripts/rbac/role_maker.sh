@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ $# -ne 1 ]; then
-	echo "Usage: $0 <NAMESPACE>"
-	exit -1
+  echo "Usage: $0 <NAMESPACE>"
+  exit -1
 fi
 
 NAMESPACE=$1
@@ -10,7 +10,7 @@ NAMESPACE=$1
 kubectl get ns $NAMESPACE
 
 if [ $? -eq 1 ]; then
-	kubectl create ns $NAMESPACE
+  kubectl create ns $NAMESPACE
 fi
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
@@ -27,7 +27,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   namespace: $NAMESPACE
-  name: $NAMESPACE-viewer
+  name: $NAMESPACE-view
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources: ["*"]
