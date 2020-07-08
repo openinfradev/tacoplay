@@ -12,7 +12,7 @@
 
 - name: install keycloak chart
   shell: |
-    {{ bin_dir }}/helm upgrade --install keycloak {{ playbook_dir }}/charts/taco-helm/keycloak --namespace keycloak --values {{ inventory_dir }}/keycloak.yaml
+    {{ bin_dir }}/helm upgrade --install keycloak {{ playbook_dir }}/charts/taco-helm/keycloak --namespace {{ keycloak_namespace }} --values {{ inventory_dir }}/keycloak.yaml
 
 - include_tasks: create-certificate.yml
   when:
