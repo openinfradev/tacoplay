@@ -15,9 +15,6 @@
     {{ bin_dir }}/helm upgrade --install keycloak {{ playbook_dir }}/charts/taco-helm/keycloak --namespace {{ keycloak_namespace }} --values {{ inventory_dir }}/keycloak.yaml
 
 - include_tasks: create-certificate.yml
-  when:
-    - keycloak_certificate is undefined
-    - keycloak_certificate_key is undefined
 
 - name: add secret for ingress
   shell: |
