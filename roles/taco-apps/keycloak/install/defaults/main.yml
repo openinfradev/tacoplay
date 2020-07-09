@@ -27,3 +27,6 @@ postgresql_exporter_image_tag: 0.8.0-debian-10-r106
 
 keycloak_certificate: /etc/keycloak/ssl/keycloak.crt
 keycloak_certificate_key: /etc/keycloak/ssl/keycloak.key
+
+keycloak_password: password
+keycloak_db_password: password

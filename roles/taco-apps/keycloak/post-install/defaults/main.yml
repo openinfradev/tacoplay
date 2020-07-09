@@ -1,0 +1,2 @@
+---
+keycloak_certificate: /etc/keycloak/ssl/keycloak.crt
