@@ -65,7 +65,6 @@
     - { role: k8s/helmv2/pre-install, tags: helmv2, when: use_helmv2_for_armada }
     - { role: kubespray/roles/kubernetes-apps/helm, tags: helmv2, when: use_helmv2_for_armada }
     - { role: k8s/helmv2/post-install, tags: helmv2, when: use_helmv2_for_armada }
-
     - { role: k8s/helmv2/tiller, tags: helmv2, when: use_helmv2_for_armada }
 
 # TODO: add tests for checking status of the new k8s cluster
