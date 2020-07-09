@@ -25,11 +25,10 @@ keycloak:
       - hosts:
         - {{ keycloak_domain }}
         secretName: tls-keycloak
-  password: {{ keycloak_password | default('password') }}
+  password: {{ keycloak_password }}
   persistence:
     deployPostgres: true
     dbVendor: postgres
-  password: {{ keycloak_password | default('password') }}
 postgresql:
 {% if container_registry_enabled %}
   image:
@@ -52,4 +51,4 @@ postgresql:
     accessModes:
       - ReadWriteOnce
     size: 20Gi
-  postgresqlPassword: {{ keycloak_db_password | default('password') }}
+  postgresqlPassword: {{ keycloak_db_password }}
