@@ -42,8 +42,42 @@
     - inventory_hostname in groups['admin-node']
     - check_dir.stat.exists == false
 
-- name: install helm2to3 plugin
-  shell: "{{ bin_dir }}/helm2 plugin install https://github.com/helm/helm-2to3"
+- name: download helm 2to3 plugin
+  get_url:
+    url: "{{ helm_2to3_plugin_download_url }}"
+    dest: "/tmp/helm-2to3_0.5.1_linux_amd64.tar.gz"
+    checksum: "{{ 'sha256:' + helm_2to3_checksum }}"
+  become: no
+  when:
+    - inventory_hostname in groups['admin-node']
+
+- name: ensure helm-2to3 directory exists
+  file:
+    path: "/tmp/helm-2to3"
+    state: directory
+  become: no
+  when:
+    - inventory_hostname in groups['admin-node']
+
+- name: extract helm 2to3 plugin
+  unarchive:
+    src: "/tmp/helm-2to3_0.5.1_linux_amd64.tar.gz"
+    dest: "/tmp/helm-2to3"
+    copy: no
+  become: no
+  when:
+    - inventory_hostname in groups['admin-node']
+
+- name: copy custom install script for offline env
+  copy:
+    src: "install_plugin.sh"
+    dest: "/tmp/helm-2to3/scripts"
+  become: no
+  when:
+    - inventory_hostname in groups['admin-node']
+
+- name: install helm 2to3 plugin
+  shell: "{{ bin_dir }}/helm2 plugin install /tmp/helm-2to3"
   become: no
   ignore_errors: True
   when:

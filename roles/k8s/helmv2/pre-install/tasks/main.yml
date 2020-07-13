@@ -1,0 +1,7 @@
+- name: override helm_version to v2
+  set_fact:
+    helm_version: "{{ helmv2_version }}"
+
+- name: debug helm version
+  debug:
+    var: helm_version

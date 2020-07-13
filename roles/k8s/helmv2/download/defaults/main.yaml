@@ -1,0 +1,3 @@
+---
+helm_2to3_plugin_download_url: "https://github.com/helm/helm-2to3/releases/download/v0.5.1/helm-2to3_0.5.1_linux_amd64.tar.gz"
+helm_2to3_checksum: 11f6ca6851ba18778e21b8e2802323c18ca151e00a411232da537b94d8175e58

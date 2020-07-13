@@ -1,0 +1,12 @@
+---
+- name: download helm 2to3 plugin to local release dir
+  get_url:
+    url: "{{ helm_2to3_plugin_download_url }}"
+    dest: "{{ local_release_dir }}"
+    checksum: "{{ 'sha256:' + helm_2to3_checksum }}"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg or 'Not Modified' in get_url_result.msg"
+  retries: 4
+  delay: "{{ retry_stagger | default(5) }}"
+  become: true
+
