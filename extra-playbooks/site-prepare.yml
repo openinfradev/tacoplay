@@ -16,7 +16,7 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: istio/prepare }
+    - { role: taco-apps/istio/prepare }
   tags: always
 
 - hosts: localhost

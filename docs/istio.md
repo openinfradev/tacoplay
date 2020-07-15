@@ -39,16 +39,16 @@ istio 설치
 
 | 설정 값 | 설명 | 기본 값 |
 |---------|------|------|
-|  istio_enabled | istio 설치 여부 | false
+|  taco_apps | istio 설치 여부 | null
 |  istio_injection_namespaces | istio injection을 적용할 namespace 목록 | ["default"]
 
 
 **(예제)**
 ```
-istio_enabled: true
+taco_apps: ['istio', ...]
 ```
 
-위와 같이 istio_enabled: true를 extra-vars.yml에 추가하고 site.yml을 돌리면 istio가 cluster에 설치된다.
+위와 같이 extra-vars.yml의 'taco_apps' array에 'istio'를 추가하고 site.yml을 돌리면 istio가 cluster에 설치된다.
 
 **(예제)**
 ```

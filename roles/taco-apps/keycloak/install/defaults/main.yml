@@ -1,6 +1,5 @@
 ---
 bin_dir: /usr/local/bin
-keycloak_enabled: false
 keycloak_domain: keycloak.example.com
 keycloak_namespace: fed
 
