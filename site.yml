@@ -55,7 +55,6 @@
     - { role: kubespray/roles/kubespray-defaults, tags: k8s-post-install }
     - { role: k8s/post-install, tags: k8s-post-install }
     - { role: k8s/clients, tags: k8s-post-install }
-    - { role: istio/deploy, tags: deploy-istio, when: istio_enabled }
 
 - name: setup helm client for version2
   hosts: admin-node:kube-master
@@ -81,20 +80,22 @@
   roles:
     - { role: taco-apps/lma/pre-install, tags: lma, when: '"lma" in taco_apps' }
 
-- name: install keycloack chart
+# Keycloak/install task will be integrated to taco-apps/deploy role
+# once we migrate to decapod from armada.
+- name: install istio and keycloack
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/keycloak/install, when: keycloak_enabled | default(false) }
+    - { role: kubespray/roles/kubespray-defaults, tags: always, when: ('"istio" in taco_apps') or ('"keycloak" in taco_apps') }
+    - { role: taco-apps/istio/deploy, tags: deploy-istio, when: '"istio" in taco_apps' }
+    - { role: taco-apps/keycloak/install, tags: install-keycloak, when: '"keycloak" in taco_apps' }
 
-- name: add a self-signed cert to ca-trust
+- name: add a self-signed cert to ca-trust for keycloak
   hosts: taco
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: taco-apps/keycloak/post-install, when: kube_oidc_auth | default(false) }
+    - { role: taco-apps/keycloak/post-install, when: kube_oidc_auth }
 
-# Once we support various apps other than openstack, we should be able to
-# deploy those apps selectively.
 - name: deploy taco apps
   hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"

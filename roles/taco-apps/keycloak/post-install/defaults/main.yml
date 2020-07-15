@@ -1,2 +1,3 @@
 ---
+kube_oidc_auth: false
 keycloak_certificate: /etc/keycloak/ssl/keycloak.crt

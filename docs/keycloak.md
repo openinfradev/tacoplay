@@ -6,8 +6,13 @@ Keycloak은 Kubernetes에 사용자 인증기능을 사용하기 위해 tacoplay
 
 설치방법
 --------
+extra-vars 에 아래 설정을 추가한다.
+```
+kube_oidc_auth: true
+taco_apps: ['keycloak', ...]
+```
 
-site.yml플레이북에서  kube_oidc_auth 변수를 true로 설정하여 실행한다.
+site.yml을 실행한다.
 ```
 $  ansible-playbook -b -i inventory/test/hosts.ini -e @inventory/test/extra-vars.yml -e kube_oidc_auth=true site.yml 
 ```

@@ -1,4 +1,3 @@
-istio_enabled: false
 istio_injection_namespaces: ["default"]
 # cluster_name: This value is defined in kubespray.
 
