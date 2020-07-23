@@ -29,26 +29,33 @@ keycloak:
   persistence:
     deployPostgres: true
     dbVendor: postgres
-postgresql:
+postgresql-ha:
 {% if container_registry_enabled %}
-  image:
+  postgresqlImage:
     registry: {{ postgresql_image_registry }}
     repository: {{ postgresql_image }}
     tag: {{ postgresql_image_tag }}
-  metrics:
-    image:
-      registry: {{ postgresql_exporter_registry }}
-      repository: {{ postgresql_exporter_image }}
-      tag: {{ postgresql_exporter_image_tag }}
-  volumePermissions:
-    image:
-      registry: {{ postgresql_minideb_registry }}
-      repository: {{ postgresql_minideb_image }}
-      tag: {{ postgresql_minideb_image_tag }}
+  pgpoolImage:
+    registry: {{ postgresql_pgpool_registry }}
+    repository: {{ postgresql_pgpool_image }}
+    tag: {{ postgresql_pgpool_image_tag }}
+  metricsImage:
+    registry: {{ postgresql_exporter_registry }}
+    repository: {{ postgresql_exporter_image }}
+    tag: {{ postgresql_exporter_image_tag }}
+  volumePermissionsImage:
+    registry: {{ postgresql_minideb_registry }}
+    repository: {{ postgresql_minideb_image }}
+    tag: {{ postgresql_minideb_image_tag }}
 {% endif %}
+  postgresql:
+    password: {{ keycloak_db_password }}
+    repmgrPassword: {{ keycloak_db_repmgr_password }}
+  networkPolicy:
+    enabled: false
+    allowExternal: true
   persistence:
     enabled: true
     accessModes:
       - ReadWriteOnce
     size: 20Gi
-  postgresqlPassword: {{ keycloak_db_password }}
