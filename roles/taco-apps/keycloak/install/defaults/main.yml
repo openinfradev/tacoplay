@@ -34,3 +34,5 @@ keycloak_certificate_key: /etc/keycloak/ssl/keycloak.key
 keycloak_password: password
 keycloak_db_password: password
 keycloak_db_repmgr_password: password
+
+postgresql_metrics_enabled: true

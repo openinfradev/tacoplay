@@ -59,3 +59,7 @@ postgresql-ha:
     accessModes:
       - ReadWriteOnce
     size: 20Gi
+{% if postgresql_metrics_enabled %}
+  metrics:
+    enabled: true
+{% endif %}
