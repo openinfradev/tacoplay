@@ -1,0 +1,44 @@
+---
+- name: git clone helm-operator
+  git:
+    repo: "{{ helm_operator_source }}"
+    dest: "{{ helm_operator_dest }}"
+    version: "{{ helm_operator_version }}"
+  become: false
+
+- name: get manifest to deploy
+  shell: >-
+    {{ bin_dir }}/kubectl kustomize {{ helm_operator_dest }}/deploy/ > /tmp/.helm-operator-kustomization.yaml
+  become: false
+
+- name: replace image repo
+  replace:
+    path: /tmp/.helm-operator-kustomization.yaml
+    replace: "image: {{ helm_operator_image_repo }}:{{ helm_operator_version | replace('v','') }}"
+    regexp: "image:(.*)$"
+  become: false
+
+- name: replace namespace to deploy
+  replace:
+    path: /tmp/.helm-operator-kustomization.yaml
+    replace: "namespace: kube-system"
+    regexp: "namespace: (.*)$"
+  become: false
+
+- name: deploy helm-operator
+  shell: >-
+    {{ bin_dir }}/kubectl apply -f /tmp/.helm-operator-kustomization.yaml -n kube-system
+  become: false
+
+- name: wait for helm-operator pod becomes ready
+  shell: >-
+    {{ bin_dir }}/kubectl wait --namespace=kube-system --for=condition=Ready pods --selector name=helm-operator --timeout=600s
+  become: false
+
+- name: delete helm-operator by-products
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /tmp/.helm-operator-kustomization.yaml
+    - "{{ helm_operator_dest }}"

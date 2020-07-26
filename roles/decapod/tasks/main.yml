@@ -1,0 +1,54 @@
+---
+- import_tasks: helm-operator.yml
+- import_tasks: argo.yml
+
+- name: git clone decapod-flow
+  git:
+    repo: "{{ decapod_flow_source }}"
+    dest: "{{ decapod_flow_dest }}"
+    version: "{{ decapod_flow_version }}"
+  become: false
+
+- name: copy helmrelease-rbac.yaml to tmp
+  copy:
+    src: "{{ decapod_flow_dest }}/workflow-templates/helm-operator/helmrelease-rbac.yaml"
+    dest: "/tmp/.helmrelease-rbac.yaml"
+  become: false
+
+- name: replace namespace to argo
+  replace:
+    path: "/tmp/.helmrelease-rbac.yaml"
+    replace: "namespace: argo"
+    regexp: "namespace: (.*)$"
+  become: false
+
+- name: install rbac to argo for helmrelase
+  shell: >-
+    {{ bin_dir }}/kubectl apply -f /tmp/.helmrelease-rbac.yaml -n argo
+  become: false
+
+- name: check helmrelease-wftpl is exist
+  shell: >-
+    {{ bin_dir }}/argo template get helmrelease
+  ignore_errors: true
+  register: shell_result
+  become: false
+
+- name: remove helmrelease wftpl
+  shell: >-
+    {{ bin_dir }}/argo template delete helmrelease
+  when: not shell_result.failed
+  become: false
+
+- name: summit helmrelease workflow template to argo
+  shell: >-
+    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/helm-operator/helmrelease-wftpl.yaml
+  become: false
+
+- name: delete decapod by-products
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ decapod_flow_source }}"
+    - /tmp/.helmrelease-rbac.yaml

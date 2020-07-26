@@ -1,0 +1,52 @@
+---
+- name: git clone argo
+  git:
+    repo: "{{ argo_source }}"
+    dest: "{{ argo_dest }}"
+    version: "{{ argo_version }}"
+  become: false
+
+- name: replace image repo
+  replace:
+    path: /tmp/argo/manifests/install.yaml
+    replace: "image: {{ item.repo }}:{{ argo_version }}"
+    regexp: "image: argoproj/{{ item.image }}(.*)$"
+  with_items:
+    - { image : 'argocli', repo : '{{ argo_server_image_repo }}' } 
+    - { image : 'workflow-controller', repo : '{{ argo_workflow_controller_image_repo }}' }
+  become: false
+
+- name: create namespace to deploy argo
+  shell: >-
+    {{ bin_dir }}/kubectl create namespace argo
+  ignore_errors: true
+  become: false
+
+- name: deploy argo
+  shell: >-
+    {{ bin_dir }}/kubectl apply -f /tmp/argo/manifests/install.yaml -n argo
+  become: false
+
+- name: wait for argo pods become ready
+  shell: >-
+    {{ bin_dir }}/kubectl wait --namespace=argo --for=condition=Ready pods -l app={{ item }} --timeout=600s
+  become: false
+  with_items:
+    - argo-server
+    - workflow-controller
+
+- name: check argo client exists
+  stat:
+    path: "{{ bin_dir }}/argo"
+  register: stat_result
+
+- name: install argo client
+  shell: >-
+    cd /tmp && curl -sLO {{ argo_client_url }} && chmod +x {{ argo_client_binary_name }} && mv ./{{ argo_client_binary_name }} {{ bin_dir }}/argo
+  become: true
+  when: not stat_result.stat.exists
+
+- name: delete argo by-products
+  file:
+    path: "{{ argo_dest }}"
+    state: absent

@@ -1,0 +1,20 @@
+bin_dir: /usr/local/bin
+decapod_enabled: true
+decapod_flow_source: "https://github.com/openinfradev/decapod-flow.git"
+decapod_flow_dest: "/tmp/decapod_flow"
+decapod_flow_version: "master"
+
+helm_operator_version: "v1.1.0"
+helm_operator_image_repo: "docker.io/fluxcd/helm-operator"
+helm_operator_source: "https://github.com/fluxcd/helm-operator.git"
+helm_operator_dest: "/tmp/helm-operator"
+
+argo_version: "v2.9.4"
+argo_server_image_repo: "argoproj/argocli"
+argo_workflow_controller_image_repo: "argoproj/workflow-controller"
+argo_source: "https://github.com/argoproj/argo.git"
+argo_dest: "/tmp/argo"
+argo_client_binary_name: "argo-linux-amd64"
+argo_client_url: "https://github.com/argoproj/argo/releases/download/{{ argo_version }}/{{ argo_client_binary_name }}"
+
+
