@@ -66,6 +66,12 @@
     - { role: k8s/helmv2/post-install, tags: helmv2, when: use_helmv2_for_armada }
     - { role: k8s/helmv2/tiller, tags: helmv2, when: use_helmv2_for_armada }
 
+- name: setup helm repository
+  hosts: helm-repository
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  roles:
+    - { role: helm-repository, tags: helm-repo, when: helm_repo_enabled }
+
 # TODO: add tests for checking status of the new k8s cluster
 - name: setup openstack-related config on operating system
   hosts: controller-node:compute-node
