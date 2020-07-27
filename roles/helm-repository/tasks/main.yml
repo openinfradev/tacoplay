@@ -1,0 +1,133 @@
+---
+- name: gather source chart list with asterisk
+  set_fact:
+    dirs_with_asterisk: '{{ (dirs_with_asterisk|default([])) + [item | replace("*","")] }}'
+  with_items:
+    - "{{ source_chart_list }}"
+  when: item is search("\*")
+
+- name: check the source chart with asterisk exists
+  stat:
+    path: '{{ source_chart_base_dir }}/{{ item | replace("*","") }}'
+  register: check_result
+  with_items:
+    - "{{ dirs_with_asterisk }}"
+
+- name: fail if source chart directory name is wrong
+  fail:
+    msg: "The directory {{ item.item }} is not exist."
+  when: not item.stat.exists
+  with_items:
+    - "{{ check_result.results }}"
+
+- name: gather source chart list without asterisk
+  set_fact:
+    dirs_wo_asterisk: '{{ (dirs_wo_asterisk|default([])) + [item] }}'
+  with_items:
+    - "{{ source_chart_list }}"
+  when: not item is search("\*")
+
+- name: check the source chart without asterisk exists
+  stat:
+    path: '{{ source_chart_base_dir }}/{{ item }}'
+  register: check_result
+  with_items:
+    - "{{ dirs_wo_asterisk }}"
+  
+- name: fail if source chart directory name is wrong
+  fail:
+    msg: "The directory {{ item.item }} is not exist."
+  when: not item.stat.exists
+  with_items:
+    - "{{ check_result.results }}"
+
+- name: make a directory for local helm repository server
+  file:
+    path: '{{ ansible_env.HOME }}/.helm/charts'
+    state: directory
+
+- name: serve taco helm repository
+  shell: >-
+    {{ bin_dir }}/helm serve --repo-path {{ ansible_env.HOME }}/.helm/charts/ --address {{ ansible_default_ipv4.address }}:{{ helm_repo_port }}/charts&
+  become: false
+
+- name: add taco helm repository to repo list
+  shell: >-
+    {{ bin_dir }}/helm repo add {{ helm_repo_name }} http://{{ ansible_default_ipv4.address }}:{{ helm_repo_port }}/charts
+  become: false
+
+- name: check an osh-infra helm-toolkit chart exists
+  stat:
+    path: '{{source_chart_base_dir }}/openstack-helm-infra/helm-toolkit'
+  register: helm_toolkit_exists
+
+- name: add localhost helm repo for osh helm-toolkit
+  shell: >-
+    {{ bin_dir }}/helm repo add local http://localhost:8879/charts
+  become: false
+  when: helm_toolkit_exists.stat.exists
+
+- name: package osh helm-toolkit to local repo
+  shell: >-
+    {{ bin_dir }}/helm package {{source_chart_base_dir }}/openstack-helm-infra/helm-toolkit/ -d {{ ansible_env.HOME }}/.helm/repository/local/
+  become: false
+  when: helm_toolkit_exists.stat.exists
+
+- name: index local repo
+  shell: >-
+    {{ bin_dir }}/helm repo index {{ ansible_env.HOME }}/.helm/repository/local/ --url http://localhost:8879/charts
+  become: false
+  when: helm_toolkit_exists.stat.exists
+
+- name: update local repo
+  shell: >-
+    {{ bin_dir }}/helm repo update local
+  become: false
+  when: helm_toolkit_exists.stat.exists
+
+- name: gather source chart directories with asterisk
+  find:
+    path: '{{ source_chart_base_dir }}/{{ item | replace("*","") }}'
+    recurse: no
+    file_type: directory
+  register: chart_matched
+  with_items:
+    - "{{ dirs_with_asterisk }}"
+
+- name: list up source charts with asterisk
+  set_fact:
+    chart_files : '{{ (chart_files|default([])) + item.files }}'
+  with_items:
+    - "{{ chart_matched.results }}"
+
+- name: list up charts with Chart.yaml with asterisk
+  stat:
+    path: '{{ item.path }}/Chart.yaml'
+  register: stat_result
+  with_items:
+    - "{{ chart_files }}"
+
+- name: list up charts defined in source_chart_list without asterisk
+  stat:
+    path: '{{ source_chart_base_dir }}/{{ item }}/Chart.yaml'
+  register: stat_result_wo
+  with_items:
+    - "{{ dirs_wo_asterisk }}"
+
+- name: package source charts
+  shell: >-
+    {{ bin_dir }}/helm package {{ item.stat.path | dirname }} -u -d {{ ansible_env.HOME }}/.helm/charts/
+  when: item.stat.exists
+  with_items:
+    - "{{ stat_result.results + stat_result_wo.results }}"
+
+- name: update index for taco helm repository
+  shell: >-
+    {{ bin_dir }}/helm repo index {{ ansible_env.HOME }}/.helm/charts/ --url http://{{ ansible_default_ipv4.address }}:{{ helm_repo_port }}/charts/
+  become: false
+
+- name: update all helm repositories
+  shell: >-
+    {{ bin_dir }}/helm repo update
+  become: false
+
