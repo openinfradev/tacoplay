@@ -7,6 +7,7 @@
   when: item is search("\*")
 
 - name: check the source chart with asterisk exists
+  become: false
   stat:
     path: '{{ source_chart_base_dir }}/{{ item | replace("*","") }}'
   register: check_result
@@ -28,6 +29,7 @@
   when: not item is search("\*")
 
 - name: check the source chart without asterisk exists
+  become: false
   stat:
     path: '{{ source_chart_base_dir }}/{{ item }}'
   register: check_result
@@ -42,50 +44,25 @@
     - "{{ check_result.results }}"
 
 - name: make a directory for local helm repository server
+  become: no
   file:
-    path: '{{ ansible_env.HOME }}/.helm/charts'
+    path: "{{ lookup('env','HOME') }}/.helm/charts"
     state: directory
 
 - name: serve taco helm repository
+  become: no
   shell: >-
-    {{ bin_dir }}/helm serve --repo-path {{ ansible_env.HOME }}/.helm/charts/ --address {{ ansible_default_ipv4.address }}:{{ helm_repo_port }}/charts&
+    {{ bin_dir }}/helm serve --repo-path {{ lookup('env', 'HOME') }}/.helm/charts/ --address {{ ansible_default_ipv4.address }}:{{ helm_repo_port }} &
   become: false
 
 - name: add taco helm repository to repo list
+  become: no
   shell: >-
     {{ bin_dir }}/helm repo add {{ helm_repo_name }} http://{{ ansible_default_ipv4.address }}:{{ helm_repo_port }}/charts
   become: false
 
-- name: check an osh-infra helm-toolkit chart exists
-  stat:
-    path: '{{source_chart_base_dir }}/openstack-helm-infra/helm-toolkit'
-  register: helm_toolkit_exists
-
-- name: add localhost helm repo for osh helm-toolkit
-  shell: >-
-    {{ bin_dir }}/helm repo add local http://localhost:8879/charts
-  become: false
-  when: helm_toolkit_exists.stat.exists
-
-- name: package osh helm-toolkit to local repo
-  shell: >-
-    {{ bin_dir }}/helm package {{source_chart_base_dir }}/openstack-helm-infra/helm-toolkit/ -d {{ ansible_env.HOME }}/.helm/repository/local/
-  become: false
-  when: helm_toolkit_exists.stat.exists
-
-- name: index local repo
-  shell: >-
-    {{ bin_dir }}/helm repo index {{ ansible_env.HOME }}/.helm/repository/local/ --url http://localhost:8879/charts
-  become: false
-  when: helm_toolkit_exists.stat.exists
-
-- name: update local repo
-  shell: >-
-    {{ bin_dir }}/helm repo update local
-  become: false
-  when: helm_toolkit_exists.stat.exists
-
 - name: gather source chart directories with asterisk
+  become: no
   find:
     path: '{{ source_chart_base_dir }}/{{ item | replace("*","") }}'
     recurse: no
@@ -115,18 +92,21 @@
     - "{{ dirs_wo_asterisk }}"
 
 - name: package source charts
+  become: no
   shell: >-
-    {{ bin_dir }}/helm package {{ item.stat.path | dirname }} -u -d {{ ansible_env.HOME }}/.helm/charts/
+    {{ bin_dir }}/helm package {{ item.stat.path | dirname }} -u -d {{ lookup('env', 'HOME') }}/.helm/charts/
   when: item.stat.exists
   with_items:
     - "{{ stat_result.results + stat_result_wo.results }}"
 
 - name: update index for taco helm repository
+  become: no
   shell: >-
-    {{ bin_dir }}/helm repo index {{ ansible_env.HOME }}/.helm/charts/ --url http://{{ ansible_default_ipv4.address }}:{{ helm_repo_port }}/charts/
+    {{ bin_dir }}/helm repo index {{ lookup('env', 'HOME') }}/.helm/charts/ --url http://{{ ansible_default_ipv4.address }}:{{ helm_repo_port }}/charts/
   become: false
 
 - name: update all helm repositories
+  become: no
   shell: >-
     {{ bin_dir }}/helm repo update
   become: false
