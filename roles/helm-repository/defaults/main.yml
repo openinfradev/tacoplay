@@ -3,5 +3,5 @@ helm_repo_enabled: true
 helm_repo_name: "taco-helm-repository"
 helm_repo_port: 8879
 
-source_chart_base_dir: "{{ ansible_env.HOME }}/tacoplay/charts"
+source_chart_base_dir: "{{ lookup('env', 'HOME') }}/tacoplay/charts"
 source_chart_list: ["taco-helm/*", "taco-addons/*"]
