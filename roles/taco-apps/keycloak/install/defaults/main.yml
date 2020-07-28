@@ -13,8 +13,12 @@ keycloak_test_image: "{{ container_registry_url }}/unguiculus/docker-python3-pha
 keycloak_test_image_tag: v1
 
 postgresql_image_registry: "{{ container_registry_url }}"
-postgresql_image: bitnami/postgresql
-postgresql_image_tag: 11.7.0-debian-10-r98
+postgresql_image: bitnami/postgresql-repmgr
+postgresql_image_tag: 11.8.0-debian-10-r52
+
+postgresql_pgpool_registry: "{{ container_registry_url }}"
+postgresql_pgpool_image: bitnami/pgpool
+postgresql_pgpool_image_tag: 4.1.2-debian-10-r53
 
 postgresql_minideb_registry: "{{ container_registry_url }}"
 postgresql_minideb_image: bitnami/minideb
@@ -22,10 +26,13 @@ postgresql_minideb_image_tag: buster
 
 postgresql_exporter_registry: "{{ container_registry_url }}"
 postgresql_exporter_image: bitnami/postgres-exporter
-postgresql_exporter_image_tag: 0.8.0-debian-10-r106
+postgresql_exporter_image_tag: 0.8.0-debian-10-r166
 
 keycloak_certificate: /etc/keycloak/ssl/keycloak.crt
 keycloak_certificate_key: /etc/keycloak/ssl/keycloak.key
 
 keycloak_password: password
 keycloak_db_password: password
+keycloak_db_repmgr_password: password
+
+postgresql_metrics_enabled: true
