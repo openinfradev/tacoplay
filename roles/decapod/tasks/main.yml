@@ -45,6 +45,11 @@
     {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/helm-operator/helmrelease-wftpl.yaml
   become: false
 
+- name: summit sync-yaml-from-git workflow template to argo
+  shell: >-
+    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/decapod-yaml/sync-yaml-from-git-wftpl.yaml
+  become: false
+
 - name: delete decapod by-products
   file:
     path: "{{ item }}"
