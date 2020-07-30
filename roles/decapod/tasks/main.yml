@@ -24,25 +24,43 @@
 
 - name: install rbac to argo for helmrelase
   shell: >-
-    {{ bin_dir }}/kubectl apply -f /tmp/.helmrelease-rbac.yaml -n argo
+    {{ bin_dir }}/kubectl apply -f /tmp/.helmrelease-rbac.yaml
   become: false
 
-- name: check helmrelease-wftpl is exist
+- name: check deploy-helmrelease-wftpl is exist
   shell: >-
-    {{ bin_dir }}/argo template get helmrelease
+    {{ bin_dir }}/argo template get deploy-helmrelease
   ignore_errors: true
   register: shell_result
   become: false
 
-- name: remove helmrelease wftpl
+- name: remove deploy-helmrelease wftpl
   shell: >-
-    {{ bin_dir }}/argo template delete helmrelease
+    {{ bin_dir }}/argo template delete deploy-helmrelease
   when: not shell_result.failed
   become: false
 
 - name: summit helmrelease workflow template to argo
   shell: >-
     {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/helm-operator/helmrelease-wftpl.yaml
+  become: false
+
+- name: check sync-yaml-from-git-wftpl is exist
+  shell: >-
+    {{ bin_dir }}/argo template get sync-yaml-from-git
+  ignore_errors: true
+  register: shell_result
+  become: false
+
+- name: remove sync-yaml-from-git wftpl
+  shell: >-
+    {{ bin_dir }}/argo template delete sync-yaml-from-git
+  when: not shell_result.failed
+  become: false
+
+- name: summit sync-yaml-from-git workflow template to argo
+  shell: >-
+    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/decapod-yaml/sync-yaml-from-git-wftpl.yaml
   become: false
 
 - name: delete decapod by-products
