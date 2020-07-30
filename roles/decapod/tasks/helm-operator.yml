@@ -25,6 +25,13 @@
     regexp: "namespace: (.*)$"
   become: false
 
+- name: Ensure using helmv3
+  lineinfile:
+    path: /tmp/.helm-operator-kustomization.yaml
+    regexp: '--enabled-helm-versions=(.*)$'
+    insertafter: '- args:'
+    line: '        - --enabled-helm-versions=v3'
+
 - name: deploy helm-operator
   shell: >-
     {{ bin_dir }}/kubectl apply -f /tmp/.helm-operator-kustomization.yaml -n kube-system

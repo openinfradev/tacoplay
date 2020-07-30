@@ -50,6 +50,7 @@
   shell: >-
     {{ bin_dir }}/kubectl create rolebinding default-admin --clusterrole=admin --serviceaccount=default:default
   become: false
+  ignore_errors: True
 
 - name: delete argo by-products
   file:
