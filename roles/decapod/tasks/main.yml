@@ -24,7 +24,7 @@
 
 - name: install rbac to argo for helmrelase
   shell: >-
-    {{ bin_dir }}/kubectl apply -f /tmp/.helmrelease-rbac.yaml -n argo
+    {{ bin_dir }}/kubectl apply -f /tmp/.helmrelease-rbac.yaml
   become: false
 
 - name: check deploy-helmrelease-wftpl is exist
