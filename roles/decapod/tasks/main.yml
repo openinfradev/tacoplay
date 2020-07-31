@@ -45,22 +45,22 @@
     {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/helm-operator/helmrelease-wftpl.yaml
   become: false
 
-- name: check sync-yaml-from-git-wftpl is exist
+- name: check prepare-manifest-wftpl is exist
   shell: >-
-    {{ bin_dir }}/argo template get sync-yaml-from-git
+    {{ bin_dir }}/argo template get prepare-manifest
   ignore_errors: true
   register: shell_result
   become: false
 
-- name: remove sync-yaml-from-git wftpl
+- name: remove prepare-manifest wftpl
   shell: >-
-    {{ bin_dir }}/argo template delete sync-yaml-from-git
+    {{ bin_dir }}/argo template delete prepare-manifest
   when: not shell_result.failed
   become: false
 
-- name: summit sync-yaml-from-git workflow template to argo
+- name: summit prepare-manifest workflow template to argo
   shell: >-
-    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/decapod-yaml/sync-yaml-from-git-wftpl.yaml
+    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/decapod-yaml/prepare-manifest-wftpl.yaml
   become: false
 
 - name: delete decapod by-products

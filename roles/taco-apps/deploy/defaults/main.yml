@@ -1,9 +1,4 @@
 ---
 bin_dir: /usr/local/bin
 
-armada_image_repo: "docker.io/sktdev/armada"
-armada_image_tag: "0.2.0"
-
-tiller_port: 32134
-
-taco_apps: ["openstack"]
+taco_apps: []

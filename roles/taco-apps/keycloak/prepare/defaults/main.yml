@@ -1,0 +1,6 @@
+---
+bin_dir: /usr/local/bin
+keycloak_namespace: fed
+
+keycloak_certificate: /etc/keycloak/ssl/keycloak.crt
+keycloak_certificate_key: /etc/keycloak/ssl/keycloak.key

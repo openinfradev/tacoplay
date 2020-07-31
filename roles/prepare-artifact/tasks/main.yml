@@ -28,17 +28,8 @@
     name: "{{ item.repo }}:{{item.tag }}"
   with_items:
     - { repo: "{{ openstackclient_image_repo }}", tag: "{{ openstackclient_image_tag }}" }
-    - { repo: "{{ armada_image_repo }}", tag: "{{ armada_image_tag }}" }
     - { repo: "{{ rbd_provisioner_image_repo }}", tag: "{{ rbd_provisioner_image_tag }}" }
     - { repo: "{{ container_registry_image_repo }}", tag: "{{ container_registry_image_tag }}" }
-  become: yes
-
-- name: pull helm v2 image for armada
-  docker_image:
-    name: "{{ item.repo }}:{{item.tag }}"
-  with_items:
-    - { repo: "{{ helm_image_repo }}", tag: "{{ helmv2_version }}" }
-    - { repo: "{{ tiller_image_repo }}", tag: "{{ helmv2_version }}" }
   become: yes
 
 - name: run registry container

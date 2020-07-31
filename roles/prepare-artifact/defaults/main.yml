@@ -6,8 +6,6 @@ exclude_k8s_images: false
 
 rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
 rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
-armada_image_repo: "docker.io/sktdev/armada"
-armada_image_tag: "0.2.0"
 openstackclient_image_repo: "docker.io/sktdev/openstackclient"
 openstackclient_image_tag: "stein"
 
