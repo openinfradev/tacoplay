@@ -12,7 +12,7 @@
     path: '{{ source_chart_base_dir }}/{{ item | replace("*","") }}'
   register: check_result
   with_items:
-    - "{{ dirs_with_asterisk }}"
+    - "{{ dirs_with_asterisk|default([]) }}"
 
 - name: fail if source chart directory name is wrong
   fail:
@@ -34,7 +34,7 @@
     path: '{{ source_chart_base_dir }}/{{ item }}'
   register: check_result
   with_items:
-    - "{{ dirs_wo_asterisk }}"
+    - "{{ dirs_wo_asterisk|default([]) }}"
   
 - name: fail if source chart directory name is wrong
   fail:
@@ -49,14 +49,38 @@
     path: "{{ lookup('env','HOME') }}/.helm/charts"
     state: directory
 
-- name: serve taco helm repository
-  become: no
+- name: check chartmuseum exists
+  stat:
+    path: "{{ bin_dir }}/chartmuseum"
+  register: stat_result
+
+- name: install chartmuseum
   shell: >-
-    {{ bin_dir }}/helm serve --repo-path {{ lookup('env', 'HOME') }}/.helm/charts/ --address {{ ansible_default_ipv4.address }}:{{ helm_repo_port }} &
+    cd /tmp && curl -sLO {{ chartmuseum_url }} && chmod +x chartmuseum && mv ./chartmuseum {{ bin_dir }}/chartmuseum
+  become: true
+  when: not stat_result.stat.exists
+
+- name: uninstall helm-servecm plugin if exists
+  shell: >-
+    {{ bin_dir }}/helm plugin uninstall servecm
   become: false
 
+- name: install helm-servecm plugin
+  shell: >-
+    {{ bin_dir }}/helm plugin install {{ helm_servecm_url }}
+  become: false
+
+- name: serve taco helm repository
+  shell: >-
+    {{ bin_dir }}/helm servecm --port={{ helm_repo_port }} --context-path=/charts --storage=local --storage-local-rootdir={{ lookup('env', 'HOME') }}/.helm/charts/ >/dev/null 2>&1 &
+  become: false
+
+- name: wait for servecm port to become open
+  wait_for:
+    port: "{{ helm_repo_port }}"
+    delay: 5
+
 - name: add taco helm repository to repo list
-  become: no
   shell: >-
     {{ bin_dir }}/helm repo add {{ helm_repo_name }} http://{{ ansible_default_ipv4.address }}:{{ helm_repo_port }}/charts
   become: false
@@ -69,7 +93,7 @@
     file_type: directory
   register: chart_matched
   with_items:
-    - "{{ dirs_with_asterisk }}"
+    - "{{ dirs_with_asterisk|default([]) }}"
 
 - name: list up source charts with asterisk
   set_fact:
@@ -89,7 +113,7 @@
     path: '{{ source_chart_base_dir }}/{{ item }}/Chart.yaml'
   register: stat_result_wo
   with_items:
-    - "{{ dirs_wo_asterisk }}"
+    - "{{ dirs_wo_asterisk|default([]) }}"
 
 - name: package source charts
   become: no

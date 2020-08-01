@@ -1,78 +1,25 @@
 ---
-
-- name: check host where tiller is running
+- name: delete manifest configmap
   shell: >-
-    {{ bin_dir }}/kubectl get pods -n kube-system -o json |
-    jq -r '.items[] | select(.metadata.name|test("tiller")).status.hostIP'
-  register: tiller_host
-  become: no
+    {{ bin_dir }}/kubectl delete configmap {{ item }}
+  when: item != "istio"
+  with_items:
+    - "{{ taco_apps }}"
+  become: false
+  ignore_errors: true
 
-- name: delete armada lock
+- name: create manifest configmap
   shell: >-
-    {{ bin_dir }}/kubectl delete lock --all -n kube-system
-  become: no
-  ignore_errors: yes
+    {{ bin_dir }}/kubectl create configmap {{ item }} --from-file={{ inventory_dir }}/decapod/{{ item }}-manifest.yaml
+  when: item != "istio"
+  with_items:
+    - "{{ taco_apps }}"
+  become: false
 
-- name: forcereinstall cryptography on centos (avoid docker pip package error)
-  become: yes
-  pip:
-    name: cryptography
-    state: forcereinstall
-  when: ansible_distribution in ["CentOS","RedHat"]
-
-- name: remove existing armada container
-  docker_container:
-    name: "armada"
-    state: absent
-  become: yes
-
-- name: set docker.sock permission to 666
-  become: yes
-  file:
-    path: /var/run/docker.sock
-    mode: '0666'
-  run_once: yes
-
-- name: run armada docker container
-  docker_container:
-    name: "armada"
-    image: "{{ armada_image_repo }}:{{ armada_image_tag }}"
-    volumes:
-      - "{{ lookup('env','HOME') }}/:{{ lookup('env','HOME') }}/"
-      - "{{ lookup('env','HOME') }}/.kube:/root/.kube/"
-      - "/tmp/:/tmp/"
-      - "{{ lookup('env','HOME') }}/.netrc:/root/.netrc"
-    dns_servers:
-      - 8.8.8.8
-    network_mode: host
-    privileged: yes
-    restart_policy: always
-    state: started
-  become: no
-
-- name: show armada apply usage for next try
-  debug:
-    msg: >-
-      "docker exec -u root armada armada apply
-      --tiller-host {{ tiller_host.stdout }}
-      --tiller-port {{ tiller_port }}
-      --timeout 7200
-      {{ inventory_dir }}/[YOUR_APP]-manifest.yaml"
-  when: tiller_host.stdout != ""
-
-- name: deploy apps using 'armada apply'
+- name: deploy apps
   shell: >-
-    set -e;
-    for app in {{ taco_apps|join(' ') }}; do
-       docker exec -u root armada armada apply \
-       --tiller-host {{ tiller_host.stdout }} \
-       --tiller-port {{ tiller_port }} \
-       --timeout 7200 \
-       {{ inventory_dir }}/${app}-manifest.yaml > /tmp/${app}-deployment.log
-    done
-  when:
-    - tiller_host.stdout != ""
-    - taco_apps and taco_apps|length > 0
-  args:
-    executable: /bin/bash
-  run_once: yes
+    {{ bin_dir }}/argo submit {{ inventory_dir }}/decapod/{{ item }}-wf.yaml
+  when: item != "istio"
+  with_items:
+    - "{{ taco_apps }}"
+  become: false

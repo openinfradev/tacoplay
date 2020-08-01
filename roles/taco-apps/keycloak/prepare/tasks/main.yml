@@ -1,0 +1,16 @@
+---
+- name: create namespace
+  shell: |
+    {{ bin_dir }}/kubectl create namespace {{ keycloak_namespace }}
+  ignore_errors: yes
+
+- include_tasks: create-certificate.yml
+
+- name: add secret for ingress
+  shell: |
+    {{ bin_dir }}/kubectl delete secret tls-keycloak -n {{ keycloak_namespace }}
+  ignore_errors: yes
+
+- name: add secret for ingress
+  shell: |
+    {{ bin_dir }}/kubectl create secret tls tls-keycloak --key {{ keycloak_certificate_key }} --cert {{ keycloak_certificate }} -n {{ keycloak_namespace }}

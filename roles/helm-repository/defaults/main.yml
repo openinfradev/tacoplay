@@ -3,5 +3,8 @@ helm_repo_enabled: true
 helm_repo_name: "taco-helm-repository"
 helm_repo_port: 8879
 
+chartmuseum_url: "https://s3.amazonaws.com/chartmuseum/release/latest/bin/linux/amd64/chartmuseum"
+helm_servecm_url: "https://github.com/jdolitsky/helm-servecm"
+
 source_chart_base_dir: "{{ lookup('env', 'HOME') }}/tacoplay/charts"
 source_chart_list: ["taco-helm/*", "taco-addons/*"]

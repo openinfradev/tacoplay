@@ -57,16 +57,6 @@
     - { role: k8s/clients, tags: k8s-post-install }
     - { role: decapod, tags: decapod, when: decapod_enabled }
 
-- name: setup helm client for version2
-  hosts: admin-node:kube-master
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: kubespray/roles/kubespray-defaults, tags: helmv2, when: use_helmv2_for_armada }
-    - { role: k8s/helmv2/pre-install, tags: helmv2, when: use_helmv2_for_armada }
-    - { role: kubespray/roles/kubernetes-apps/helm, tags: helmv2, when: use_helmv2_for_armada }
-    - { role: k8s/helmv2/post-install, tags: helmv2, when: use_helmv2_for_armada }
-    - { role: k8s/helmv2/tiller, tags: helmv2, when: use_helmv2_for_armada }
-
 - name: setup helm repository
   hosts: helm-repository
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
@@ -95,7 +85,7 @@
   roles:
     - { role: kubespray/roles/kubespray-defaults, tags: always, when: ('"istio" in taco_apps') or ('"keycloak" in taco_apps') }
     - { role: taco-apps/istio/deploy, tags: deploy-istio, when: '"istio" in taco_apps' }
-    - { role: taco-apps/keycloak/install, tags: install-keycloak, when: '"keycloak" in taco_apps' }
+    - { role: taco-apps/keycloak/prepare, tags: prepare-keycloak, when: '"keycloak" in taco_apps' }
 
 - name: add a self-signed cert to ca-trust for keycloak
   hosts: taco

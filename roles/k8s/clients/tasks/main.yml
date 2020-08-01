@@ -3,11 +3,11 @@
   when:
     - not skip_k8s_clients_download|default(false)
 
+- include_tasks: helm.yml
+  when: install_k8s_clients and use_helm
+
 - include_tasks: kubectl.yml
   when: install_k8s_clients and use_kubectl
-
-- include_tasks: helm3.yml
-  when: install_k8s_clients and use_helm
 
 - include_tasks: kubectx.yml
   when: install_k8s_clients and use_kubectx
