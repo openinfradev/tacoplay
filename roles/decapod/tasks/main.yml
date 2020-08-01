@@ -15,13 +15,6 @@
     dest: "/tmp/.helmrelease-rbac.yaml"
   become: false
 
-- name: replace namespace to argo
-  replace:
-    path: "/tmp/.helmrelease-rbac.yaml"
-    replace: "namespace: argo"
-    regexp: "namespace: (.*)$"
-  become: false
-
 - name: install rbac to argo for helmrelase
   shell: >-
     {{ bin_dir }}/kubectl apply -f /tmp/.helmrelease-rbac.yaml
