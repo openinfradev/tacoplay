@@ -64,6 +64,7 @@
   shell: >-
     {{ bin_dir }}/helm plugin uninstall servecm
   become: false
+  ignore_errors: true
 
 - name: install helm-servecm plugin
   shell: >-
