@@ -85,7 +85,7 @@
   roles:
     - { role: kubespray/roles/kubespray-defaults, tags: always, when: ('"istio" in taco_apps') or ('"keycloak" in taco_apps') }
     - { role: taco-apps/istio/deploy, tags: deploy-istio, when: '"istio" in taco_apps' }
-    - { role: taco-apps/keycloak/prepare, tags: prepare-keycloak, when: '"keycloak" in taco_apps' }
+    - { role: taco-apps/keycloak/prepare, tags: prepare-keycloak, when: '"admin-tools" in taco_apps' }
 
 - name: add a self-signed cert to ca-trust for keycloak
   hosts: taco
