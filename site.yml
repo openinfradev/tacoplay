@@ -72,7 +72,7 @@
     - { role: openvswitch, tags: openvswitch, when: ovs_package_installed }
 
 - name: prepare lma installation
-  hosts: taco
+  hosts: admin-node
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-apps/lma/pre-install, tags: lma, when: '"lma" in taco_apps' }
