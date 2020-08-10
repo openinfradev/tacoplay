@@ -1,3 +1,4 @@
+bin_dir: /usr/local/bin
 
 # Container registry
 container_registry_enabled: false
@@ -27,8 +28,6 @@ taco_apps: ["openstack"]
 # These images are managed by TACO
 rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
 rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
-armada_image_repo: "docker.io/sktdev/armada"
-armada_image_tag: "0.2.0"
 openstackclient_image_repo: "docker.io/sktdev/openstackclient"
 openstackclient_image_tag: "stein"
 
@@ -49,13 +48,11 @@ ansible_python_interpreter: /usr/bin/python
 # decide if k8s images are excluded in the artifact by site-prepare job
 exclude_k8s_images: false
 
-# install helmv2 in case of the armada deploys taco apps
-use_helmv2_for_armada: true
-helmv2_version: "v2.16.7"
-
 # If set to false, one can't deploy a cluster with the same cluster_name as existing one.
 # If set to true, the new deployment overwrites existing one, if same cluster name is used.
 allow_redeployment: false
 
-# kubespray's version
-kubespray_version: v2.13.1
+# Versions files
+versions_kubespray_default: "./kubespray/roles/download/defaults/main.yml"
+versions_taco_istio: "./roles/taco-apps/istio/deploy/defaults/main.yml"
+versions_kubespray_docker: "./kubespray/roles/container-engine/docker/defaults/main.yml"

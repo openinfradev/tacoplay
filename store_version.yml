@@ -1,0 +1,63 @@
+- hosts: localhost
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  tasks:
+    - name: gather kubespray version
+      shell: "cat ./VERSIONS | grep kubespray | cut -d' ' -f3"
+      register: gather_kubespray
+    
+    - set_fact: kubespray_version={{gather_kubespray.stdout}}
+
+    - name: gather kubernetes version in kubespray
+      shell: "cat {{ versions_kubespray_default }} | grep kube_version: | cut -d' ' -f2"
+      register: kube_version_in_kubespray
+
+    - set_fact: kubernetes_version={{kube_version|default(kube_version_in_kubespray.stdout)}}
+
+    - name: gather helm version in kubespray
+      shell: "cat {{ versions_kubespray_default }} | grep helm_version: | cut -d' ' -f2"
+      register: helm_version_in_kubespray
+
+    - set_fact: helm_version={{helm_version|default(helm_version_in_kubespray.stdout)}}
+
+    - name: gather istio version in kubespray
+      shell: "cat {{ versions_taco_istio }} | grep istio_version: | cut -d' ' -f2"
+      register: istio_version_in_tacoplay
+
+    - set_fact: istio_version={{istio_version|default(istio_version_in_tacoplay.stdout)}}
+      when: "{{ 'istio' in taco_apps }}"
+        
+    - name: gather docker version in kubespray
+      shell: "cat {{ versions_kubespray_docker }} | grep docker_version: | cut -d' ' -f2"
+      register: docker_version_in_tacoplay
+
+    - set_fact: docker_version={{docker_version|default(docker_version_in_tacoplay.stdout)}}
+
+    - name: gather etcd version in kubespray
+      shell: "cat {{ versions_kubespray_default }} | grep etcd_version: | cut -d' ' -f2"
+      register: etcd_version_in_kubespray
+
+    - set_fact: etcd_version={{etcd_version|default(etcd_version_in_kubespray.stdout)}}
+
+    - name: gather coredns version in kubespray
+      shell: "cat {{ versions_kubespray_default }} | grep coredns_version: | cut -d' ' -f2"
+      register: coredns_version_in_kubespray
+
+    - set_fact: coredns_version={{coredns_version|default(coredns_version_in_kubespray.stdout)}}
+
+    - name: remove taco-system-version configmap if it exists
+      shell: "{{ bin_dir }}/kubectl delete configmap taco-system-version"
+      become: false
+      ignore_errors: true
+
+    - name: create taco-system-version configmap
+      shell: >-
+        {{ bin_dir }}/kubectl create configmap taco-system-version \
+          --from-literal=kubespray_version={{ kubespray_version }} \
+          --from-literal=kubernetes_version={{ kubernetes_version }} \
+          --from-literal=helm_version={{ helm_version }} \
+          --from-literal=istio_version={{ istio_version | default('') }} \
+          --from-literal=etcd_version={{ etcd_version }} \
+          --from-literal=docker_version=v{{ docker_version }} \
+          --from-literal=coredns_version={{ coredns_version }}
+      become: false
+  tags: store_version

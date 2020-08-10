@@ -106,3 +106,6 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-apps/openstack/client, tags: openstack-client, when: '"openstack" in taco_apps' }
+
+- name: store versions to configmap
+  import_playbook: store_version.yml
