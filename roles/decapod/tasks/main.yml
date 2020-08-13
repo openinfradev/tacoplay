@@ -22,38 +22,38 @@
 
 - name: check deploy-helmrelease-wftpl is exist
   shell: >-
-    {{ bin_dir }}/argo template get deploy-helmrelease
+    {{ bin_dir }}/argo template get deploy-helmrelease -nargo
   ignore_errors: true
   register: shell_result
   become: false
 
 - name: remove deploy-helmrelease wftpl
   shell: >-
-    {{ bin_dir }}/argo template delete deploy-helmrelease
+    {{ bin_dir }}/argo template delete deploy-helmrelease -nargo
   when: not shell_result.failed
   become: false
 
 - name: summit helmrelease workflow template to argo
   shell: >-
-    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/helm-operator/helmrelease-wftpl.yaml
+    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/helm-operator/helmrelease-wftpl.yaml -nargo
   become: false
 
 - name: check prepare-manifest-wftpl is exist
   shell: >-
-    {{ bin_dir }}/argo template get prepare-manifest
+    {{ bin_dir }}/argo template get prepare-manifest -nargo
   ignore_errors: true
   register: shell_result
   become: false
 
 - name: remove prepare-manifest wftpl
   shell: >-
-    {{ bin_dir }}/argo template delete prepare-manifest
+    {{ bin_dir }}/argo template delete prepare-manifest -nargo
   when: not shell_result.failed
   become: false
 
 - name: summit prepare-manifest workflow template to argo
   shell: >-
-    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/decapod-yaml/prepare-manifest-wftpl.yaml
+    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/decapod-yaml/prepare-manifest-wftpl.yaml -nargo
   become: false
 
 - name: delete decapod by-products
