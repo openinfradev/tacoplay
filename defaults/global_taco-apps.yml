@@ -5,9 +5,6 @@ vfat_config_drive_enabled: false
 pci_passthrough_enabled: false
 ovs_package_installed: false
 
-storage_class_name: >-
-    {%- if taco_storage_backend == 'ceph' -%}rbd{%- elif taco_storage_backend == 'nfs' -%}nfs-client{%- else -%}FIXME{%- endif -%}
-
 # Openstack DB ACCOUNT
 db_root_user: root
 db_root_password: password

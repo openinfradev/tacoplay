@@ -14,6 +14,9 @@ ceph_monitors: >-
 ceph_admin_keyring: >-
   {%- if groups["osds"] is defined -%}{%- else -%}TACOFIXME{%- endif -%}
 
+taco_storageclass_name: >-
+  {%- if taco_storage_backend == 'ceph' -%}rbd{%- elif taco_storage_backend == 'nfs' -%}nfs-client{%- else -%}TACOFIXME{%- endif -%}
+
 # when deploying new ceph
 monitor_interface: TACOFIXME
 public_network: TACOFIXME
