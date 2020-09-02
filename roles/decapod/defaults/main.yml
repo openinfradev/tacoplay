@@ -17,5 +17,4 @@ argo_chart_source: "{{ lookup('env', 'HOME') }}/tacoplay/charts/taco-helm/argo"
 argo_client_binary_name: "argo-linux-amd64"
 argo_client_url: "https://github.com/argoproj/argo/releases/download/{{ argo_version }}/{{ argo_client_binary_name }}"
 argo_workflow_archive_enabled: true
-argo_archive_storage_class: rbd
 argo_archive_storage_size: 8Gi
