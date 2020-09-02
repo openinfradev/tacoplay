@@ -12,9 +12,10 @@ helm_operator_dest: "/tmp/helm-operator"
 argo_version: "v2.9.4"
 argo_server_image_repo: "argoproj/argocli"
 argo_workflow_controller_image_repo: "argoproj/workflow-controller"
-argo_source: "https://github.com/argoproj/argo.git"
-argo_dest: "/tmp/argo"
+argo_workflow_executor_image_repo: "argoproj/argoexec"
+argo_chart_source: "{{ lookup('env', 'HOME') }}/tacoplay/charts/taco-helm/argo"
 argo_client_binary_name: "argo-linux-amd64"
 argo_client_url: "https://github.com/argoproj/argo/releases/download/{{ argo_version }}/{{ argo_client_binary_name }}"
-
-
+argo_workflow_archive_enabled: true
+argo_archive_storage_class: rbd
+argo_archive_storage_size: 8Gi
