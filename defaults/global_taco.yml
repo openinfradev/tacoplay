@@ -21,6 +21,7 @@ ceph_repo_url: ""
 
 # Storage configurations: ceph or nfs
 taco_storage_backend: "ceph"
+taco_storage_class: "rbd"
 
 # Taco Apps to deploy using Armada
 taco_apps: ["openstack"]
