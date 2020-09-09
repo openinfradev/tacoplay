@@ -29,18 +29,9 @@ pipeline {
     booleanParam(name: 'REINSTALL',
       defaultValue: false,
       description: 'reset before install?')
-    string(name: 'TEMPEST_FAIL_THRESHOLD',
-      defaultValue: '10',
-      description: 'Threshold for failed tempest test cases')
     booleanParam(name: 'CLEANUP',
       defaultValue: true,
       description: 'delete VM once job is finished?')
-    string(name: 'VERSION_FILE_NAME',
-      defaultValue: 'abcde',
-      description: 'arbitrary name of the version file that\'ll be shared to next job (Eg, \'version-190101-abcd\')')
-    booleanParam(name: 'EMPHASIZED_NOTIFICATION',
-      defaultValue: false,
-      description: 'enable emphasized notification going to slack?')
   }
   environment {
     KUBECONFIG = "/root/.kube/config"
@@ -100,11 +91,7 @@ pipeline {
               deleteBdm = true
 
               if (online) {
-                if (params.OS.contains("ubuntu")) {
-                  sh "mv gate/cloudInitUbuntuOnline.sh gate/cloudInit.sh"
-                } else {
-                  sh "mv gate/cloudInitOnline.sh gate/cloudInit.sh"
-                }
+                sh "mv gate/cloudInitOnline.sh gate/cloudInit.sh"
               } else {
                 if (params.OS.contains("ubuntu")) {
                   sh "mv gate/cloudInitUbuntuOffline.sh gate/cloudInit.sh"
@@ -310,10 +297,10 @@ pipeline {
         }
     }
     success {
-      notifyCompleted(true, params.EMPHASIZED_NOTIFICATION)
+      notifyCompleted(true)
     }
     failure {
-      notifyCompleted(false, params.EMPHASIZED_NOTIFICATION)
+      notifyCompleted(false)
     }
   }
 }
