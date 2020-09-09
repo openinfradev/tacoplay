@@ -5,7 +5,6 @@ PASSWORD="taco1130@"
 
 echo "Installing for OS $OS"
 
-
 echo "UseDNS no" | sudo tee -a /etc/ssh/sshd_config
 echo "127.0.0.1 taco-aio" | sudo tee -a /etc/hosts
 echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
@@ -41,12 +40,6 @@ elif [ "$OS" = "ubuntu" ]; then
   sudo apt install -y python-pip
 fi
 sudo pip install --upgrade pip
-
-#if [ "$OS" = "\"centos\"" ]; then
-#  sudo pip install -r kubespray/requirements.txt --upgrade --ignore-installed
-#elif [ "$OS" = "ubuntu" ]; then
-#  sudo pip install -r kubespray/requirements.txt --upgrade 
-#fi
 
 if [ "$OS" = "\"centos\"" ]; then
   sudo pip install -r requirements.txt --upgrade --ignore-installed
