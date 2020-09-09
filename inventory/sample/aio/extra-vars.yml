@@ -3,11 +3,11 @@
 # TACO parameter : a backend storage for kubernetes shared storage (ceph|nfs)
 taco_storage_backend: "ceph"
 
-# TACO parameter : applications will be deployed on kubernetes. (openstack|lma|sona)
-taco_apps: ["openstack"]
+# TACO parameter : list of applications that will be deployed on kubernetes (openstack|lma|etc)
+taco_apps: []
 
 # TACO parameter : container image registry will be deployed on the node defined in container-registry in hosts.ini
-#container_registry_enabled: true
+container_registry_enabled: true
 
 # ceph parameter
 monitor_interface: br-data
@@ -15,10 +15,10 @@ public_network: 192.168.97.0/24
 cluster_network: 192.168.97.0/24
 
 ceph_conf_overrides:
-      global:
-        mon_allow_pool_delete: true
-        osd_pool_default_size: 1
-        osd_pool_default_min_size: 1
+  global:
+    mon_allow_pool_delete: true
+    osd_pool_default_size: 1
+    osd_pool_default_min_size: 1
 
 osd_objectstore: bluestore
 lvm_volumes:
