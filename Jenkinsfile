@@ -23,12 +23,6 @@ pipeline {
     string(name: 'AZ',
       defaultValue: 'r06',
       description: 'Availability Zone Name')
-    string(name: 'ARTIFACT',
-      defaultValue: 'latest-gate-centos-lb-ceph-offline-multinodes',
-      description: 'artifact filename on minio server')
-    booleanParam(name: 'REINSTALL',
-      defaultValue: false,
-      description: 'reset before install?')
     booleanParam(name: 'CLEANUP',
       defaultValue: true,
       description: 'delete VM once job is finished?')
@@ -38,7 +32,7 @@ pipeline {
     ANSIBLE_SCP_IF_SSH = "y"
   }
   options {
-    timeout(time: 240, unit: 'MINUTES')
+    timeout(time: 60, unit: 'MINUTES')
     timestamps()
   }
 
@@ -48,18 +42,16 @@ pipeline {
           script {
             ADMIN_NODE = ''
             VM_COUNT = 5
-            SECURITY_GROUP = '57aa4e93-0a9c-4ff9-bcb5-33fe1c1ca344' // Jenkins project's default sec group
-            online = false
-
-            println("* This is from MASTER branch *")
+            SECURITY_GROUP = '' // Jenkins project's default sec group
+            online = true
 
             println("*********************************************")
             println("SITE (Inventory): ${params.SITE}")
             println("*********************************************")
 
             sh """
-              git clone https://tde.sktelecom.com/stash/scm/oreotools/vslab-inventories.git
-              cp -r vslab-inventories/${params.SITE} ./inventory/
+              git clone https://github.com/openinfradev/taco-gate-inventories.git
+              cp -r taco-gate-inventories/${params.SITE} ./inventory/
 
               cp /var/lib/jenkins/.ssh/jenkins.key ./jenkins.key
               rm -rf /var/lib/jenkins/.ssh/known_hosts
@@ -74,31 +66,17 @@ pipeline {
 
               // Use three net interfaces for each VM instance
               networks = [:]
-              networks.mgmt = 'private-mgmt-offline'
+              networks.mgmt = 'private-mgmt-online'
               networks.flat = 'private-data1'
               networks.vxlan = 'private-data2'
 
-              if (params.SITE.contains("online")) {
-                online = true
-                networks.mgmt = 'private-mgmt-online'
-                if (!params.SITE.contains("multi")) {
-                  VM_COUNT = 1
-                }
-              } else {
-                //SECURITY_GROUP = 'offline-rule'
+              if (!params.SITE.contains("multi")) {
+                VM_COUNT = 1
               }
 
               deleteBdm = true
 
-              if (online) {
-                sh "mv gate/cloudInitOnline.sh gate/cloudInit.sh"
-              } else {
-                if (params.OS.contains("ubuntu")) {
-                  sh "mv gate/cloudInitUbuntuOffline.sh gate/cloudInit.sh"
-                } else {
-                  sh "mv gate/cloudInitOffline.sh gate/cloudInit.sh"
-                }
-              }
+              sh "mv gate/cloudInitOnline.sh gate/cloudInit.sh"
 
               // Automatically choose flavor ID based on gating inventory 
               // For AIO inventory, larger flavor is used
@@ -161,32 +139,14 @@ pipeline {
     stage ('Prepare Admin Node') {
       steps {
           script {
-
-            if (params.SITE.startsWith("gate") && !params.SITE.contains("online")) {
-              /***************************************************************************************************
-              * In offline gating, only send hosts.ini file and tacoplay will be fetched directry to admin Node. *
-              ***************************************************************************************************/
-              sh """
-                mv gate/adminInitOffline.sh gate/adminInit.sh
-                sed -i 's/SITE_NAME/${params.SITE}/g' gate/adminInit.sh
-                sed -i 's/ARTIFACT_NAME/${params.ARTIFACT}/g' gate/adminInit.sh
-                scp -o StrictHostKeyChecking=no -i jenkins.key -r inventory/${params.SITE}/hosts.ini inventory/${params.SITE}/extra-vars.yml inventory/${params.SITE}/*-manifest.yaml /var/lib/jenkins/.netrc gate/adminInit.sh taco@$ADMIN_NODE:/home/taco/
-              """
-            } else {
-              /****************************************
-              * For online gating and non-gating test *
-              ****************************************/
-              sh """
-                mv gate/adminInitOnline.sh gate/adminInit.sh
-                sed -i 's/SITE_NAME/${params.SITE}/g' gate/adminInit.sh
-                ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'mkdir tacoplay'
-                scp -o StrictHostKeyChecking=no -i jenkins.key -rp ./* .git taco@$ADMIN_NODE:/home/taco/tacoplay/
-                ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cp /home/taco/tacoplay/gate/adminInit.sh /home/taco/'
-                scp -o StrictHostKeyChecking=no -i jenkins.key /var/lib/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
-              """
-            }
-
             sh """
+              mv gate/adminInitOnline.sh gate/adminInit.sh
+              sed -i 's/SITE_NAME/${params.SITE}/g' gate/adminInit.sh
+              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'mkdir tacoplay'
+              scp -o StrictHostKeyChecking=no -i jenkins.key -rp ./* .git taco@$ADMIN_NODE:/home/taco/tacoplay/
+              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cp /home/taco/tacoplay/gate/adminInit.sh /home/taco/'
+              scp -o StrictHostKeyChecking=no -i jenkins.key /var/lib/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
+
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE chmod 0755 /home/taco/adminInit.sh
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE /home/taco/adminInit.sh 
             """
@@ -202,18 +162,11 @@ pipeline {
           script {
             // Should pass this format: '{"taco_apps": ['openstack','lma']}'
             tacoplay_params = "-e '{\"taco_apps\": ["
-            add_openstack_param = false
 
             if (params.INCLUDED_APPS) {
               def app_list = params.INCLUDED_APPS.split(',')
 
               app_list.eachWithIndex { app, index ->
-                if ( app == 'openstack') {
-                  if (!params.SITE.startsWith('gate')) {
-                    add_openstack_param = true
-                  }
-                }
-
                 if ( index == app_list.length-1 ) {
                   tacoplay_params += "'${app}'"
                 } else {
@@ -223,67 +176,15 @@ pipeline {
             }
             tacoplay_params += "]}'"
 
-            if (!params.SITE.startsWith('gate') && add_openstack_param ) {
-              tacoplay_params += " -e 'site_name=${params.SITE} openstack_release=${params.OPENSTACK_RELEASE}'"
-            }
-
-            // HOTFIX: if kubespray support docker_version 19.03, delete this.
-            tacoplay_params += " -e docker_version=latest"
             println("tacoplay_params: ${tacoplay_params}")
 
-            if (params.REINSTALL) {
-              deleteGlanceBootstrapImage(params.SITE)
-              sh "ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cd tacoplay && ansible-playbook -T 30 -vv -u taco -i inventory/${params.SITE}/hosts.ini -e @inventory/${params.SITE}/extra-vars.yml reset-wrapper.yml'"
-            }
-
-            // [Robert] Do we need to pass 'site_name' var as a param? (Is there any case where inventory name != manifest name?)
             sh """
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
             """
-
-/*
-            dir('tacoplay') {
-              sh "cp VERSIONS ${params.VERSION_FILE_NAME}"
-              sh "mc -C /root/.mc --quiet cp ./${params.VERSION_FILE_NAME} ${env.MINIO}/jenkins/etc/"
-            }
-*/
           }
       }
     }
 
-    stage ('Run Tempest') {
-      when {
-        expression { params.INCLUDED_APPS.contains("openstack") }
-      }
-      steps {
-          script {
-            if (params.SITE.startsWith("gate")) {
-              def job = build(
-                job: "Tasks/tempest-new",
-                parameters: [
-                  booleanParam(name: 'ONLINE', value: online),
-                  booleanParam(name: 'EMPHASIZED_NOTIFICATION', value: params.EMPHASIZED_NOTIFICATION),
-                  string(name: 'INSECURE_IP', value: "${ADMIN_NODE}"),
-                  string(name: 'FAIL_THRESHOLD', value: params.TEMPEST_FAIL_THRESHOLD)
-                ],
-                propagate: true
-              )
-              res = job.getResult()
-              println("Tempest Result: ${res}")
-            } else {
-              def job = build(
-                job: "Tasks/tempest",
-                parameters: [
-                  string(name: 'KUBE_CONTEXT', value: "${params.SITE}")
-                ],
-                propagate: true
-              )
-              res = job.getResult()
-              println("Tempest Result: ${res}")
-            }
-          }
-      }
-    }
   }
 
   post {
