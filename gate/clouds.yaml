@@ -1,0 +1,10 @@
+clouds:
+  taco-prod:
+    auth:
+      auth_url: http://keystone.openstack.svc.cluster.local:80/v3
+      project_name: CHANGEME
+      username: CHANGEME
+      password: CHANGEME
+      user_domain_name: default
+      project_domain_name: default
+    region_name: RegionOne
