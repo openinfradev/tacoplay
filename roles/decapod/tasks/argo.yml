@@ -40,6 +40,6 @@
 
 - name: granting admin privileges into default serviceaccount
   shell: >-
-    {{ bin_dir }}/kubectl create rolebinding default-admin --clusterrole=admin --serviceaccount=default:default
+    {{ bin_dir }}/kubectl create rolebinding default-admin --clusterrole=admin --serviceaccount=argo:default -n argo
   become: false
   ignore_errors: True
