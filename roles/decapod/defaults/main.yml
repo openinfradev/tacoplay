@@ -18,4 +18,4 @@ argo_client_binary_name: "argo-linux-amd64"
 argo_client_url: "https://github.com/argoproj/argo/releases/download/{{ argo_version }}/{{ argo_client_binary_name }}"
 argo_workflow_archive_enabled: true
 argo_archive_storage_size: 8Gi
-argo_node_selector: {}
+argo_node_selector: null
