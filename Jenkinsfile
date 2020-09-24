@@ -1,13 +1,17 @@
-@Library('pipeline-library@taco-v20.07-v2') _
+//@Library('pipeline-library@master') _
+@Library('jenkins-pipeline-library@master') _
 
 pipeline {
   agent {
     node {
-      label 'openstack-prd'
+      label 'openstack-slave'
       customWorkspace "workspace/${env.JOB_NAME}/${env.BUILD_NUMBER}"
     }
   }
   parameters {
+    string(name: 'PROVIDER',
+      defaultValue: 'hanu-prod',
+      description: 'The name of provider that defined clouds.yaml file.')
     string(name: 'SITE',
       defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
@@ -21,7 +25,7 @@ pipeline {
       defaultValue: 'auto',
       description: 'flavor of target VM')
     string(name: 'AZ',
-      defaultValue: 'r06',
+      defaultValue: 'service-az',
       description: 'Availability Zone Name')
     booleanParam(name: 'CLEANUP',
       defaultValue: true,
@@ -53,8 +57,13 @@ pipeline {
               git clone https://github.com/openinfradev/taco-gate-inventories.git
               cp -r taco-gate-inventories/${params.SITE} ./inventory/
 
-              cp /var/lib/jenkins/.ssh/jenkins.key ./jenkins.key
-              rm -rf /var/lib/jenkins/.ssh/known_hosts
+              cp /opt/jenkins/.ssh/jenkins.key ./jenkins.key
+              rm -rf /opt/jenkins/.ssh/known_hosts
+            """
+            
+            // This will be deleted after creation for private gate repo.
+            sh """
+              mc cp hanu-minio/openstack/clouds.yaml .
             """
 
             println("SITE: ${params.SITE}")
@@ -89,15 +98,15 @@ pipeline {
                 }
               }
 
-              vmNamePrefix = createOpenstackVMs(params.SITE, params.OS, flavor, VM_COUNT, [50, 50, 50], "gate/cloudInit.sh", null, SECURITY_GROUP, params.AZ, online, deleteBdm, networks)
-              vmMgmtIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt)
-              vmFlatIPs = getOpenstackVMinfo(vmNamePrefix, networks.flat)
-              vmVxlanIPs = getOpenstackVMinfo(vmNamePrefix, networks.vxlan)
+              vmNamePrefix = createOpenstackVMs(params.SITE, params.OS, flavor, VM_COUNT, [50, 50, 50], "gate/cloudInit.sh", null, SECURITY_GROUP, params.AZ, online, deleteBdm, networks, params.PROVIDER)
+              vmMgmtIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt, params.PROVIDER)
+              vmFlatIPs = getOpenstackVMinfo(vmNamePrefix, networks.flat, params.PROVIDER)
+              vmVxlanIPs = getOpenstackVMinfo(vmNamePrefix, networks.vxlan, params.PROVIDER)
 
               // Disable port-security
-              disablePorts(vmMgmtIPs)
-              disablePorts(vmFlatIPs)
-              disablePorts(vmVxlanIPs)
+              disablePorts(vmMgmtIPs, params.PROVIDER)
+              disablePorts(vmFlatIPs, params.PROVIDER)
+              disablePorts(vmVxlanIPs, params.PROVIDER)
 
               vmMgmtIPs.eachWithIndex { name, ip, index ->
                 if (index==0)
@@ -145,7 +154,7 @@ pipeline {
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'mkdir tacoplay'
               scp -o StrictHostKeyChecking=no -i jenkins.key -rp ./* .git taco@$ADMIN_NODE:/home/taco/tacoplay/
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cp /home/taco/tacoplay/gate/adminInit.sh /home/taco/'
-              scp -o StrictHostKeyChecking=no -i jenkins.key /var/lib/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
+              scp -o StrictHostKeyChecking=no -i jenkins.key /opt/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
 
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE chmod 0755 /home/taco/adminInit.sh
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE /home/taco/adminInit.sh 
@@ -191,7 +200,7 @@ pipeline {
     always {
         script {
           if ( params.CLEANUP == true ) {
-            deleteOpenstackVMs(vmNamePrefix)
+            deleteOpenstackVMs(vmNamePrefix, params.PROVIDER)
           } else {
             echo "Skipping VM cleanup.."
           }
