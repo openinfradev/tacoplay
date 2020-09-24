@@ -46,7 +46,7 @@ pipeline {
           script {
             ADMIN_NODE = ''
             VM_COUNT = 5
-            SECURITY_GROUP = '' // Jenkins project's default sec group
+            SECURITY_GROUP = 'default' // Jenkins project's default sec group
             online = true
 
             println("*********************************************")
@@ -86,6 +86,7 @@ pipeline {
               deleteBdm = true
 
               sh "mv gate/cloudInitOnline.sh gate/cloudInit.sh"
+              sh "sed -i 's/# CHANGE_ME #/ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGc4hfKJk9fyGAmq5RkQOpirZSZhRg5t08CoVOffl3RF6MIGzEprvL2hK8ky9+3qqWuGyh6zN1y8F8tj+lNgBWnFAycp9eXS8QLqJShhHWmSkETc4sr6Iq649UZu5uRrf+BmoDqnftwyymg3\\/H0ZlOT9PqMrTub5ab2oALn4\\/kyWcNuqXIwM+HfhQBAYvEVtUeSWGv44PTHqiLOT+roWrzPzPGnVQHiikRslevZabxYY6lAJad6mXBaAUWCgxe99SzGvFzHo1\\/FaK3xvql9jaOKNXFMQV1fnXuBLpg0PnDlP3LCr3fOdu+xxm0jjQp2e4DCcAEMPNvxLGTkiNa4y6j jenkins-slave-key/' gate/cloudInit.sh"
 
               // Automatically choose flavor ID based on gating inventory 
               // For AIO inventory, larger flavor is used
