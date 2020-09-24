@@ -32,10 +32,10 @@ do
   sleep 3
   if [ "$OS" = "\"centos\"" ]; then
     net0_stat=$(ip a | grep eth0 | grep 10.10)
-    net1_stat=$(ip a | grep eth1 | grep 10.10)
+    net1_stat=$(ip a | grep eth1 | grep 20.20)
   elif [ "$OS" = "ubuntu" ]; then
     net0_stat=$(ip a | grep ens3 | grep 10.10)
-    net1_stat=$(ip a | grep ens4 | grep 10.10)
+    net1_stat=$(ip a | grep ens4 | grep 20.20)
   fi
 done
 
