@@ -31,18 +31,18 @@ until [ -n "$net0_stat" ] && [ -n "$net1_stat" ]
 do
   sleep 3
   if [ "$OS" = "\"centos\"" ]; then
-    net0_stat=$(ip a | grep eth0 | grep 172.16)
-    net1_stat=$(ip a | grep eth1 | grep 172.16)
+    net0_stat=$(ip a | grep eth0 | grep 10.10)
+    net1_stat=$(ip a | grep eth1 | grep 10.10)
   elif [ "$OS" = "ubuntu" ]; then
-    net0_stat=$(ip a | grep ens3 | grep 172.16)
-    net1_stat=$(ip a | grep ens4 | grep 172.16)
+    net0_stat=$(ip a | grep ens3 | grep 10.10)
+    net1_stat=$(ip a | grep ens4 | grep 10.10)
   fi
 done
 
 ## Set default gateway to proper one. Modify based on your actual IP subnet ##
-if echo $net0_stat | grep 172.16.50
+if echo $net0_stat | grep 10.10.10
 then
-  gateway='172.16.50.1'
+  gateway='10.10.10.1'
 else
   echo "Something went wrong! Exiting.."
   exit 1
