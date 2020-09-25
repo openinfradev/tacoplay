@@ -132,10 +132,10 @@ pipeline {
                 println("name: ${name}, IP: ${ip}, index: ${index}")
                 sh "sed -i 's/VM-NAME-${index+1}/${name}/g' inventory/${params.SITE}/hosts.ini"
                 sh "sed -i 's/VM-NAME-${index+1}/${name}/g' inventory/${params.SITE}/extra-vars.yml"
-                sh "sed -i 's/VM-NAME-${index+1}/${name}/g' inventory/${params.SITE}/*-manifest.yaml"
+                #sh "sed -i 's/VM-NAME-${index+1}/${name}/g' inventory/${params.SITE}/*-manifest.yaml"
                 sh "sed -i 's/VM-IP-${index+1}/${ip}/g' inventory/${params.SITE}/hosts.ini"
                 sh "sed -i 's/VM-IP-${index+1}/${ip}/g' inventory/${params.SITE}/extra-vars.yml"
-                sh "sed -i 's/VM-IP-${index+1}/${ip}/g' inventory/${params.SITE}/*-manifest.yaml"
+                #sh "sed -i 's/VM-IP-${index+1}/${ip}/g' inventory/${params.SITE}/*-manifest.yaml"
                 sh "ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'sudo -- sh -c \"echo ${ip} ${name} >> /etc/hosts\"'"
                 //sh "ssh -o StrictHostKeyChecking=no -i jenkins.key taco@${ip} 'sudo -- sh -c \"echo ${ADMIN_NODE} tacorepo >> /etc/hosts\"'"
               }
