@@ -155,7 +155,7 @@ pipeline {
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'mkdir tacoplay'
               scp -o StrictHostKeyChecking=no -i jenkins.key -rp ./* .git taco@$ADMIN_NODE:/home/taco/tacoplay/
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cp /home/taco/tacoplay/gate/adminInit.sh /home/taco/'
-              scp -o StrictHostKeyChecking=no -i jenkins.key /opt/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
+              //scp -o StrictHostKeyChecking=no -i jenkins.key /opt/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
 
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE chmod 0755 /home/taco/adminInit.sh
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE /home/taco/adminInit.sh 
