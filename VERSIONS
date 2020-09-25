@@ -1,4 +1,4 @@
-kubespray https://github.com/openinfradev/kubespray.git v2.13.1
+kubespray https://github.com/openinfradev/kubespray.git v2.13.0
 #charts/openstack-helm https://github.com/openinfradev/openstack-helm.git taco-v20.07-v2
 #charts/openstack-helm-infra https://github.com/openinfradev/openstack-helm-infra.git taco-v20.07-v2
 ceph-ansible https://github.com/openinfradev/ceph-ansible.git stable-4.0
