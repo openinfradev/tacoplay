@@ -131,7 +131,7 @@ pipeline {
               vmMgmtIPs.eachWithIndex { name, ip, index ->
                 println("name: ${name}, IP: ${ip}, index: ${index}")
                 sh "sed -i 's/VM-NAME-${index+1}/${name}/g' inventory/${params.SITE}/hosts.ini"
-                # should check if the mons group need be empty and it is possible to add on gate.
+                // should check if the mons group need be empty and it is possible to add on gate.
                 if (!params.SITE.contains("multi")) {
                   sh "sed -i '/\[mons\]/{n;s/.*/\#taco-aio/}' inventory/${params.SITE}/hosts.ini"
                 }

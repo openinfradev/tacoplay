@@ -10,6 +10,7 @@ echo "127.0.0.1 taco-aio" | sudo tee -a /etc/hosts
 echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
 
 if [ "$OS" = "\"centos\"" ]; then
+  sudo timedatectl set-timezone Asia/Seoul
   sudo yum update -y
   sudo yum install -y openssh-server.x86_64 openssh-clients gcc make git sshpass
 elif [ "$OS" = "ubuntu" ]; then
