@@ -2,7 +2,7 @@ configure_firewall: false
 
 ceph_stable_release: nautilus
 ceph_origin: repository
-ceph_mirror: http://hk.ceph.com
+ceph_mirror: https://download.ceph.com
 
 ceph_repository: >-
   {%- if ceph_repo_url != "" -%}custom{%- else -%}community{%- endif -%}
