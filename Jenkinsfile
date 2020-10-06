@@ -133,7 +133,11 @@ pipeline {
                 sh "sed -i 's/VM-NAME-${index+1}/${name}/g' inventory/${params.SITE}/hosts.ini"
                 // should check if the mons group need be empty and it is possible to add on gate.
                 if (!params.SITE.contains("multi")) {
-                  sh "sed -i '/\\[mons\\]/{n;s/.*/#taco-aio/}' inventory/${params.SITE}/hosts.ini"
+                  // sh "sed -i '/\\[mons\\]/{n;s/.*/#taco-aio/}' inventory/${params.SITE}/hosts.ini"
+                  sh "sed -i 's/k8s_binary_repo_url/#k8s_binary_repo_url/' inventory/${params.SITE}/extra-vars.yml"
+                  sh "sed -i 's/monitor_interface: CHANGEME/monitor_interface: eth1/' inventory/${params.SITE}/extra-vars.yml"
+                  sh "sed -i 's/public_network: CHANGEME/public_network: 20.20.20.0\\/24/' inventory/${params.SITE}/extra-vars.yml"
+                  sh "sed -i 's/cluster_network: CHANGEME/cluster_network: 20.20.20.0\\/24/' inventory/${params.SITE}/extra-vars.yml"
                 }
                 sh "sed -i 's/VM-NAME-${index+1}/${name}/g' inventory/${params.SITE}/extra-vars.yml"
                 //sh "sed -i 's/VM-NAME-${index+1}/${name}/g' inventory/${params.SITE}/*-manifest.yaml"
