@@ -30,12 +30,6 @@
 - hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
-    - { role: k8s/helmv2/download }
-  tags: always
-
-- hosts: localhost
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
     - { role: ../kubespray/roles/kubespray-defaults }
     - { role: taco-apps/openstack/pre-install, when: '"openstack" in taco_apps', vars: { prepare_manifest_only: true } }
     - { role: prepare-artifact }
