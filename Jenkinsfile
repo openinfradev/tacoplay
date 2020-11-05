@@ -55,7 +55,7 @@ pipeline {
 
             sh """
               git clone https://github.com/openinfradev/taco-gate-inventories.git
-              cp -r taco-gate-inventories/${params.SITE} ./inventory/
+              cp -r taco-gate-inventories/inventories/${params.SITE} ./inventory/
 
               cp /opt/jenkins/.ssh/jenkins.key ./jenkins.key
               rm -rf /opt/jenkins/.ssh/known_hosts
