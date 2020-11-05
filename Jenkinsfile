@@ -56,6 +56,7 @@ pipeline {
             sh """
               git clone https://github.com/openinfradev/taco-gate-inventories.git
               cp -r taco-gate-inventories/inventories/${params.SITE} ./inventory/
+              cp -r taco-gate-inventories/scripts ./gate-scripts
 
               cp /opt/jenkins/.ssh/jenkins.key ./jenkins.key
               rm -rf /opt/jenkins/.ssh/known_hosts
@@ -85,8 +86,8 @@ pipeline {
 
               deleteBdm = true
 
-              sh "mv gate/cloudInitOnline.sh gate/cloudInit.sh"
-              sh "sed -i 's/# CHANGE_ME #/ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGc4hfKJk9fyGAmq5RkQOpirZSZhRg5t08CoVOffl3RF6MIGzEprvL2hK8ky9+3qqWuGyh6zN1y8F8tj+lNgBWnFAycp9eXS8QLqJShhHWmSkETc4sr6Iq649UZu5uRrf+BmoDqnftwyymg3\\/H0ZlOT9PqMrTub5ab2oALn4\\/kyWcNuqXIwM+HfhQBAYvEVtUeSWGv44PTHqiLOT+roWrzPzPGnVQHiikRslevZabxYY6lAJad6mXBaAUWCgxe99SzGvFzHo1\\/FaK3xvql9jaOKNXFMQV1fnXuBLpg0PnDlP3LCr3fOdu+xxm0jjQp2e4DCcAEMPNvxLGTkiNa4y6j jenkins-slave-key/' gate/cloudInit.sh"
+              sh "mv gate-scripts/cloudInitOnline.sh gate-scripts/cloudInit.sh"
+              sh "sed -i 's/# CHANGE_ME #/ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGc4hfKJk9fyGAmq5RkQOpirZSZhRg5t08CoVOffl3RF6MIGzEprvL2hK8ky9+3qqWuGyh6zN1y8F8tj+lNgBWnFAycp9eXS8QLqJShhHWmSkETc4sr6Iq649UZu5uRrf+BmoDqnftwyymg3\\/H0ZlOT9PqMrTub5ab2oALn4\\/kyWcNuqXIwM+HfhQBAYvEVtUeSWGv44PTHqiLOT+roWrzPzPGnVQHiikRslevZabxYY6lAJad6mXBaAUWCgxe99SzGvFzHo1\\/FaK3xvql9jaOKNXFMQV1fnXuBLpg0PnDlP3LCr3fOdu+xxm0jjQp2e4DCcAEMPNvxLGTkiNa4y6j jenkins-slave-key/' gate-scripts/cloudInit.sh"
 
               // Automatically choose flavor ID based on gating inventory 
               // For AIO inventory, larger flavor is used
@@ -99,7 +100,7 @@ pipeline {
                 }
               }
 
-              vmNamePrefix = createOpenstackVMs(params.SITE, params.OS, flavor, VM_COUNT, [50, 50, 50], "gate/cloudInit.sh", null, SECURITY_GROUP, params.AZ, online, deleteBdm, networks, params.PROVIDER)
+              vmNamePrefix = createOpenstackVMs(params.SITE, params.OS, flavor, VM_COUNT, [50, 50, 50], "gate-scripts/cloudInit.sh", null, SECURITY_GROUP, params.AZ, online, deleteBdm, networks, params.PROVIDER)
               vmMgmtIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt, params.PROVIDER)
               vmFlatIPs = getOpenstackVMinfo(vmNamePrefix, networks.flat, params.PROVIDER)
               vmVxlanIPs = getOpenstackVMinfo(vmNamePrefix, networks.vxlan, params.PROVIDER)
@@ -158,11 +159,11 @@ pipeline {
       steps {
           script {
             sh """
-              mv gate/adminInitOnline.sh gate/adminInit.sh
-              sed -i 's/SITE_NAME/${params.SITE}/g' gate/adminInit.sh
+              mv gate-scripts/adminInitOnline.sh gate-scripts/adminInit.sh
+              sed -i 's/SITE_NAME/${params.SITE}/g' gate-scripts/adminInit.sh
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'mkdir tacoplay'
               scp -o StrictHostKeyChecking=no -i jenkins.key -rp ./* .git taco@$ADMIN_NODE:/home/taco/tacoplay/
-              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cp /home/taco/tacoplay/gate/adminInit.sh /home/taco/'
+              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cp /home/taco/tacoplay/gate-scripts/adminInit.sh /home/taco/'
               #scp -o StrictHostKeyChecking=no -i jenkins.key /opt/jenkins/.netrc taco@$ADMIN_NODE:/home/taco/
 
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE chmod 0755 /home/taco/adminInit.sh
