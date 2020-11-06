@@ -1,6 +1,6 @@
 # tacoplay 
 
-tacoplay is a set of ansible playbooks to selectively deploy and configure various services (platforms) developed under TACO project. 
+Tacoplay is a set of ansible playbooks to selectively deploy and configure various services (platforms) developed under TACO project. 
 
 List of services (platforms) is as following: 
 
