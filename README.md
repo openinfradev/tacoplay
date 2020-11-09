@@ -22,6 +22,8 @@ Refer to detailed installation guide on the following documentation site.
 TACO Document: https://taco-docs.readthedocs.io/ko/latest/#
 
 
+## NIPA Verification
+NIPA-verification-Yet
 
 
 ---
