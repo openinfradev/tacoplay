@@ -208,11 +208,16 @@ pipeline {
 
   post {
     always {
-        script {
-          if ( params.CLEANUP == true ) {
-            deleteOpenstackVMs(vmNamePrefix, params.PROVIDER)
-          } else {
-            echo "Skipping VM cleanup.."
+        timeout(time: 10, unit: "MINUTES") {
+          script {
+            env.Delete = input message: 'Would you quit waiting?(will take 10 min)', ok: 'yes'
+          }
+          script {
+            if ( params.CLEANUP == true ) {
+              deleteOpenstackVMs(vmNamePrefix, params.PROVIDER)
+            } else {
+              echo "Skipping VM cleanup.."
+            }
           }
         }
     }
