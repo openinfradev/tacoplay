@@ -208,7 +208,7 @@ pipeline {
 
   post {
     always {
-        timeout(time: 10, unit: "MINUTES") {
+        timeout(time: 60, unit: "MINUTES") {
           script {
             env.Delete = input message: 'Would you quit waiting?(will take 10 min)', ok: 'yes'
           }
