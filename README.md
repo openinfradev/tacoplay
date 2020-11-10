@@ -1,3 +1,6 @@
+**NOTE: The master branch is currently in maintenance, so use 'hanu-verification' branch instead for now.
+
+
 # tacoplay 
 
 tacoplay is a set of ansible playbooks to selectively deploy and configure various services (platforms) developed under TACO project. 
