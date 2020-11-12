@@ -23,7 +23,7 @@ TACO Document: https://taco-docs.readthedocs.io/ko/latest/#
 
 
 ## NIPA Verification
-NIPA-verification-Yet
+NIPA-verification-Done
 
 
 ---
