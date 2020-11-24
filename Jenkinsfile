@@ -60,7 +60,7 @@ pipeline {
               cp -r taco-gate-inventories/inventories/${params.SITE} ./inventory/
               cp -r taco-gate-inventories/scripts ./gate-scripts
 
-              cp /opt/jenkins/.ssh/jenkins.key ./jenkins.key
+              cp /opt/jenkins/.ssh/jenkins-slave-hanukey ./jenkins.key
               rm -rf /opt/jenkins/.ssh/known_hosts
             """
             
