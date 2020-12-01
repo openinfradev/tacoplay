@@ -225,11 +225,9 @@ pipeline {
 
             println("tacoplay_params: ${tacoplay_params}")
 
-/*
             sh """
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
             """
-*/
           }
       }
     }
