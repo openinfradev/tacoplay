@@ -225,9 +225,11 @@ pipeline {
 
             println("tacoplay_params: ${tacoplay_params}")
 
+/*
             sh """
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
             """
+*/
           }
       }
     }
@@ -236,11 +238,32 @@ pipeline {
       steps {
         script {
           cluster_name = "cluster-${env.BUILD_NUMBER}"
-          putEtcdValue("k8s_endpoint/${cluster_name}", 'endpoint', ADMIN_NODE)
-          //putEtcdValue('k8s_endpoint/${cluster_name}', 'status', 'ready')
+          putEtcdValue("k8s_endpoint/${cluster_name}", 'vmName', vmNamePrefix)
+          putEtcdValue('k8s_endpoint/${cluster_name}', 'status', 'ready')
+
+
+          /*******************************
+          * TEST: get k8s info from etcd *
+          *******************************/
+          vmName = getK8sVmName("k8s_endpoint")
+
+          vmNamePrefix = vmName[1]
+          vmIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt, params.PROVIDER)
+
+          // get API endpoints
+          vmIPs.eachWithIndex { name, ip, index ->
+            if (index==0) {
+              ADMIN_NODE_IP = ip
+              print("Found admin node IP: ${ADMIN_NODE_IP}")
+            }
+            // get master node IPs if necessary
+
+
+              
+          }
         }
       }
-   }
+    }
 
   }
 
