@@ -225,11 +225,10 @@ pipeline {
 
             println("tacoplay_params: ${tacoplay_params}")
 
-/*
             sh """
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
             """
-*/
+
           }
       }
     }
@@ -239,8 +238,6 @@ pipeline {
         script {
           cluster_name = "cluster-${env.BUILD_NUMBER}"
           putEtcdValue("k8s_endpoint/${cluster_name}", 'vmName', vmNamePrefix)
-          putEtcdValue('k8s_endpoint/${cluster_name}', 'status', 'ready')
-
 
           /*******************************
           * TEST: get k8s info from etcd *
@@ -256,10 +253,6 @@ pipeline {
               ADMIN_NODE_IP = ip
               print("Found admin node IP: ${ADMIN_NODE_IP}")
             }
-            // get master node IPs if necessary
-
-
-              
           }
         }
       }
@@ -271,7 +264,7 @@ pipeline {
     always {
         script {
           if ( params.CLEANUP == true ) {
-            deleteOpenstackVMs(vmNamePrefix, params.PROVIDER)
+            deleteOpenstackVMs(vmNamePrefix, "k8s_endpoint/${cluster_name}/vmName", params.PROVIDER)
           } else {
             echo "Skipping VM cleanup.."
           }
