@@ -29,6 +29,9 @@ pipeline {
     string(name: 'ARTIFACT',
       defaultValue: 'latest-gate-centos-lb-ceph-offline-multinodes',
       description: 'artifact filename on minio server')
+    booleanParam(name: 'CHECK_POOL_SIZE',
+      defaultValue: false,
+      description: 'If job runs as periodic schedulled job, the k8s pool size needs to be checked')
     booleanParam(name: 'CLEANUP',
       defaultValue: true,
       description: 'delete VM once job is finished?')
@@ -50,6 +53,14 @@ pipeline {
             VM_COUNT = 5
             SECURITY_GROUP = 'default' // Jenkins project's default sec group
             online = true
+
+            // Check k8s cluster pool size and abort job if the size reached the limit
+            if ( params.CHECK_POOL_SIZE ) {
+              if (checkK8sPoolSize() >= env.K8S_POOL_SIZE_LIMIT) {
+                currentBuild.result = 'ABORTED'
+                error("K8s pool size already reached the limit. Aborting the job...")
+              }
+            }
 
             println("*********************************************")
             println("SITE (Inventory): ${params.SITE}")
