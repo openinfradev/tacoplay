@@ -56,7 +56,7 @@ pipeline {
 
             // Check k8s cluster pool size and abort job if the size reached the limit
             if ( params.CHECK_POOL_SIZE ) {
-              if (checkK8sPoolSize() >= env.K8S_POOL_SIZE_LIMIT) {
+              if (checkK8sPoolSize("k8s_endpoint") >= env.K8S_POOL_SIZE_LIMIT) {
                 currentBuild.result = 'ABORTED'
                 error("K8s pool size already reached the limit. Aborting the job...")
               }
