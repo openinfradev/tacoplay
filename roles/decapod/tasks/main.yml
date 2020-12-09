@@ -11,7 +11,7 @@
 
 - name: copy helmrelease-rbac.yaml to tmp
   copy:
-    src: "{{ decapod_flow_dest }}/workflow-templates/helm-operator/helmrelease-rbac.yaml"
+    src: "{{ decapod_flow_dest }}/templates/helm-operator/helmrelease-rbac.yaml"
     dest: "/tmp/.helmrelease-rbac.yaml"
   become: false
 
@@ -35,7 +35,7 @@
 
 - name: summit helmrelease workflow template to argo
   shell: >-
-    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/helm-operator/helmrelease-wftpl.yaml -nargo
+    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/templates/helm-operator/helmrelease-wftpl.yaml -nargo
   become: false
 
 - name: check prepare-manifest-wftpl is exist
@@ -53,7 +53,7 @@
 
 - name: summit prepare-manifest workflow template to argo
   shell: >-
-    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/workflow-templates/decapod-yaml/prepare-manifest-wftpl.yaml -nargo
+    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/templates/decapod-yaml/prepare-manifest-wftpl.yaml -nargo
   become: false
 
 - name: delete decapod by-products
