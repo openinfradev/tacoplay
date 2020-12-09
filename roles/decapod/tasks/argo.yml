@@ -23,6 +23,8 @@
   shell: >-
     {{ bin_dir }}/kubectl wait --namespace=argo --for=condition=Ready pods -l app={{ item }} --timeout=600s
   become: false
+  delay: 10
+  retries: 3
   with_items:
     - argo-server
     - workflow-controller
