@@ -29,9 +29,9 @@ pipeline {
     string(name: 'ARTIFACT',
       defaultValue: 'latest-gate-centos-lb-ceph-offline-multinodes',
       description: 'artifact filename on minio server')
-    booleanParam(name: 'CHECK_POOL_SIZE',
+    booleanParam(name: 'JOIN_K8S_POOL',
       defaultValue: false,
-      description: 'If job runs as periodic schedulled job, the k8s pool size needs to be checked')
+      description: 'If job runs as periodic schedulled job, newly created k8s cluster will join the k8s cluster pool.')
     booleanParam(name: 'CLEANUP',
       defaultValue: true,
       description: 'delete VM once job is finished?')
@@ -55,7 +55,7 @@ pipeline {
             online = true
 
             // Check k8s cluster pool size and abort job if the size reached the limit
-            if ( params.CHECK_POOL_SIZE ) {
+            if ( params.JOIN_K8S_POOL ) {
               if (checkK8sPoolSize("k8s_endpoint") >= env.K8S_POOL_SIZE_LIMIT) {
                 currentBuild.result = 'ABORTED'
                 error("K8s pool size already reached the limit. Aborting the job...")
