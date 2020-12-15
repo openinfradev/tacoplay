@@ -253,9 +253,7 @@ pipeline {
           /*******************************
           * TEST: get k8s info from etcd *
           *******************************/
-          vmName = getK8sVmName("k8s_endpoint")
-
-          vmNamePrefix = vmName[1]
+          vmNamePrefix = getK8sVmName("k8s_endpoint")
           vmIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt, params.PROVIDER)
 
           // get API endpoints
