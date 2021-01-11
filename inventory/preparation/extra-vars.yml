@@ -1,3 +1,5 @@
+# docker
+docker_daemon_graph: "/home/jenkins/agent/docker_images"
 # ceph
 ceph_monitors: 10.10.40.52
 ceph_admin_keyring: AQBAHAdfHQ5RLhAAzynxAYUokA55ku4ZwqVJjQ==
