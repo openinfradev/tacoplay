@@ -41,6 +41,8 @@
   shell: >-
     {{ bin_dir }}/kubectl wait --namespace=kube-system --for=condition=Ready pods --selector name=helm-operator --timeout=600s
   become: false
+  delay: 10
+  retries: 3
 
 - name: delete helm-operator by-products
   file:
