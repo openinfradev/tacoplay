@@ -1,5 +1,3 @@
-**NOTE: The master branch is currently in maintenance, so use 'hanu-verification' branch instead for now.
-
 
 # tacoplay 
 
@@ -12,23 +10,24 @@ List of services (platforms) is as following:
 * Kubernetes (via Kubespray)
 * CSI/CNI
 * Helm 
-* Airship-armada
-* OpenStack (via openstack-helm & armada) 
-* Logging, Monitoring, Alarm (via openstack-helm-infra & operators)
+* Decapod (argo & etc)
+* OpenStack
+* Logging, Monitoring, Alarm
 * and more tools under TACO project. 
 
-## Document & Installation Guide  
+## Installation Guide  
 Refer to detailed installation guide on the following documentation site.
 
 **Warning: Use 'sample/aio' inventory for now, since 'sample/5nodes' hasn't been updated to the recent version yet. It'll be updated soon.**
 
 TACO Document: https://taco-docs.readthedocs.io/ko/latest/#
 
-
+## Contribution Guide
+Refer to [Contribution Guide](docs/contribution.md)
 
 
 ---
-Copyright 2017 ~ 2020 SK Telecom., Ltd. 
+Copyright 2017 ~ 2021 SK Telecom., Ltd. 
 
 Licensed under the Apache License, Version 2.0 (the "License");
 
