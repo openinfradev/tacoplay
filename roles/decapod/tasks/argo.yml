@@ -36,7 +36,7 @@
 
 - name: install argo client
   shell: >-
-    cd /tmp && curl -sLO {{ argo_client_url }} && chmod +x {{ argo_client_binary_name }} && mv ./{{ argo_client_binary_name }} {{ bin_dir }}/argo
+    cd /tmp && curl -sLO {{ argo_client_url }} && gunzip {{ argo_client_binary_name }}.gz && chmod +x {{ argo_client_binary_name }} && mv ./{{ argo_client_binary_name }} {{ bin_dir }}/argo
   become: true
   when: not stat_result.stat.exists
 
