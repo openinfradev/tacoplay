@@ -3,14 +3,14 @@
 pipeline {
   agent {
     node {
-      label 'openstack-slave'
+      label 'openstack-prd'
       customWorkspace "workspace/${env.JOB_NAME}/${env.BUILD_NUMBER}"
     }
   }
   parameters {
     string(name: 'PROVIDER',
-      defaultValue: 'hanu-prod',
-      description: 'The name of provider that defined clouds.yaml file.')
+      defaultValue: 'taco-prod',
+      description: 'The name of provider defined in clouds.yaml file.')
     string(name: 'SITE',
       defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
@@ -24,7 +24,7 @@ pipeline {
       defaultValue: 'auto',
       description: 'flavor of target VM')
     string(name: 'AZ',
-      defaultValue: 'service-az',
+      defaultValue: 'r06',
       description: 'Availability Zone Name')
     string(name: 'ARTIFACT',
       defaultValue: 'latest-gate-centos-lb-ceph-offline-multinodes',
@@ -51,7 +51,7 @@ pipeline {
           script {
             ADMIN_NODE = ''
             VM_COUNT = 5
-            SECURITY_GROUP = 'default' // Jenkins project's default sec group
+            SECURITY_GROUP = '57aa4e93-0a9c-4ff9-bcb5-33fe1c1ca344' // Jenkins project's default sec group
             online = true
 
             // Check k8s cluster pool size and abort job if the size reached the limit
@@ -73,11 +73,6 @@ pipeline {
 
               cp /opt/jenkins/.ssh/jenkins-slave-hanukey ./jenkins.key
               rm -rf /opt/jenkins/.ssh/known_hosts
-            """
-            
-            // This will be deleted after creation for private gate repo.
-            sh """
-              mc cp hanu-minio/openstack/clouds.yaml .
             """
 
             println("SITE: ${params.SITE}")
@@ -248,23 +243,23 @@ pipeline {
       steps {
         script {
           cluster_name = "cluster-${env.BUILD_NUMBER}"
-          putEtcdValue("k8s_endpoint/${cluster_name}", 'vmName', vmNamePrefix)
+          //putEtcdValue("k8s_endpoint/${cluster_name}", 'vmName', vmNamePrefix)
 
           /*******************************
           * TEST: get k8s info from etcd *
           *******************************/
-          vmName = getK8sVmName("k8s_endpoint")
+          //vmName = getK8sVmName("k8s_endpoint")
 
-          vmNamePrefix = vmName[1]
-          vmIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt, params.PROVIDER)
+          //vmNamePrefix = vmName[1]
+          //vmIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt, params.PROVIDER)
 
           // get API endpoints
-          vmIPs.eachWithIndex { name, ip, index ->
-            if (index==0) {
-              ADMIN_NODE_IP = ip
-              print("Found admin node IP: ${ADMIN_NODE_IP}")
-            }
-          }
+          //vmIPs.eachWithIndex { name, ip, index ->
+          //  if (index==0) {
+          //    ADMIN_NODE_IP = ip
+          //    print("Found admin node IP: ${ADMIN_NODE_IP}")
+          //  }
+          //}
         }
       }
     }
@@ -275,6 +270,7 @@ pipeline {
     always {
         script {
           if ( params.CLEANUP == true ) {
+            // TODO: endpoint removal will fail, so it needs to be disabled
             deleteOpenstackVMs(vmNamePrefix, "k8s_endpoint/${cluster_name}/vmName", params.PROVIDER)
           } else {
             echo "Skipping VM cleanup.."
