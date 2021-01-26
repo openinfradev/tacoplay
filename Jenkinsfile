@@ -70,6 +70,7 @@ pipeline {
               git clone https://github.com/openinfradev/taco-gate-inventories.git
               cp -r taco-gate-inventories/inventories/${params.SITE} ./inventory/
               cp -r taco-gate-inventories/scripts ./gate-scripts
+              cp taco-gate-inventories/config/pangyo-clouds.yml ./clouds.yaml
 
               cp /opt/jenkins/.ssh/jenkins-slave-hanukey ./jenkins.key
               rm -rf /opt/jenkins/.ssh/known_hosts
