@@ -10,6 +10,7 @@
     name:
       - yq
       - docker
+    executable: pip3
     extra_args: --ignore-installed
   become: yes
 
