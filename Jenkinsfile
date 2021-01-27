@@ -254,7 +254,7 @@ pipeline {
           vmNamePrefix = vmName[1]
           vmIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt, params.PROVIDER)
 
-           get API endpoints
+          // get API endpoints
           vmIPs.eachWithIndex { name, ip, index ->
             if (index==0) {
               ADMIN_NODE_IP = ip
@@ -271,7 +271,6 @@ pipeline {
     always {
         script {
           if ( params.CLEANUP == true ) {
-            // TODO: endpoint removal will fail, so it needs to be disabled
             deleteOpenstackVMs(vmNamePrefix, "k8s_endpoint/${cluster_name}/vmName", params.PROVIDER)
           } else {
             echo "Skipping VM cleanup.."
