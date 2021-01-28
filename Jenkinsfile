@@ -249,14 +249,16 @@ pipeline {
           /*******************************
           * TEST: get k8s info from etcd *
           *******************************/
-          vmNamePrefix = getK8sVmName("k8s_endpoint")
-          vmIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt, params.PROVIDER)
+          vmNamePrefixRand = getK8sVmName("k8s_endpoint")
+          vmIPs = getOpenstackVMinfo(vmNamePrefixRand, networks.mgmt, params.PROVIDER)
 
           // get API endpoints
-          vmIPs.eachWithIndex { name, ip, index ->
-            if (index==0) {
-              ADMIN_NODE_IP = ip
-              print("Found admin node IP: ${ADMIN_NODE_IP}")
+          if (vmIPs) {
+            vmIPs.eachWithIndex { name, ip, index ->
+              if (index==0) {
+                ADMIN_NODE_IP = ip
+                print("Found admin node IP: ${ADMIN_NODE_IP}")
+              }
             }
           }
         }
