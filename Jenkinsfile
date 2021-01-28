@@ -3,13 +3,13 @@
 pipeline {
   agent {
     node {
-      label 'openstack-prd'
+      label 'openstack-slave-pangyo'
       customWorkspace "workspace/${env.JOB_NAME}/${env.BUILD_NUMBER}"
     }
   }
   parameters {
     string(name: 'PROVIDER',
-      defaultValue: 'taco-prod',
+      defaultValue: 'openstack-pangyo',
       description: 'The name of provider defined in clouds.yaml file.')
     string(name: 'SITE',
       defaultValue: 'gate-centos-lb-ceph-online-aio',
