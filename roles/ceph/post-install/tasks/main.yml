@@ -55,6 +55,7 @@
 - name: reinstall python-requests if requests installed with dist package
   pip:
     name: requests
+    executable: pip3
     extra_args: --ignore-installed
   when:
     - ansible_distribution in ["CentOS","RedHat"]
