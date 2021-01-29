@@ -275,7 +275,11 @@ pipeline {
     always {
         script {
           if ( params.CLEANUP == true ) {
-            deleteOpenstackVMs(vmNamePrefix, "k8s_endpoint/${cluster_name}/vmName", params.PROVIDER)
+            if (params.JOIN_K8S_POOL) {
+              deleteOpenstackVMs(vmNamePrefix, "k8s_endpoint/${cluster_name}/vmName", params.PROVIDER)
+            } else {
+              deleteOpenstackVMs(vmNamePrefix, '', params.PROVIDER)
+            }
           } else {
             echo "Skipping VM cleanup.."
           }
