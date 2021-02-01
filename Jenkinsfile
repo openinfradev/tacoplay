@@ -243,23 +243,27 @@ pipeline {
     stage ('Register endpoint to Etcd') {
       steps {
         script {
-          cluster_name = "cluster-${env.BUILD_NUMBER}"
-          putEtcdValue("k8s_endpoint/${cluster_name}", 'vmName', vmNamePrefix)
+          if ( params.JOIN_K8S_POOL ) {
+            cluster_name = "cluster-${env.BUILD_NUMBER}"
+            putEtcdValue("k8s_endpoint/${cluster_name}", 'vmName', vmNamePrefix)
 
-          /*******************************
-          * TEST: get k8s info from etcd *
-          *******************************/
-          vmNamePrefixRand = getK8sVmName("k8s_endpoint")
-          vmIPs = getOpenstackVMinfo(vmNamePrefixRand, networks.mgmt, params.PROVIDER)
+            /*******************************
+            * TEST: get k8s info from etcd *
+            *******************************/
+            vmNamePrefixRand = getK8sVmName("k8s_endpoint")
+            vmIPs = getOpenstackVMinfo(vmNamePrefixRand, networks.mgmt, params.PROVIDER)
 
-          // get API endpoints
-          if (vmIPs) {
-            vmIPs.eachWithIndex { name, ip, index ->
-              if (index==0) {
-                ADMIN_NODE_IP = ip
-                print("Found admin node IP: ${ADMIN_NODE_IP}")
+            // get API endpoints
+            if (vmIPs) {
+              vmIPs.eachWithIndex { name, ip, index ->
+                if (index==0) {
+                  ADMIN_NODE_IP = ip
+                  print("Found admin node IP: ${ADMIN_NODE_IP}")
+                }
               }
             }
+          } else {
+            println("Skipping endpoint registration..")
           }
         }
       }
@@ -271,7 +275,11 @@ pipeline {
     always {
         script {
           if ( params.CLEANUP == true ) {
-            deleteOpenstackVMs(vmNamePrefix, "k8s_endpoint/${cluster_name}/vmName", params.PROVIDER)
+            if (params.JOIN_K8S_POOL) {
+              deleteOpenstackVMs(vmNamePrefix, "k8s_endpoint/${cluster_name}/vmName", params.PROVIDER)
+            } else {
+              deleteOpenstackVMs(vmNamePrefix, '', params.PROVIDER)
+            }
           } else {
             echo "Skipping VM cleanup.."
           }
