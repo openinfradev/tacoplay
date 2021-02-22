@@ -14,9 +14,9 @@ pipeline {
     string(name: 'SITE',
       defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
-    string(name: 'INCLUDED_APPS',
-      defaultValue: '',
-      description: 'Apps to include in tarball? (comma-separated list)')
+    string(name: 'K8S_VERSION',
+      defaultValue: 'v1.18.9',
+      description: 'Kubernetes version to deploy')
     string(name: 'OS',
       defaultValue: 'centos7',
       description: 'guest OS of target VM')
@@ -213,30 +213,16 @@ pipeline {
 
     stage ('Run Tacoplay') {
       steps {
-          script {
-            // Should pass this format: '{"taco_apps": ['openstack','lma']}'
-            tacoplay_params = "-e '{\"taco_apps\": ["
+        script {
+          tacoplay_params = "-e kube_version=${params.K8S_VERSION}"
+          println("tacoplay_params: ${tacoplay_params}")
 
-            if (params.INCLUDED_APPS) {
-              def app_list = params.INCLUDED_APPS.split(',')
-
-              app_list.eachWithIndex { app, index ->
-                if ( index == app_list.length-1 ) {
-                  tacoplay_params += "'${app}'"
-                } else {
-                 tacoplay_params += "'${app}',"
-                }
-              }
-            }
-            tacoplay_params += "]}'"
-
-            println("tacoplay_params: ${tacoplay_params}")
-
-            sh """
-              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
-            """
-
-          }
+          sh """
+            ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
+          """
+          // Store k8s endpoint to file
+          sh "echo ${vmNamePrefix} > k8s_vm_\$(date +%y%m%d)"
+        }
       }
     }
 
