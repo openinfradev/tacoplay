@@ -221,7 +221,7 @@ pipeline {
             ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
           """
           // Store k8s endpoint to file
-          sh "echo ${vmNamePrefix} > k8s_vm_\$(date +%y%m%d)"
+          sh "echo ${vmNamePrefix} > /tmp/k8s_vm_\$(date +%y%m%d)"
         }
       }
     }
