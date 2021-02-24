@@ -15,7 +15,7 @@ pipeline {
       defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
     string(name: 'K8S_VERSION',
-      defaultValue: 'v1.18.9',
+      defaultValue: 'v1.18.8',
       description: 'Kubernetes version to deploy')
     string(name: 'OS',
       defaultValue: 'centos7',
