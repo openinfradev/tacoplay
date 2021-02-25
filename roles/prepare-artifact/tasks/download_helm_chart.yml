@@ -1,0 +1,32 @@
+- name: git clone decapod-site-yaml
+  git:
+    repo: "{{ decapod-site-yaml_source }}"
+    dest: "{{ decapod-site-yaml_dest }}"
+    version: "{{ decapod-site-yaml_version }}"
+  become: false
+
+- name: Render manifest yaml
+  script: >-
+    {{ playbook_dir | dirname }}/scripts/render_manifest.sh
+    {{ item }}
+  environment:
+    decapod-site-yaml_dest: "{{ decapod-site-yaml_dest }}"
+  args:
+    creates: "/tmp/.{{ item }}-manifest-render-done"
+  when:
+    - taco_apps and taco_apps|length > 0
+  with_items: "{{ taco_apps }}"
+
+- name: Download helm chart
+  script: >-
+    {{ playbook_dir | dirname }}/scripts/download_helm_charts.py
+    {{ inventory_dir }}/{{ item }}-manifest.yaml
+  args:
+    creates: "/tmp/.{{ item }}-chart-download-done"
+  when:
+    - taco_apps and taco_apps|length > 0
+  with_items: "{{ taco_apps }}"
+
+- name: Move helm chart
+  script: >-
+    mv /tmp/charts/* {{ playbook_dir }}/charts/taco_apps/

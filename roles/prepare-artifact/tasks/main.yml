@@ -1,4 +1,6 @@
 ---
+- import_tasks: download_helm_chart.yml
+
 - name: ensure jq package installed
   package:
     name: jq

@@ -17,3 +17,8 @@ openstackclient_image_tag: "stein"
 # Since prepare-artifact role is called from extra-playbook directory,
 # the volume_dir should be set to upper directory of the playbook_dir
 container_registry_volume_relative_dir: "{{ playbook_dir | dirname }}/container_registry"
+
+decapod-site-yaml_source: "https://github.com/openinfradev/decapod-site-yaml"
+decapod-site-yaml_dest: "/tmp/decapod-site-yaml"
+decapod-site-yaml_version: "test-download-helm-chart"
+
