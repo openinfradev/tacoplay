@@ -17,6 +17,9 @@ pipeline {
     string(name: 'K8S_VERSION',
       defaultValue: 'v1.18.8',
       description: 'Kubernetes version to deploy')
+    string(name: 'SONOBUOY_MODE',
+      defaultValue: 'quick',
+      description: 'custom | quick | non-disruptive-conformance | certified-conformance')
     string(name: 'OS',
       defaultValue: 'centos7',
       description: 'guest OS of target VM')
@@ -73,7 +76,7 @@ pipeline {
               cp taco-gate-inventories/config/pangyo-clouds.yml ./clouds.yaml
 
               cp /opt/jenkins/.ssh/jenkins-slave-hanukey ./jenkins.key
-              rm -rf /opt/jenkins/.ssh/known_hosts
+              rm -rf ~/.ssh/known_hosts
             """
 
             println("SITE: ${params.SITE}")
@@ -222,6 +225,23 @@ pipeline {
           """
           // Store k8s endpoint to file
           sh "echo ${vmNamePrefix} > /tmp/k8s_vm_\$(date +%y%m%d)"
+        }
+      }
+    }
+
+    stage ('Validate k8s cluster') {
+      steps {
+        script {
+          def job = build(
+            job: "validate-k8s",
+            parameters: [
+              string(name: 'KUBERNETES_CLUSTER_IP', value: "${ADMIN_NODE}"),
+              string(name: 'SONOBUOY_MODE', value: params.SONOBUOY_MODE)
+            ],
+            propagate: true
+          )
+          res = job.getResult()
+          println("Validate-k8s result: ${res}")
         }
       }
     }
