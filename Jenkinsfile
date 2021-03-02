@@ -14,9 +14,12 @@ pipeline {
     string(name: 'SITE',
       defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
-    string(name: 'INCLUDED_APPS',
-      defaultValue: '',
-      description: 'Apps to include in tarball? (comma-separated list)')
+    string(name: 'K8S_VERSION',
+      defaultValue: 'v1.18.8',
+      description: 'Kubernetes version to deploy')
+    string(name: 'SONOBUOY_MODE',
+      defaultValue: 'quick',
+      description: 'custom | quick | non-disruptive-conformance | certified-conformance')
     string(name: 'OS',
       defaultValue: 'centos7',
       description: 'guest OS of target VM')
@@ -73,7 +76,7 @@ pipeline {
               cp taco-gate-inventories/config/pangyo-clouds.yml ./clouds.yaml
 
               cp /opt/jenkins/.ssh/jenkins-slave-hanukey ./jenkins.key
-              rm -rf /opt/jenkins/.ssh/known_hosts
+              rm -rf ~/.ssh/known_hosts
             """
 
             println("SITE: ${params.SITE}")
@@ -213,30 +216,33 @@ pipeline {
 
     stage ('Run Tacoplay') {
       steps {
-          script {
-            // Should pass this format: '{"taco_apps": ['openstack','lma']}'
-            tacoplay_params = "-e '{\"taco_apps\": ["
+        script {
+          tacoplay_params = "-e kube_version=${params.K8S_VERSION}"
+          println("tacoplay_params: ${tacoplay_params}")
 
-            if (params.INCLUDED_APPS) {
-              def app_list = params.INCLUDED_APPS.split(',')
+          sh """
+            ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
+          """
+          // Store k8s endpoint to file
+          sh "echo ${vmNamePrefix} > /tmp/k8s_vm_\$(date +%y%m%d)"
+        }
+      }
+    }
 
-              app_list.eachWithIndex { app, index ->
-                if ( index == app_list.length-1 ) {
-                  tacoplay_params += "'${app}'"
-                } else {
-                 tacoplay_params += "'${app}',"
-                }
-              }
-            }
-            tacoplay_params += "]}'"
-
-            println("tacoplay_params: ${tacoplay_params}")
-
-            sh """
-              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
-            """
-
-          }
+    stage ('Validate k8s cluster') {
+      steps {
+        script {
+          def job = build(
+            job: "validate-k8s",
+            parameters: [
+              string(name: 'KUBERNETES_CLUSTER_IP', value: "${ADMIN_NODE}"),
+              string(name: 'SONOBUOY_MODE', value: params.SONOBUOY_MODE)
+            ],
+            propagate: true
+          )
+          res = job.getResult()
+          println("Validate-k8s result: ${res}")
+        }
       }
     }
 
