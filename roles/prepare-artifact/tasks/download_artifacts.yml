@@ -13,6 +13,7 @@
     decapod_site_yaml_dest: "{{ decapod_site_yaml_dest }}"
     inventory_dir: "{{ inventory_dir }}"
     site_name: "{{ site_name }}"
+    decapod_base_yaml_version: "{{ decapod_base_yaml_version }}"
   args:
     creates: "/tmp/.{{ item }}-manifest-render-done"
   when:

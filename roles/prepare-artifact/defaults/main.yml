@@ -21,3 +21,4 @@ container_registry_volume_relative_dir: "{{ playbook_dir | dirname }}/container_
 decapod_site_yaml_source: "https://github.com/openinfradev/decapod-site-yaml"
 decapod_site_yaml_dest: "/tmp/decapod_site_yaml"
 decapod_site_yaml_version: "main"
+decapod_base_yaml_version: "main"
