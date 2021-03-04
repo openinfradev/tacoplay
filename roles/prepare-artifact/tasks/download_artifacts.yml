@@ -1,0 +1,56 @@
+- name: git clone decapod-site-yaml
+  git:
+    repo: "{{ decapod_site_yaml_source }}"
+    dest: "{{ decapod_site_yaml_dest }}"
+    version: "{{ decapod_site_yaml_version }}"
+  become: false
+
+- name: Render manifest yaml
+  script: >-
+    {{ playbook_dir | dirname }}/scripts/render_manifest.sh
+    {{ item }}
+  environment:
+    decapod_site_yaml_dest: "{{ decapod_site_yaml_dest }}"
+    inventory_dir: "{{ inventory_dir }}"
+    site_name: "{{ site_name }}"
+    decapod_base_yaml_version: "{{ decapod_base_yaml_version }}"
+  args:
+    creates: "/tmp/.{{ item }}-manifest-render-done"
+  when:
+    - taco_apps and taco_apps|length > 0
+  with_items: "{{ taco_apps }}"
+
+- name: grep tacoplay path
+  shell: >-
+    echo {{ playbook_dir }} | sed  's/extra-playbooks//g'
+  register: tacoplay_dir
+
+- name: create chart folder
+  shell: >-
+    mkdir {{ tacoplay_dir.stdout }}charts/taco_apps/
+  become: no
+  ignore_errors: yes
+
+- name: Download helm chart
+  script: >-
+    {{ playbook_dir | dirname }}/scripts/download_helm_charts.py
+    {{ inventory_dir }}/{{ item }}-manifest.yaml
+  args:
+    creates: "/tmp/.{{ item }}-chart-download-done"
+  when:
+    - taco_apps and taco_apps|length > 0
+  with_items: "{{ taco_apps }}"
+
+- name: Move helm chart
+  shell: >-
+    mv /tmp/charts/* {{ tacoplay_dir.stdout }}charts/taco_apps/
+
+- name: Download container image
+  script: >-
+    {{ playbook_dir | dirname }}/scripts/download_container_images.py
+    {{ inventory_dir }}/{{ item }}-manifest.yaml
+  args:
+    creates: "/tmp/.{{ item }}-image-download-done"
+  when:
+    - taco_apps and taco_apps|length > 0
+  with_items: "{{ taco_apps }}"

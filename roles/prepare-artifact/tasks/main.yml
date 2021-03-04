@@ -1,4 +1,6 @@
 ---
+- import_tasks: download_artifacts.yml
+
 - name: ensure jq package installed
   package:
     name: jq
@@ -13,16 +15,6 @@
     executable: pip3
     extra_args: --ignore-installed
   become: yes
-
-- name: pull all images used in application manifests
-  script: >-
-    {{ playbook_dir | dirname }}/scripts/pull-images.sh
-    {{ inventory_dir }}/{{ item }}-manifest.yaml
-  args:
-    creates: "/tmp/.{{ item }}-image-pull-done"
-  when:
-    - taco_apps and taco_apps|length > 0
-  with_items: "{{ taco_apps }}"
 
 - name: pull images provided by taco
   docker_image:
