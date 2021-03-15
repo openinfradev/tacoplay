@@ -20,6 +20,17 @@
     {{ bin_dir }}/kubectl apply -f /tmp/.helmrelease-rbac.yaml
   become: false
 
+- name: copy argo-additional-rbac.yaml to tmp
+  copy:
+    src: "{{ decapod_flow_dest }}/templates/argo-additional-rbac.yaml"
+    dest: "/tmp/.argo-additional-rbac.yaml"
+  become: false
+
+- name: install rbac to argo for argo:default serviceaccount
+  shell: >-
+    {{ bin_dir }}/kubectl apply -f /tmp/.argo-additional-rbac.yaml
+  become: false
+
 - name: check deploy-helmrelease-wftpl is exist
   shell: >-
     {{ bin_dir }}/argo template get deploy-helmrelease -nargo
