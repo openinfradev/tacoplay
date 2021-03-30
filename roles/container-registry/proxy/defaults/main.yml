@@ -1,0 +1,16 @@
+container_registry_proxy_enabled: false
+container_registry_proxy_cert_dir: "{{ playbook_dir }}/proxy/certs"
+container_registry_proxy_cache_dir: "{{ playbook_dir }}/proxy/caches"
+container_registry_option_dir: "/etc/systemd/system/docker.service.d"
+container_registry_proxy_name: "docker-registry-proxy"
+container_registry_proxy_image_repo: "sktdev/docker-registry-proxy"
+container_registry_proxy_image_tag: "0.6.3-taco"
+container_registry_proxy_env:
+  ENABLE_MANIFEST_CACHE: "true"
+  CACHE_MAX_SIZE: "1024g"
+container_registry_proxy_expose:
+  - "3128"
+container_registry_proxy_ports: 
+  - 3128:3128
+container_registry_proxy: "http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:{{ container_registry_proxy_expose[0] }}"
+docker_bin_dir: "/usr/bin"

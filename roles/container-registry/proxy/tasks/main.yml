@@ -1,0 +1,64 @@
+---
+- name: install certain python modules for docker
+  pip:
+    name: "{{ item.name }}"
+    state: present
+    executable: pip3
+    extra_args: --ignore-installed
+  with_items:
+  - { name: docker }
+
+- name: docker-registry-proxy | create directory for cert
+  file:
+    path: "{{ container_registry_proxy_cert_dir }}"
+    state: directory
+  when:
+    - container_registry_proxy_enabled
+
+- name: docker-registry-proxy | create directory for image caches
+  file:
+    path: "{{ container_registry_proxy_cache_dir }}"
+    state: directory
+  when:
+    - container_registry_proxy_enabled
+
+- name: docker-registry-proxy | run docker registry proxy container
+  docker_container:
+    name: "{{ container_registry_proxy_name }}"
+    image: "{{ container_registry_proxy_image_repo }}:{{ container_registry_proxy_image_tag }}"
+    env: "{{ container_registry_proxy_env }}"
+    exposed_ports: "{{ container_registry_proxy_expose }}"
+    ports: "{{ container_registry_proxy_ports }}"
+    volumes:
+      - "{{ container_registry_proxy_cache_dir }}:/docker_mirror_cache"
+      - "{{ container_registry_proxy_cert_dir }}:/ca"
+    restart_policy: always
+    state: started
+  when: container_registry_proxy_enabled
+
+- name: docker-registry-proxy | create docker directory for systemd
+  file:
+    path: "{{ container_registry_option_dir }}"
+    state: directory
+  when:
+    - container_registry_proxy_enabled
+
+- name: docker-registry-proxy | Add environment vars pointing Docker to use the proxy
+  template:
+    src: docker-registry-proxy.conf.j2
+    dest: "{{ container_registry_option_dir }}/docker-registry-proxy.conf"
+  notify: restart docker
+  when: container_registry_proxy_enabled
+
+- name: docker-registry-proxy | Get the CA certificate from the proxy and make it a trusted root.
+  get_url:
+    url: "{{ container_registry_proxy }}/ca.crt"
+    dest: "/etc/pki/ca-trust/source/anchors/docker_registry_proxy.crt"
+    mode: '0440'
+  when: container_registry_proxy_enabled
+
+- name: Make CA certificate from the proxy a trusted root.
+  command: update-ca-trust
+  when: container_registry_proxy_enabled
+
+- meta: flush_handlers
