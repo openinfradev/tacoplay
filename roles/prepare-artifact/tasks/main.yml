@@ -34,22 +34,26 @@
       - 5000:5000
     volumes:
       - "{{ container_registry_volume_relative_dir }}:/var/lib/registry"
+  when: local_registry_enabled
 
 - name: tag images
   script: "{{ playbook_dir | dirname }}/scripts/tag-images.sh"
   args:
     creates: /tmp/.image-tag-done
+  when: local_registry_enabled
 
 - name: push tagged images to registry
   script: "{{ playbook_dir | dirname }}/scripts/push-images.sh"
   args:
     creates: /tmp/.image-push-done
+  when: local_registry_enabled
 
 - name: archive registry image
   docker_image:
     name: "{{ container_registry_image_repo }}"
     tag: "{{ container_registry_image_tag }}"
     archive_path: "{{ container_registry_volume_relative_dir }}/registry.tar"
+  when: local_registry_enabled
 
 - name: bundle up tacoplay
   shell: tar cvfz tacoplay.tar.gz tacoplay/
