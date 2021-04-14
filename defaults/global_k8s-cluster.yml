@@ -9,6 +9,7 @@ kubelet_custom_flags: ["--registry-qps=30"]
 # kubernetes apps
 helm_enabled: true
 helm_skip_refresh: true
+metrics_server_enabled: true
 
 # Prometheus metrics for calico
 calico_felix_prometheusmetricsenabled: "true"
