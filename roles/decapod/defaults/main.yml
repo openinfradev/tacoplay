@@ -19,3 +19,11 @@ argo_client_url: "https://github.com/argoproj/argo/releases/download/{{ argo_ver
 argo_workflow_archive_enabled: true
 argo_archive_storage_size: 8Gi
 argo_node_selector: null
+
+argocd_version: "v2.0.0"
+argocd_chart_source: "{{ lookup('env', 'HOME') }}/tacoplay/charts/argo-helm/charts/argo-cd"
+argocd_app_ctrl_replicas: 1
+argocd_server_replicas: 2
+argocd_repo_server_replicas: 2
+argocd_client_binary_name: "argocd-linux-amd64"
+argocd_client_url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/{{ argocd_client_binary_name }}"

@@ -1,0 +1,59 @@
+---
+- name: create namespace to deploy argo
+  shell: >-
+    {{ bin_dir }}/kubectl create namespace argo
+  ignore_errors: true
+  become: false
+
+- name: get redis-ha chart verion for argo-cd chart
+  shell: >-
+    grep version {{ argocd_chart_source }}/Chart.yaml  | tail -1 | awk '{print $2}'
+  register: redis_ha_chart_version
+
+- name: create sub-chart directory in argo-cd chart
+  file:
+    path: "{{ argocd_chart_source }}/charts"
+    state: directory
+  become: false
+
+- name: download redis-ha chart for argo-cd chart
+  shell: >-
+    cd {{ argocd_chart_source }}/charts && curl -sLO http://dandydeveloper.github.io/charts/redis-ha-{{ redis_ha_chart_version.stdout }}.tgz
+  become: false
+
+- name: install argo-cd chart
+  shell: >-
+    {{ bin_dir }}/helm install decapod-argocd {{ argocd_chart_source }} -n argo \
+    --set installCRDs=false \
+    --set controller.replicas={{ argocd_app_ctrl_replicas }} \
+    --set repoServer.replicas={{ argocd_repo_server_replicas }} \
+    --set server.replicas={{ argocd_server_replicas }}
+  become: false
+
+- name: sleep for 30 seconds for argo-cd pods to be launched
+  wait_for:
+    timeout: 30
+
+- name: wait for argo-cd pods become ready
+  shell: >-
+    {{ bin_dir }}/kubectl wait --namespace=argo --for=condition=Ready pods -l app.kubernetes.io/name={{ item }} --timeout=600s
+  become: false
+  delay: 10
+  retries: 3
+  with_items:
+    - argocd-dex-server
+    - argocd-redis
+    - argocd-application-controller
+    - argocd-repo-server
+    - argocd-server
+
+- name: check argocd client exists
+  stat:
+    path: "{{ bin_dir }}/argocd"
+  register: stat_result
+
+- name: install argo-cd client
+  shell: >-
+    cd /tmp && curl -sLO {{ argocd_client_url }} && chmod +x {{ argocd_client_binary_name }} && mv ./{{ argocd_client_binary_name }} {{ bin_dir }}/argocd
+  become: true
+  when: not stat_result.stat.exists

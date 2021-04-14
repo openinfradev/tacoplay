@@ -4,3 +4,4 @@ kubespray https://github.com/openinfradev/kubespray.git v2.14.0
 ceph-ansible https://github.com/openinfradev/ceph-ansible.git stable-4.0
 #charts/helm https://github.com/openinfradev/helm-charts.git master
 charts/taco-helm https://github.com/openinfradev/taco-helm.git main
+charts/argo-helm https://github.com/argoproj/argo-helm.git master

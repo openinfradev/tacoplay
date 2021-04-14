@@ -1,6 +1,7 @@
 ---
 - import_tasks: helm-operator.yml
 - import_tasks: argo.yml
+- import_tasks: argocd.yml
 
 - name: git clone decapod-flow
   git:
