@@ -58,3 +58,26 @@
     cd /tmp && curl -sLO {{ argocd_client_url }} && chmod +x {{ argocd_client_binary_name }} && mv ./{{ argocd_client_binary_name }} {{ bin_dir }}/argocd
   become: true
   when: not stat_result.stat.exists
+
+- name: install htpasswd to create bcrypt hash for argocd admin user's password
+  package: name={{ htpasswd_pkg_name }}  state=latest
+
+- name: create bcrypt argocd admin's password hash
+  shell: >-
+    htpasswd -nbBC 10 ADMIN password |  cut -d':' -f 2
+  register: argocd_admin_password_hash
+
+- name: get password modified time
+  shell: >-
+    date +%FT%T%Z
+  register: argocd_admin_password_mtime
+
+- name: change argocd admin's password
+  shell: >-
+    kubectl -n argo patch secret argocd-secret -p '{"stringData": { "admin.password": "{{ argocd_admin_password_hash.stdout }}", "admin.passwordMtime": "{{ argocd_admin_password_mtime.stdout }}" }}'
+  become: false
+
+- name: delete argocd initial password secret
+  shell: >-
+    kubectl -n argo delete secret argocd-initial-admin-secret
+  become: false
