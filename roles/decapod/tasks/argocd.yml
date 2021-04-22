@@ -28,7 +28,8 @@
     --set controller.replicas={{ argocd_app_ctrl_replicas }} \
     --set repoServer.replicas={{ argocd_repo_server_replicas }} \
     --set server.replicas={{ argocd_server_replicas }} \
-    --set server.service.type=NodePort
+    --set server.service.type=NodePort \
+    --set "server.config.accounts\.admin=apiKey\, login" 
   become: false
 
 - name: sleep for 30 seconds for argo-cd pods to be launched
