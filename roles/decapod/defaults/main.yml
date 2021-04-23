@@ -27,3 +27,9 @@ argocd_server_replicas: 2
 argocd_repo_server_replicas: 2
 argocd_client_binary_name: "argocd-linux-amd64"
 argocd_client_url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/{{ argocd_client_binary_name }}"
+argocd_admin_password: "password"
+
+htpasswd_pkg_name_default: "httpd-tools"
+htpasswd_pkg_name_redhat: "httpd-tools"
+htpasswd_pkg_name_debian: "apache2-utils"
+htpasswd_pkg_name: "{{ lookup('vars', 'my_role_variable_'+ansible_os_family|lower, default=htpasswd_pkg_name_default) }}"
