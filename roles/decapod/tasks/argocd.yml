@@ -61,11 +61,11 @@
   when: not stat_result.stat.exists
 
 - name: install htpasswd to create bcrypt hash for argocd admin user's password
-  package: name={{ htpasswd_pkg_name }}  state=latest
+  package: name={{ htpasswd_pkg_name }} state=latest
 
 - name: create bcrypt argocd admin's password hash
   shell: >-
-    htpasswd -nbBC 10 ADMIN password |  cut -d':' -f 2
+    htpasswd -nbBC 10 ADMIN {{ argocd_admin_password }} |  cut -d':' -f 2
   register: argocd_admin_password_hash
 
 - name: get password modified time
