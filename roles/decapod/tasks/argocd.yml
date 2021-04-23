@@ -82,3 +82,28 @@
   shell: >-
     kubectl -n argo delete secret argocd-initial-admin-secret
   become: false
+
+- name: get one of the master node IP address
+  shell: >-
+     kubectl get no --selector=node-role.kubernetes.io/master -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}' | head -1
+  register: k8s_master_node_ip_addr
+  become: false
+
+- name: get nodePort of the argocd server service
+  shell: >-
+    kubectl get svc -n argo decapod-argocd-server -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}'
+  register: argocd_server_svc_nodeport
+  become: false
+
+- name: get current kuberetes cluster context
+  shell: >-
+    kubectl config view -o jsonpath='{.current-context}'
+  register: k8s_current_context
+  become: false
+
+- name: add an explicit target cluster context
+  shell: |
+    argocd login --insecure {{ k8s_master_node_ip_addr.stdout }}:{{ argocd_server_svc_nodeport.stdout }} --username admin --password {{ argocd_admin_password }}
+    argocd cluster add {{ k8s_current_context.stdout }} --name {{ argocd_current_cluster_name }} --upsert
+  become: false
+
