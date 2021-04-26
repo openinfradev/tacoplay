@@ -28,6 +28,7 @@ argocd_repo_server_replicas: 2
 argocd_client_binary_name: "argocd-linux-amd64"
 argocd_client_url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/{{ argocd_client_binary_name }}"
 argocd_admin_password: "password"
+argocd_current_cluster_name: "hanu-reference"
 
 htpasswd_pkg_name_default: "httpd-tools"
 htpasswd_pkg_name_redhat: "httpd-tools"
