@@ -1,24 +1,23 @@
 - name: git clone decapod-site-yaml
   git:
-    repo: "{{ decapod_site_yaml_source }}"
-    dest: "{{ decapod_site_yaml_dest }}"
-    version: "{{ decapod_site_yaml_version }}"
+    repo: "{{ decapod_site_source }}"
+    dest: "{{ decapod_site_dest }}"
+    version: "{{ decapod_site_version }}"
   become: false
 
 - name: Render manifest yaml
   script: >-
     {{ playbook_dir | dirname }}/scripts/render_manifest.sh
-    {{ item }}
   environment:
-    decapod_site_yaml_dest: "{{ decapod_site_yaml_dest }}"
+    decapod_site_dest: "{{ decapod_site_dest }}"
     inventory_dir: "{{ inventory_dir }}"
     site_name: "{{ site_name }}"
     decapod_base_yaml_version: "{{ decapod_base_yaml_version }}"
+    taco_apps: "{{ taco_apps }}"
   args:
-    creates: "/tmp/.{{ item }}-manifest-render-done"
+    creates: "/tmp/.manifest-render-done"
   when:
     - taco_apps and taco_apps|length > 0
-  with_items: "{{ taco_apps }}"
 
 - name: grep tacoplay path
   shell: >-
