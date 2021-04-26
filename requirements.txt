@@ -1,5 +1,5 @@
 # from kubespray v2.13.1
-ansible==2.8.12
+ansible==2.10.0
 jinja2==2.11.3
 netaddr==0.7.19
 pbr==5.4.4
