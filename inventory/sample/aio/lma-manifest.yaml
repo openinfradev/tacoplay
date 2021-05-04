@@ -126,7 +126,7 @@ data:
     #     eck-operator: registry.cicd.stg.taco/eck/eck-operator:1.0.0
   source:
     type: git
-    location: https://github.com/openinfradev/taco-helm
+    location: https://github.com/openinfradev/helm-charts
     subpath: elasticsearch-operator
     reference: taco-v20.05
   dependencies: []
@@ -644,7 +644,7 @@ data:
     #     kibana: registry.cicd.stg.taco/kibana/kibana:7.4.2
   source:
     type: git
-    location: https://github.com/openinfradev/taco-helm
+    location: https://github.com/openinfradev/helm-charts
     subpath: elasticsearch-operator
     reference: taco-v20.05
   dependencies: []
@@ -1014,7 +1014,7 @@ data:
         authkey: admin:password
   source:
     type: git
-    location: https://github.com/openinfradev/taco-helm
+    location: https://github.com/openinfradev/helm-charts
     subpath: taco-watcher
     reference: taco-v20.05
   dependencies: []
