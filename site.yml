@@ -33,17 +33,6 @@
     - { role: kubespray/roles/container-engine, tags: container-registry, when: container_registry_enabled }
     - { role: container-registry/server, tags: container-registry, when: container_registry_enabled }
 
-- name: install ceph
-  include: ceph-ansible/site.yml.sample
-  tags: ceph
-  when: taco_storage_backend == 'ceph'
-
-- name: post install for ceph
-  hosts: admin-node:kube-master
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: ceph/post-install, tags: ceph-post-install, when: taco_storage_backend == 'ceph' }
-
 - name: install kubernetes
   include: kubespray/cluster.yml
   tags: k8s
@@ -55,6 +44,7 @@
     - { role: kubespray/roles/kubespray-defaults, tags: k8s-post-install }
     - { role: k8s/post-install, tags: k8s-post-install }
     - { role: k8s/clients, tags: k8s-post-install }
+    - { role: ceph/rook, tags: rook,  when: taco_storage_backend == 'rook-ceph' }
     - { role: decapod, tags: decapod, when: decapod_enabled }
 
 - name: setup helm repository
