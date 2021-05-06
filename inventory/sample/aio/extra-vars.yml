@@ -1,7 +1,9 @@
 # tacoplay
 
-# TACO parameter : a backend storage for kubernetes shared storage (ceph|nfs)
-taco_storage_backend: "ceph"
+# ceph
+rook_ceph_cluster_mon_replicas: 1
+rook_ceph_cluster_taco_pool_size: 1
+rook_ceph_cluster_taco_pool_require_safe_size: "false"
 
 # TACO parameter : list of applications that will be deployed on kubernetes (openstack|lma|etc)
 taco_apps: []
@@ -9,78 +11,12 @@ taco_apps: []
 # TACO parameter : container image registry will be deployed on the node defined in container-registry in hosts.ini
 container_registry_enabled: true
 
-# ceph parameter
-monitor_interface: br-data
-public_network: 192.168.97.0/24
-cluster_network: 192.168.97.0/24
-
-ceph_conf_overrides:
-  global:
-    mon_allow_pool_delete: true
-    osd_pool_default_size: 1
-    osd_pool_default_min_size: 1
-
-osd_objectstore: bluestore
-lvm_volumes:
-  - data: /dev/vdb
-  
 # kubespray parameter : enable calico IP-in-IP encapsulation of the inter-workload traffic. (Always | Never | CrossSubnet)
 ipip_mode: Always
 #peer_with_router: false
 
 # Override openstack release (Default value is defined in Tacoplay)
 #Openstack_release: stein
-
-# OpenStack parameter
-openstack_config: true
-kube_pool:
-  name: "kube"
-  pg_num: 2
-  pgp_num: 2
-  rule_name: "replicated_rule"
-  type: 1
-  erasure_profile: ""
-  expected_num_objects: ""
-  application: "rbd"
-openstack_glance_pool:
-  name: "images"
-  pg_num: 8
-  pgp_num: 8
-  rule_name: "replicated_rule"
-  type: 1
-  erasure_profile: ""
-  expected_num_objects: ""
-openstack_cinder_pool:
-  name: "volumes"
-  pg_num: 16
-  pgp_num: 16
-  rule_name: "replicated_rule"
-  type: 1
-  erasure_profile: ""
-  expected_num_objects: ""
-openstack_cinder_backup_pool:
-  name: "backups"
-  pg_num: 8
-  pgp_num: 8
-  rule_name: "replicated_rule"
-  type: 1
-  erasure_profile: ""
-  expected_num_objects: ""
-openstack_nova_vms_pool:
-  name: "vms"
-  pg_num: 16
-  pgp_num: 16
-  rule_name: "replicated_rule"
-  type: 1
-  erasure_profile: ""
-  expected_num_objects: ""
-
-openstack_pools:
-  - "{{ kube_pool }}"
-  - "{{ openstack_glance_pool }}"
-  - "{{ openstack_cinder_pool }}"
-  - "{{ openstack_cinder_backup_pool }}"
-  - "{{ openstack_nova_vms_pool }}"
 
 # OpenStack ACCOUNT
 os_root_user: admin
