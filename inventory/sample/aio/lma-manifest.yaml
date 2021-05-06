@@ -91,7 +91,7 @@ data:
     #     hyperkube: registry.cicd.stg.taco/hyperkube:v1.12.1
   source:
     type: git
-    location: https://github.com/openinfradev/helm-charts
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: stable/prometheus-operator
     reference: taco-v20.05
   dependencies: []
@@ -126,7 +126,7 @@ data:
     #     eck-operator: registry.cicd.stg.taco/eck/eck-operator:1.0.0
   source:
     type: git
-    location: https://github.com/openinfradev/taco-helm
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: elasticsearch-operator
     reference: taco-v20.05
   dependencies: []
@@ -288,7 +288,7 @@ data:
     #     prometheus: registry.cicd.stg.taco/prometheus/prometheus:v2.15.2
   source:
     type: git
-    location: https://github.com/openinfradev/helm-charts
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: stable/prometheus-operator
     reference: taco-v20.05
   dependencies: []
@@ -466,7 +466,7 @@ data:
                   storage: 500Gi      # FIXME
   source:
     type: git
-    location: https://github.com/openinfradev/helm-charts
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: stable/prometheus-operator
     reference: taco-v20.05
   dependencies: []
@@ -488,7 +488,7 @@ data:
   #       kube-state-metrics: registry.cicd.stg.taco/coreos/kube-state-metrics:v1.9.4
   source:
     type: git
-    location: https://github.com/openinfradev/helm-charts
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: stable/kube-state-metrics
     reference: taco-v20.05
   dependencies: []
@@ -510,7 +510,7 @@ data:
   #       node-exporter: registry.cicd.stg.taco/prometheus/node-exporter:v0.18.1
   source:
     type: git
-    location: https://github.com/openinfradev/helm-charts
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: stable/prometheus-node-exporter
     reference: taco-v20.05
   dependencies: 
@@ -533,7 +533,7 @@ data:
   #       prometheus-pushgateway: registry.cicd.stg.taco/coreos/prometheus-pushgateway:v1.9.4
   source:
     type: git
-    location: https://github.com/openinfradev/helm-charts
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: stable/prometheus-pushgateway
     reference: taco-v20.05
   dependencies: []
@@ -644,7 +644,7 @@ data:
     #     kibana: registry.cicd.stg.taco/kibana/kibana:7.4.2
   source:
     type: git
-    location: https://github.com/openinfradev/taco-helm
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: elasticsearch-operator
     reference: taco-v20.05
   dependencies: []
@@ -700,7 +700,7 @@ data:
     #     sidecar: registry.cicd.stg.taco/kiwigrid/k8s-sidecar:0.0.16
   source:
     type: git
-    location: https://github.com/openinfradev/helm-charts
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: stable/grafana
     reference: taco-v20.05
   dependencies: []
@@ -1014,7 +1014,7 @@ data:
         authkey: admin:password
   source:
     type: git
-    location: https://github.com/openinfradev/taco-helm
+    location: https://github.com/openinfradev/taco-helm-charts
     subpath: taco-watcher
     reference: taco-v20.05
   dependencies: []
