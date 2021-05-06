@@ -42,30 +42,6 @@
     - pkg_repo_url != ""
     - ansible_distribution in ["Ubuntu","Debian"]
 
-- name: set ceph_custom_repo for ceph-ansible
-  set_fact:
-    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/ceph.repo"
-  when:
-    - ansible_distribution in ["CentOS", "RedHat"]
-    - ceph_repo_url != ""
-
-- name: set ceph_custom_repo for ceph-ansible
-  set_fact:
-    ceph_custom_repo: "http://{{ ceph_repo_url }}/ceph/debian-nautilus"
-  when:
-    - ceph_repo_url != ""
-    - ansible_distribution in ["Ubuntu", "Debian"]
-
-- name: configure debian/ubuntu ceph stable repository key
-  apt_key:
-    data: "{{ lookup('file', playbook_dir+'/ceph-ansible/roles/ceph-common/files/cephstable.asc') }}"
-    state: present
-  register: result
-  until: result is succeeded
-  when:
-    - ceph_repo_url != ""
-    - ansible_distribution in ["Ubuntu", "Debian"]
-
 - name: add local pypi repo
   template:
     src: pip.conf.j2

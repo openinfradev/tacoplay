@@ -17,30 +17,6 @@ calico_felix_prometheusmetricsport: 9091
 calico_felix_prometheusgometricsenabled: "true"
 calico_felix_prometheusprocessmetricsenabled: "true"
 
-# external provisioners > rbd_provisioner
-rbd_provisioner_enabled: >-
-    {%- if taco_storage_backend == 'ceph' -%}true{%- else -%}false{%- endif -%}
-
-# below will be used by default when rbd_provisioner_enabled=true
-rbd_provisioner_namespace: kube-system
-rbd_provisioner_replicas: 1
-rbd_provisioner_pool: kube
-rbd_provisioner_secret_name: ceph-secret-admin
-rbd_provisioner_user_secret_name: ceph-secret-user
-rbd_provisioner_user_secret_namespace: kube-system
-rbd_provisioner_fs_type: ext4
-rbd_provisioner_image_format: "2"
-rbd_provisioner_image_features: layering
-rbd_provisioner_storage_class: rbd
-rbd_provisioner_reclaim_policy: Delete
-rbd_provisioner_admin_id: "kube"
-rbd_provisioner_secret: "AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=="
-rbd_provisioner_user_id: "kube"
-rbd_provisioner_user_secret: "AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=="
-
-rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
-rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
-
 # external provisioners > local_provisioners
 # For more customization, refer to "roles/kubernetes-apps/external_provisioner
 local_volume_provisioner_enabled: false
@@ -81,7 +57,6 @@ kube_proxy_metrics_bind_address: 0.0.0.0:10249
 #kubelet_deployment_type: host
 
 #local_volume_provisioner_enabled: false
-#cephfs_provisioner_enabled: false
 
 # Applications
 #dns_mode: coredns

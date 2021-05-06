@@ -17,17 +17,14 @@ docker_insecure_registries: []
 pip_repo_url: ""
 pkg_repo_url: ""
 k8s_binary_repo_url: ""
-ceph_repo_url: ""
 
-# Storage configurations: ceph or nfs
+# Storage configurations: rook-ceph or nfs
 taco_storage_backend: "rook-ceph"
 
 # Taco Apps to deploy using Armada
 taco_apps: ["openstack"]
 
 # These images are managed by TACO
-rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
-rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
 openstackclient_image_repo: "docker.io/sktdev/openstackclient"
 openstackclient_image_tag: "stein"
 
