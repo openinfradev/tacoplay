@@ -10,3 +10,5 @@ charts/
 mirrors/
 manifests/
 ironic-image/
+taco-gate-inventories/
+my-inventory/
