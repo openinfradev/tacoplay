@@ -1,4 +1,3 @@
-container_registry_proxy_enabled: false
 container_registry_proxy_cert_dir: "{{ playbook_dir }}/proxy/certs"
 container_registry_proxy_cache_dir: "{{ playbook_dir }}/proxy/caches"
 container_registry_option_dir: "/etc/systemd/system/docker.service.d"

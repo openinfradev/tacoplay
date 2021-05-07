@@ -1,2 +1,7 @@
+{% if container_registry_proxy is defined %}
 [Service]
-Environment={% if container_registry_proxy is defined %}"HTTP_PROXY={{ container_registry_proxy }}"{% endif %} {% if container_registry_proxy is defined %}"HTTPS_PROXY={{ container_registry_proxy }}"{% endif %} {% if no_proxy is defined %}"NO_PROXY={{ no_proxy }}"{% endif %}
+Environment="HTTP_PROXY={{ container_registry_proxy }}"
+Environment="HTTPS_PROXY={{ container_registry_proxy }}"{% endif %}
+{% if no_proxy is defined %}
+Environment="NO_PROXY={{ no_proxy }}"
+{% endif %}

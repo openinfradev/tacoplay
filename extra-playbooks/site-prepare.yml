@@ -8,7 +8,7 @@
     - { role: ../kubespray/roles/kubespray-defaults }
     - { role: ../kubespray/roles/container-engine }
     - { role: container-registry/client }
-    - { role: container-registry/proxy }
+    - { role: container-registry/proxy, when: container_registry_proxy_enabled}
   tags: always
 
 - import_playbook: ../kubespray/cluster.yml
