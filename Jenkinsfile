@@ -26,6 +26,9 @@ pipeline {
     string(name: 'FLAVOR',
       defaultValue: 'auto',
       description: 'flavor of target VM')
+    string(name: 'VOLUME_TYPE',
+      defaultValue: 'rbd1',
+      description: 'volume type of of target VM: rbd1(HDD), rbd2(SSD)')
     string(name: 'AZ',
       defaultValue: 'r06',
       description: 'Availability Zone Name')
@@ -129,7 +132,7 @@ pipeline {
                 }
               }
 
-              vmNamePrefix = createOpenstackVMs(params.SITE, params.OS, flavor, VM_COUNT, [50, 50, 50], "gate-scripts/cloudInit.sh", null, SECURITY_GROUP, params.AZ, online, deleteBdm, networks, params.PROVIDER)
+              vmNamePrefix = createOpenstackVMs(params.SITE, params.OS, flavor, VM_COUNT, params.VOLUME_TYPE, [50, 50, 50], "gate-scripts/cloudInit.sh", null, SECURITY_GROUP, params.AZ, online, deleteBdm, networks, params.PROVIDER)
               vmMgmtIPs = getOpenstackVMinfo(vmNamePrefix, networks.mgmt, params.PROVIDER)
               vmFlatIPs = getOpenstackVMinfo(vmNamePrefix, networks.flat, params.PROVIDER)
               vmVxlanIPs = getOpenstackVMinfo(vmNamePrefix, networks.vxlan, params.PROVIDER)
