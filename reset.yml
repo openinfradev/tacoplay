@@ -10,8 +10,3 @@
 # Reset K8S cluster
 - include: kubespray/reset.yml
   tags: k8s
-
-# Purge Ceph cluster
-- include: ceph-ansible/infrastructure-playbooks/purge-cluster.yml
-  tags: ceph
-  when: taco_storage_backend == 'ceph'

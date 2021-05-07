@@ -1,0 +1,5 @@
+---
+rook_ceph_cluster_chart_source: "{{ lookup('env', 'HOME') }}/tacoplay/charts/taco-helm-charts/rook-ceph-cluster"
+rook_ceph_cluster_mon_replicas: 3
+rook_ceph_cluster_taco_pool_size: 3
+rook_ceph_cluster_taco_pool_require_safe_size: "true"

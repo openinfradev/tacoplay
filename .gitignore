@@ -4,7 +4,6 @@
 artifacts/
 docker_registry/
 /armada/
-ceph-ansible/
 kubespray/
 charts/
 mirrors/

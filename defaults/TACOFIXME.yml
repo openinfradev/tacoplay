@@ -3,6 +3,7 @@
 
 # TACO
 
+
 # Ceph
 # ceph_monitors and ceph_admin_keyring would be set automatically
 # from /etc/ceph/ceph.conf and ceph.client.admin.keyring
@@ -15,12 +16,7 @@ ceph_admin_keyring: >-
   {%- if groups["osds"] is defined -%}{%- else -%}TACOFIXME{%- endif -%}
 
 taco_storageclass_name: >-
-  {%- if taco_storage_backend == 'ceph' -%}rbd{%- elif taco_storage_backend == 'nfs' -%}nfs-client{%- else -%}TACOFIXME{%- endif -%}
-
-# when deploying new ceph
-monitor_interface: TACOFIXME
-public_network: TACOFIXME
-cluster_network: TACOFIXME
+  {%- if taco_storage_backend == 'rook-ceph' -%}rbd{%- elif taco_storage_backend == 'nfs' -%}nfs-client{%- else -%}TACOFIXME{%- endif -%}
 
 # K8S
 kube_pods_subnet: TACOFIXME
@@ -35,17 +31,6 @@ ipip_mode: TACOFIXME
 # set false if the cluster size is smaller then 100 nodes
 # as number and border router IP should be set only if it is enabled
 peer_with_router: TACOFIXME
-
-# RBD provisioner
-# set below only when using existing ceph
-rbd_provisioner_admin_id: >-
-  {%- if groups["osds"] is not defined -%}TACOFIXME{%- else -%}kube{%- endif -%}
-rbd_provisioner_secret: >-
-  {%- if groups["osds"] is not defined -%}TACOFIXME{%- else -%}AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=={%- endif -%}
-rbd_provisioner_user_id: >-
-  {%- if groups["osds"] is not defined -%}TACOFIXME{%- else -%}kube{%- endif -%}
-rbd_provisioner_user_secret: >-
-  {%- if groups["osds"] is not defined -%}TACOFIXME{%- else -%}AQAPn8tUmPBwCxAAeIfvpDKA1fGvrBeXGdc6xQ=={%- endif -%}
 
 # external NFS server
 nfs_server: TACOFIXME

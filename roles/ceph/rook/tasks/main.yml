@@ -1,0 +1,49 @@
+---
+- name: create namespace for rook
+  shell: >-
+    {{ bin_dir }}/kubectl create namespace rook-ceph
+  ignore_errors: true
+  become: false
+
+- name: add rook release helm repository
+  shell: >-
+    {{ bin_dir }}/helm repo add rook-release https://charts.rook.io/release
+  become: false
+
+- name: install rook-operator chart
+  shell: >-
+    {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph rook-release/rook-ceph
+  become: false
+
+- name: sleep for 60 seconds for rook-operator pod to be launched
+  wait_for:
+    timeout: 60
+
+- name: wait for rook-operator pods become ready
+  shell: >-
+    {{ bin_dir }}/kubectl wait --namespace=rook-ceph --for=condition=Ready pods -l app={{ item }} --timeout=600s
+  become: false
+  delay: 10
+  retries: 3
+  with_items:
+    - rook-ceph-operator
+
+- name: install rook ceph cluster chart
+  shell: >-
+    {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph-cluster {{ rook_ceph_cluster_chart_source }} \
+    --set cluster.mon.count={{ rook_ceph_cluster_mon_replicas }} \
+    --set block_pools[0].name=taco \
+    --set block_pools[0].size={{ rook_ceph_cluster_taco_pool_size  }} \
+    --set block_pools[0].requireSafeReplicaSize={{ rook_ceph_cluster_taco_pool_require_safe_size }}
+  become: false
+
+- name: sleep for 300 seconds for rook ceph cluster to be initialized
+  wait_for:
+    timeout: 300
+
+- name: wait for rook ceph cluster become ready
+  shell: >-
+    {{ bin_dir }}/kubectl wait -n rook-ceph --for=condition=Ready cephcluster rook-ceph --timeout=600s
+  become: false
+  delay: 10
+  retries: 3

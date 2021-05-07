@@ -7,12 +7,6 @@
         - "{{ playbook_dir }}/defaults/global_taco.yml"
         - "{{ playbook_dir }}/defaults/global_k8s-cluster.yml"
 
-    - name: include global override values - ceph
-      include_vars: "{{ item }}"
-      loop:
-        - "{{ playbook_dir }}/defaults/global_ceph.yml"
-      when: taco_storage_backend == 'ceph'
-
     - name: include global override values - k8s images
       include_vars: "{{ item }}"
       loop:
