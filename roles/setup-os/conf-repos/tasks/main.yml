@@ -51,8 +51,12 @@
 - name: update yum repository cache
   yum:
     update_cache: yes
+  become: true
+  vars:
+    ansible_python_interpreter: "{{ /usr/bin/python }}"
   when:
     - ansible_distribution in ["CentOS","RedHat"]
+    - "ansible_distribution_major_version | int == 7"
 
 - name: update apt repository cache
   apt:
