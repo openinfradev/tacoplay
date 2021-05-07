@@ -85,7 +85,7 @@
 
 - name: get one of the master node IP address
   shell: >-
-     kubectl get no --selector=node-role.kubernetes.io/master -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}' | head -1
+     kubectl get no --selector=node-role.kubernetes.io/master -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}' | awk '{print $1}'
   register: k8s_master_node_ip_addr
   become: false
 
