@@ -11,6 +11,12 @@ pipeline {
     string(name: 'PROVIDER',
       defaultValue: 'openstack-pangyo',
       description: 'The name of provider defined in clouds.yaml file.')
+    string(name: 'TACOPLAY_TAG',
+      defaultValue: 'main',
+      description: 'tacoplay repository tag or branch')
+     string(name: 'GATING_INVENTORIES_TAG',
+      defaultValue: 'main',
+      description: 'gating inventories repository tag or branch')
     string(name: 'SITE',
       defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
@@ -73,7 +79,7 @@ pipeline {
             println("*********************************************")
 
             sh """
-              git clone https://github.com/openinfradev/taco-gate-inventories.git
+              git clone https://github.com/openinfradev/taco-gate-inventories.git --branch ${params.GATING_INVENTORIES_TAG} --single-branch
               cp -r taco-gate-inventories/inventories/${params.SITE} ./inventory/
               cp -r taco-gate-inventories/scripts ./gate-scripts
               cp taco-gate-inventories/config/pangyo-clouds.yml ./clouds.yaml
@@ -208,11 +214,11 @@ pipeline {
 
             sh """
               ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE chmod 0755 /home/taco/adminInit.sh
-              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE /home/taco/adminInit.sh 
+              ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE /home/taco/adminInit.sh ${params.TACOPLAY_TAG}
             """
 
             // Debug cmds
-            sh "ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cd tacoplay && git status && cat VERSIONS'"
+            sh "ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE 'cd tacoplay && git branch && git status && cat VERSIONS'"
           }
       }
     }
