@@ -15,10 +15,6 @@
     {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph rook-release/rook-ceph
   become: false
 
-- name: sleep for 60 seconds for rook-operator pod to be launched
-  wait_for:
-    timeout: 60
-
 - name: wait for rook-operator pods become ready
   shell: >-
     {{ bin_dir }}/kubectl wait --namespace=rook-ceph --for=condition=Ready pods -l app={{ item }} --timeout=600s
@@ -27,6 +23,8 @@
   retries: 3
   with_items:
     - rook-ceph-operator
+  register: rook_ceph_operator_result
+  until: rook_ceph_operator_result is not failed
 
 - name: install rook ceph cluster chart
   shell: >-
@@ -37,13 +35,11 @@
     --set block_pools[0].requireSafeReplicaSize={{ rook_ceph_cluster_taco_pool_require_safe_size }}
   become: false
 
-- name: sleep for 300 seconds for rook ceph cluster to be initialized
-  wait_for:
-    timeout: 300
-
 - name: wait for rook ceph cluster become ready
   shell: >-
     {{ bin_dir }}/kubectl wait -n rook-ceph --for=condition=Ready cephcluster rook-ceph --timeout=600s
   become: false
   delay: 10
   retries: 3
+  register: rook_ceph_cluster_result
+  until: rook_ceph_cluster_result is not failed

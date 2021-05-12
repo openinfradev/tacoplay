@@ -37,16 +37,14 @@
     {{ bin_dir }}/kubectl apply -f /tmp/.helm-operator-kustomization.yaml -n kube-system
   become: false
 
-- name: sleep for 5 seconds for helm-operator to be launched
-  wait_for:
-    timeout: 5
-
 - name: wait for helm-operator pod becomes ready
   shell: >-
     {{ bin_dir }}/kubectl wait --namespace=kube-system --for=condition=Ready pods --selector name=helm-operator --timeout=600s
   become: false
   delay: 10
   retries: 3
+  register: helm_operator_result
+  until: helm_operator_result is not failed
 
 - name: delete helm-operator by-products
   file:
