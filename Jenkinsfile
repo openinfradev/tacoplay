@@ -196,7 +196,7 @@ pipeline {
                 mv gate-scripts/adminInitOffline.sh gate-scripts/adminInit.sh
                 sed -i 's/SITE_NAME/${params.SITE}/g' gate-scripts/adminInit.sh
                 sed -i 's/ARTIFACT_NAME/${params.ARTIFACT}/g' gate-scripts/adminInit.sh
-                scp -o StrictHostKeyChecking=no -i jenkins.key -r inventory/${params.SITE}/hosts.ini inventory/${params.SITE}/extra-vars.yml inventory/${params.SITE}/*-manifest.yaml /opt/jenkins/.netrc gate-scripts/adminInit.sh taco@$ADMIN_NODE:/home/taco/
+                scp -o StrictHostKeyChecking=no -i jenkins.key -r inventory/${params.SITE}/hosts.ini inventory/${params.SITE}/extra-vars.yml /opt/jenkins/.netrc gate-scripts/adminInit.sh taco@$ADMIN_NODE:/home/taco/
               """
             } else {
               /****************************************
