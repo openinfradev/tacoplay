@@ -32,10 +32,6 @@
     --set "server.config.accounts\.admin=apiKey\, login" 
   become: false
 
-- name: sleep for 30 seconds for argo-cd pods to be launched
-  wait_for:
-    timeout: 30
-
 - name: wait for argo-cd pods become ready
   shell: >-
     {{ bin_dir }}/kubectl wait --namespace=argo --for=condition=Ready pods -l app.kubernetes.io/name={{ item }} --timeout=600s
@@ -48,6 +44,8 @@
     - argocd-application-controller
     - argocd-repo-server
     - argocd-server
+  register: argocd_pods_result
+  until: argocd_pods_result is not failed
 
 - name: check argocd client exists
   stat:

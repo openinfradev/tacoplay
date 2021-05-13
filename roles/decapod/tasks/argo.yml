@@ -28,6 +28,8 @@
   with_items:
     - argo-server
     - workflow-controller
+  register: argo_pods_result
+  until: argo_pods_result is not failed
 
 - name: check argo client exists
   stat:
