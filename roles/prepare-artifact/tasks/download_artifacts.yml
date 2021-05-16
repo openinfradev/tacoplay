@@ -34,15 +34,12 @@
   script: >-
     {{ playbook_dir | dirname }}/scripts/download_helm_charts.py
     {{ inventory_dir }}/{{ item }}-manifest.yaml
+    {{ tacoplay_dir.stdout }}charts/taco_apps/
   args:
     creates: "/tmp/.{{ item }}-chart-download-done"
   when:
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
-
-- name: Move helm chart
-  shell: >-
-    mv /tmp/charts/* {{ tacoplay_dir.stdout }}charts/taco_apps/
 
 - name: Download container image
   script: >-
