@@ -15,7 +15,7 @@
     decapod_base_yaml_version: "{{ decapod_base_yaml_version }}"
     taco_apps: "{{ taco_apps }}"
   args:
-    creates: "/tmp/.manifest-render-done"
+    creates: "{{ inventory_dir }}/.manifest-render-done"
   when:
     - taco_apps and taco_apps|length > 0
 
@@ -36,7 +36,7 @@
     {{ inventory_dir }}/{{ item }}-manifest.yaml
     {{ tacoplay_dir.stdout }}charts/taco_apps/
   args:
-    creates: "/tmp/.{{ item }}-chart-download-done"
+    creates: "{{ inventory_dir }}/.{{ item }}-chart-download-done"
   when:
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
@@ -47,6 +47,7 @@
     {{ inventory_dir }}/{{ item }}-manifest.yaml
   args:
     creates: "/tmp/.{{ item }}-image-download-done"
+    creates: "{{ inventory_dir }}/.{{ item }}-image-download-done"
   when:
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
