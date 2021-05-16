@@ -44,6 +44,15 @@
   args:
     creates: /tmp/.image-push-done
 
+- name: replace container image in deploy-helmrelease template for offline environment
+  replace:
+    path: "{{ item }}"
+    replace: "LOCAL_REGISTRY"
+    regexp: "k8s.gcr.io"
+  with_fileglob:
+    - "{{ playbook_dir }}/../roles/decapod/files/decapod_flow/templates/helm-operator/*-wftpl.yaml"
+  become: true
+
 - name: archive registry image
   docker_image:
     name: "{{ container_registry_image_repo }}"

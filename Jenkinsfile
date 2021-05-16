@@ -22,7 +22,7 @@ pipeline {
       description: 'target site(inventory) to deploy taco')
     string(name: 'K8S_VERSION',
       defaultValue: 'v1.18.8',
-      description: 'Kubernetes version to deploy')
+      description: 'Kubernetes version to deploy. This will be ignored when offline deployment.')
     string(name: 'SONOBUOY_MODE',
       defaultValue: 'quick',
       description: 'custom | quick | non-disruptive-conformance | certified-conformance')
@@ -226,7 +226,12 @@ pipeline {
     stage ('Run Tacoplay') {
       steps {
         script {
-          tacoplay_params = "-e kube_version=${params.K8S_VERSION}"
+          tacoplay_params = ""
+          if (online) {
+            tacoplay_params = "-e kube_version=${params.K8S_VERSION}"
+            // When offline deployment, all K8S binaries and images have already been prepared in the artifact file.
+            // Therefore, kube_version parameter is ignored.
+          }
           println("tacoplay_params: ${tacoplay_params}")
 
           sh """
@@ -245,7 +250,8 @@ pipeline {
             job: "validate-k8s",
             parameters: [
               string(name: 'KUBERNETES_CLUSTER_IP', value: "${ADMIN_NODE}"),
-              string(name: 'SONOBUOY_MODE', value: params.SONOBUOY_MODE)
+              string(name: 'SONOBUOY_MODE', value: params.SONOBUOY_MODE),
+              booleanParam(name: 'OFFLINE_ENV', value: !online)
             ],
             propagate: true
           )

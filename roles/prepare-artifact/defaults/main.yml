@@ -20,3 +20,9 @@ decapod_site_source: "https://github.com/openinfradev/decapod-site"
 decapod_site_dest: "/tmp/decapod_site"
 decapod_site_version: "main"
 decapod_base_yaml_version: "main"
+decapod_preperation_site_name: "hanu-reference"
+
+# The following images were added because they cannot be processed
+# by tacoplay/scripts/download_container_images.py
+download_container_images:
+  - { repo: quay.io/prometheus-operator/prometheus-config-reloader, tag: v0.48.0}

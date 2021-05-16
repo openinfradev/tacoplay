@@ -9,22 +9,38 @@
   shell: >-
     grep version {{ argocd_chart_source }}/Chart.yaml  | tail -1 | awk '{print $2}'
   register: redis_ha_chart_version
+  tags: download
 
 - name: create sub-chart directory in argo-cd chart
   file:
     path: "{{ argocd_chart_source }}/charts"
     state: directory
   become: false
+  tags: download
+
+- name: check redis-ha chart
+  stat:
+    path: "{{ argocd_chart_source }}/charts/redis-ha-{{ redis_ha_chart_version.stdout }}.tgz"
+  register: stat_redis_chart_result
+  tags: download
 
 - name: download redis-ha chart for argo-cd chart
   shell: >-
     cd {{ argocd_chart_source }}/charts && curl -sLO http://dandydeveloper.github.io/charts/redis-ha-{{ redis_ha_chart_version.stdout }}.tgz
   become: false
+  when: not stat_redis_chart_result.stat.exists
+  tags: download
 
 - name: install argo-cd chart
   shell: >-
     {{ bin_dir }}/helm install decapod-argocd {{ argocd_chart_source }} -n argo \
     --set installCRDs=false \
+    --set global.image.repository={{ argocd_image_repo }} \
+    --set global.image.tag={{ argocd_version }} \
+    --set dex.image.repository={{ argocd_dex_image_repo }} \
+    --set dex.image.tag={{ argocd_dex_version }} \
+    --set redis.image.repository={{ argocd_redis_image_repo }} \
+    --set redis.image.tag={{ argocd_redis_version }} \
     --set controller.replicas={{ argocd_app_ctrl_replicas }} \
     --set repoServer.replicas={{ argocd_repo_server_replicas }} \
     --set server.replicas={{ argocd_server_replicas }} \
@@ -47,16 +63,28 @@
   register: argocd_pods_result
   until: argocd_pods_result is not failed
 
-- name: check argocd client exists
+- name: check argocd client binary exists
+  stat:
+    path: "{{ role_path }}/files/{{ argocd_client_binary_name }}"
+  register: stat_argocd_cli_result
+  tags: download
+
+- name: download argocd client binary
+  shell: >-
+    curl -L {{ argocd_client_url }} -o {{ role_path }}/files/{{ argocd_client_binary_name }}
+  when: not stat_argocd_cli_result.stat.exists
+  tags: download
+
+- name: check argocd client installed
   stat:
     path: "{{ bin_dir }}/argocd"
-  register: stat_result
+  register: stat_argocd_bin_result
 
 - name: install argo-cd client
   shell: >-
-    cd /tmp && curl -sLO {{ argocd_client_url }} && chmod +x {{ argocd_client_binary_name }} && mv ./{{ argocd_client_binary_name }} {{ bin_dir }}/argocd
+    chmod +x {{ role_path }}/files/{{ argocd_client_binary_name }} && cp {{ role_path }}/files/{{ argocd_client_binary_name }} {{ bin_dir }}/argocd
   become: true
-  when: not stat_result.stat.exists
+  when: not stat_argocd_bin_result.stat.exists
 
 - name: install htpasswd to create bcrypt hash for argocd admin user's password
   package: name={{ htpasswd_pkg_name }} state=latest
