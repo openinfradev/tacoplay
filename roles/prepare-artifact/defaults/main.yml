@@ -4,8 +4,6 @@ is_gating_test: false
 # Set this to 'true' to exclude k8s component images in site-prepare job
 exclude_k8s_images: false
 
-rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
-rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
 openstackclient_image_repo: "docker.io/sktdev/openstackclient"
 openstackclient_image_tag: "stein"
 

@@ -21,7 +21,6 @@
     name: "{{ item.repo }}:{{item.tag }}"
   with_items:
     - { repo: "{{ openstackclient_image_repo }}", tag: "{{ openstackclient_image_tag }}" }
-    - { repo: "{{ rbd_provisioner_image_repo }}", tag: "{{ rbd_provisioner_image_tag }}" }
     - { repo: "{{ container_registry_image_repo }}", tag: "{{ container_registry_image_tag }}" }
   become: yes
 
