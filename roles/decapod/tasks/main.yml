@@ -1,14 +1,39 @@
 ---
+- name: set facts for prepare role
+  set_fact:
+    argo_version: "{{ argo_version }}"
+    argo_workflow_controller_image_repo: "{{ argo_workflow_controller_image_repo }}"
+    argo_workflow_executor_image_repo: "{{ argo_workflow_executor_image_repo }}"
+    argo_server_image_repo: "{{ argo_server_image_repo }}"
+    argo_mysql_image_repo: "{{ argo_mysql_image_repo }}"
+    argo_mysql_version: "{{ argo_mysql_version }}"
+    argocd_image_repo: "{{ argocd_image_repo }}"
+    argocd_version: "{{ argocd_version }}"
+    argocd_dex_image_repo: "{{ argocd_dex_image_repo }}"
+    argocd_dex_version: "{{ argocd_dex_version }}"
+    argocd_redis_image_repo: "{{ argocd_redis_image_repo }}"
+    argocd_redis_version: "{{ argocd_redis_version }}"
+    helm_operator_version: "{{ helm_operator_version }}"
+    helm_operator_image_repo: "{{ helm_operator_image_repo }}"
+  tags: download
+
 - import_tasks: helm-operator.yml
 - import_tasks: argo.yml
 - import_tasks: argocd.yml
+
+- name: check if decapod_flow directory exists
+  stat:
+    path: "{{ decapod_flow_dest }}"
+  register: stat_decapod_flow_dest
+  tags: download
 
 - name: git clone decapod-flow
   git:
     repo: "{{ decapod_flow_source }}"
     dest: "{{ decapod_flow_dest }}"
     version: "{{ decapod_flow_version }}"
-  become: false
+  when: not stat_decapod_flow_dest.stat.exists
+  tags: download
 
 - name: copy helmrelease-rbac.yaml to tmp
   copy:
@@ -30,6 +55,21 @@
 - name: install rbac to argo for argo:default serviceaccount
   shell: >-
     {{ bin_dir }}/kubectl apply -f /tmp/.argo-additional-rbac.yaml
+  become: false
+
+- name: set facts for local helm repository IP address
+  set_fact:
+    local_helm_repo: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
+  with_items: "{{ groups['helm-repository'] | first }}"
+
+- name: set facts for local image registry hostname
+  set_fact:
+    local_image_registry: "{{ item }}"
+  with_items: "{{ groups['container-registry'] | first }}"
+
+- name: create manifest configmaps if {{ inventory_dir }} has *-manifest.yaml files
+  shell: >-
+    {{ playbook_dir }}/scripts/decapod/update_manifest_configmap.sh --helm-repo {{ local_helm_repo }} --image-registry {{ local_image_registry }} --inventory {{ inventory_dir }} --decapod_flow_dir {{ decapod_flow_dest }}
   become: false
 
 - name: check deploy-helmrelease-wftpl is exist

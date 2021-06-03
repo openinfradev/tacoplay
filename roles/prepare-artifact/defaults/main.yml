@@ -4,8 +4,6 @@ is_gating_test: false
 # Set this to 'true' to exclude k8s component images in site-prepare job
 exclude_k8s_images: false
 
-rbd_provisioner_image_repo: "docker.io/sktdev/rbd-provisioner"
-rbd_provisioner_image_tag: "v2.1.1-nautilus-14.2.4"
 openstackclient_image_repo: "docker.io/sktdev/openstackclient"
 openstackclient_image_tag: "stein"
 
@@ -22,3 +20,9 @@ decapod_site_source: "https://github.com/openinfradev/decapod-site"
 decapod_site_dest: "/tmp/decapod_site"
 decapod_site_version: "main"
 decapod_base_yaml_version: "main"
+decapod_preperation_site_name: "hanu-reference"
+
+# The following images were added because they cannot be processed
+# by tacoplay/scripts/download_container_images.py
+download_container_images:
+  - { repo: quay.io/prometheus-operator/prometheus-config-reloader, tag: v0.48.0}

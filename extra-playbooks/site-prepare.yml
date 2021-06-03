@@ -14,6 +14,23 @@
   when: not exclude_k8s_images
 
 - hosts: localhost
+  tasks:
+    - name: Download rook helm chart
+      include_role:
+        name: ceph/rook
+      tags: download
+
+    - name: Download decapod resources
+      include_role:
+        name: decapod
+      tags: download
+
+    - name: Download helm-repository resources
+      include_role:
+        name: helm-repository
+      tags: download
+
+- hosts: localhost
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: taco-apps/istio/prepare }

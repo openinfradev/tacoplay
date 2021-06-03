@@ -1,27 +1,33 @@
+docker_image_repo: "docker.io"
+quay_image_repo: "quay.io"
+
 bin_dir: /usr/local/bin
 decapod_enabled: true
 decapod_flow_source: "https://github.com/openinfradev/decapod-flow.git"
-decapod_flow_dest: "/tmp/decapod_flow"
+decapod_flow_dest: "{{ role_path }}/files/decapod_flow"
 decapod_flow_version: "main"
 
 helm_operator_version: "v1.1.0"
-helm_operator_image_repo: "docker.io/fluxcd/helm-operator"
+helm_operator_image_repo: "{{ docker_image_repo }}/fluxcd/helm-operator"
 helm_operator_source: "https://github.com/fluxcd/helm-operator.git"
-helm_operator_dest: "/tmp/helm-operator"
+helm_operator_dest: "{{ role_path }}/files/helm-operator"
 
 argo_version: "v2.12.5"
-argo_server_image_repo: "argoproj/argocli"
-argo_workflow_controller_image_repo: "argoproj/workflow-controller"
-argo_workflow_executor_image_repo: "argoproj/argoexec"
-argo_chart_source: "{{ lookup('env', 'HOME') }}/tacoplay/charts/taco-helm-charts/argo"
+argo_server_image_repo: "{{ docker_image_repo }}/argoproj/argocli"
+argo_workflow_controller_image_repo: "{{ docker_image_repo }}/argoproj/workflow-controller"
+argo_workflow_executor_image_repo: "{{ docker_image_repo }}/argoproj/argoexec"
+argo_chart_source: "{{ role_path }}/../../charts/taco-helm-charts/argo"
 argo_client_binary_name: "argo-linux-amd64"
 argo_client_url: "https://github.com/argoproj/argo/releases/download/{{ argo_version }}/{{ argo_client_binary_name }}.gz"
 argo_workflow_archive_enabled: true
+argo_mysql_image_repo: "{{ docker_image_repo }}/library/mysql"
+argo_mysql_version: "8"
 argo_archive_storage_size: 8Gi
 argo_node_selector: null
 
+argocd_image_repo: "{{ quay_image_repo }}/argoproj/argocd"
 argocd_version: "v2.0.0"
-argocd_chart_source: "{{ lookup('env', 'HOME') }}/tacoplay/charts/argo-helm/charts/argo-cd"
+argocd_chart_source: "{{ role_path}}/../../charts/argo-helm/charts/argo-cd"
 argocd_app_ctrl_replicas: 1
 argocd_server_replicas: 2
 argocd_repo_server_replicas: 2
@@ -29,6 +35,10 @@ argocd_client_binary_name: "argocd-linux-amd64"
 argocd_client_url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/{{ argocd_client_binary_name }}"
 argocd_admin_password: "password"
 argocd_current_cluster_name: "hanu-reference"
+argocd_dex_image_repo: "{{ quay_image_repo }}/dexidp/dex"
+argocd_dex_version: "v2.26.0"
+argocd_redis_image_repo: "{{ docker_image_repo }}/library/redis"
+argocd_redis_version: "6.2.1-alpine"
 
 htpasswd_pkg_name_default: "httpd-tools"
 htpasswd_pkg_name_redhat: "httpd-tools"

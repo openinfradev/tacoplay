@@ -1,3 +1,8 @@
+- name: Delete decapod-site-yaml
+  file:
+    state: absent
+    path: "{{ decapod_site_dest }}"
+
 - name: git clone decapod-site-yaml
   git:
     repo: "{{ decapod_site_source }}"
@@ -5,17 +10,29 @@
     version: "{{ decapod_site_version }}"
   become: false
 
-- name: Render manifest yaml
+- name: Render manifest yaml for artifacts
   script: >-
     {{ playbook_dir | dirname }}/scripts/render_manifest.sh
   environment:
     decapod_site_dest: "{{ decapod_site_dest }}"
     inventory_dir: "{{ inventory_dir }}"
-    site_name: "{{ site_name }}"
+    site_name: "{{ decapod_preperation_site_name }}"
     decapod_base_yaml_version: "{{ decapod_base_yaml_version }}"
     taco_apps: "{{ taco_apps }}"
   args:
-    creates: "/tmp/.manifest-render-done"
+    creates: "{{ inventory_dir }}/.manifest-render-done"
+  when:
+    - taco_apps and taco_apps|length > 0
+
+- name: Render manifest yaml for real deployment
+  script: >-
+    {{ playbook_dir | dirname }}/scripts/render_manifest.sh
+  environment:
+    decapod_site_dest: "{{ decapod_site_dest }}"
+    inventory_dir: "{{ inventory_dir }}/../{{ tacoplay_inventory_site }}"
+    site_name: "{{ site_name }}"
+    decapod_base_yaml_version: "{{ decapod_base_yaml_version }}"
+    taco_apps: "{{ taco_apps }}"
   when:
     - taco_apps and taco_apps|length > 0
 
@@ -34,15 +51,12 @@
   script: >-
     {{ playbook_dir | dirname }}/scripts/download_helm_charts.py
     {{ inventory_dir }}/{{ item }}-manifest.yaml
+    {{ tacoplay_dir.stdout }}charts/taco_apps/
   args:
-    creates: "/tmp/.{{ item }}-chart-download-done"
+    creates: "{{ inventory_dir }}/.{{ item }}-chart-download-done"
   when:
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
-
-- name: Move helm chart
-  shell: >-
-    mv /tmp/charts/* {{ tacoplay_dir.stdout }}charts/taco_apps/
 
 - name: Download container image
   script: >-
@@ -50,6 +64,39 @@
     {{ inventory_dir }}/{{ item }}-manifest.yaml
   args:
     creates: "/tmp/.{{ item }}-image-download-done"
+    creates: "{{ inventory_dir }}/.{{ item }}-image-download-done"
   when:
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
+
+- name: Download container image for rook, argo and argocd
+  docker_image:
+    name: "{{ item.repo }}"
+    tag: "{{ item.tag }}"
+    source: pull
+  with_items:
+    - { repo: "{{ rook_ceph_image_repo }}", tag: "{{ rook_ceph_version }}" }
+    - { repo: "{{ rook_cephcsi_image_repo }}", tag: "{{ rook_cephcsi_image_tag }}" }
+    - { repo: "{{ rook_csi_snapshotter_image_repo }}", tag: "{{ rook_csi_snapshotter_tag }}" }
+    - { repo: "{{ rook_csi_attacher_image_repo }}", tag: "{{ rook_csi_attacher_image_tag }}" }
+    - { repo: "{{ rook_csi_provisioner_image_repo }}", tag: "{{ rook_csi_provisioner_image_tag }}" }
+    - { repo: "{{ rook_csi_resizer_image_repo }}", tag: "{{ rook_csi_resizer_image_tag }}" }
+    - { repo: "{{ rook_csi_node_driver_registrar_image_repo }}", tag: "{{ rook_csi_node_driver_registrar_image_tag }}" }
+    - { repo: "{{ helm_operator_image_repo }}", tag: "{{ helm_operator_version | replace('v','') }}" }
+    - { repo: "{{ argocd_image_repo }}", tag: "{{ argocd_version }}" }
+    - { repo: "{{ argocd_dex_image_repo }}", tag: "{{ argocd_dex_version }}" }
+    - { repo: "{{ argocd_redis_image_repo }}", tag: "{{ argocd_redis_version }}" }
+    - { repo: "{{ argo_workflow_controller_image_repo }}", tag: "{{ argo_version }}" }
+    - { repo: "{{ argo_workflow_executor_image_repo }}", tag: "{{ argo_version }}" }
+    - { repo: "{{ argo_server_image_repo }}",  tag: "{{ argo_version }}" }
+    - { repo: "{{ argo_mysql_image_repo }}", tag: "{{ argo_mysql_version }}" }
+  become: true
+
+- name: Download container images
+  docker_image:
+    name: "{{ item.repo }}"
+    tag: "{{ item.tag }}"
+    source: pull
+  with_items:
+    - "{{ download_container_images }}"
+  become: true

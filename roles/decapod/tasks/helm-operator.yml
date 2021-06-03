@@ -1,10 +1,17 @@
 ---
+- name: check if helm-operator directory exists
+  stat:
+    path: "{{ helm_operator_dest }}"
+  register: stat_helm_operator_dest
+  tags: download
+
 - name: git clone helm-operator
   git:
     repo: "{{ helm_operator_source }}"
     dest: "{{ helm_operator_dest }}"
     version: "{{ helm_operator_version }}"
-  become: false
+  when: not stat_helm_operator_dest.stat.exists
+  tags: download
 
 - name: get manifest to deploy
   shell: >-
@@ -52,4 +59,3 @@
     state: absent
   with_items:
     - /tmp/.helm-operator-kustomization.yaml
-    - "{{ helm_operator_dest }}"

@@ -1,18 +1,52 @@
 ---
+- name: set facts for prepare role
+  set_fact:
+    rook_ceph_image_repo: "{{ rook_ceph_image_repo }}"
+    rook_ceph_version: "{{ rook_ceph_version }}"
+    rook_cephcsi_image_repo: "{{ rook_cephcsi_image_repo }}"
+    rook_cephcsi_image_tag: "{{ rook_cephcsi_image_tag }}"
+    rook_csi_snapshotter_image_repo: "{{ rook_csi_snapshotter_image_repo }}"
+    rook_csi_snapshotter_tag: "{{ rook_csi_snapshotter_tag }}"
+    rook_csi_attacher_image_repo: "{{ rook_csi_attacher_image_repo }}"
+    rook_csi_attacher_image_tag: "{{ rook_csi_attacher_image_tag }}"
+    rook_csi_provisioner_image_repo: "{{ rook_csi_provisioner_image_repo }}"
+    rook_csi_provisioner_image_tag: "{{ rook_csi_provisioner_image_tag }}"
+    rook_csi_resizer_image_repo: "{{ rook_csi_resizer_image_repo }}"
+    rook_csi_resizer_image_tag: "{{ rook_csi_resizer_image_tag }}"
+    rook_csi_node_driver_registrar_image_repo: "{{ rook_csi_node_driver_registrar_image_repo }}"
+    rook_csi_node_driver_registrar_image_tag: "{{ rook_csi_node_driver_registrar_image_tag }}"
+  tags: download
+
 - name: create namespace for rook
   shell: >-
     {{ bin_dir }}/kubectl create namespace rook-ceph
   ignore_errors: true
   become: false
 
-- name: add rook release helm repository
+- name: check if rook-operator chart directory exists
+  stat:
+    path: "{{ rook_ceph_operator_chart_source }}"
+  register: stat_rook_ceph_chart_source
+  tags: download
+
+- name: download rook-operator chart
   shell: >-
-    {{ bin_dir }}/helm repo add rook-release https://charts.rook.io/release
+    {{ bin_dir }}/helm pull rook-ceph --repo https://charts.rook.io/release --version {{ rook_ceph_version }} --untar --untardir {{ rook_ceph_operator_chart_source }}/..
   become: false
+  tags: download
+  when: not stat_rook_ceph_chart_source.stat.exists
 
 - name: install rook-operator chart
   shell: >-
-    {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph rook-release/rook-ceph
+    {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph {{ rook_ceph_operator_chart_source }} \
+    --set image.repository={{ rook_ceph_image_repo }} \
+    --set image.tag={{ rook_ceph_version }} \
+    --set csi.cephcsi.image={{ rook_cephcsi_image_repo }}:{{ rook_cephcsi_image_tag }} \
+    --set csi.registrar.image={{ rook_csi_node_driver_registrar_image_repo }}:{{ rook_csi_node_driver_registrar_image_tag }} \
+    --set csi.provisioner.image={{ rook_csi_provisioner_image_repo }}:{{ rook_csi_provisioner_image_tag }} \
+    --set csi.snapshotter.image={{ rook_csi_snapshotter_image_repo }}:{{ rook_csi_snapshotter_tag }} \
+    --set csi.attacher.image={{ rook_csi_attacher_image_repo }}:{{ rook_csi_attacher_image_tag }} \
+    --set csi.resizer.image={{ rook_csi_resizer_image_repo }}:{{ rook_csi_resizer_image_tag }}
   become: false
 
 - name: wait for rook-operator pods become ready
@@ -29,6 +63,8 @@
 - name: install rook ceph cluster chart
   shell: >-
     {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph-cluster {{ rook_ceph_cluster_chart_source }} \
+    --set cluster.image.repository={{ rook_ceph_image_repo }} \
+    --set cluster.image.tag={{ rook_ceph_version }} \
     --set cluster.mon.count={{ rook_ceph_cluster_mon_replicas }} \
     --set block_pools[0].name=taco \
     --set block_pools[0].size={{ rook_ceph_cluster_taco_pool_size  }} \

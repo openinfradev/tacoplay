@@ -43,20 +43,32 @@
   with_items:
     - "{{ check_result.results }}"
 
+- name: check chartmuseum binary exists
+  stat:
+    path: "{{ role_path }}/files/chartmuseum"
+  register: stat_chartmuseum_result
+  tags: download
+
+- name: download chartmuseum binary
+  shell: >-
+    curl -sL {{ chartmuseum_url }} -o {{ role_path }}/files/chartmuseum
+  when: not stat_chartmuseum_result.stat.exists
+  tags: download
+
 - name: make a directory for local helm repository server
   become: no
   file:
     path: "{{ lookup('env','HOME') }}/.helm/charts"
     state: directory
 
-- name: check chartmuseum exists
+- name: check chartmuseum exists in bin dir
   stat:
     path: "{{ bin_dir }}/chartmuseum"
   register: stat_result
 
 - name: install chartmuseum
   shell: >-
-    cd /tmp && curl -sLO {{ chartmuseum_url }} && chmod +x chartmuseum && mv ./chartmuseum {{ bin_dir }}/chartmuseum
+    chmod +x {{ role_path }}/files/chartmuseum && cp {{ role_path }}/files/chartmuseum {{ bin_dir }}/chartmuseum
   become: true
   when: not stat_result.stat.exists
 
@@ -66,9 +78,21 @@
   become: false
   ignore_errors: true
 
+- name: check helm-servecm dir exists
+  stat:
+    path: "{{ role_path }}/files/helm-servecm"
+  register: stat_helm_servecm_dir_result
+  tags: download
+
+- name: clone helm-servecm repo
+  shell: >-
+    git clone {{ helm_servecm_url }} {{ role_path }}/files/helm-servecm
+  when: not stat_chartmuseum_result.stat.exists
+  tags: download
+
 - name: install helm-servecm plugin
   shell: >-
-    {{ bin_dir }}/helm plugin install {{ helm_servecm_url }}
+    {{ bin_dir }}/helm plugin install {{ role_path }}/files/helm-servecm
   become: false
 
 - name: serve taco helm repository
@@ -119,7 +143,7 @@
 - name: package source charts
   become: no
   shell: >-
-    {{ bin_dir }}/helm package {{ item.stat.path | dirname }} -u -d {{ lookup('env', 'HOME') }}/.helm/charts/
+    {{ bin_dir }}/helm package {{ item.stat.path | dirname }} -d {{ lookup('env', 'HOME') }}/.helm/charts/
   when: item.stat.exists
   with_items:
     - "{{ stat_result.results + stat_result_wo.results }}"
