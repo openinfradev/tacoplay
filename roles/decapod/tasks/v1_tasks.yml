@@ -13,17 +13,20 @@
 - name: set facts for local helm repository IP address
   set_fact:
     local_helm_repo: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
+  when: (groups['helm-repository'] | default([])) | length > 0
   with_items: "{{ groups['helm-repository'] | first }}"
 
 - name: set facts for local image registry hostname
   set_fact:
     local_image_registry: "{{ item }}"
+  when: (groups['container-registry'] | default([])) | length > 0
   with_items: "{{ groups['container-registry'] | first }}"
 
 - name: create manifest configmaps if {{ inventory_dir }} has *-manifest.yaml files
   shell: >-
     {{ playbook_dir }}/scripts/decapod/update_manifest_configmap.sh --helm-repo {{ local_helm_repo }} --image-registry {{ local_image_registry }} --inventory {{ inventory_dir }} --decapod_flow_dir {{ decapod_flow_dest }}
   become: false
+  when: local_helm_repo is defined and local_image_registry is defined
 
 - name: check deploy-helmrelease-wftpl is exist
   shell: >-
