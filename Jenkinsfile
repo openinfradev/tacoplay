@@ -20,6 +20,9 @@ pipeline {
     string(name: 'SITE',
       defaultValue: 'gate-centos-lb-ceph-online-aio',
       description: 'target site(inventory) to deploy taco')
+    string(name: 'DECAPOD_VERSION',
+      defaultValue: 'main',
+      description: 'Decapod version: main or release-1.0')
     string(name: 'K8S_VERSION',
       defaultValue: 'v1.18.8',
       description: 'Kubernetes version to deploy. This will be ignored when offline deployment.')
@@ -228,7 +231,7 @@ pipeline {
         script {
           tacoplay_params = ""
           if (online) {
-            tacoplay_params = "-e kube_version=${params.K8S_VERSION}"
+            tacoplay_params = "-e kube_version=${params.K8S_VERSION} -e decapod_base_yaml_version=${params.DECAPOD_VERSION} -e decapod_site_version=${params.DECAPOD_VERSION} -e decapod_flow_version=${params.DECAPOD_VERSION}"
             // When offline deployment, all K8S binaries and images have already been prepared in the artifact file.
             // Therefore, kube_version parameter is ignored.
           }
