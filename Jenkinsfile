@@ -231,14 +231,14 @@ pipeline {
         script {
           tacoplay_params = ""
           if (online) {
-            tacoplay_params = "-e kube_version=${params.K8S_VERSION} -e decapod_base_yaml_version=${params.DECAPOD_VERSION} -e decapod_site_version=${params.DECAPOD_VERSION} -e decapod_flow_version=${params.DECAPOD_VERSION}"
+            tacoplay_params = "-e kube_version=${params.K8S_VERSION}"
             // When offline deployment, all K8S binaries and images have already been prepared in the artifact file.
             // Therefore, kube_version parameter is ignored.
           }
           println("tacoplay_params: ${tacoplay_params}")
 
           sh """
-            ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml ${tacoplay_params}"
+            ssh -o StrictHostKeyChecking=no -i jenkins.key taco@$ADMIN_NODE "cd tacoplay && git status && ansible-playbook -T 30 -vv -u taco -b -i inventory/${params.SITE}/hosts.ini site.yml -e @inventory/${params.SITE}/extra-vars.yml -e decapod_base_yaml_version=${params.DECAPOD_VERSION} -e decapod_site_version=${params.DECAPOD_VERSION} -e decapod_flow_version=${params.DECAPOD_VERSION} ${tacoplay_params}"
           """
           // Store k8s endpoint to file
           sh "echo ${vmNamePrefix} > /tmp/k8s_vm_\$(date +%y%m%d)"
