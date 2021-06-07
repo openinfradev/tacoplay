@@ -33,18 +33,8 @@
     dest: "{{ decapod_flow_dest }}"
     version: "{{ decapod_flow_version }}"
   when: not stat_decapod_flow_dest.stat.exists
+  become: false
   tags: download
-
-- name: copy helmrelease-rbac.yaml to tmp
-  copy:
-    src: "{{ decapod_flow_dest }}/templates/helm-operator/helmrelease-rbac.yaml"
-    dest: "/tmp/.helmrelease-rbac.yaml"
-  become: false
-
-- name: install rbac to argo for helmrelase
-  shell: >-
-    {{ bin_dir }}/kubectl apply -f /tmp/.helmrelease-rbac.yaml
-  become: false
 
 - name: copy argo-additional-rbac.yaml to tmp
   copy:
@@ -57,56 +47,8 @@
     {{ bin_dir }}/kubectl apply -f /tmp/.argo-additional-rbac.yaml
   become: false
 
-- name: set facts for local helm repository IP address
-  set_fact:
-    local_helm_repo: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
-  with_items: "{{ groups['helm-repository'] | first }}"
-
-- name: set facts for local image registry hostname
-  set_fact:
-    local_image_registry: "{{ item }}"
-  with_items: "{{ groups['container-registry'] | first }}"
-
-- name: create manifest configmaps if {{ inventory_dir }} has *-manifest.yaml files
-  shell: >-
-    {{ playbook_dir }}/scripts/decapod/update_manifest_configmap.sh --helm-repo {{ local_helm_repo }} --image-registry {{ local_image_registry }} --inventory {{ inventory_dir }} --decapod_flow_dir {{ decapod_flow_dest }}
-  become: false
-
-- name: check deploy-helmrelease-wftpl is exist
-  shell: >-
-    {{ bin_dir }}/argo template get deploy-helmrelease -nargo
-  ignore_errors: true
-  register: shell_result
-  become: false
-
-- name: remove deploy-helmrelease wftpl
-  shell: >-
-    {{ bin_dir }}/argo template delete deploy-helmrelease -nargo
-  when: not shell_result.failed
-  become: false
-
-- name: summit helmrelease workflow template to argo
-  shell: >-
-    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/templates/helm-operator/helmrelease-wftpl.yaml -nargo
-  become: false
-
-- name: check prepare-manifest-wftpl is exist
-  shell: >-
-    {{ bin_dir }}/argo template get prepare-manifest -nargo
-  ignore_errors: true
-  register: shell_result
-  become: false
-
-- name: remove prepare-manifest wftpl
-  shell: >-
-    {{ bin_dir }}/argo template delete prepare-manifest -nargo
-  when: not shell_result.failed
-  become: false
-
-- name: summit prepare-manifest workflow template to argo
-  shell: >-
-    {{ bin_dir }}/argo template create {{ decapod_flow_dest }}/templates/decapod-yaml/prepare-manifest-wftpl.yaml -nargo
-  become: false
+- import_tasks: v1_tasks.yml
+  when: decapod_flow_version == "release-1.0"
 
 - name: delete decapod by-products
   file:
