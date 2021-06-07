@@ -45,13 +45,13 @@
 
 - name: check chartmuseum binary exists
   stat:
-    path: "{{ role_path }}/files/chartmuseum"
+    path: "{{ role_path }}/files/chartmuseum.tar.gz"
   register: stat_chartmuseum_result
   tags: download
 
 - name: download chartmuseum binary
   shell: >-
-    curl -sL {{ chartmuseum_url }} -o {{ role_path }}/files/chartmuseum
+    curl -sL {{ chartmuseum_url }} -o {{ role_path }}/files/chartmuseum.tar.gz
   when: not stat_chartmuseum_result.stat.exists
   tags: download
 
@@ -67,8 +67,10 @@
   register: stat_result
 
 - name: install chartmuseum
-  shell: >-
-    chmod +x {{ role_path }}/files/chartmuseum && cp {{ role_path }}/files/chartmuseum {{ bin_dir }}/chartmuseum
+  shell: |
+    cd {{ role_path }}/files/
+    tar xvfz {{ role_path }}/files/chartmuseum.tar.gz
+    cp {{ role_path }}/files/linux-amd64/chartmuseum {{ bin_dir }}/chartmuseum
   become: true
   when: not stat_result.stat.exists
 
