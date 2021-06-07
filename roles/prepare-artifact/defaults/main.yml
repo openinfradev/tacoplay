@@ -33,3 +33,8 @@ download_container_images:
   - { repo: jaegertracing/jaeger-ingester, tag: 1.22.0 }
   - { repo: jaegertracing/jaeger-query, tag: 1.22.0 }
   - { repo: jaegertracing/all-in-one, tag: 1.22.0 }
+  - { repo: jaegertracing/jaeger-collector, tag: 1.21.0 }
+  - { repo: jaegertracing/jaeger-agent, tag: 1.21.0 }
+  - { repo: jaegertracing/jaeger-ingester, tag: 1.21.0 }
+  - { repo: jaegertracing/jaeger-query, tag: 1.21.0 }
+  - { repo: jaegertracing/all-in-one, tag: 1.21.0 }
