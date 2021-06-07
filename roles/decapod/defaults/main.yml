@@ -5,7 +5,7 @@ bin_dir: /usr/local/bin
 decapod_enabled: true
 decapod_flow_source: "https://github.com/openinfradev/decapod-flow.git"
 decapod_flow_dest: "{{ role_path }}/files/decapod_flow"
-decapod_flow_version: "main"
+decapod_flow_version: "release-1.0"
 
 helm_operator_version: "v1.1.0"
 helm_operator_image_repo: "{{ docker_image_repo }}/fluxcd/helm-operator"
