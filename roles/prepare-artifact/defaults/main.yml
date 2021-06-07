@@ -25,4 +25,4 @@ decapod_preperation_site_name: "hanu-reference"
 # The following images were added because they cannot be processed
 # by tacoplay/scripts/download_container_images.py
 download_container_images:
-  - { repo: quay.io/prometheus-operator/prometheus-config-reloader, tag: v0.48.0}
+  - { repo: quay.io/prometheus-operator/prometheus-config-reloader, tag: v0.46.0}
