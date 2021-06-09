@@ -31,12 +31,6 @@
       tags: download
 
 - hosts: localhost
-  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
-  roles:
-    - { role: taco-apps/istio/prepare }
-  tags: always
-
-- hosts: localhost
   name: download k8s clients
   roles:
     - { role: k8s/clients }
