@@ -55,7 +55,7 @@
 
 - name: install argo client
   shell: >-
-    gunzip {{ role_path }}/files/{{ argo_client_binary_name }}.gz && chmod +x {{ role_path }}/files/{{ argo_client_binary_name }} && cp {{ role_path }}/files/{{ argo_client_binary_name }} {{ bin_dir }}/argo
+    gunzip {{ role_path }}/files/{{ argo_client_binary_name }}.gz -c > {{ role_path }}/files/{{ argo_client_binary_name }} && chmod +x {{ role_path }}/files/{{ argo_client_binary_name }} && cp {{ role_path }}/files/{{ argo_client_binary_name }} {{ bin_dir }}/argo
   become: true
   when: not stat_argo_bin_result.stat.exists
 
