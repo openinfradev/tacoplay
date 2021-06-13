@@ -1,4 +1,4 @@
-kubespray https://github.com/openinfradev/kubespray.git v2.15.1-local-path-fix
+kubespray https://github.com/openinfradev/kubespray.git v2.15.1-hanu
 #charts/openstack-helm https://github.com/openinfradev/openstack-helm.git master
 #charts/openstack-helm-infra https://github.com/openinfradev/openstack-helm-infra.git master
 charts/taco-helm-charts https://github.com/openinfradev/helm-charts.git main
