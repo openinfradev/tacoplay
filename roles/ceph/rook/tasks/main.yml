@@ -68,7 +68,8 @@
     --set cluster.mon.count={{ rook_ceph_cluster_mon_replicas }} \
     --set block_pools[0].name=taco \
     --set block_pools[0].size={{ rook_ceph_cluster_taco_pool_size  }} \
-    --set block_pools[0].requireSafeReplicaSize={{ rook_ceph_cluster_taco_pool_require_safe_size }}
+    --set block_pools[0].requireSafeReplicaSize={{ rook_ceph_cluster_taco_pool_require_safe_size }} \
+    --set storageclass.name={{ taco_storageclass_name }}
   become: false
 
 - name: wait for rook ceph cluster become ready

@@ -24,6 +24,7 @@ local_volume_provisioner_enabled: false
 local_path_provisioner_enabled: false
 local_path_provisioner_namespace: "kube-system"
 local_path_provisioner_is_default_storageclass: "false"
+local_path_provisioner_storage_class: "{{ taco_storageclass_name }}"
 
 # docker option
 docker_dns_servers_strict: false
