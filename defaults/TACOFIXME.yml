@@ -15,9 +15,6 @@ ceph_monitors: >-
 ceph_admin_keyring: >-
   {%- if groups["osds"] is defined -%}{%- else -%}TACOFIXME{%- endif -%}
 
-taco_storageclass_name: >-
-  {%- if taco_storage_backend == 'rook-ceph' -%}rbd{%- elif taco_storage_backend == 'nfs' -%}nfs-client{%- else -%}TACOFIXME{%- endif -%}
-
 # K8S
 kube_pods_subnet: TACOFIXME
 kube_service_addresses: TACOFIXME

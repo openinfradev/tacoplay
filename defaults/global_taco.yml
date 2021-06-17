@@ -20,6 +20,7 @@ k8s_binary_repo_url: ""
 
 # Storage configurations: rook-ceph or nfs
 taco_storage_backend: "rook-ceph"
+taco_storageclass_name: "taco-storage"
 
 # Taco Apps to deploy using Armada
 taco_apps: ["openstack"]
