@@ -1,0 +1,38 @@
+installCRDs: false
+
+global:
+  image:
+    repository: {{ argocd_image_repo }}
+    tag: {{ argocd_version }}
+
+dex:
+  image:
+    repository: {{ argocd_dex_image_repo }}
+    tag: {{ argocd_dex_version }}
+
+redis:
+  image:
+    repository: {{ argocd_redis_image_repo }}
+    tag: {{ argocd_redis_version }}
+
+controller:
+  replicas: {{ argocd_app_ctrl_replicas }}
+
+repoServer:
+  replicas: {{ argocd_repo_server_replicas }}
+
+server:
+  replicas: {{ argocd_server_replicas }}
+  service:
+    type: NodePort
+  configEnabled: true
+  config:
+    accounts.admin: apiKey, login
+
+    resource.customizations: |
+      jaegertracing.io/Jaeger:
+        health.lua: |
+          hs = {}
+          hs.status = "Healthy"
+          hs.message = "Jaeger Controller can't store Jaeger's status"
+          return hs
