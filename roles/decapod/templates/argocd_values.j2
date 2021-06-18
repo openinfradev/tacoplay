@@ -36,3 +36,43 @@ server:
           hs.status = "Healthy"
           hs.message = "Jaeger Controller can't store Jaeger's status"
           return hs
+
+      admissionregistration.k8s.io/ValidatingWebhookConfiguration:
+        ignoreDifferences: |
+          jsonPointers:
+          - /webhooks/0/clientConfig/caBundle
+          - /webhooks/1/clientConfig/caBundle
+          - /webhooks/2/clientConfig/caBundle
+          - /webhooks/3/clientConfig/caBundle
+          - /webhooks/4/clientConfig/caBundle
+          - /webhooks/5/clientConfig/caBundle
+          - /webhooks/6/clientConfig/caBundle
+          - /webhooks/7/clientConfig/caBundle
+          - /webhooks/8/clientConfig/caBundle
+          - /webhooks/9/clientConfig/caBundle
+          - /webhooks/0/failurePolicy
+  
+      admissionregistration.k8s.io/MutatingWebhookConfiguration:
+        ignoreDifferences: |
+          jsonPointers:
+          - /webhooks/0/failurePolicy
+  
+      elasticsearch.k8s.elastic.co/Elasticsearch:
+        ignoreDifferences: |
+          jsonPointers:
+          - /spec/nodeSets/0/podTemplate
+          - /spec/nodeSets/0/volumeClaimTemplates/0/metadata/creationTimestamp
+          - /spec/nodeSets/0/volumeClaimTemplates/0/status
+          - /spec/nodeSets/1/podTemplate
+          - /spec/nodeSets/1/volumeClaimTemplates/0/metadata/creationTimestamp
+          - /spec/nodeSets/1/volumeClaimTemplates/0/status
+  
+      kibana.k8s.elastic.co/Kibana:
+        ignoreDifferences: |
+          jsonPointers:
+          - /spec/podTemplate/spec/containers/0/resources/limits/cpu
+  
+      Service:
+        ignoreDifferences: |
+          jsonPointers:
+          - /spec/clusterIP
