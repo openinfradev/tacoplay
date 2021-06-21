@@ -31,21 +31,16 @@
   when: not stat_redis_chart_result.stat.exists
   tags: download
 
+- name: templating values file for argocd chart
+  template:
+    src: "{{ role_path }}/templates/argocd_values.j2"
+    dest: "{{ role_path }}/files/argocd.vo"
+  become: false
+
 - name: install argo-cd chart
   shell: >-
     {{ bin_dir }}/helm install decapod-argocd {{ argocd_chart_source }} -n argo \
-    --set installCRDs=false \
-    --set global.image.repository={{ argocd_image_repo }} \
-    --set global.image.tag={{ argocd_version }} \
-    --set dex.image.repository={{ argocd_dex_image_repo }} \
-    --set dex.image.tag={{ argocd_dex_version }} \
-    --set redis.image.repository={{ argocd_redis_image_repo }} \
-    --set redis.image.tag={{ argocd_redis_version }} \
-    --set controller.replicas={{ argocd_app_ctrl_replicas }} \
-    --set repoServer.replicas={{ argocd_repo_server_replicas }} \
-    --set server.replicas={{ argocd_server_replicas }} \
-    --set server.service.type=NodePort \
-    --set "server.config.accounts\.admin=apiKey\, login" 
+    -f {{ role_path }}/files/argocd.vo
   become: false
 
 - name: wait for argo-cd pods become ready
