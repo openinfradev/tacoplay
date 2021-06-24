@@ -252,6 +252,7 @@ pipeline {
           def job = build(
             job: "validate-k8s",
             parameters: [
+              string(name: 'SONOBUOY_VERSION', value: "0.51.0"),
               string(name: 'KUBERNETES_CLUSTER_IP', value: "${ADMIN_NODE}"),
               string(name: 'SONOBUOY_MODE', value: params.SONOBUOY_MODE),
               booleanParam(name: 'OFFLINE_ENV', value: !online)
