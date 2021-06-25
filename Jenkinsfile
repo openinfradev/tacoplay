@@ -1,4 +1,4 @@
-@Library('jenkins-pipeline-library@main') _
+@Library('jenkins-pipeline-library@hanacard_mydata-210625') _
 
 pipeline {
   agent {
