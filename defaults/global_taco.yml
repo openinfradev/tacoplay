@@ -54,5 +54,5 @@ allow_redeployment: false
 versions_kubespray_default: "./kubespray/roles/download/defaults/main.yml"
 versions_taco_istio: "./roles/taco-apps/istio/deploy/defaults/main.yml"
 versions_kubespray_docker: "./kubespray/roles/container-engine/docker/defaults/main.yml"
-taco_version: "v20.08"
+taco_version: "v21.06"
 version_namespace: "default"
