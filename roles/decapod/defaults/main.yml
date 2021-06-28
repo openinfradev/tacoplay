@@ -3,6 +3,7 @@ quay_image_repo: "quay.io"
 
 bin_dir: /usr/local/bin
 decapod_enabled: true
+decapod_v1_enabled: false
 decapod_flow_source: "https://github.com/openinfradev/decapod-flow.git"
 decapod_flow_dest: "{{ role_path }}/files/decapod_flow"
 decapod_flow_version: "release-1.0"

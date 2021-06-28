@@ -48,7 +48,7 @@
   become: false
 
 - import_tasks: v1_tasks.yml
-  when: decapod_flow_version == "release-1.0"
+  when: decapod_v1_enabled
 
 - name: delete decapod by-products
   file:
