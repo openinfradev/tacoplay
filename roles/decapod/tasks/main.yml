@@ -13,11 +13,8 @@
     argocd_dex_version: "{{ argocd_dex_version }}"
     argocd_redis_image_repo: "{{ argocd_redis_image_repo }}"
     argocd_redis_version: "{{ argocd_redis_version }}"
-    helm_operator_version: "{{ helm_operator_version }}"
-    helm_operator_image_repo: "{{ helm_operator_image_repo }}"
   tags: download
 
-- import_tasks: helm-operator.yml
 - import_tasks: argo.yml
 - import_tasks: argocd.yml
 
@@ -46,9 +43,6 @@
   shell: >-
     {{ bin_dir }}/kubectl apply -f /tmp/.argo-additional-rbac.yaml
   become: false
-
-- import_tasks: v1_tasks.yml
-  when: decapod_v1_enabled
 
 - name: delete decapod by-products
   file:
