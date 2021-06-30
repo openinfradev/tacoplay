@@ -44,9 +44,6 @@
     {{ bin_dir }}/kubectl apply -f /tmp/.argo-additional-rbac.yaml
   become: false
 
-- import_tasks: v1_tasks.yml
-  when: decapod_v1_enabled
-
 - name: delete decapod by-products
   file:
     path: "{{ item }}"
