@@ -20,6 +20,7 @@
 - import_tasks: helm-operator.yml
 - import_tasks: argo.yml
 - import_tasks: argocd.yml
+  when: argocd_enabled
 
 - name: check if decapod_flow directory exists
   stat:

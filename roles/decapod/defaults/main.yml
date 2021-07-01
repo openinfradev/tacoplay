@@ -26,6 +26,7 @@ argo_mysql_version: "8"
 argo_archive_storage_size: 8Gi
 argo_node_selector: null
 
+argocd_enabled: false
 argocd_image_repo: "{{ quay_image_repo }}/argoproj/argocd"
 argocd_version: "v2.0.0"
 argocd_chart_source: "{{ role_path}}/../../charts/argo-helm/charts/argo-cd"
