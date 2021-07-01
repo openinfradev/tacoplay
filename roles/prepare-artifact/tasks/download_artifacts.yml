@@ -69,7 +69,7 @@
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
 
-- name: Download container image for rook, argo and argocd
+- name: Download container image for rook and argo
   docker_image:
     name: "{{ item.repo }}"
     tag: "{{ item.tag }}"
@@ -83,9 +83,6 @@
     - { repo: "{{ rook_csi_resizer_image_repo }}", tag: "{{ rook_csi_resizer_image_tag }}" }
     - { repo: "{{ rook_csi_node_driver_registrar_image_repo }}", tag: "{{ rook_csi_node_driver_registrar_image_tag }}" }
     - { repo: "{{ helm_operator_image_repo }}", tag: "{{ helm_operator_version | replace('v','') }}" }
-    - { repo: "{{ argocd_image_repo }}", tag: "{{ argocd_version }}" }
-    - { repo: "{{ argocd_dex_image_repo }}", tag: "{{ argocd_dex_version }}" }
-    - { repo: "{{ argocd_redis_image_repo }}", tag: "{{ argocd_redis_version }}" }
     - { repo: "{{ argo_workflow_controller_image_repo }}", tag: "{{ argo_version }}" }
     - { repo: "{{ argo_workflow_executor_image_repo }}", tag: "{{ argo_version }}" }
     - { repo: "{{ argo_server_image_repo }}",  tag: "{{ argo_version }}" }
