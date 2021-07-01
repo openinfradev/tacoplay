@@ -37,6 +37,7 @@
     dest: "{{ role_path }}/files/argocd.vo"
   become: false
 
+# TODO: should check if same helm release already exists
 - name: install argo-cd chart
   shell: >-
     {{ bin_dir }}/helm install decapod-argocd {{ argocd_chart_source }} -n argo \

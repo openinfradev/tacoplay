@@ -1,0 +1,45 @@
+---
+- name: install argo-workflow chart with persistence config
+  shell: >-
+    {{ bin_dir }}/helm upgrade argo-workflow {{ argo_workflow_chart_source }} -n argo \
+    --set controller.image.registry={{ argo_workflow_controller_image_registry }} \
+    --set controller.image.repository={{ argo_workflow_controller_image_repo }} \
+    --set executor.image.registry={{ argo_workflow_executor_image_registry }} \
+    --set executor.image.repository={{ argo_workflow_executor_image_repo }} \
+    --set server.image.registry={{ argo_workflow_server_image_registry }} \
+    --set server.image.repository={{ argo_workflow_server_image_repo }} \
+    --set controller.persistence.postgresql.host={{ argo_workflow_controller_persistence_postgres_host }} \
+    --set controller.persistence.postgresql.port={{ argo_workflow_controller_persistence_postgres_port }} \
+    --set controller.persistence.postgresql.database={{ argo_workflow_controller_persistence_postgres_database }} \
+    --set controller.persistence.postgresql.tableName={{ argo_workflow_controller_persistence_postgres_tablename }} \
+    --set controller.persistence.postgresql.userNameSecret.name={{ argo_workflow_controller_persistence_postgres_secret }} \
+    --set controller.persistence.postgresql.userNameSecret.key="username" \
+    --set controller.persistence.postgresql.passwordSecret.name={{ argo_workflow_controller_persistence_postgres_secret }} \
+    --set controller.persistence.postgresql.passwordSecret.key="password" \
+    --set controller.persistence.nodeStatusOffload={{ argo_workflow_offload_enabled }} \
+    --set controller.persistence.archive={{ argo_workflow_archive_enabled }} \
+  become: false
+
+- name: wait for argo pods become ready
+  shell: >-
+    {{ bin_dir }}/kubectl wait --namespace=argo --for=condition=Ready pods -l app.kubernetes.io/name={{ item }} --timeout=600s
+  become: false
+  delay: 10
+  retries: 3
+  with_items:
+    - argo-workflows-server
+    - argo-workflows-workflow-controller
+  register: argo_pods_result
+  until: argo_pods_result is not failed
+
+- name: check argo client exists
+  stat:
+    path: "{{ bin_dir }}/argo"
+  register: stat_result
+
+- name: install argo client
+  shell: >-
+    cd /tmp && curl -sLO {{ argo_client_url }} && gunzip {{ argo_client_binary_name }}.gz && chmod +x {{ argo_client_binary_name }} && mv ./{{ argo_client_binary_name }} {{ bin_dir }}/argo
+  become: true
+  when: not stat_result.stat.exists
+

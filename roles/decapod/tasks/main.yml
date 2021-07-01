@@ -15,8 +15,9 @@
     argocd_redis_version: "{{ argocd_redis_version }}"
   tags: download
 
-- import_tasks: argo.yml
-- import_tasks: argocd.yml
+- { import_tasks: argo.yml, when: decapod_enabled }
+- { import_tasks: argocd.yml, when: decapod_enabled }
+- { import_tasks: argo_with_db.yml, when: decapod_with_db_enabled }
 
 - name: check if decapod_flow directory exists
   stat:
@@ -50,4 +51,3 @@
     state: absent
   with_items:
     - "{{ decapod_flow_source }}"
-    - /tmp/.helmrelease-rbac.yaml

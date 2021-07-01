@@ -45,7 +45,7 @@
     - { role: k8s/post-install, tags: k8s-post-install }
     - { role: k8s/clients, tags: k8s-post-install }
     - { role: ceph/rook, tags: rook,  when: taco_storage_backend == 'rook-ceph' }
-    - { role: decapod, tags: decapod, when: decapod_enabled }
+    - { role: decapod, tags: decapod, when: decapod_enabled or decapod_with_db_enabled }
 
 - name: setup helm repository
   hosts: helm-repository

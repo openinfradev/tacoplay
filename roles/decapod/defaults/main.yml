@@ -3,22 +3,33 @@ quay_image_repo: "quay.io"
 
 bin_dir: /usr/local/bin
 decapod_enabled: true
+decapod_with_db_enabled: false
 decapod_flow_source: "https://github.com/openinfradev/decapod-flow.git"
 decapod_flow_dest: "{{ role_path }}/files/decapod_flow"
 decapod_flow_version: "main"
 
-argo_version: "v2.12.5"
-argo_server_image_repo: "{{ docker_image_repo }}/argoproj/argocli"
-argo_workflow_controller_image_repo: "{{ docker_image_repo }}/argoproj/workflow-controller"
-argo_workflow_executor_image_repo: "{{ docker_image_repo }}/argoproj/argoexec"
-argo_chart_source: "{{ role_path }}/../../charts/taco-helm-charts/argo"
-argo_client_binary_name: "argo-linux-amd64"
-argo_client_url: "https://github.com/argoproj/argo/releases/download/{{ argo_version }}/{{ argo_client_binary_name }}.gz"
+argo_workflow_version: "v3.1.0"
+argo_workflow_controller_image_registry: {{ quay_image_repo }}
+argo_workflow_controller_image_repo: "argoproj/workflow-controller"
+argo_workflow_executor_image_registry: {{ quay_image_repo }}
+argo_workflow_executor_image_repo: "argoproj/argoexec"
+argo_workflow_server_image_registry: {{ quay_image_repo }}
+argo_workflow_server_image_repo: "argoproj/argocli"
+
+argo_workflow_server_node_selector: null
+argo_workflow_controller_node_selector: null
+
+argo_workflow_controller_persistence_postgres_host: "172.16.50.85"
+argo_workflow_controller_persistence_postgres_port: 5432
+argo_workflow_controller_persistence_postgres_database: "postgres"
+argo_workflow_controller_persistence_postgres_tablename: "argo_workflows"
+argo_workflow_controller_persistence_postgres_secret: "postgres-secret"
+argo_workflow_offload_enabled: false
 argo_workflow_archive_enabled: true
-argo_mysql_image_repo: "{{ docker_image_repo }}/library/mysql"
-argo_mysql_version: "8"
-argo_archive_storage_size: 8Gi
-argo_node_selector: null
+
+argo_workflow_chart_source: "{{ role_path}}/../../charts/argo-helm/charts/argo-workflows"
+argo_client_binary_name: "argo-linux-amd64"
+argo_client_url: "https://github.com/argoproj/argo/releases/download/{{ argo_workflow_version }}/{{ argo_client_binary_name }}.gz"
 
 argocd_image_repo: "{{ quay_image_repo }}/argoproj/argocd"
 argocd_version: "v2.0.0"
@@ -29,11 +40,11 @@ argocd_repo_server_replicas: 2
 argocd_client_binary_name: "argocd-linux-amd64"
 argocd_client_url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/{{ argocd_client_binary_name }}"
 argocd_admin_password: "password"
-argocd_current_cluster_name: "hanu-reference"
 argocd_dex_image_repo: "{{ quay_image_repo }}/dexidp/dex"
 argocd_dex_version: "v2.26.0"
 argocd_redis_image_repo: "{{ docker_image_repo }}/library/redis"
 argocd_redis_version: "6.2.1-alpine"
+argocd_current_cluster_name: "{{ cluster_name }}"
 
 htpasswd_pkg_name_default: "httpd-tools"
 htpasswd_pkg_name_redhat: "httpd-tools"
