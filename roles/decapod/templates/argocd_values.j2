@@ -9,6 +9,8 @@ dex:
   image:
     repository: {{ argocd_dex_image_repo }}
     tag: {{ argocd_dex_version }}
+  metrics:
+    enabled: true
 
 redis:
   image:
@@ -17,12 +19,16 @@ redis:
 
 controller:
   replicas: {{ argocd_app_ctrl_replicas }}
+  metrics:
+    enabled: true
 
 repoServer:
   replicas: {{ argocd_repo_server_replicas }}
 
 server:
   replicas: {{ argocd_server_replicas }}
+  metrics:
+    enabled: true
   service:
     type: NodePort
   configEnabled: true
