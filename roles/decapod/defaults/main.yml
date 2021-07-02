@@ -15,6 +15,7 @@ argo_workflow_executor_image_registry: {{ quay_image_repo }}
 argo_workflow_executor_image_repo: "argoproj/argoexec"
 argo_workflow_server_image_registry: {{ quay_image_repo }}
 argo_workflow_server_image_repo: "argoproj/argocli"
+argo_workflow_server_service_type: "NodePort"
 
 #TODO: Currently not used values. Override these if necessary
 argo_workflow_server_node_selector: null

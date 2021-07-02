@@ -8,6 +8,7 @@
     --set executor.image.repository={{ argo_workflow_executor_image_repo }} \
     --set server.image.registry={{ argo_workflow_server_image_registry }} \
     --set server.image.repository={{ argo_workflow_server_image_repo }} \
+    --set server.serviceType={{ argo_workflow_server_service_type }} \
     --set controller.persistence.postgresql.host={{ argo_workflow_controller_persistence_postgres_host }} \
     --set controller.persistence.postgresql.port={{ argo_workflow_controller_persistence_postgres_port }} \
     --set controller.persistence.postgresql.database={{ argo_workflow_controller_persistence_postgres_database }} \
@@ -17,7 +18,7 @@
     --set controller.persistence.postgresql.passwordSecret.name={{ argo_workflow_controller_persistence_postgres_secret }} \
     --set controller.persistence.postgresql.passwordSecret.key="password" \
     --set controller.persistence.nodeStatusOffload={{ argo_workflow_offload_enabled }} \
-    --set controller.persistence.archive={{ argo_workflow_archive_enabled }} \
+    --set controller.persistence.archive={{ argo_workflow_archive_enabled }} 
   become: false
 
 - name: wait for argo pods become ready

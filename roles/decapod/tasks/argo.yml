@@ -14,6 +14,7 @@
     --set executor.image.repository={{ argo_workflow_executor_image_repo }} \
     --set server.image.registry={{ argo_workflow_server_image_registry }} \
     --set server.image.repository={{ argo_workflow_server_image_repo }} \
+    --set server.serviceType={{ argo_workflow_server_service_type }} 
   become: false
 
 - name: wait for argo pods become ready
