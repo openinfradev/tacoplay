@@ -16,10 +16,11 @@ argo_workflow_executor_image_repo: "argoproj/argoexec"
 argo_workflow_server_image_registry: {{ quay_image_repo }}
 argo_workflow_server_image_repo: "argoproj/argocli"
 
+#TODO: Currently not used values. Override these if necessary
 argo_workflow_server_node_selector: null
 argo_workflow_controller_node_selector: null
 
-argo_workflow_controller_persistence_postgres_host: "172.16.50.85"
+argo_workflow_controller_persistence_postgres_host: ""
 argo_workflow_controller_persistence_postgres_port: 5432
 argo_workflow_controller_persistence_postgres_database: "postgres"
 argo_workflow_controller_persistence_postgres_tablename: "argo_workflows"

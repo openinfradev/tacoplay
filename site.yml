@@ -8,7 +8,7 @@
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: kubespray/roles/kubespray-defaults, tags: setup-os }
-    - { role: validate-cluster, tags: setup-os }
+    - { role: validate, tags: setup-os }
 
 - name: setup host operating systems in taco host group
   hosts: taco

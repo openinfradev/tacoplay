@@ -1,4 +1,11 @@
 ---
+- name: fail if decapod flags are both set
+  fail:
+    msg: "Error! Both decapod_enabled and decapod_with_db_enabled are set. Pick one!"
+  when:
+    - decapod_enabled
+    - decapod_with_db_enabled
+
 - name: set facts for prepare role
   set_fact:
     argo_version: "{{ argo_version }}"
