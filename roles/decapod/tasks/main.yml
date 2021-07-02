@@ -8,12 +8,13 @@
 
 - name: set facts for prepare role
   set_fact:
-    argo_version: "{{ argo_version }}"
+    argo_workflow_version: "{{ argo_workflow_version }}"
+    argo_workflow_controller_image_registry: "{{ argo_workflow_controller_image_registry }}"
     argo_workflow_controller_image_repo: "{{ argo_workflow_controller_image_repo }}"
+    argo_workflow_executor_image_registry: "{{ argo_workflow_executor_image_registry }}"
     argo_workflow_executor_image_repo: "{{ argo_workflow_executor_image_repo }}"
-    argo_server_image_repo: "{{ argo_server_image_repo }}"
-    argo_mysql_image_repo: "{{ argo_mysql_image_repo }}"
-    argo_mysql_version: "{{ argo_mysql_version }}"
+    argo_workflow_server_image_registry: "{{ argo_workflow_server_image_registry }}"
+    argo_workflow_server_image_repo: "{{ argo_workflow_server_image_repo }}"
     argocd_image_repo: "{{ argocd_image_repo }}"
     argocd_version: "{{ argocd_version }}"
     argocd_dex_image_repo: "{{ argocd_dex_image_repo }}"

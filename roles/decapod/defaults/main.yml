@@ -9,11 +9,11 @@ decapod_flow_dest: "{{ role_path }}/files/decapod_flow"
 decapod_flow_version: "main"
 
 argo_workflow_version: "v3.1.0"
-argo_workflow_controller_image_registry: {{ quay_image_repo }}
+argo_workflow_controller_image_registry: "{{ quay_image_repo }}"
 argo_workflow_controller_image_repo: "argoproj/workflow-controller"
-argo_workflow_executor_image_registry: {{ quay_image_repo }}
+argo_workflow_executor_image_registry: "{{ quay_image_repo }}"
 argo_workflow_executor_image_repo: "argoproj/argoexec"
-argo_workflow_server_image_registry: {{ quay_image_repo }}
+argo_workflow_server_image_registry: "{{ quay_image_repo }}"
 argo_workflow_server_image_repo: "argoproj/argocli"
 argo_workflow_server_service_type: "NodePort"
 
