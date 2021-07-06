@@ -75,6 +75,7 @@
     tag: "{{ item.tag }}"
     source: pull
   with_items:
+    - { repo: "{{ rook_ceph_operator_image_repo }}", tag: "{{ rook_ceph_operator_version }}" }
     - { repo: "{{ rook_ceph_image_repo }}", tag: "{{ rook_ceph_version }}" }
     - { repo: "{{ rook_cephcsi_image_repo }}", tag: "{{ rook_cephcsi_image_tag }}" }
     - { repo: "{{ rook_csi_snapshotter_image_repo }}", tag: "{{ rook_csi_snapshotter_tag }}" }

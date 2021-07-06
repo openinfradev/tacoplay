@@ -1,6 +1,8 @@
 ---
 - name: set facts for prepare role
   set_fact:
+    rook_ceph_operator_image_repo: "{{ rook_ceph_operator_image_repo }}"
+    rook_ceph_operator_version: "{{ rook_ceph_operator_version }}"
     rook_ceph_image_repo: "{{ rook_ceph_image_repo }}"
     rook_ceph_version: "{{ rook_ceph_version }}"
     rook_cephcsi_image_repo: "{{ rook_cephcsi_image_repo }}"
@@ -31,7 +33,7 @@
 
 - name: download rook-operator chart
   shell: >-
-    {{ bin_dir }}/helm pull rook-ceph --repo https://charts.rook.io/release --version {{ rook_ceph_version }} --untar --untardir {{ rook_ceph_operator_chart_source }}/..
+    {{ bin_dir }}/helm pull rook-ceph --repo https://charts.rook.io/release --version {{ rook_ceph_operator_version }} --untar --untardir {{ rook_ceph_operator_chart_source }}/..
   become: false
   tags: download
   when: not stat_rook_ceph_chart_source.stat.exists
@@ -39,8 +41,8 @@
 - name: install rook-operator chart
   shell: >-
     {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph {{ rook_ceph_operator_chart_source }} \
-    --set image.repository={{ rook_ceph_image_repo }} \
-    --set image.tag={{ rook_ceph_version }} \
+    --set image.repository={{ rook_ceph_operator_image_repo }} \
+    --set image.tag={{ rook_ceph_operator_version }} \
     --set csi.cephcsi.image={{ rook_cephcsi_image_repo }}:{{ rook_cephcsi_image_tag }} \
     --set csi.registrar.image={{ rook_csi_node_driver_registrar_image_repo }}:{{ rook_csi_node_driver_registrar_image_tag }} \
     --set csi.provisioner.image={{ rook_csi_provisioner_image_repo }}:{{ rook_csi_provisioner_image_tag }} \
