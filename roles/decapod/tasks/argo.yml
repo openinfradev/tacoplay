@@ -5,23 +5,16 @@
   ignore_errors: true
   become: false
 
-- name: install argo chart
+- name: templating values file for argo-wf chart
+  template:
+    src: "{{ role_path }}/templates/argowf_values.j2"
+    dest: "{{ role_path }}/files/argowf.vo"
+  become: false
+
+- name: install argo-wf chart
   shell: >-
     {{ bin_dir }}/helm install argo {{ argo_chart_source }} -n argo \
-    --set workflowArchive.enabled={{ argo_workflow_archive_enabled }} \
-    --set mysql.enabled={{ argo_workflow_archive_enabled }} \
-    --set workflowController.image.repository={{ argo_workflow_controller_image_repo }} \
-    --set workflowController.image.tag={{ argo_version }} \
-    --set workflowController.executor.image.repository={{ argo_workflow_executor_image_repo }} \
-    --set workflowController.executor.image.tag={{ argo_version }} \
-    --set argoServer.image.repository={{ argo_server_image_repo }} \
-    --set argoServer.image.tag={{ argo_version }} \
-    --set nodeSelector={{ argo_node_selector }} \
-    --set mysql.image.repository={{ argo_mysql_image_repo }} \
-    --set mysql.image.tag={{ argo_mysql_version }} \
-    --set mysql.persistence.storageClass={{ taco_storageclass_name }} \
-    --set mysql.persistence.size={{ argo_archive_storage_size }} \
-    --set mysql.nodeSelector={{ argo_node_selector }}
+    -f {{ role_path }}/files/argowf.vo
   become: false
 
 - name: wait for argo pods become ready
