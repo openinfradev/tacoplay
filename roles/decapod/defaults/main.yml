@@ -26,21 +26,6 @@ argo_mysql_version: "8"
 argo_archive_storage_size: 8Gi
 argo_node_selector: null
 
-argocd_image_repo: "{{ quay_image_repo }}/argoproj/argocd"
-argocd_version: "v2.0.0"
-argocd_chart_source: "{{ role_path}}/../../charts/argo-helm/charts/argo-cd"
-argocd_app_ctrl_replicas: 1
-argocd_server_replicas: 2
-argocd_repo_server_replicas: 2
-argocd_client_binary_name: "argocd-linux-amd64"
-argocd_client_url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/{{ argocd_client_binary_name }}"
-argocd_admin_password: "password"
-argocd_current_cluster_name: "hanu-reference"
-argocd_dex_image_repo: "{{ quay_image_repo }}/dexidp/dex"
-argocd_dex_version: "v2.26.0"
-argocd_redis_image_repo: "{{ docker_image_repo }}/library/redis"
-argocd_redis_version: "6.2.1-alpine"
-
 htpasswd_pkg_name_default: "httpd-tools"
 htpasswd_pkg_name_redhat: "httpd-tools"
 htpasswd_pkg_name_debian: "apache2-utils"

@@ -7,19 +7,12 @@
     argo_server_image_repo: "{{ argo_server_image_repo }}"
     argo_mysql_image_repo: "{{ argo_mysql_image_repo }}"
     argo_mysql_version: "{{ argo_mysql_version }}"
-    argocd_image_repo: "{{ argocd_image_repo }}"
-    argocd_version: "{{ argocd_version }}"
-    argocd_dex_image_repo: "{{ argocd_dex_image_repo }}"
-    argocd_dex_version: "{{ argocd_dex_version }}"
-    argocd_redis_image_repo: "{{ argocd_redis_image_repo }}"
-    argocd_redis_version: "{{ argocd_redis_version }}"
     helm_operator_version: "{{ helm_operator_version }}"
     helm_operator_image_repo: "{{ helm_operator_image_repo }}"
   tags: download
 
 - import_tasks: helm-operator.yml
 - import_tasks: argo.yml
-- import_tasks: argocd.yml
 
 - name: check if decapod_flow directory exists
   stat:
