@@ -35,6 +35,6 @@
 
 - name: install workflow templates and rbac
   shell: >-
-    {{ bin_dir }}/kubectl apply -f {{ decapod_flow_dest }}/templates --recursive
+    {{ bin_dir }}/kubectl apply -f {{ decapod_flow_dest }}/templates --recursive -nargo
   become: false
 
