@@ -5,9 +5,15 @@
   ignore_errors: true
   become: false
 
-- name: get redis-ha chart verion for argo-cd chart
+- name: get redis-ha chart index from argo-cd chart dependencies
   shell: >-
-    grep version {{ argocd_chart_source }}/Chart.yaml  | tail -1 | awk '{print $2}'
+    cat {{ argocd_chart_source }}/Chart.yaml | /usr/local/bin/yq | jq .dependencies | jq 'map(.name == "redis-ha") | index(true) '
+  register: redis_ha_chart_index
+  tags: download
+
+- name: get redis-ha chart verion for argo-cd chart
+  shell: |
+    cat {{ argocd_chart_source }}/Chart.yaml | /usr/local/bin/yq .dependencies[{{ redis_ha_chart_index.stdout }}].version
   register: redis_ha_chart_version
   tags: download
 

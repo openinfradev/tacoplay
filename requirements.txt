@@ -9,3 +9,4 @@ ruamel.yaml==0.16.10
 
 # for taco
 docker
+yq
