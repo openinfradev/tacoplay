@@ -33,21 +33,8 @@
   become: false
   tags: download
 
-- name: copy argo-additional-rbac.yaml to tmp
-  copy:
-    src: "{{ decapod_flow_dest }}/templates/argo-additional-rbac.yaml"
-    dest: "/tmp/.argo-additional-rbac.yaml"
-  become: false
-
-- name: install rbac to argo for argo:default serviceaccount
+- name: install workflow templates and rbac
   shell: >-
-    {{ bin_dir }}/kubectl apply -f /tmp/.argo-additional-rbac.yaml
+    {{ bin_dir }}/kubectl apply -f {{ decapod_flow_dest }}/templates --recursive -nargo
   become: false
 
-- name: delete decapod by-products
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ decapod_flow_source }}"
-    - /tmp/.helmrelease-rbac.yaml
