@@ -4,7 +4,7 @@ docker_image_repo: "docker.io"
 quay_image_repo: "quay.io"
 
 rook_ceph_operator_chart_source: "{{ role_path }}/../../../charts/rook-ceph"
-rook_ceph_operator_version: v1.6.7
+rook_ceph_operator_version: v1.6.9
 rook_ceph_operator_image_repo: "{{ docker_image_repo }}/rook/ceph"
 rook_cephcsi_image_repo: "{{ quay_image_repo }}/cephcsi/cephcsi"
 rook_cephcsi_image_tag: v3.3.1
@@ -19,8 +19,8 @@ rook_csi_resizer_image_tag: v1.2.0
 rook_csi_node_driver_registrar_image_repo: "{{ kube_image_repo }}/sig-storage/csi-node-driver-registrar"
 rook_csi_node_driver_registrar_image_tag: v2.2.0
 
-rook_ceph_image_repo: "{{ docker_image_repo }}/ceph/ceph"
-rook_ceph_version: v15.2.13
+rook_ceph_image_repo: "{{ quay_image_repo }}/ceph/ceph"
+rook_ceph_version: v15.2.14
 rook_ceph_cluster_chart_source: "{{ role_path }}/../../../charts/taco-helm-charts/rook-ceph-cluster"
 rook_ceph_cluster_mon_replicas: 3
 rook_ceph_cluster_taco_pool_size: 3
