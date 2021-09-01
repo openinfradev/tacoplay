@@ -24,6 +24,15 @@
     {{ bin_dir }}/kubectl create namespace rook-ceph
   ignore_errors: true
   become: false
+  run_once: true
+
+- name: add a taint for Ceph services
+  shell: >-
+    {{ bin_dir }}/kubectl taint nodes {{ item }} storage-node=true:NoSchedule --overwrite
+  when:
+  - rook_ceph_cluster_ceph_only_nodes_enabled
+  with_items: "{{ groups['ceph'] }}"
+  run_once: true
 
 - name: check if rook-operator chart directory exists
   stat:
@@ -62,17 +71,16 @@
   register: rook_ceph_operator_result
   until: rook_ceph_operator_result is not failed
 
-- name: install rook ceph cluster chart
+- name: templating values file for rook-ceph-cluster chart
+  template:
+    src: "{{ role_path }}/templates/rook_ceph_cluster_values.j2"
+    dest: "{{ role_path }}/files/rook_ceph_cluster.vo"
+  become: false
+
+- name: install rook-ceph-cluster chart
   shell: >-
     {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph-cluster {{ rook_ceph_cluster_chart_source }} \
-    --set cluster.image.repository={{ rook_ceph_image_repo }} \
-    --set cluster.image.tag={{ rook_ceph_version }} \
-    --set cluster.mon.count={{ rook_ceph_cluster_mon_replicas }} \
-    --set cluster.network.hostNetworkingEnabled={{ rook_ceph_cluster_host_networking_enabled }} \
-    --set block_pools[0].name=taco \
-    --set block_pools[0].size={{ rook_ceph_cluster_taco_pool_size  }} \
-    --set block_pools[0].requireSafeReplicaSize={{ rook_ceph_cluster_taco_pool_require_safe_size }} \
-    --set storageclass.name={{ taco_storageclass_name }}
+    -f {{ role_path }}/files/rook_ceph_cluster.vo
   become: false
 
 - name: wait for rook ceph cluster become ready

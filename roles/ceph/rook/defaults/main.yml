@@ -25,4 +25,5 @@ rook_ceph_cluster_chart_source: "{{ role_path }}/../../../charts/taco-helm-chart
 rook_ceph_cluster_mon_replicas: 3
 rook_ceph_cluster_taco_pool_size: 3
 rook_ceph_cluster_host_networking_enabled: "false"
+rook_ceph_cluster_ceph_only_nodes_enabled: "false"
 rook_ceph_cluster_taco_pool_require_safe_size: "true"
