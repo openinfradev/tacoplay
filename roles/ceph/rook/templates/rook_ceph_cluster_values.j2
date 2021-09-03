@@ -1,0 +1,36 @@
+rook:
+  image:
+    repository: {{ rook_ceph_operator_image_repo }}
+    tag: {{ rook_ceph_operator_version }}
+
+cluster:
+  image:
+    repository: {{ rook_ceph_image_repo }}
+    tag: {{ rook_ceph_version }}
+  mon:
+    # should be odd number
+    count: {{ rook_ceph_cluster_mon_replicas }}
+  network:
+    hostNetworkingEnabled: {{ rook_ceph_cluster_host_networking_enabled }}
+  {% if rook_ceph_cluster_ceph_only_nodes_enabled -%}
+  placement:
+    all:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: role
+              operator: In
+              values:
+              - storage-node
+      tolerations:
+      - key: storage-node
+        operator: Exists
+  {% endif %}
+block_pools:
+  - name: taco
+    size: {{ rook_ceph_cluster_taco_pool_size }}
+    requireSafeReplicaSize: {{ rook_ceph_cluster_taco_pool_require_safe_size }}
+storageclass:
+  name: {{ taco_storageclass_name }}
+  pool: taco
