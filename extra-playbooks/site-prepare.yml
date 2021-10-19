@@ -43,4 +43,5 @@
   roles:
     - { role: ../kubespray/roles/kubespray-defaults }
     - { role: prepare-artifact }
+    - { role: k8s/helm-repository }
   tags: always

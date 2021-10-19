@@ -24,18 +24,6 @@
   when:
     - taco_apps and taco_apps|length > 0
 
-- name: Render manifest yaml for real deployment
-  script: >-
-    {{ playbook_dir | dirname }}/scripts/render_manifest.sh
-  environment:
-    decapod_site_dest: "{{ decapod_site_dest }}"
-    inventory_dir: "{{ inventory_dir }}/../{{ tacoplay_inventory_site }}"
-    site_name: "{{ site_name }}"
-    decapod_base_yaml_version: "{{ decapod_base_yaml_version }}"
-    taco_apps: "{{ taco_apps }}"
-  when:
-    - taco_apps and taco_apps|length > 0
-
 - name: grep tacoplay path
   shell: >-
     echo {{ playbook_dir }} | sed  's/extra-playbooks//g'

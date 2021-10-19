@@ -50,7 +50,10 @@
     replace: "LOCAL_REGISTRY"
     regexp: "k8s.gcr.io"
   with_fileglob:
-    - "{{ playbook_dir }}/../roles/decapod/files/decapod_flow/templates/helm-operator/*-wftpl.yaml"
+    - "{{ playbook_dir }}/../roles/decapod/files/decapod_flow/templates/*-wftpl.yaml"
+    - "{{ playbook_dir }}/../roles/decapod/files/decapod_flow/templates/argo-cd/*-wftpl.yaml"
+    - "{{ playbook_dir }}/../roles/decapod/files/decapod_flow/templates/decapod-apps/*-wftpl.yaml"
+    - "{{ playbook_dir }}/../roles/decapod/files/decapod_flow/templates/decapod-manifests/*-wftpl.yaml"
   become: true
 
 - name: archive registry image
