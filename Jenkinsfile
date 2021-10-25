@@ -62,6 +62,9 @@ pipeline {
 
   stages {
     stage ('Prepare Tacoplay') {
+      environment {
+          GITHUB_TOKEN = credentials('hanu-github-token-new')
+      }
       steps {
           script {
             ADMIN_NODE = ''
@@ -82,7 +85,7 @@ pipeline {
             println("*********************************************")
 
             sh """
-              git clone https://github.com/openinfradev/taco-gate-inventories.git --branch ${params.GATING_INVENTORIES_TAG} --single-branch
+              git clone https://$GITHUB_TOKEN@github.com/openinfradev/taco-gate-inventories.git --single-branch -b $params.GATING_INVENTORIES_TAG
               cp -r taco-gate-inventories/inventories/${params.SITE} ./inventory/
               cp -r taco-gate-inventories/scripts ./gate-scripts
               cp taco-gate-inventories/config/pangyo-clouds.yml ./clouds.yaml
