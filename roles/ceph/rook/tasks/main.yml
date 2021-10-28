@@ -31,7 +31,7 @@
     {{ bin_dir }}/kubectl taint nodes {{ item }} storage-node=true:NoSchedule --overwrite
   when:
   - rook_ceph_cluster_ceph_only_nodes_enabled
-  with_items: "{{ groups['ceph'] }}"
+  with_items: "{{ groups['rook-ceph'] }}"
   run_once: true
 
 - name: check if rook-operator chart directory exists
