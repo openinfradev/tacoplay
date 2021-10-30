@@ -24,18 +24,6 @@
   when:
     - taco_apps and taco_apps|length > 0
 
-- name: Render manifest yaml for real deployment
-  script: >-
-    {{ playbook_dir | dirname }}/scripts/render_manifest.sh
-  environment:
-    decapod_site_dest: "{{ decapod_site_dest }}"
-    inventory_dir: "{{ inventory_dir }}/../{{ tacoplay_inventory_site }}"
-    site_name: "{{ site_name }}"
-    decapod_base_yaml_version: "{{ decapod_base_yaml_version }}"
-    taco_apps: "{{ taco_apps }}"
-  when:
-    - taco_apps and taco_apps|length > 0
-
 - name: grep tacoplay path
   shell: >-
     echo {{ playbook_dir }} | sed  's/extra-playbooks//g'
@@ -83,7 +71,6 @@
     - { repo: "{{ rook_csi_provisioner_image_repo }}", tag: "{{ rook_csi_provisioner_image_tag }}" }
     - { repo: "{{ rook_csi_resizer_image_repo }}", tag: "{{ rook_csi_resizer_image_tag }}" }
     - { repo: "{{ rook_csi_node_driver_registrar_image_repo }}", tag: "{{ rook_csi_node_driver_registrar_image_tag }}" }
-    - { repo: "{{ helm_operator_image_repo }}", tag: "{{ helm_operator_version | replace('v','') }}" }
     - { repo: "{{ argocd_image_repo }}", tag: "{{ argocd_version }}" }
     - { repo: "{{ argocd_dex_image_repo }}", tag: "{{ argocd_dex_version }}" }
     - { repo: "{{ argocd_redis_image_repo }}", tag: "{{ argocd_redis_version }}" }
