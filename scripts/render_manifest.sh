@@ -1,9 +1,9 @@
 #!/bin/bash
 
 cd ${decapod_site_dest}
-.github/workflows/render.sh $decapod_base_yaml_version
+.github/workflows/render.sh $decapod_base_yaml_version $site_name
 
 APPS=$(python <<< "print(' '.join(${taco_apps}))")
 for app in $APPS; do
-    cp ${site_name}/${app}/${app}-manifest.yaml ${inventory_dir}/
+    cp decapod-base-yaml/${app}/${site_name}/${app}-manifest.yaml ${inventory_dir}/
 done
