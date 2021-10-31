@@ -2,21 +2,64 @@
 - name: set facts for prepare role
   set_fact:
     argo_version: "{{ argo_version }}"
-    argo_workflow_controller_image_repo: "{{ argo_workflow_controller_image_repo }}"
-    argo_workflow_executor_image_repo: "{{ argo_workflow_executor_image_repo }}"
-    argo_server_image_repo: "{{ argo_server_image_repo }}"
-    argo_mysql_image_repo: "{{ argo_mysql_image_repo }}"
-    argo_mysql_version: "{{ argo_mysql_version }}"
-    argocd_image_repo: "{{ argocd_image_repo }}"
     argocd_version: "{{ argocd_version }}"
-    argocd_dex_image_repo: "{{ argocd_dex_image_repo }}"
-    argocd_dex_version: "{{ argocd_dex_version }}"
-    argocd_redis_image_repo: "{{ argocd_redis_image_repo }}"
-    argocd_redis_version: "{{ argocd_redis_version }}"
+    argocd_chart_source: "{{ argocd_chart_source }}"
+    argocd_chart_version: "{{ argocd_chart_version }}"
+    decapod_bootstrap_dest: "{{ decapod_bootstrap_dest }}"
+    decapod_site_dest: "{{ decapod_site_dest }}"
   tags: download
+
+- name: create namespace for decapod-bootstrap
+  shell: |
+    {{ bin_dir }}/kubectl create namespace argo
+    {{ bin_dir }}/kubectl create namespace decapod-db
+  ignore_errors: true
+  become: false
 
 - import_tasks: argo.yml
 - import_tasks: argocd.yml
+
+- name: check if decapod directory exists
+  stat:
+    path: "{{ role_path }}/../../decapod"
+  register: stat_decapod_dir
+  tags: download
+
+- name: create decapod directory
+  stat:
+    path: "{{ role_path }}/../../decapod"
+  when: not stat_decapod_dir.stat.exists
+  tags: download
+
+- name: check if decapod-bootstrap directory exists
+  stat:
+    path: "{{ decapod_bootstrap_dest }}"
+  register: stat_decapod_bootstrap_dest
+  tags: download
+
+- name: git clone decapod-bootstrap
+  git:
+    repo: "{{ decapod_bootstrap_source }}"
+    dest: "{{ decapod_bootstrap_dest }}"
+    version: "{{ decapod_bootstrap_version }}"
+  when: not stat_decapod_bootstrap_dest.stat.exists
+  become: false
+  tags: download
+
+- name: check if decapod-base-yaml directory exists
+  stat:
+    path: "{{ decapod_base_dest }}"
+  register: stat_decapod_base_dest
+  tags: download
+
+- name: git clone decapod-base-yaml
+  git:
+    repo: "{{ decapod_base_source }}"
+    dest: "{{ decapod_base_dest }}"
+    version: "{{ decapod_base_version }}"
+  when: not stat_decapod_base_dest.stat.exists
+  become: false
+  tags: download
 
 - name: check if decapod_flow directory exists
   stat:
@@ -33,8 +76,23 @@
   become: false
   tags: download
 
+- name: check if decapod-site directory exists
+  stat:
+    path: "{{ decapod_site_dest }}"
+  register: stat_decapod_site_dest
+  tags: download
+
+- name: git clone decapod-site-yaml
+  git:
+    repo: "{{ decapod_site_source }}"
+    dest: "{{ decapod_site_dest }}"
+    version: "{{ decapod_site_version }}"
+  when: not stat_decapod_site_dest.stat.exists
+  become: false
+  tags: download
+
 - name: install workflow templates and rbac
   shell: >-
-    {{ bin_dir }}/kubectl apply -f {{ decapod_flow_dest }}/templates --recursive -nargo
+    {{ bin_dir }}/kubectl apply -f {{ decapod_flow_dest }}/templates/argo-additional-rbac.yaml -nargo
   become: false
 

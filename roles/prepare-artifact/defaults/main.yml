@@ -16,9 +16,6 @@ openstackclient_image_tag: "stein"
 # the volume_dir should be set to upper directory of the playbook_dir
 container_registry_volume_relative_dir: "{{ playbook_dir | dirname }}/container_registry"
 
-decapod_site_source: "https://github.com/openinfradev/decapod-site"
-decapod_site_dest: "/tmp/decapod_site"
-decapod_site_version: "main"
 decapod_base_yaml_version: "main"
 decapod_preperation_site_name: "hanu-reference"
 
@@ -28,13 +25,21 @@ download_container_images:
   - { repo: quay.io/prometheus-operator/prometheus-config-reloader, tag: v0.46.0 }
   - { repo: gcr.io/istio-testing/proxyv2, tag: 1.11-alpha.aa439f6e4772aa52acafa11ac7a5fbdfbb160357 }
   - { repo: gcr.io/istio-testing/pilot, tag: 1.11-alpha.aa439f6e4772aa52acafa11ac7a5fbdfbb160357 }
-  - { repo: jaegertracing/jaeger-collector, tag: 1.22.0 }
-  - { repo: jaegertracing/jaeger-agent, tag: 1.22.0 }
-  - { repo: jaegertracing/jaeger-ingester, tag: 1.22.0 }
-  - { repo: jaegertracing/jaeger-query, tag: 1.22.0 }
-  - { repo: jaegertracing/all-in-one, tag: 1.22.0 }
-  - { repo: jaegertracing/jaeger-collector, tag: 1.21.0 }
-  - { repo: jaegertracing/jaeger-agent, tag: 1.21.0 }
-  - { repo: jaegertracing/jaeger-ingester, tag: 1.21.0 }
-  - { repo: jaegertracing/jaeger-query, tag: 1.21.0 }
-  - { repo: jaegertracing/all-in-one, tag: 1.21.0 }
+  - { repo: docker.io/jaegertracing/jaeger-collector, tag: 1.22.0 }
+  - { repo: docker.io/jaegertracing/jaeger-agent, tag: 1.22.0 }
+  - { repo: docker.io/jaegertracing/jaeger-ingester, tag: 1.22.0 }
+  - { repo: docker.io/jaegertracing/jaeger-query, tag: 1.22.0 }
+  - { repo: docker.io/jaegertracing/all-in-one, tag: 1.22.0 }
+  - { repo: docker.io/jaegertracing/jaeger-collector, tag: 1.21.0 }
+  - { repo: docker.io/jaegertracing/jaeger-agent, tag: 1.21.0 }
+  - { repo: docker.io/jaegertracing/jaeger-ingester, tag: 1.21.0 }
+  - { repo: docker.io/jaegertracing/jaeger-query, tag: 1.21.0 }
+  - { repo: docker.io/jaegertracing/all-in-one, tag: 1.21.0 }
+  # for argo workflow
+  - { repo: quay.io/argoproj/argoexec, tag: v3.1.9}
+  # for decapod v2 rendering
+  - { repo: ghcr.io/openinfradev/helmrelease2yaml, tag: v1.3.0 }
+  - { repo: docker.io/sktdev/decapod-kustomize, tag: latest }
+  # for decapod-flow
+  - { repo: docker.io/sktdev/argocd, tag: latest }
+  - { repo: k8s.gcr.io/hyperkube, tag: v1.18.8 }
