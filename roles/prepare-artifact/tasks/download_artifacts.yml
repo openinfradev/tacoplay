@@ -1,15 +1,3 @@
-- name: Delete decapod-site-yaml
-  file:
-    state: absent
-    path: "{{ decapod_site_dest }}"
-
-- name: git clone decapod-site-yaml
-  git:
-    repo: "{{ decapod_site_source }}"
-    dest: "{{ decapod_site_dest }}"
-    version: "{{ decapod_site_version }}"
-  become: false
-
 - name: Render manifest yaml for artifacts
   script: >-
     {{ playbook_dir | dirname }}/scripts/render_manifest.sh
@@ -35,7 +23,7 @@
   become: no
   ignore_errors: yes
 
-- name: Download helm chart
+- name: Download helm charts from decapod-manifests
   script: >-
     {{ playbook_dir | dirname }}/scripts/download_helm_charts.py
     {{ inventory_dir }}/{{ item }}-manifest.yaml
@@ -46,7 +34,7 @@
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
 
-- name: Download container image
+- name: Download container images from decapod-manifests
   script: >-
     {{ playbook_dir | dirname }}/scripts/download_container_images.py
     {{ inventory_dir }}/{{ item }}-manifest.yaml
@@ -57,7 +45,7 @@
     - taco_apps and taco_apps|length > 0
   with_items: "{{ taco_apps }}"
 
-- name: Download container image for rook, argo and argocd
+- name: Download container image for rook
   docker_image:
     name: "{{ item.repo }}"
     tag: "{{ item.tag }}"
@@ -71,16 +59,9 @@
     - { repo: "{{ rook_csi_provisioner_image_repo }}", tag: "{{ rook_csi_provisioner_image_tag }}" }
     - { repo: "{{ rook_csi_resizer_image_repo }}", tag: "{{ rook_csi_resizer_image_tag }}" }
     - { repo: "{{ rook_csi_node_driver_registrar_image_repo }}", tag: "{{ rook_csi_node_driver_registrar_image_tag }}" }
-    - { repo: "{{ argocd_image_repo }}", tag: "{{ argocd_version }}" }
-    - { repo: "{{ argocd_dex_image_repo }}", tag: "{{ argocd_dex_version }}" }
-    - { repo: "{{ argocd_redis_image_repo }}", tag: "{{ argocd_redis_version }}" }
-    - { repo: "{{ argo_workflow_controller_image_repo }}", tag: "{{ argo_version }}" }
-    - { repo: "{{ argo_workflow_executor_image_repo }}", tag: "{{ argo_version }}" }
-    - { repo: "{{ argo_server_image_repo }}",  tag: "{{ argo_version }}" }
-    - { repo: "{{ argo_mysql_image_repo }}", tag: "{{ argo_mysql_version }}" }
   become: true
 
-- name: Download container images
+- name: Download containers that are used implicitly
   docker_image:
     name: "{{ item.repo }}"
     tag: "{{ item.tag }}"
@@ -88,3 +69,8 @@
   with_items:
     - "{{ download_container_images }}"
   become: true
+
+- name: Download container image for argocd
+  shell: |
+    helm template {{ argocd_chart_source }}/argo-cd-{{ argocd_chart_version }}.tgz -f {{ decapod_bootstrap_dest }}/argocd-install/values-override.yaml > {{ decapod_bootstrap_dest }}/argocd.yaml
+    {{ playbook_dir | dirname }}/scripts/download_container_images_from_yaml.py {{ decapod_bootstrap_dest }}/argocd.yaml

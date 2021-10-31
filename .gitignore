@@ -14,6 +14,4 @@ my-inventory/
 roles/decapod/files/argocd-linux-amd64
 roles/decapod/files/argo-linux-amd64.gz
 roles/decapod/files/argo-linux-amd64
-roles/decapod/files/decapod_flow/
-roles/decapod/files/helm-operator/
 roles/helm-repository/files/chartmuseum
