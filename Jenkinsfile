@@ -120,11 +120,7 @@ pipeline {
               deleteBdm = true
 
               if (online) {
-                if (params.OS.contains("ubuntu")) {
-                  sh "mv gate-scripts/cloudInitUbuntuOnline.sh gate-scripts/cloudInit.sh"
-                } else {
                   sh "mv gate-scripts/cloudInitOnline.sh gate-scripts/cloudInit.sh"
-                }
               } else {
                 if (params.OS.contains("ubuntu")) {
                   sh "mv gate-scripts/cloudInitUbuntuOffline.sh gate-scripts/cloudInit.sh"
