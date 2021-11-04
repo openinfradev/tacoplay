@@ -6,7 +6,7 @@
     flat: yes
     validate_checksum: no
   become: no
-  delegate_to: "{{ groups['kube-master']|first }}"
+  delegate_to: "{{ groups['kube_control_plane']|first }}"
 
 - name: copy helm to bin_dir
   copy:
