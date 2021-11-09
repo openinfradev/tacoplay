@@ -8,7 +8,7 @@ Tacoplay ansible variables
 Inventory
 ---------------------
 tacoplay는 아래와 같은 inventory로 node를 group으로 구성한다.
-* [kube-master]: kubernetes master node들의 목록
+* [kube_control_plane]: kubernetes master node들의 목록
 * [etcd]: etcd cluster를 구성할 node들의 목록
 * [kube-node]: kubernetes worker node들의 목록
 * [k8s-cluster:children]: kubernetes cluster 목록의 묶음

@@ -12,7 +12,7 @@
     dest: "{{ artifacts_dir }}/kubectl"
     flat: yes
     validate_checksum: no
-  delegate_to: "{{ groups['kube-master']|first }}"
+  delegate_to: "{{ groups['kube_control_plane']|first }}"
 
 - name: copy kubectl to bin_dir
   copy:
