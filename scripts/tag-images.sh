@@ -17,17 +17,6 @@ if [ $# == 0 ]; then
 	| sed -e "s/[a-z0-9.-]*\.io\///2" \
 	| sed -e "s/[a-z0-9.-]*:[0-9]*\///2" \
 	| sed -e "s/[a-z0-9.-]*.cicd.stg.taco\///2" \
-	| sed -e "s/squareup\///2" \
-	| sed -e "s/jettech\///2" \
-	| sed -e "s/prom\///2" \
-	| sed -e "s/grafana\///2" \
-	| sed -e "s/bats\///2" \
-	| sed -e "s/curlimages\///2" \
-	| sed -e "s/kiwigrid\///2" \
-	| sed -e "s/siim\///2" \
-	| sed -e "s/directxman12\///2" \
-	| sed -e "s/ncabatoff\///2" \
-	| sed -e "s/sktdev\///2" \
 	| sed -e "s/ / $NEW_REGISTRY\//g" \
 	| xargs -n2 docker tag $1 $2
 
