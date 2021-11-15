@@ -19,6 +19,7 @@
 - name: pull images provided by taco
   docker_image:
     name: "{{ item.repo }}:{{item.tag }}"
+    source: pull
   with_items:
     - { repo: "{{ openstackclient_image_repo }}", tag: "{{ openstackclient_image_tag }}" }
     - { repo: "{{ container_registry_image_repo }}", tag: "{{ container_registry_image_tag }}" }
@@ -58,6 +59,7 @@
     name: "{{ container_registry_image_repo }}"
     tag: "{{ container_registry_image_tag }}"
     archive_path: "{{ container_registry_volume_relative_dir }}/registry.tar"
+    source: local
 
 - name: bundle up tacoplay
   shell: tar cvfz tacoplay.tar.gz tacoplay/
