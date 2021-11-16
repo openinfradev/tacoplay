@@ -49,7 +49,7 @@
 
 - name: install rook-operator chart
   shell: >-
-    {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph {{ rook_ceph_operator_chart_source }} \
+    {{ bin_dir }}/helm upgrade --install --namespace rook-ceph rook-ceph {{ rook_ceph_operator_chart_source }} \
     --set image.repository={{ rook_ceph_operator_image_repo }} \
     --set image.tag={{ rook_ceph_operator_version }} \
     --set csi.cephcsi.image={{ rook_cephcsi_image_repo }}:{{ rook_cephcsi_image_tag }} \
@@ -79,7 +79,7 @@
 
 - name: install rook-ceph-cluster chart
   shell: >-
-    {{ bin_dir }}/helm install --namespace rook-ceph rook-ceph-cluster {{ rook_ceph_cluster_chart_source }} \
+    {{ bin_dir }}/helm upgrade --install --namespace rook-ceph rook-ceph-cluster {{ rook_ceph_cluster_chart_source }} \
     -f {{ role_path }}/files/rook_ceph_cluster.vo
   become: false
 
