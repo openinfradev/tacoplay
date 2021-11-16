@@ -110,19 +110,20 @@
   with_items: "{{ groups['etcd'] }}"
   ignore_errors: true
 
-- name: Get file paths for etcd container 
-  shell: "ls /var/lib/docker/containers/`sudo docker ps | grep etcd | awk '{print $1}'`*/*json.log"
-  register: "etcd_files"
-  delegate_to: "{{ item }}" 
-  with_items: "{{ groups['etcd'] }}"
-
-- name: Create etcd log file
-  file:
-    src: "{{ item[1].stdout }}"
-    path: "/var/log/etcd.log"
-    state: "link"
-  delegate_to: "{{ item[0] }}"
-  with_together:
-  - "{{ groups['etcd'] }}"
-  - "{{ etcd_files.results }}"
-
+# TODO: check if these tasks should be replaced for host-type etcd
+#- name: Get file paths for etcd container
+#  shell: "ls /var/lib/docker/containers/`sudo docker ps | grep etcd | awk '{print $1}'`*/*json.log"
+#  register: "etcd_files"
+#  delegate_to: "{{ item }}"
+#  with_items: "{{ groups['etcd'] }}"
+#
+#- name: Create etcd log file
+#  file:
+#    src: "{{ item[1].stdout }}"
+#    path: "/var/log/etcd.log"
+#    state: "link"
+#  delegate_to: "{{ item[0] }}"
+#  with_together:
+#  - "{{ groups['etcd'] }}"
+#  - "{{ etcd_files.results }}"
+#
