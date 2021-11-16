@@ -1,4 +1,4 @@
-@Library('jenkins-pipeline-library@main') _
+@Library('jenkins-pipeline-library@tks-v2.0.0-rc0') _
 
 pipeline {
   agent {
