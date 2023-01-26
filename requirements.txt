@@ -1,5 +1,5 @@
 # from kubespray v2.17.0
-ansible==3.4.0
+ansible==7.0.0
 ansible-base==2.10.11
 cryptography==3.3.2
 jinja2==2.11.3
